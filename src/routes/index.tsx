@@ -17,7 +17,8 @@ export const Route = createFileRoute("/")({
 
 function Index() {
   return (
-    <main className="min-h-screen">
+    <main className="relative min-h-screen">
+      <ScrollBackground />
       <Hero />
       <Welcome />
       <section className="relative z-10 bg-[#180028] py-32 text-center">
