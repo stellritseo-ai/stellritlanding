@@ -212,19 +212,45 @@ export default function Footer() {
       {/* Giant wordmark */}
       <div className="overflow-hidden px-4 pb-4">
         <div
-          className="select-none whitespace-nowrap text-center font-sans font-black uppercase leading-[0.8] tracking-[-0.05em] bg-gradient-to-b from-white to-[#1a0533] bg-clip-text text-transparent"
+          className="shimmer-text select-none whitespace-nowrap text-center font-sans font-black uppercase leading-[0.8] tracking-[-0.05em]"
           style={{ fontSize: "clamp(80px, 28vw, 480px)" }}
         >
           StellR IT
         </div>
       </div>
 
-
-
       <style>{`
         @keyframes marquee {
           from { transform: translateX(0); }
           to { transform: translateX(-50%); }
+        }
+
+        .shimmer-text {
+          background:
+            linear-gradient(
+              105deg,
+              rgba(255,255,255,0) 0%,
+              rgba(255,255,255,0) 40%,
+              rgba(255,255,255,0.55) 50%,
+              rgba(255,255,255,0) 60%,
+              rgba(255,255,255,0) 100%
+            ),
+            linear-gradient(
+              to bottom,
+              rgba(255,255,255,1) 0%,
+              rgba(255,255,255,0.35) 55%,
+              rgba(26,5,51,1) 100%
+            );
+          background-size: 250% 100%, 100% 100%;
+          -webkit-background-clip: text;
+          background-clip: text;
+          color: transparent;
+          animation: shimmer-sweep 5s ease-in-out infinite;
+        }
+
+        @keyframes shimmer-sweep {
+          0%   { background-position: 200% 0, 0 0; }
+          100% { background-position: -200% 0, 0 0; }
         }
       `}</style>
     </footer>
