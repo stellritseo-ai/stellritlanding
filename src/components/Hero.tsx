@@ -196,7 +196,7 @@ export default function Hero() {
           style={{ opacity: glowOpacity }}
           className="pointer-events-none absolute left-1/2 top-1/2 h-[800px] w-[800px] -translate-x-1/2 -translate-y-1/2"
         >
-          <div className="h-full w-full" style={{ background: "var(--grad-glow)", filter: "blur(20px)" }} />
+          <div className="h-full w-full" style={{ background: "var(--grad-glow)" }} />
         </motion.div>
 
         {/* Nav */}
