@@ -92,7 +92,7 @@ export default function Hero() {
 
   return (
     <div ref={containerRef} className="relative" style={{ height: "320vh" }}>
-      <div className="sticky top-0 h-screen w-full overflow-hidden noise-overlay" style={{ background: "var(--grad-bg)" }}>
+      <div className="sticky top-0 h-screen w-full overflow-hidden noise-overlay">
         {/* Ambient orbs */}
         <div className="pointer-events-none absolute inset-0">
           <motion.div

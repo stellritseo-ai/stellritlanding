@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import Hero from "@/components/Hero";
 import Welcome from "@/components/Welcome";
+import ScrollBackground from "@/components/ScrollBackground";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -16,7 +17,8 @@ export const Route = createFileRoute("/")({
 
 function Index() {
   return (
-    <main className="min-h-screen">
+    <main className="relative min-h-screen">
+      <ScrollBackground />
       <Hero />
       <Welcome />
       <section className="relative z-10 bg-[#180028] py-32 text-center">
