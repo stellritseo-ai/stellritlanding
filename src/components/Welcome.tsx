@@ -61,15 +61,13 @@ export default function Welcome() {
     offset: ["start end", "end start"],
   });
   const smooth = useSpring(sectionProgress, {
-    stiffness: 40,
-    damping: 20,
-    mass: 0.6,
+    stiffness: 50,
+    damping: 24,
+    mass: 0.5,
   });
 
-  const orb1Y = useTransform(smooth, [0, 1], ["-8%", "8%"]);
-  const orb2Y = useTransform(smooth, [0, 1], ["8%", "-8%"]);
-  const orb3Y = useTransform(smooth, [0, 1], ["-4%", "4%"]);
-  const bgShift = useTransform(smooth, [0, 1], [0, -40]);
+  // ONE continuous transform drives the entire background layer
+  const bgY = useTransform(smooth, [0, 1], ["-12%", "12%"]);
 
   // Per-word reveal driven by scroll progress through the text block
   const { scrollYProgress: textProgress } = useScroll({
