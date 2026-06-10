@@ -1,7 +1,8 @@
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { MapPin, Phone, Mail } from "lucide-react";
+import { MapPin, Phone, Mail, Send } from "lucide-react";
+import { toast } from "sonner";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -14,6 +15,9 @@ export default function Footer() {
   const topRef = useRef<HTMLDivElement>(null);
   const columnsRef = useRef<HTMLDivElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
+  const [email, setEmail] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -41,6 +45,28 @@ export default function Footer() {
     });
     return () => ctx.revert();
   }, []);
+
+  const handleSubscribe = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+
+    const trimmed = email.trim();
+    if (!trimmed) {
+      setError("Please enter your email address.");
+      return;
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(trimmed)) {
+      setError("Please enter a valid email address.");
+      return;
+    }
+
+    setLoading(true);
+    await new Promise((r) => setTimeout(r, 800));
+    setLoading(false);
+    setEmail("");
+    toast.success("You've been subscribed to the StellR IT newsletter!");
+  };
 
   const Column = ({ title, items }: { title: string; items: string[] }) => (
     <div>
@@ -171,6 +197,49 @@ export default function Footer() {
                 </a>
               </li>
             </ul>
+          </div>
+        </div>
+
+        {/* Newsletter */}
+        <div className="mt-16 rounded-2xl border border-white/10 bg-white/5 px-8 py-10 backdrop-blur-sm md:px-12">
+          <div className="flex flex-col gap-8 md:flex-row md:items-center md:justify-between">
+            <div>
+              <h4 className="text-[20px] font-semibold text-white">Subscribe to our newsletter</h4>
+              <p className="mt-2 text-[15px] text-white/60">
+                Get the latest insights, case studies, and updates from StellR IT.
+              </p>
+            </div>
+            <form onSubmit={handleSubscribe} className="flex w-full flex-col gap-3 md:w-auto md:flex-row md:items-start">
+              <div className="flex w-full flex-col gap-1 md:w-auto">
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    if (error) setError(null);
+                  }}
+                  placeholder="Enter your email"
+                  className={`h-12 w-full rounded-full border bg-white/5 px-5 text-[15px] text-white outline-none transition-all placeholder:text-white/30 md:w-72 ${
+                    error ? "border-red-400/60 focus:border-red-400" : "border-white/15 focus:border-[#ff8a5b]"
+                  }`}
+                />
+                {error && <span className="px-1 text-[13px] text-red-400">{error}</span>}
+              </div>
+              <button
+                type="submit"
+                disabled={loading}
+                className="flex h-12 shrink-0 items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#7a2adc] to-[#ff8a5b] px-6 text-[15px] font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-60"
+              >
+                {loading ? (
+                  <span className="h-5 w-5 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+                ) : (
+                  <>
+                    Subscribe
+                    <Send className="h-4 w-4" />
+                  </>
+                )}
+              </button>
+            </form>
           </div>
         </div>
 
