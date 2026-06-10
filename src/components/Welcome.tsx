@@ -61,15 +61,13 @@ export default function Welcome() {
     offset: ["start end", "end start"],
   });
   const smooth = useSpring(sectionProgress, {
-    stiffness: 40,
-    damping: 20,
-    mass: 0.6,
+    stiffness: 50,
+    damping: 24,
+    mass: 0.5,
   });
 
-  const orb1Y = useTransform(smooth, [0, 1], ["-8%", "8%"]);
-  const orb2Y = useTransform(smooth, [0, 1], ["8%", "-8%"]);
-  const orb3Y = useTransform(smooth, [0, 1], ["-4%", "4%"]);
-  const bgShift = useTransform(smooth, [0, 1], [0, -40]);
+  // ONE continuous transform drives the entire background layer
+  const bgY = useTransform(smooth, [0, 1], ["-12%", "12%"]);
 
   // Per-word reveal driven by scroll progress through the text block
   const { scrollYProgress: textProgress } = useScroll({
@@ -95,43 +93,21 @@ export default function Welcome() {
           "linear-gradient(180deg, #1a0640 0%, #4a1740 22%, #c97560 58%, #e88a72 100%)",
       }}
     >
-      {/* Smooth animated background blobs */}
+      {/* Single composited background layer — one transform, no jitter */}
       <motion.div
-        style={{ y: orb1Y, willChange: "transform" }}
-        className="pointer-events-none absolute -left-32 top-0 h-[600px] w-[600px] rounded-full"
-      >
-        <div
-          className="h-full w-full"
-          style={{
-            background: "radial-gradient(circle, rgba(255,170,140,0.55), transparent 65%)",
-            filter: "blur(80px)",
-          }}
-        />
-      </motion.div>
-      <motion.div
-        style={{ y: orb2Y, willChange: "transform" }}
-        className="pointer-events-none absolute -right-40 bottom-0 h-[700px] w-[700px] rounded-full"
-      >
-        <div
-          className="h-full w-full"
-          style={{
-            background: "radial-gradient(circle, rgba(180,80,200,0.45), transparent 70%)",
-            filter: "blur(100px)",
-          }}
-        />
-      </motion.div>
-      <motion.div
-        style={{ y: orb3Y, x: bgShift, willChange: "transform" }}
-        className="pointer-events-none absolute left-1/2 top-1/3 h-[800px] w-[800px] -translate-x-1/2 rounded-full"
-      >
-        <div
-          className="h-full w-full"
-          style={{
-            background: "radial-gradient(circle, rgba(255,200,170,0.4), transparent 60%)",
-            filter: "blur(120px)",
-          }}
-        />
-      </motion.div>
+        aria-hidden
+        style={{
+          y: bgY,
+          willChange: "transform",
+          background: `
+            radial-gradient(40% 35% at 12% 18%, rgba(255,170,140,0.55), transparent 70%),
+            radial-gradient(45% 40% at 88% 88%, rgba(180,80,200,0.45), transparent 72%),
+            radial-gradient(55% 45% at 50% 45%, rgba(255,200,170,0.40), transparent 70%)
+          `,
+          filter: "blur(60px)",
+        }}
+        className="pointer-events-none absolute -inset-[15%]"
+      />
 
       {/* Soft grain */}
       <div
