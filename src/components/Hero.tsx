@@ -169,20 +169,20 @@ export default function Hero() {
         {/* Right logo slider */}
         <motion.div
           style={{ opacity: logosOpacity }}
-          className="absolute right-0 top-0 z-20 hidden h-full w-[200px] md:block"
+          className="absolute right-0 top-1/2 z-20 hidden -translate-y-1/2 md:block"
         >
           <div
-            className="relative h-full overflow-hidden"
+            className="relative h-[70px] w-[280px] overflow-hidden lg:w-[320px]"
             style={{
-              maskImage: "linear-gradient(to bottom, transparent, black 15%, black 85%, transparent)",
-              WebkitMaskImage: "linear-gradient(to bottom, transparent, black 15%, black 85%, transparent)",
+              maskImage: "linear-gradient(to right, transparent, black 15%, black 85%, transparent)",
+              WebkitMaskImage: "linear-gradient(to right, transparent, black 15%, black 85%, transparent)",
             }}
           >
-            <div className="animate-scroll-up flex flex-col gap-12 py-12">
+            <div className="animate-scroll-left flex h-full flex-row flex-nowrap items-center gap-8 px-8">
               {[...LOGOS, ...LOGOS].map((logo, i) => (
                 <div
                   key={i}
-                  className="flex items-center justify-center text-center font-serif text-2xl tracking-[0.2em] text-white/70 transition hover:text-white"
+                  className="flex shrink-0 items-center justify-center whitespace-nowrap font-serif text-lg tracking-[0.2em] text-white/70 transition hover:text-white lg:text-2xl"
                   style={{ opacity: 0.5 + ((i % 4) * 0.12) }}
                 >
                   {logo}
