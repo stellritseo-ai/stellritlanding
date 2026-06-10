@@ -14,18 +14,64 @@ export const Route = createFileRoute("/case-studies/$slug")({
     if (!study) throw notFound();
     return { study };
   },
-  head: ({ loaderData }) => {
+  head: ({ loaderData, params }) => {
     const s = loaderData?.study;
     if (!s) return { meta: [{ title: "Case Study — StellR IT LLC" }] };
+    const title = `${s.title} — ${s.subtitle} | StellR IT LLC`;
+    const description = `${s.subtitle}. ${s.overview.slice(0, 155)}`.replace(/\s+/g, " ").trim();
+    const url = `/case-studies/${params.slug}`;
     return {
       meta: [
-        { title: `${s.title} — Case Study | StellR IT LLC` },
-        { name: "description", content: `${s.subtitle}. ${s.overview.slice(0, 140)}` },
-        { property: "og:title", content: `${s.title} — Case Study` },
-        { property: "og:description", content: s.subtitle },
+        { title },
+        { name: "description", content: description },
+        { name: "keywords", content: [s.industry, s.client, ...s.services, ...s.tags].join(", ") },
+        { property: "og:title", content: title },
+        { property: "og:description", content: description },
+        { property: "og:type", content: "article" },
+        { property: "og:url", content: url },
         { property: "og:image", content: s.hero },
+        { property: "article:section", content: s.industry },
+        { property: "article:published_time", content: `${s.year}-01-01` },
         { name: "twitter:card", content: "summary_large_image" },
+        { name: "twitter:title", content: title },
+        { name: "twitter:description", content: description },
         { name: "twitter:image", content: s.hero },
+      ],
+      links: [{ rel: "canonical", href: url }],
+      scripts: [
+        {
+          type: "application/ld+json",
+          children: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Article",
+            headline: `${s.title} — ${s.subtitle}`,
+            description,
+            image: [s.hero],
+            datePublished: `${s.year}-01-01`,
+            author: { "@type": "Organization", name: "StellR IT LLC" },
+            publisher: {
+              "@type": "Organization",
+              name: "StellR IT LLC",
+              logo: { "@type": "ImageObject", url: "/favicon.ico" },
+            },
+            about: { "@type": "Organization", name: s.client },
+            articleSection: s.industry,
+            keywords: [...s.services, ...s.tags].join(", "),
+            mainEntityOfPage: { "@type": "WebPage", "@id": url },
+          }),
+        },
+        {
+          type: "application/ld+json",
+          children: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              { "@type": "ListItem", position: 1, name: "Home", item: "/" },
+              { "@type": "ListItem", position: 2, name: "Case Studies", item: "/case-studies" },
+              { "@type": "ListItem", position: 3, name: s.title, item: url },
+            ],
+          }),
+        },
       ],
     };
   },
