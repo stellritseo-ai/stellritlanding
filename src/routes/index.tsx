@@ -7,6 +7,7 @@ import Testimonials from "@/components/Testimonials";
 import Insights from "@/components/Insights";
 import Footer from "@/components/Footer";
 import ScrollBackground from "@/components/ScrollBackground";
+import ChatWidget from "@/components/ChatWidget";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -31,6 +32,7 @@ function Index() {
       <Testimonials />
       <Insights />
       <Footer />
+      <ChatWidget />
     </main>
   );
 }
