@@ -183,7 +183,7 @@ export default function Footer() {
         </div>
 
         {/* Bottom */}
-        <div className="flex flex-col gap-4 border-t border-white/10 pt-8 text-[11px] uppercase tracking-[0.2em] text-white/50 md:flex-row md:items-center md:justify-between">
+        <div ref={bottomRef} className="flex flex-col gap-4 border-t border-white/10 pt-8 text-[11px] uppercase tracking-[0.2em] text-white/50 md:flex-row md:items-center md:justify-between">
           <span>© {new Date().getFullYear()} StellR IT LLC. All rights reserved.</span>
           <nav className="flex flex-wrap gap-8">
             <a href="#" className="transition-colors hover:text-white">Environmental Sustainability</a>
