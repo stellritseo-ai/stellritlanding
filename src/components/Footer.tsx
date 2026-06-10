@@ -69,7 +69,7 @@ export default function Footer() {
   }, []);
 
   return (
-    <footer className="relative z-10 bg-[#1a0533] text-white">
+    <footer className="relative z-10 text-white">
       {/* Marquee */}
       <div className="overflow-hidden border-y border-white/10 py-10">
         <div className="flex animate-[marquee_40s_linear_infinite] gap-16 whitespace-nowrap px-8">

@@ -113,7 +113,7 @@ export default function Services() {
   };
 
   return (
-    <section className="relative py-24 text-white md:py-32" style={{ background: "#2a0a5e" }}>
+    <section className="relative py-24 text-white md:py-32">
       <div
         className="mx-auto grid max-w-7xl items-center gap-10 px-6 md:grid-cols-[1.2fr_460px] md:gap-16 md:px-12"
         onMouseMove={onStageMove}

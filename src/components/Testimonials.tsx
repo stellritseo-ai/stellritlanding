@@ -83,7 +83,7 @@ export default function Testimonials() {
   }, []);
 
   return (
-    <section className="relative z-10 bg-[#1a0033] py-28 md:py-36">
+    <section className="relative z-10 py-28 md:py-36">
       <div className="mx-auto max-w-[1240px] px-6">
         <motion.h2
           initial={{ opacity: 0, y: 24 }}
