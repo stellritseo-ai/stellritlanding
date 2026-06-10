@@ -1,10 +1,12 @@
 import { motion } from "framer-motion";
+import { Link } from "@tanstack/react-router";
 import liveNation from "@/assets/case-livenation.jpg";
 import upli from "@/assets/case-upli.jpg";
 import tilton from "@/assets/case-tilton.jpg";
 import newscorp from "@/assets/case-newscorp.jpg";
 
 type Study = {
+  slug: string;
   title: string;
   subtitle: string;
   tags: string[];
@@ -16,6 +18,7 @@ type Study = {
 
 const STUDIES: Study[] = [
   {
+    slug: "livenation",
     title: "LiveNation",
     subtitle: "Bold, Interactive Live Entertainment",
     tags: ["Concept", "Mobile First Design", "UX/UI"],
@@ -24,6 +27,7 @@ const STUDIES: Study[] = [
     align: "left",
   },
   {
+    slug: "upli",
     title: "Upli",
     subtitle: "Financial Wellness at your Fingertips",
     tags: ["App UI Design", "Mobile App Strategy", "Mobile App Design"],
@@ -33,6 +37,7 @@ const STUDIES: Study[] = [
     offsetY: "md:mt-24",
   },
   {
+    slug: "tilton",
     title: "Tilton School",
     subtitle: "Encouraging Enrollment through Authenticity",
     tags: ["Art Direction", "Communication Strategy", "Content Strategy"],
@@ -42,6 +47,7 @@ const STUDIES: Study[] = [
     offsetY: "md:-mt-16",
   },
   {
+    slug: "newscorp",
     title: "News Corp",
     subtitle: "A Better Benefits Selection Experience",
     tags: ["Strategy", "Web Audit", "UX/UI"],
@@ -94,26 +100,28 @@ function CaseCard({ study, index }: { study: Study; index: number }) {
       transition={{ duration: 0.8, delay: index * 0.05, ease: [0.2, 0.7, 0.2, 1] }}
       className={`group ${study.offsetY ?? ""}`}
     >
-      <div className={`overflow-hidden rounded-sm ${study.ratio} relative`}>
-        <motion.img
-          src={study.image}
-          alt={study.title}
-          loading="lazy"
-          className="h-full w-full object-cover"
-          whileHover={{ scale: 1.04 }}
-          transition={{ duration: 0.9, ease: [0.2, 0.7, 0.2, 1] }}
-        />
-      </div>
-      <div className="mt-7">
-        <h3 className="relative inline-block font-serif text-[34px] leading-tight text-white md:text-[40px]">
-          {study.title}
-          <span className="absolute -bottom-1 left-0 h-px w-full origin-left scale-x-100 bg-white/80 transition-transform duration-500 group-hover:scale-x-0" />
-        </h3>
-        <p className="mt-3 text-[15px] text-white/85">{study.subtitle}</p>
-        <p className="mt-2 text-[12px] uppercase tracking-wider text-white/55">
-          {study.tags.join("  —  ")}
-        </p>
-      </div>
+      <Link to="/case-studies/$slug" params={{ slug: study.slug }} className="block">
+        <div className={`overflow-hidden rounded-sm ${study.ratio} relative`}>
+          <motion.img
+            src={study.image}
+            alt={study.title}
+            loading="lazy"
+            className="h-full w-full object-cover"
+            whileHover={{ scale: 1.04 }}
+            transition={{ duration: 0.9, ease: [0.2, 0.7, 0.2, 1] }}
+          />
+        </div>
+        <div className="mt-7">
+          <h3 className="relative inline-block font-serif text-[34px] leading-tight text-white md:text-[40px]">
+            {study.title}
+            <span className="absolute -bottom-1 left-0 h-px w-full origin-left scale-x-100 bg-white/80 transition-transform duration-500 group-hover:scale-x-0" />
+          </h3>
+          <p className="mt-3 text-[15px] text-white/85">{study.subtitle}</p>
+          <p className="mt-2 text-[12px] uppercase tracking-wider text-white/55">
+            {study.tags.join("  —  ")}
+          </p>
+        </div>
+      </Link>
     </motion.article>
   );
 }
