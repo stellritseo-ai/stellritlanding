@@ -102,20 +102,10 @@ export default function Hero() {
           </div>
         </header>
 
-        {/* Headline */}
-        <motion.h1
-          style={{ scale: headlineScale, opacity: headlineOpacity, y: headlineY }}
-          className="relative z-20 mx-auto mt-4 max-w-[1400px] px-6 text-center font-serif text-[64px] font-medium leading-[0.95] tracking-[-0.02em] text-white text-glow md:text-[110px] lg:text-[150px]"
-        >
-          Digital Evolution
-          <br />
-          <span className="italic font-light">for Business</span>
-        </motion.h1>
-
-        {/* Center hero video */}
+        {/* Center hero video — on top */}
         <motion.div
           style={{ y: centerY, opacity: centerOpacity, x: sx, translateY: sy }}
-          className="pointer-events-none absolute left-1/2 top-[55%] z-10 h-[520px] w-[520px] -translate-x-1/2 -translate-y-1/2 md:h-[640px] md:w-[640px]"
+          className="pointer-events-none absolute left-1/2 top-[20%] z-10 h-[360px] w-[360px] -translate-x-1/2 md:top-[18%] md:h-[480px] md:w-[480px] lg:h-[540px] lg:w-[540px]"
         >
           <motion.div
             animate={{ y: [0, -18, 0] }}
@@ -136,6 +126,15 @@ export default function Hero() {
             />
           </motion.div>
         </motion.div>
+
+        {/* Headline — below video, single line */}
+        <motion.h1
+          style={{ scale: headlineScale, opacity: headlineOpacity, y: headlineY }}
+          className="absolute left-1/2 top-[72%] z-20 w-full max-w-[1600px] -translate-x-1/2 whitespace-nowrap px-6 text-center font-serif text-[36px] font-medium leading-[1] tracking-[-0.02em] text-white text-glow sm:text-[52px] md:text-[78px] lg:text-[104px]"
+        >
+          Digital Evolution <span className="italic font-light">for Business</span>
+        </motion.h1>
+
 
         {/* Left content */}
         <motion.div
