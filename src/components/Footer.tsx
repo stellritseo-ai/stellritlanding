@@ -211,7 +211,10 @@ export default function Footer() {
 
       {/* Giant wordmark */}
       <div className="overflow-hidden px-4 pb-4">
-        <div className="select-none whitespace-nowrap text-center font-sans font-black uppercase leading-[0.8] tracking-[-0.05em] text-white" style={{ fontSize: "clamp(80px, 28vw, 480px)" }}>
+        <div
+          className="select-none whitespace-nowrap text-center font-sans font-black uppercase leading-[0.8] tracking-[-0.05em] bg-gradient-to-b from-white to-[#1a0533] bg-clip-text text-transparent"
+          style={{ fontSize: "clamp(80px, 28vw, 480px)" }}
+        >
           StellR IT
         </div>
       </div>
