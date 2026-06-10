@@ -21,18 +21,20 @@ export default function Hero() {
     target: containerRef,
     offset: ["start start", "end end"],
   });
+  // Smooth the scroll signal so per-frame transforms coalesce.
+  const p = useSpring(scrollYProgress, { stiffness: 60, damping: 30, mass: 0.5 });
 
   // Phase 1: headline scales down, center video moves up, glow intensifies
-  const headlineScale = useTransform(scrollYProgress, [0, 0.25], [1, 0.7]);
-  const headlineOpacity = useTransform(scrollYProgress, [0, 0.2, 0.3], [1, 0.6, 0]);
-  const headlineY = useTransform(scrollYProgress, [0, 0.25], [0, -80]);
+  const headlineScale = useTransform(p, [0, 0.25], [1, 0.7]);
+  const headlineOpacity = useTransform(p, [0, 0.2, 0.3], [1, 0.6, 0]);
+  const headlineY = useTransform(p, [0, 0.25], [0, -80]);
 
-  const centerY = useTransform(scrollYProgress, [0, 0.3, 0.5], [0, -120, -200]);
-  const centerOpacity = useTransform(scrollYProgress, [0, 0.4, 0.55], [1, 0.5, 0]);
-  const glowOpacity = useTransform(scrollYProgress, [0, 0.3], [0.6, 1]);
+  const centerY = useTransform(p, [0, 0.3, 0.5], [0, -120, -200]);
+  const centerOpacity = useTransform(p, [0, 0.4, 0.55], [1, 0.5, 0]);
+  const glowOpacity = useTransform(p, [0, 0.3], [0.6, 1]);
 
-  const leftTextOpacity = useTransform(scrollYProgress, [0, 0.2], [1, 0]);
-  const logosOpacity = useTransform(scrollYProgress, [0, 0.35, 0.5], [1, 0.7, 0]);
+  const leftTextOpacity = useTransform(p, [0, 0.2], [1, 0]);
+  const logosOpacity = useTransform(p, [0, 0.35, 0.5], [1, 0.7, 0]);
 
   // Phase 2-3: left video card expands to fit screen (centered, with gutters)
   const [vp, setVp] = useState({ w: 1280, h: 720 });
@@ -49,16 +51,13 @@ export default function Hero() {
   const CARD_LEFT = vp.w >= 768 ? 48 : 24;
   const CARD_BOTTOM = 48;
 
-  // Target: fit within viewport with ~48px gutters, preserve aspect
   const gutter = 48;
   const targetW = vp.w - gutter * 2;
-  const targetH = vp.h - gutter * 2 - 80; // leave room for nav
+  const targetH = vp.h - gutter * 2 - 80;
   const scaleX = targetW / CARD_W;
   const scaleY = targetH / CARD_H;
   const fitScale = Math.min(scaleX, scaleY);
 
-  // card center currently at (CARD_LEFT + CARD_W/2, vp.h - CARD_BOTTOM - CARD_H/2)
-  // we want it at viewport center (vp.w/2, vp.h/2 + 20)
   const targetCenterX = vp.w / 2;
   const targetCenterY = vp.h / 2 + 20;
   const currentCenterX = CARD_LEFT + CARD_W / 2;
@@ -66,30 +65,16 @@ export default function Hero() {
   const deltaX = targetCenterX - currentCenterX;
   const deltaY = targetCenterY - currentCenterY;
 
-  const cardScale = useTransform(scrollYProgress, [0.3, 0.65], [1, fitScale]);
-  const cardX = useTransform(scrollYProgress, [0.3, 0.65], [0, deltaX]);
-  const cardY = useTransform(scrollYProgress, [0.3, 0.65], [0, deltaY]);
-  const cardRadius = useTransform(scrollYProgress, [0.3, 0.65], [24, 12]);
+  const cardScale = useTransform(p, [0.3, 0.65], [1, fitScale]);
+  const cardX = useTransform(p, [0.3, 0.65], [0, deltaX]);
+  const cardY = useTransform(p, [0.3, 0.65], [0, deltaY]);
+  const cardRadius = useTransform(p, [0.3, 0.65], [24, 12]);
 
   // Phase 4: content reveal
-  const phase4Opacity = useTransform(scrollYProgress, [0.7, 0.85], [0, 1]);
-  const phase4Y = useTransform(scrollYProgress, [0.7, 0.9], [60, 0]);
+  const phase4Opacity = useTransform(p, [0.7, 0.85], [0, 1]);
+  const phase4Y = useTransform(p, [0.7, 0.9], [60, 0]);
 
-  // Cursor parallax for center video
-  const mx = useMotionValue(0);
-  const my = useMotionValue(0);
-  const sx = useSpring(mx, { stiffness: 80, damping: 20 });
-  const sy = useSpring(my, { stiffness: 80, damping: 20 });
-  useEffect(() => {
-    const onMove = (e: MouseEvent) => {
-      const x = (e.clientX / window.innerWidth - 0.5) * 30;
-      const y = (e.clientY / window.innerHeight - 0.5) * 30;
-      mx.set(x);
-      my.set(y);
-    };
-    window.addEventListener("mousemove", onMove);
-    return () => window.removeEventListener("mousemove", onMove);
-  }, [mx, my]);
+
 
   return (
     <div ref={containerRef} className="relative" style={{ height: "200vh" }}>
