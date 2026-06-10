@@ -100,26 +100,28 @@ function CaseCard({ study, index }: { study: Study; index: number }) {
       transition={{ duration: 0.8, delay: index * 0.05, ease: [0.2, 0.7, 0.2, 1] }}
       className={`group ${study.offsetY ?? ""}`}
     >
-      <div className={`overflow-hidden rounded-sm ${study.ratio} relative`}>
-        <motion.img
-          src={study.image}
-          alt={study.title}
-          loading="lazy"
-          className="h-full w-full object-cover"
-          whileHover={{ scale: 1.04 }}
-          transition={{ duration: 0.9, ease: [0.2, 0.7, 0.2, 1] }}
-        />
-      </div>
-      <div className="mt-7">
-        <h3 className="relative inline-block font-serif text-[34px] leading-tight text-white md:text-[40px]">
-          {study.title}
-          <span className="absolute -bottom-1 left-0 h-px w-full origin-left scale-x-100 bg-white/80 transition-transform duration-500 group-hover:scale-x-0" />
-        </h3>
-        <p className="mt-3 text-[15px] text-white/85">{study.subtitle}</p>
-        <p className="mt-2 text-[12px] uppercase tracking-wider text-white/55">
-          {study.tags.join("  —  ")}
-        </p>
-      </div>
+      <Link to="/case-studies/$slug" params={{ slug: study.slug }} className="block">
+        <div className={`overflow-hidden rounded-sm ${study.ratio} relative`}>
+          <motion.img
+            src={study.image}
+            alt={study.title}
+            loading="lazy"
+            className="h-full w-full object-cover"
+            whileHover={{ scale: 1.04 }}
+            transition={{ duration: 0.9, ease: [0.2, 0.7, 0.2, 1] }}
+          />
+        </div>
+        <div className="mt-7">
+          <h3 className="relative inline-block font-serif text-[34px] leading-tight text-white md:text-[40px]">
+            {study.title}
+            <span className="absolute -bottom-1 left-0 h-px w-full origin-left scale-x-100 bg-white/80 transition-transform duration-500 group-hover:scale-x-0" />
+          </h3>
+          <p className="mt-3 text-[15px] text-white/85">{study.subtitle}</p>
+          <p className="mt-2 text-[12px] uppercase tracking-wider text-white/55">
+            {study.tags.join("  —  ")}
+          </p>
+        </div>
+      </Link>
     </motion.article>
   );
 }
