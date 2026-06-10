@@ -38,14 +38,7 @@ function layerOpacity(p: MotionValue<number>, i: number, n: number) {
 }
 
 export default function ScrollBackground() {
-  const { scrollYProgress } = useScroll();
-  const p = useSpring(scrollYProgress, {
-    stiffness: 30,
-    damping: 30,
-    mass: 0.8,
-  });
   const reduced = useReducedMotion();
-
   if (reduced) {
     return (
       <div aria-hidden className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
@@ -54,6 +47,17 @@ export default function ScrollBackground() {
       </div>
     );
   }
+  return <FullScrollBackground />;
+}
+
+function FullScrollBackground() {
+  const { scrollYProgress } = useScroll();
+  const p = useSpring(scrollYProgress, {
+    stiffness: 30,
+    damping: 30,
+    mass: 0.8,
+  });
+
 
 
   return (
