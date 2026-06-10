@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import Hero from "@/components/Hero";
 import Welcome from "@/components/Welcome";
+import ScrollBackground from "@/components/ScrollBackground";
 
 export const Route = createFileRoute("/")({
   head: () => ({
