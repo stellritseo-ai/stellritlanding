@@ -87,12 +87,21 @@ export default function Welcome() {
   return (
     <section
       ref={sectionRef}
-      className="relative isolate overflow-hidden py-24 text-white md:py-32"
+      className="relative isolate overflow-hidden pt-48 pb-24 text-white md:pt-64 md:pb-32"
       style={{
         background:
-          "linear-gradient(180deg, #1a0640 0%, #4a1740 22%, #c97560 58%, #e88a72 100%)",
+          "linear-gradient(180deg, #180028 0%, #2a065a 8%, #4a1290 20%, #7a2a6e 40%, #c97560 68%, #e88a72 100%)",
       }}
     >
+      {/* Top fade bridges seamlessly into the Hero's deep purple */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 top-0 h-56 md:h-72"
+        style={{
+          background:
+            "linear-gradient(180deg, #180028 0%, rgba(24,0,40,0.6) 50%, rgba(24,0,40,0) 100%)",
+        }}
+      />
       {/* Single composited background layer — one transform, no jitter */}
       <motion.div
         aria-hidden
