@@ -28,9 +28,6 @@ const STORIES: Story[] = [
 ];
 
 export default function Insights() {
-  const featured = STORIES[0];
-  const rest = STORIES.slice(1);
-
   return (
     <section className="relative z-10 bg-[#1a0533] px-6 py-28 md:px-12 lg:px-20">
       <div className="mx-auto max-w-[1400px]">
@@ -39,34 +36,14 @@ export default function Insights() {
         </h2>
 
         <div className="grid grid-cols-1 gap-px lg:grid-cols-[2fr_1fr_1fr]">
-          {/* Featured white card */}
-          <article className="group relative flex flex-col justify-between bg-white p-10 md:p-14 lg:p-16">
-            <h3 className="font-serif text-[42px] font-normal leading-[1.05] tracking-tight text-[#1a0033] md:text-[56px] lg:text-[64px]">
-              {featured.title}
-            </h3>
-            <div className="mt-10 flex flex-wrap gap-3">
-              {featured.tags.map((t) => (
-                <span
-                  key={t}
-                  className="inline-flex items-center border border-[#2a0a4a] px-4 py-2 text-[11px] font-medium tracking-[0.12em] text-[#1a0033]"
-                >
-                  {t}
-                </span>
-              ))}
-            </div>
-            <button
-              aria-label="Read story"
-              className="absolute -right-7 bottom-10 flex h-14 w-14 items-center justify-center rounded-full bg-[#a78bfa] text-white shadow-lg ring-4 ring-[#1a0533] transition-transform duration-300 hover:scale-110 md:bottom-14"
-            >
-              <ArrowRight className="h-5 w-5" />
-            </button>
-          </article>
-
-          {/* Side dark cards */}
-          {rest.map((s) => (
+          {STORIES.map((s) => (
             <article
               key={s.title}
-              className="group relative flex flex-col border border-white/15 bg-transparent p-8 transition-colors duration-500 hover:bg-white"
+              className={`group relative flex flex-col border border-white/15 bg-transparent transition-colors duration-500 hover:bg-white ${
+                s.featured
+                  ? "justify-between p-10 md:p-14 lg:p-16"
+                  : "p-8"
+              }`}
             >
               {s.image && (
                 <div className="mb-8 aspect-[16/9] w-full overflow-hidden">
@@ -77,10 +54,22 @@ export default function Insights() {
                   />
                 </div>
               )}
-              <h3 className="font-serif text-[26px] font-normal leading-[1.15] text-white transition-colors duration-500 group-hover:text-[#1a0033] md:text-[30px]">
+
+              <h3
+                className={`font-serif font-normal leading-[1.05] tracking-tight text-white transition-colors duration-500 group-hover:text-[#1a0033] ${
+                  s.featured
+                    ? "text-[42px] md:text-[56px] lg:text-[64px]"
+                    : "text-[26px] leading-[1.15] md:text-[30px]"
+                }`}
+              >
                 {s.title}
               </h3>
-              <div className="mt-8 flex flex-col flex-wrap items-start gap-3">
+
+              <div
+                className={`mt-10 flex gap-3 ${
+                  s.featured ? "flex-wrap" : "flex-col flex-wrap items-start"
+                }`}
+              >
                 {s.tags.map((t) => (
                   <span
                     key={t}
@@ -90,9 +79,10 @@ export default function Insights() {
                   </span>
                 ))}
               </div>
+
               <button
                 aria-label="Read story"
-                className="pointer-events-none absolute -right-7 bottom-10 flex h-14 w-14 translate-y-2 items-center justify-center rounded-full bg-[#a78bfa] text-white opacity-0 shadow-lg ring-4 ring-[#1a0533] transition-all duration-500 group-hover:pointer-events-auto group-hover:translate-y-0 group-hover:opacity-100"
+                className="pointer-events-none absolute -right-7 bottom-10 flex h-14 w-14 translate-y-2 items-center justify-center rounded-full bg-[#a78bfa] text-white opacity-0 shadow-lg ring-4 ring-[#1a0533] transition-all duration-500 group-hover:pointer-events-auto group-hover:translate-y-0 group-hover:opacity-100 md:bottom-14"
               >
                 <ArrowRight className="h-5 w-5" />
               </button>
