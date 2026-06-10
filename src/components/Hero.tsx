@@ -92,23 +92,9 @@ export default function Hero() {
   }, [mx, my]);
 
   return (
-    <div ref={containerRef} className="relative" style={{ height: "320vh" }}>
+    <div ref={containerRef} className="relative" style={{ height: "200vh" }}>
       <div className="sticky top-0 h-screen w-full overflow-hidden noise-overlay">
-        {/* Ambient orbs */}
-        <div className="pointer-events-none absolute inset-0">
-          <motion.div
-            className="absolute -left-40 top-20 h-[500px] w-[500px] rounded-full"
-            style={{ background: "radial-gradient(circle, rgba(180,80,255,0.35), transparent 70%)", filter: "blur(40px)" }}
-            animate={{ x: [0, 40, 0], y: [0, 30, 0] }}
-            transition={{ duration: 14, repeat: Infinity, ease: "easeInOut" }}
-          />
-          <motion.div
-            className="absolute right-0 bottom-0 h-[600px] w-[600px] rounded-full"
-            style={{ background: "radial-gradient(circle, rgba(120,40,200,0.4), transparent 70%)", filter: "blur(50px)" }}
-            animate={{ x: [0, -50, 0], y: [0, -20, 0] }}
-            transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
-          />
-        </div>
+
 
         {/* Center radial glow behind video */}
         <motion.div
@@ -140,28 +126,23 @@ export default function Hero() {
 
         {/* Center hero video — on top */}
         <motion.div
-          style={{ y: centerY, opacity: centerOpacity, x: sx, translateY: sy }}
+          style={{ y: centerY, opacity: centerOpacity }}
           className="pointer-events-none absolute left-1/2 top-[20%] z-10 h-[360px] w-[360px] -translate-x-1/2 md:top-[18%] md:h-[480px] md:w-[480px] lg:h-[540px] lg:w-[540px]"
         >
-          <motion.div
-            animate={{ y: [0, -18, 0] }}
-            transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
-            className="relative h-full w-full"
-          >
-            <video
-              src={CENTER_VIDEO}
-              autoPlay
-              muted
-              loop
-              playsInline
-              className="h-full w-full object-cover"
-              style={{
-                maskImage: "radial-gradient(circle, black 55%, transparent 75%)",
-                WebkitMaskImage: "radial-gradient(circle, black 55%, transparent 75%)",
-              }}
-            />
-          </motion.div>
+          <video
+            src={CENTER_VIDEO}
+            autoPlay
+            muted
+            loop
+            playsInline
+            className="h-full w-full object-cover"
+            style={{
+              maskImage: "radial-gradient(circle, black 55%, transparent 75%)",
+              WebkitMaskImage: "radial-gradient(circle, black 55%, transparent 75%)",
+            }}
+          />
         </motion.div>
+
 
         {/* Headline — on top of video */}
         <motion.h1
