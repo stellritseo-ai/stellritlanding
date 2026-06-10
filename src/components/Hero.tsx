@@ -1,6 +1,68 @@
 import { motion, useScroll, useTransform, useSpring } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
-import { ArrowUpRight, Menu } from "lucide-react";
+import { ArrowUpRight, Menu, RefreshCw } from "lucide-react";
+
+const IFRAME_SRC = "https://player.cloudinary.com/embed/?cloud_name=dmanafb84&public_id=IA-Website-Homepage-Sizzle-Reel-Animation_V5_1_2-2_c6hfyj&autoplay=true&muted=true&loop=true&controls=false&show_logo=false&fluid=true";
+
+function HeroVideoFrame() {
+  const [loaded, setLoaded] = useState(false);
+  const [errored, setErrored] = useState(false);
+  const [key, setKey] = useState(0);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    setLoaded(false);
+    setErrored(false);
+    timerRef.current = setTimeout(() => {
+      setLoaded((l) => {
+        if (!l) setErrored(true);
+        return l;
+      });
+    }, 8000);
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
+  }, [key]);
+
+  const retry = () => {
+    setErrored(false);
+    setLoaded(false);
+    setKey((k) => k + 1);
+  };
+
+  return (
+    <>
+      {!errored && (
+        <iframe
+          key={key}
+          src={IFRAME_SRC}
+          allow="autoplay; fullscreen; encrypted-media; picture-in-picture"
+          allowFullScreen
+          onLoad={() => setLoaded(true)}
+          onError={() => setErrored(true)}
+          className="h-full w-full border-0"
+          style={{ objectFit: "cover", pointerEvents: "none" }}
+        />
+      )}
+      {!loaded && !errored && (
+        <div className="pointer-events-none absolute inset-0 z-20 animate-pulse bg-gradient-to-br from-white/10 via-white/5 to-transparent">
+          <div className="absolute inset-0 bg-[linear-gradient(110deg,transparent_30%,rgba(255,255,255,0.08)_50%,transparent_70%)] bg-[length:200%_100%] animate-[shimmer_2s_linear_infinite]" />
+        </div>
+      )}
+      {errored && (
+        <div className="absolute inset-0 z-20 flex flex-col items-center justify-center gap-3 bg-black/40 backdrop-blur-sm">
+          <p className="text-xs uppercase tracking-[0.3em] text-white/70">Video unavailable</p>
+          <button
+            onClick={retry}
+            className="pointer-events-auto inline-flex items-center gap-2 rounded-full bg-white/95 px-4 py-2 text-xs font-medium text-[#2a0860] transition hover:bg-white"
+          >
+            <RefreshCw className="h-3.5 w-3.5" /> Retry
+          </button>
+        </div>
+      )}
+    </>
+  );
+}
 import { Link } from "@tanstack/react-router";
 import MenuOverlay from "./MenuOverlay";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
@@ -208,13 +270,7 @@ export default function Hero() {
           }}
           className="glass absolute left-6 bottom-12 z-20 h-[180px] w-[320px] origin-center overflow-hidden shadow-[0_30px_80px_-20px_rgba(0,0,0,0.7)] md:left-12 md:h-[200px] md:w-[360px]"
         >
-          <iframe
-            src="https://player.cloudinary.com/embed/?cloud_name=dmanafb84&public_id=IA-Website-Homepage-Sizzle-Reel-Animation_V5_1_2-2_c6hfyj&autoplay=true&muted=true&loop=true&controls=false&show_logo=false&fluid=true"
-            allow="autoplay; fullscreen; encrypted-media; picture-in-picture"
-            allowFullScreen
-            className="h-full w-full border-0"
-            style={{ objectFit: "cover", pointerEvents: "none" }}
-          />
+          <HeroVideoFrame />
           <div className="pointer-events-none absolute inset-0 z-10 ring-1 ring-inset ring-white/15" style={{ borderRadius: "inherit" }} />
         </motion.div>
 
