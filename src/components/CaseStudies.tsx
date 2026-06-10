@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { Link } from "@tanstack/react-router";
 import liveNation from "@/assets/case-livenation.jpg";
 import upli from "@/assets/case-upli.jpg";
 import tilton from "@/assets/case-tilton.jpg";
