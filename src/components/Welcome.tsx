@@ -34,15 +34,12 @@ function Word({
   progress: MotionValue<number>;
   range: [number, number];
 }) {
-  const opacity = useTransform(progress, range, [0.15, 1]);
-  const y = useTransform(progress, range, [12, 0]);
-  const blur = useTransform(progress, range, [6, 0]);
-  const filter = useTransform(blur, (b) => `blur(${b}px)`);
+  const opacity = useTransform(progress, range, [0.2, 1]);
   return (
     <span className="relative mr-[0.25em] inline-block">
       <span className="text-white/15">{children}</span>
       <motion.span
-        style={{ opacity, y, filter }}
+        style={{ opacity, willChange: "opacity" }}
         className="absolute left-0 top-0 inline-block text-white"
       >
         {children}
