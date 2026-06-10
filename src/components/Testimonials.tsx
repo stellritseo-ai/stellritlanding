@@ -1,4 +1,9 @@
+import { useRef, useEffect } from "react";
 import { motion } from "framer-motion";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+gsap.registerPlugin(ScrollTrigger);
 
 const STATS = [
   { value: "230+", label: "Enterprise brands that have partnered with us" },
@@ -41,6 +46,42 @@ const TESTIMONIALS = [
 ];
 
 export default function Testimonials() {
+  const gridRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const grid = gridRef.current;
+    if (!grid) return;
+
+    const cards = gsap.utils.toArray<HTMLElement>(grid.children);
+
+    const ctx = gsap.context(() => {
+      gsap.fromTo(
+        cards,
+        {
+          y: 60,
+          opacity: 0,
+          scale: 0.98,
+        },
+        {
+          y: 0,
+          opacity: 1,
+          scale: 1,
+          duration: 1.1,
+          stagger: 0.15,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: grid,
+            start: "top 80%",
+            end: "top 30%",
+            toggleActions: "play none none none",
+          },
+        }
+      );
+    }, grid);
+
+    return () => ctx.revert();
+  }, []);
+
   return (
     <section className="relative z-10 bg-[#1a0033] py-28 md:py-36">
       <div className="mx-auto max-w-[1240px] px-6">
@@ -79,14 +120,13 @@ export default function Testimonials() {
         </div>
 
         {/* Testimonial grid */}
-        <div className="mt-24 grid grid-cols-1 border-l border-t border-white/15 md:mt-32 md:grid-cols-6">
+        <div
+          ref={gridRef}
+          className="mt-24 grid grid-cols-1 border-l border-t border-white/15 md:mt-32 md:grid-cols-6"
+        >
           {TESTIMONIALS.map((t, i) => (
-            <motion.div
+            <div
               key={i}
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true, margin: "-40px" }}
-              transition={{ duration: 0.7, delay: i * 0.06 }}
               className={`group relative flex flex-col justify-between border-b border-r border-white/15 p-8 transition-colors duration-500 hover:bg-white/[0.03] md:p-10 ${t.span ?? "md:col-span-2"}`}
             >
               <span className="pointer-events-none absolute inset-0 border border-transparent transition-colors duration-500 group-hover:border-[#ff8a5b]/70" />
@@ -109,7 +149,7 @@ export default function Testimonials() {
                   <span className={`text-white ${t.brandClass ?? "text-2xl"}`}>{t.brand}</span>
                 )}
               </div>
-            </motion.div>
+            </div>
           ))}
         </div>
       </div>
