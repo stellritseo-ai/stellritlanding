@@ -83,18 +83,18 @@ export default function Footer() {
     toast.success("You've been subscribed to the StellR IT newsletter!");
   };
 
-  const Column = ({ title, items }: { title: string; items: string[] }) => (
+  const Column = ({ title, items }: { title: string; items: LinkItem[] }) => (
     <div>
       <h4 className="mb-7 text-[18px] font-semibold text-white">{title}</h4>
       <ul className="space-y-4">
         {items.map((s) => (
-          <li key={s}>
-            <a
-              href="#"
+          <li key={s.label}>
+            <Link
+              to={s.to}
               className="text-[15px] text-white/70 transition-colors hover:text-[#ff8a5b]"
             >
-              {s}
-            </a>
+              {s.label}
+            </Link>
           </li>
         ))}
       </ul>
@@ -267,8 +267,8 @@ export default function Footer() {
             © StellR IT . All rights reserved {new Date().getFullYear()}
           </span>
           <div className="flex items-center gap-8 text-[14px] text-white/70">
-            <a href="#" className="transition-colors hover:text-[#ff8a5b]">Privacy Policy</a>
-            <a href="#" className="transition-colors hover:text-[#ff8a5b]">Terms of Use</a>
+            <Link to="/privacy" className="transition-colors hover:text-[#ff8a5b]">Privacy Policy</Link>
+            <Link to="/terms" className="transition-colors hover:text-[#ff8a5b]">Terms of Use</Link>
           </div>
         </div>
       </div>
