@@ -306,19 +306,6 @@ export default function Hero() {
           Scroll to explore
         </motion.div>
 
-        {/* Phase 4 overlay content */}
-        <motion.div
-          style={{ opacity: phase4Opacity, y: phase4Y }}
-          className="absolute inset-0 z-30 flex flex-col items-center justify-center px-6 text-center"
-        >
-          <span className="mb-6 text-[11px] uppercase tracking-[0.5em] text-white/60">Chapter 01 — The Craft</span>
-          <h2 className="max-w-4xl font-serif text-5xl font-medium leading-[1] tracking-tight text-white text-glow md:text-7xl">
-            We design <span className="italic">moments</span> that outlive the scroll.
-          </h2>
-          <p className="mt-8 max-w-xl text-base leading-relaxed text-white/75">
-            From immersive brand worlds to high-conversion product surfaces, every pixel earns its place. Cinematic motion. Premium typography. Engineering that sings.
-          </p>
-        </motion.div>
       </div>
     </div>
   );
