@@ -53,29 +53,15 @@ export default function Welcome() {
   const sectionRef = useRef<HTMLElement>(null);
   const textRef = useRef<HTMLDivElement>(null);
 
-  // Smoothed scroll for background parallax (no jitter)
-  const { scrollYProgress: sectionProgress } = useScroll({
-    target: sectionRef,
-    offset: ["start end", "end start"],
-  });
-  const smooth = useSpring(sectionProgress, {
-    stiffness: 50,
-    damping: 24,
-    mass: 0.5,
-  });
-
-  // ONE continuous transform drives the entire background layer
-  const bgY = useTransform(smooth, [0, 1], ["-12%", "12%"]);
-
   // Per-word reveal driven by scroll progress through the text block
   const { scrollYProgress: textProgress } = useScroll({
     target: textRef,
     offset: ["start 0.85", "start 0.15"],
   });
   const smoothText = useSpring(textProgress, {
-    stiffness: 60,
-    damping: 22,
-    mass: 0.5,
+    stiffness: 80,
+    damping: 28,
+    mass: 0.4,
   });
 
   const headline =
