@@ -84,7 +84,7 @@ export default function Hero() {
     offset: ["start start", "end end"],
   });
   // Smooth the scroll signal so per-frame transforms coalesce.
-  const p = useSpring(scrollYProgress, { stiffness: 60, damping: 30, mass: 0.5 });
+  const p = useSpring(scrollYProgress, { stiffness: 120, damping: 30, mass: 0.25 });
 
   // Phase 1: headline scales down, center video moves up, glow intensifies
   const headlineScale = useTransform(p, [0, 0.25], [1, 0.7]);
