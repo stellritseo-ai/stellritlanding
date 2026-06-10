@@ -2,26 +2,21 @@ import { motion, useScroll, useTransform, useSpring } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { ArrowUpRight, Menu, RefreshCw } from "lucide-react";
 
-const IFRAME_SRC = "https://player.cloudinary.com/embed/?cloud_name=dmanafb84&public_id=IA-Website-Homepage-Sizzle-Reel-Animation_V5_1_2-2_c6hfyj&autoplay=true&muted=true&loop=true&controls=false&show_logo=false&fluid=true";
+const LEFT_VIDEO_SRC = "https://res.cloudinary.com/dmanafb84/video/upload/f_auto:video,q_auto/IA-Website-Homepage-Sizzle-Reel-Animation_V5_1_2-2_c6hfyj.mp4";
 
 function HeroVideoFrame() {
   const [loaded, setLoaded] = useState(false);
   const [errored, setErrored] = useState(false);
   const [key, setKey] = useState(0);
-  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
     setLoaded(false);
     setErrored(false);
-    timerRef.current = setTimeout(() => {
-      setLoaded((l) => {
-        if (!l) setErrored(true);
-        return l;
-      });
-    }, 8000);
-    return () => {
-      if (timerRef.current) clearTimeout(timerRef.current);
-    };
+    const t = setTimeout(() => {
+      if (!videoRef.current || videoRef.current.readyState < 2) setErrored(true);
+    }, 10000);
+    return () => clearTimeout(t);
   }, [key]);
 
   const retry = () => {
@@ -33,15 +28,18 @@ function HeroVideoFrame() {
   return (
     <>
       {!errored && (
-        <iframe
+        <video
           key={key}
-          src={IFRAME_SRC}
-          allow="autoplay; fullscreen; encrypted-media; picture-in-picture"
-          allowFullScreen
-          onLoad={() => setLoaded(true)}
+          ref={videoRef}
+          src={LEFT_VIDEO_SRC}
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="auto"
+          onLoadedData={() => setLoaded(true)}
           onError={() => setErrored(true)}
-          className="h-full w-full border-0"
-          style={{ objectFit: "cover", pointerEvents: "none" }}
+          className="h-full w-full object-cover"
         />
       )}
       {!loaded && !errored && (
@@ -308,19 +306,6 @@ export default function Hero() {
           Scroll to explore
         </motion.div>
 
-        {/* Phase 4 overlay content */}
-        <motion.div
-          style={{ opacity: phase4Opacity, y: phase4Y }}
-          className="absolute inset-0 z-30 flex flex-col items-center justify-center px-6 text-center"
-        >
-          <span className="mb-6 text-[11px] uppercase tracking-[0.5em] text-white/60">Chapter 01 — The Craft</span>
-          <h2 className="max-w-4xl font-serif text-5xl font-medium leading-[1] tracking-tight text-white text-glow md:text-7xl">
-            We design <span className="italic">moments</span> that outlive the scroll.
-          </h2>
-          <p className="mt-8 max-w-xl text-base leading-relaxed text-white/75">
-            From immersive brand worlds to high-conversion product surfaces, every pixel earns its place. Cinematic motion. Premium typography. Engineering that sings.
-          </p>
-        </motion.div>
       </div>
     </div>
   );
