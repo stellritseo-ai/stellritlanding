@@ -161,6 +161,7 @@ export default function Footer() {
         </div>
 
         {/* Copyright */}
+
         <div ref={bottomRef} className="flex flex-col items-start gap-6 border-t border-white/15 pt-8 md:flex-row md:items-center md:justify-between">
           <span className="text-[14px] text-white/80">
             © {new Date().getFullYear()} StellR IT LLC. All Rights Reserved
@@ -207,6 +208,15 @@ export default function Footer() {
           </div>
         </div>
       </div>
+
+      {/* Giant wordmark */}
+      <div className="overflow-hidden px-4 pb-4">
+        <div className="select-none whitespace-nowrap text-center font-sans font-black uppercase leading-[0.8] tracking-[-0.05em] text-white" style={{ fontSize: "clamp(80px, 28vw, 480px)" }}>
+          StellR IT
+        </div>
+      </div>
+
+
 
       <style>{`
         @keyframes marquee {
