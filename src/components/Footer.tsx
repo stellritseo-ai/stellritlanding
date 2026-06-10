@@ -46,6 +46,28 @@ export default function Footer() {
     return () => ctx.revert();
   }, []);
 
+  const handleSubscribe = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+
+    const trimmed = email.trim();
+    if (!trimmed) {
+      setError("Please enter your email address.");
+      return;
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(trimmed)) {
+      setError("Please enter a valid email address.");
+      return;
+    }
+
+    setLoading(true);
+    await new Promise((r) => setTimeout(r, 800));
+    setLoading(false);
+    setEmail("");
+    toast.success("You've been subscribed to the StellR IT newsletter!");
+  };
+
   const Column = ({ title, items }: { title: string; items: string[] }) => (
     <div>
       <h4 className="mb-7 text-[18px] font-semibold text-white">{title}</h4>
