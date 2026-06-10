@@ -1,5 +1,5 @@
 import { motion, useScroll, useTransform, useMotionValue, useSpring } from "framer-motion";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ArrowUpRight, Menu } from "lucide-react";
 
 const CENTER_VIDEO =
@@ -31,10 +31,42 @@ export default function Hero() {
   const leftTextOpacity = useTransform(scrollYProgress, [0, 0.2], [1, 0]);
   const logosOpacity = useTransform(scrollYProgress, [0, 0.35, 0.5], [1, 0.7, 0]);
 
-  // Phase 2-3: left video card expands to fullscreen
-  const cardScale = useTransform(scrollYProgress, [0.3, 0.65], [1, 8]);
-  const cardX = useTransform(scrollYProgress, [0.3, 0.65], [0, 0]);
-  const cardRadius = useTransform(scrollYProgress, [0.3, 0.65], [24, 0]);
+  // Phase 2-3: left video card expands to fit screen (centered, with gutters)
+  const [vp, setVp] = useState({ w: 1280, h: 720 });
+  useEffect(() => {
+    const update = () => setVp({ w: window.innerWidth, h: window.innerHeight });
+    update();
+    window.addEventListener("resize", update);
+    return () => window.removeEventListener("resize", update);
+  }, []);
+
+  // card base: w=320 (md:360), h=180 (md:200), left:24 (md:48), bottom:48
+  const CARD_W = vp.w >= 768 ? 360 : 320;
+  const CARD_H = vp.w >= 768 ? 200 : 180;
+  const CARD_LEFT = vp.w >= 768 ? 48 : 24;
+  const CARD_BOTTOM = 48;
+
+  // Target: fit within viewport with ~48px gutters, preserve aspect
+  const gutter = 48;
+  const targetW = vp.w - gutter * 2;
+  const targetH = vp.h - gutter * 2 - 80; // leave room for nav
+  const scaleX = targetW / CARD_W;
+  const scaleY = targetH / CARD_H;
+  const fitScale = Math.min(scaleX, scaleY);
+
+  // card center currently at (CARD_LEFT + CARD_W/2, vp.h - CARD_BOTTOM - CARD_H/2)
+  // we want it at viewport center (vp.w/2, vp.h/2 + 20)
+  const targetCenterX = vp.w / 2;
+  const targetCenterY = vp.h / 2 + 20;
+  const currentCenterX = CARD_LEFT + CARD_W / 2;
+  const currentCenterY = vp.h - CARD_BOTTOM - CARD_H / 2;
+  const deltaX = targetCenterX - currentCenterX;
+  const deltaY = targetCenterY - currentCenterY;
+
+  const cardScale = useTransform(scrollYProgress, [0.3, 0.65], [1, fitScale]);
+  const cardX = useTransform(scrollYProgress, [0.3, 0.65], [0, deltaX]);
+  const cardY = useTransform(scrollYProgress, [0.3, 0.65], [0, deltaY]);
+  const cardRadius = useTransform(scrollYProgress, [0.3, 0.65], [24, 12]);
 
   // Phase 4: content reveal
   const phase4Opacity = useTransform(scrollYProgress, [0.7, 0.85], [0, 1]);
@@ -151,6 +183,7 @@ export default function Hero() {
           style={{
             scale: cardScale,
             x: cardX,
+            y: cardY,
             borderRadius: cardRadius,
           }}
           className="glass absolute left-6 bottom-12 z-20 h-[180px] w-[320px] origin-center overflow-hidden shadow-[0_30px_80px_-20px_rgba(0,0,0,0.7)] md:left-12 md:h-[200px] md:w-[360px]"
