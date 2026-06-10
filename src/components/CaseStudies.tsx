@@ -1,5 +1,7 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { Link } from "@tanstack/react-router";
+import { ArrowUpRight } from "lucide-react";
 import liveNation from "@/assets/case-livenation.jpg";
 import upli from "@/assets/case-upli.jpg";
 import tilton from "@/assets/case-tilton.jpg";
@@ -14,6 +16,8 @@ type Study = {
   ratio: string;
   align: "left" | "right";
   offsetY?: string;
+  accentColor: string;
+  glowColor: string;
 };
 
 const STUDIES: Study[] = [
@@ -25,6 +29,8 @@ const STUDIES: Study[] = [
     image: liveNation,
     ratio: "aspect-[16/10]",
     align: "left",
+    accentColor: "#a855f7",
+    glowColor: "rgba(168, 85, 247, 0.15)",
   },
   {
     slug: "upli",
@@ -35,6 +41,8 @@ const STUDIES: Study[] = [
     ratio: "aspect-[9/11]",
     align: "right",
     offsetY: "md:mt-24",
+    accentColor: "#ff8a5b",
+    glowColor: "rgba(255, 138, 91, 0.12)",
   },
   {
     slug: "tilton",
@@ -44,7 +52,9 @@ const STUDIES: Study[] = [
     image: tilton,
     ratio: "aspect-[9/11]",
     align: "left",
-    offsetY: "md:-mt-16",
+    offsetY: "md:-mt-[450px]",
+    accentColor: "#eab308",
+    glowColor: "rgba(234, 179, 8, 0.12)",
   },
   {
     slug: "newscorp",
@@ -54,37 +64,61 @@ const STUDIES: Study[] = [
     image: newscorp,
     ratio: "aspect-[16/11]",
     align: "right",
-    offsetY: "md:mt-32",
+    offsetY: "md:-mt-[30px]",
+    accentColor: "#38bdf8",
+    glowColor: "rgba(56, 189, 248, 0.12)",
   },
 ];
 
 export default function CaseStudies() {
   return (
-    <section className="relative z-10 py-28 md:py-36">
-      <div className="mx-auto max-w-[1240px] px-6">
-        <motion.h2
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-80px" }}
-          transition={{ duration: 0.7, ease: [0.2, 0.7, 0.2, 1] }}
-          className="font-serif text-[56px] leading-none tracking-tight text-white md:text-[88px]"
-        >
-          Case studies
-        </motion.h2>
+    <section className="relative z-10 py-12 md:py-[70px] overflow-hidden">
+      {/* Background ambient glows */}
+      <div
+        className="pointer-events-none absolute -left-40 top-1/4 h-[600px] w-[600px] rounded-full opacity-30"
+        style={{
+          background: "radial-gradient(circle, rgba(168,85,247,0.15), transparent 70%)",
+          filter: "blur(80px)",
+        }}
+      />
+      <div
+        className="pointer-events-none absolute -right-40 bottom-1/4 h-[500px] w-[500px] rounded-full opacity-20"
+        style={{
+          background: "radial-gradient(circle, rgba(56,189,248,0.12), transparent 70%)",
+          filter: "blur(80px)",
+        }}
+      />
 
-        <div className="mt-16 grid grid-cols-1 gap-x-10 gap-y-20 md:mt-24 md:grid-cols-2 md:gap-y-8">
+      <div className="mx-auto max-w-[1300px] px-6">
+        {/* Section Title */}
+        <div className="max-w-4xl mb-12 md:mb-20 lg:mb-28">
+          <span className="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.5em] text-[#ff8a5b] font-medium mb-3">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#ff8a5b]" />
+            Case Studies
+          </span>
+          <h2 className="font-serif text-[32px] leading-[1.05] tracking-tight text-white sm:text-[44px] md:text-[60px] lg:text-[76px]">
+            Selected digital <span className="text-white/40 italic font-normal">craftsmanship.</span>
+          </h2>
+        </div>
+
+        {/* Dynamic Grid */}
+        <div className="grid grid-cols-1 gap-x-12 gap-y-24 md:grid-cols-2 md:gap-y-12">
           {STUDIES.map((s, i) => (
             <CaseCard key={s.title} study={s} index={i} />
           ))}
         </div>
 
-        <div className="mt-20 md:mt-28">
-          <a
-            href="#"
-            className="inline-flex items-center rounded-full bg-[#7c3aed] px-7 py-3.5 text-sm font-medium text-white shadow-[0_10px_30px_-10px_rgba(124,58,237,0.6)] transition-all hover:-translate-y-0.5 hover:bg-[#8b5cf6]"
+        {/* Global CTA */}
+        <div className="mt-[-60px] flex justify-start">
+          <Link
+            to="/case-studies"
+            className="group inline-flex items-center gap-3.5 rounded-full border border-white/10 bg-white/5 px-9 py-4.5 text-sm font-semibold text-white backdrop-blur-md transition-all duration-300 hover:border-white/20 hover:bg-white/10 hover:shadow-[0_0_35px_rgba(255,255,255,0.06)]"
           >
             All Case Studies
-          </a>
+            <span className="grid h-8 w-8 place-items-center rounded-full bg-gradient-to-br from-[#a855f7] to-[#7c2dd9] text-white transition-all duration-500 group-hover:scale-110 group-hover:rotate-45">
+              <ArrowUpRight className="h-4 w-4" />
+            </span>
+          </Link>
         </div>
       </div>
     </section>
@@ -92,33 +126,84 @@ export default function CaseStudies() {
 }
 
 function CaseCard({ study, index }: { study: Study; index: number }) {
+  const [isHovered, setIsHovered] = useState(false);
+
   return (
     <motion.article
       initial={{ opacity: 0, y: 40 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-60px" }}
-      transition={{ duration: 0.8, delay: index * 0.05, ease: [0.2, 0.7, 0.2, 1] }}
-      className={`group ${study.offsetY ?? ""}`}
+      viewport={{ once: true, margin: "-85px" }}
+      transition={{ duration: 0.8, delay: index * 0.05, ease: [0.16, 1, 0.3, 1] }}
+      className={`group relative ${study.offsetY ?? ""}`}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
     >
       <Link to="/case-studies/$slug" params={{ slug: study.slug }} className="block">
-        <div className={`overflow-hidden rounded-sm ${study.ratio} relative`}>
+        {/* Image Card Frame */}
+        <div
+          className={`overflow-hidden rounded-2xl ${study.ratio} relative border border-white/[0.06] bg-[#0c061d] transition-all duration-500 ease-out`}
+          style={{
+            boxShadow: isHovered
+              ? `0 0 50px ${study.glowColor}, 0 20px 40px rgba(0,0,0,0.4)`
+              : "0 4px 30px rgba(0,0,0,0.25)",
+            transform: isHovered ? "translateY(-4px)" : "translateY(0)"
+          }}
+        >
+          {/* Overlay gradient vignette */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/10 to-transparent opacity-85 z-10 transition-opacity duration-300 group-hover:opacity-90" />
+
+          {/* Floating Top Tags Overlay */}
+          <div className="absolute top-5 left-5 z-20 flex flex-wrap gap-2 max-w-[80%]">
+            {study.tags.map((tag) => (
+              <span
+                key={tag}
+                className="text-[10px] tracking-wider uppercase font-semibold text-white/95 bg-[#0f0a20]/80 border border-white/[0.08] backdrop-blur-md px-3 py-1 rounded-full shadow-[0_4px_12px_rgba(0,0,0,0.15)]"
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+
+          {/* Floating View Arrow Icon */}
+          <div
+            className="absolute top-5 right-5 z-20 h-10 w-10 rounded-full border flex items-center justify-center text-white transition-all duration-500 ease-out backdrop-blur-md"
+            style={{
+              borderColor: isHovered ? `${study.accentColor}60` : "rgba(255,255,255,0.08)",
+              background: isHovered ? `${study.accentColor}25` : "rgba(15,10,32,0.6)",
+              transform: isHovered ? "scale(1.1) rotate(45deg)" : "scale(0.9) rotate(0deg)",
+              opacity: isHovered ? 1 : 0.6
+            }}
+          >
+            <ArrowUpRight className="h-4.5 w-4.5" />
+          </div>
+
+          {/* Card Image */}
           <motion.img
             src={study.image}
             alt={study.title}
             loading="lazy"
-            className="h-full w-full object-cover"
-            whileHover={{ scale: 1.04 }}
-            transition={{ duration: 0.9, ease: [0.2, 0.7, 0.2, 1] }}
+            className="h-full w-full object-cover origin-center"
+            animate={{
+              scale: isHovered ? 1.05 : 1.0,
+            }}
+            transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
           />
         </div>
-        <div className="mt-7">
-          <h3 className="relative inline-block font-serif text-[34px] leading-tight text-white md:text-[40px]">
+
+        {/* Description & Typography Block */}
+        <div className="mt-8 px-1">
+          <h3 className="inline-flex items-center gap-3 font-serif text-[28px] md:text-[34px] leading-tight text-white tracking-tight transition-colors duration-300">
             {study.title}
-            <span className="absolute -bottom-1 left-0 h-px w-full origin-left scale-x-100 bg-white/80 transition-transform duration-500 group-hover:scale-x-0" />
+            <span
+              className="w-1.5 h-1.5 rounded-full transition-transform duration-500"
+              style={{
+                background: study.accentColor,
+                transform: isHovered ? "scale(2.2)" : "scale(1.0)"
+              }}
+            />
           </h3>
-          <p className="mt-3 text-[15px] text-white/85">{study.subtitle}</p>
-          <p className="mt-2 text-[12px] uppercase tracking-wider text-white/55">
-            {study.tags.join("  —  ")}
+          <p className="mt-2 text-[14px] md:text-[15px] text-white/55 font-medium leading-relaxed max-w-md">
+            {study.subtitle}
           </p>
         </div>
       </Link>

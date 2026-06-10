@@ -27,17 +27,17 @@ export const Route = createFileRoute("/careers")({
 });
 
 const ROLES = [
-  { title: "Senior Product Designer", team: "Design", location: "Los Angeles / Remote", type: "Full‑time" },
+  { title: "Senior Product Designer", team: "Design", location: "Garland, TX / Remote", type: "Full‑time" },
   { title: "Staff Front‑End Engineer", team: "Engineering", location: "Remote (Americas)", type: "Full‑time" },
-  { title: "Brand Design Lead", team: "Brand", location: "Los Angeles", type: "Full‑time" },
+  { title: "Brand Design Lead", team: "Brand", location: "Garland, TX", type: "Full‑time" },
   { title: "Growth Strategist", team: "Growth", location: "Remote (Global)", type: "Full‑time" },
-  { title: "Motion Designer", team: "Design", location: "Lahore / Remote", type: "Contract" },
-  { title: "Project Director", team: "Operations", location: "Los Angeles", type: "Full‑time" },
+  { title: "Motion Designer", team: "Design", location: "Remote", type: "Contract" },
+  { title: "Project Director", team: "Operations", location: "Garland, TX", type: "Full‑time" },
 ];
 
 const PERKS = [
   { t: "Senior-only team", d: "Work alongside people you'll learn from every day." },
-  { t: "Remote-friendly", d: "Hubs in LA and Lahore. Async by default." },
+  { t: "Remote-friendly", d: "Hub in Garland, TX. Async by default." },
   { t: "Real ownership", d: "Equity participation for full-time roles after year one." },
   { t: "Learning budget", d: "$2,000/year for books, courses, conferences." },
   { t: "Top-tier tooling", d: "Whatever helps you do the best work of your career." },
@@ -60,7 +60,7 @@ function CareersPage() {
       />
 
       {/* Perks */}
-      <section className="relative z-10 px-6 pb-24 md:px-12 lg:px-20">
+      <section className="relative z-10 px-4 sm:px-6 pb-12 md:pb-24 md:px-12 lg:px-20">
         <div className="mx-auto grid max-w-[1400px] grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {PERKS.map((p, i) => (
             <motion.div
@@ -79,23 +79,23 @@ function CareersPage() {
       </section>
 
       {/* Open Roles */}
-      <section className="relative z-10 px-6 py-24 md:px-12 lg:px-20">
+      <section className="relative z-10 px-4 sm:px-6 py-16 md:py-24 md:px-12 lg:px-20">
         <div className="mx-auto max-w-[1400px]">
-          <h2 className="font-serif text-[44px] leading-[1.05] tracking-tight text-white md:text-[72px]">
+          <h2 className="font-serif text-[38px] leading-[1.05] tracking-tight text-white md:text-[72px]">
             Open roles.
           </h2>
           <div className="mt-12 divide-y divide-white/10 border-y border-white/10">
             {ROLES.map((r, i) => (
               <motion.a
                 key={r.title}
-                href="mailto:careers@stellr.it?subject=Application: "
+                href="mailto:info@stellrit.com?subject=Application: "
                 initial={{ opacity: 0, y: 18 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: i * 0.04 }}
                 className="group grid grid-cols-1 items-center gap-3 py-6 md:grid-cols-[1.4fr_1fr_1fr_auto] md:gap-8"
               >
-                <h3 className="font-serif text-[26px] text-white transition-colors group-hover:text-[#c9a4ff] md:text-[30px]">{r.title}</h3>
+                <h3 className="font-serif text-[22px] text-white transition-colors group-hover:text-[#c9a4ff] md:text-[28px] lg:text-[30px]">{r.title}</h3>
                 <span className="text-[13px] uppercase tracking-[0.2em] text-white/60">{r.team}</span>
                 <span className="flex items-center gap-2 text-[14px] text-white/70">
                   <MapPin className="h-4 w-4" /> {r.location}
@@ -111,8 +111,8 @@ function CareersPage() {
           </div>
           <p className="mt-10 text-[14px] text-white/60">
             Don't see your role? Email{" "}
-            <a href="mailto:careers@stellr.it" className="text-white underline underline-offset-4 hover:text-[#ff8a5b]">
-              careers@stellr.it
+            <a href="mailto:info@stellrit.com" className="text-white underline underline-offset-4 hover:text-[#ff8a5b]">
+              info@stellrit.com
             </a>{" "}
             with what you'd bring.
           </p>

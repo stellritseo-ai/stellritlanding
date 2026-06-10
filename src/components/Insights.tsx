@@ -27,9 +27,13 @@ const STORIES: Story[] = [
   },
 ];
 
-export default function Insights() {
+export default function Insights({
+  className = "py-28",
+}: {
+  className?: string;
+}) {
   return (
-    <section className="relative z-10 px-6 py-28 md:px-12 lg:px-20">
+    <section className={`relative z-10 px-6 md:px-12 lg:px-20 ${className}`}>
       <div className="mx-auto max-w-[1400px]">
         <h2 className="mb-16 font-serif text-[64px] font-normal leading-[1.05] tracking-tight text-white md:text-[88px] lg:text-[110px]">
           Insights and stories
@@ -39,11 +43,10 @@ export default function Insights() {
           {STORIES.map((s) => (
             <article
               key={s.title}
-              className={`group relative flex flex-col border border-white/15 bg-transparent transition-colors duration-500 hover:bg-white ${
-                s.featured
+              className={`group relative flex flex-col border border-white/15 bg-transparent transition-colors duration-500 hover:bg-white ${s.featured
                   ? "justify-between p-10 md:p-14 lg:p-16"
                   : "p-8"
-              }`}
+                }`}
             >
               {s.image && (
                 <div className="mb-8 aspect-[16/9] w-full overflow-hidden">
@@ -56,19 +59,17 @@ export default function Insights() {
               )}
 
               <h3
-                className={`font-serif font-normal leading-[1.05] tracking-tight text-white transition-colors duration-500 group-hover:text-[#1a0033] ${
-                  s.featured
+                className={`font-serif font-normal leading-[1.05] tracking-tight text-white transition-colors duration-500 group-hover:text-[#1a0033] ${s.featured
                     ? "text-[42px] md:text-[56px] lg:text-[64px]"
                     : "text-[26px] leading-[1.15] md:text-[30px]"
-                }`}
+                  }`}
               >
                 {s.title}
               </h3>
 
               <div
-                className={`mt-10 flex gap-3 ${
-                  s.featured ? "flex-wrap" : "flex-col flex-wrap items-start"
-                }`}
+                className={`mt-10 flex gap-3 ${s.featured ? "flex-wrap" : "flex-col flex-wrap items-start"
+                  }`}
               >
                 {s.tags.map((t) => (
                   <span

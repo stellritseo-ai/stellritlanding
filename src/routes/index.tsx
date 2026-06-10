@@ -8,6 +8,11 @@ import Insights from "@/components/Insights";
 import Footer from "@/components/Footer";
 import ScrollBackground from "@/components/ScrollBackground";
 import ChatWidget from "@/components/ChatWidget";
+import MarqueeStrip from "@/components/MarqueeStrip";
+
+import ParallaxText from "@/components/ParallaxText";
+import PartnershipModels from "@/components/PartnershipModels";
+import Portfolio from "@/components/Portfolio";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -26,13 +31,32 @@ function Index() {
     <main className="relative min-h-screen">
       <ScrollBackground />
       <Hero />
+
       <Welcome />
+
+
       <Services />
+
+      <PartnershipModels />
+
       <CaseStudies />
+
+      {/* <MarqueeStrip
+        items={["TRUSTED BY 230+ BRANDS", "AWWWARDS NOMINEE", "WEBBY NOMINEE", "SOC II CERTIFIED", "GDPR COMPLIANT", "12+ YEARS OF CRAFT"]}
+        speed={26}
+        dir="left"
+        size="sm"
+      /> */}
+
       <Testimonials />
+      <Portfolio />
+
+      {/* <ParallaxText text="INSIGHTS & IDEAS" dir="right" opacity={0.06} className="-my-2" /> */}
+
       <Insights />
       <Footer />
       <ChatWidget />
     </main>
   );
 }
+
