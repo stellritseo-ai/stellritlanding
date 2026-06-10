@@ -1,6 +1,7 @@
 import { motion, useScroll, useSpring, useTransform, MotionValue } from "framer-motion";
 import { useRef } from "react";
 
+
 const Laurel = ({ children }: { children: React.ReactNode }) => (
   <div className="flex items-center gap-3 md:gap-5">
     <svg viewBox="0 0 60 100" className="h-16 w-10 md:h-24 md:w-14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
