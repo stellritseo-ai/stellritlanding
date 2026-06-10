@@ -108,7 +108,7 @@ export default function Footer() {
 
       <div className="mx-auto max-w-[1400px] px-6 py-20 md:px-12 lg:px-20">
         {/* Top: brand + contact */}
-        <div className="flex flex-col gap-8 border-b border-white/10 pb-16 md:flex-row md:items-start md:justify-between">
+        <div ref={topRef} className="flex flex-col gap-8 border-b border-white/10 pb-16 md:flex-row md:items-start md:justify-between">
           <div className="flex flex-col items-start gap-4 md:flex-row md:items-end md:gap-10">
             <span className="font-serif text-6xl font-normal tracking-tight md:text-7xl lg:text-8xl">
               StellR
