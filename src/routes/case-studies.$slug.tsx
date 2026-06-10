@@ -6,7 +6,7 @@ import Footer from "@/components/Footer";
 import CtaBand from "@/components/CtaBand";
 import ScrollBackground from "@/components/ScrollBackground";
 import ChatWidget from "@/components/ChatWidget";
-import { CASE_STUDIES, getCaseStudy } from "@/data/case-studies";
+import { CASE_STUDIES, getCaseStudy, type CaseStudy } from "@/data/case-studies";
 
 export const Route = createFileRoute("/case-studies/$slug")({
   loader: ({ params }) => {
@@ -33,7 +33,7 @@ export const Route = createFileRoute("/case-studies/$slug")({
 });
 
 function CaseStudyPage() {
-  const { study } = Route.useLoaderData();
+  const { study } = Route.useLoaderData() as { study: CaseStudy };
   const next = CASE_STUDIES.find((c) => c.slug === study.nextSlug) ?? CASE_STUDIES[0];
 
   return (
