@@ -108,8 +108,8 @@ export default function PartnershipModels() {
         </div>
 
         {/* Apple-style Dock Tab Selector */}
-          <div className="mt-10 flex justify-start overflow-x-auto pb-2">
-            <div className="p-1.5 bg-[#171127]/60 border border-white/[0.04] backdrop-blur-xl rounded-full flex gap-1 mt-[-40px] flex-shrink-0">
+          <div className="mt-0 flex justify-start overflow-x-auto pb-2">
+            <div className="p-1.5 bg-[#171127]/60 border border-white/[0.04] backdrop-blur-xl rounded-full flex gap-1 mt-0 flex-shrink-0">
             {MODELS.map((model) => {
               const Icon = model.icon;
               const isActive = model.id === activeTab;
