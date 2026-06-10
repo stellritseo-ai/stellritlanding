@@ -98,14 +98,29 @@ export default function Hero() {
         </header>
         <MenuOverlay open={menuOpen} onClose={() => setMenuOpen(false)} />
 
-        <div className="flex flex-col items-center justify-center px-6 pt-12 text-center">
-          <h1 className="text-glow max-w-5xl font-serif text-[44px] font-normal leading-[0.95] tracking-[-0.02em] text-white md:text-[72px]">
+        <div className="relative flex flex-col items-center justify-center px-6 pt-8 text-center">
+          <h1 className="text-glow relative z-20 max-w-5xl font-serif text-[44px] font-normal leading-[0.95] tracking-[-0.02em] text-white md:text-[72px]">
             Digital Evolution for Business
           </h1>
-          <p className="mt-8 max-w-xl text-[15px] leading-[1.55] text-white/85">
+          <div className="pointer-events-none relative mt-6 h-[320px] w-[320px] md:h-[440px] md:w-[440px]">
+            <video
+              src={CENTER_VIDEO}
+              autoPlay
+              muted
+              loop
+              playsInline
+              className="h-full w-full object-cover"
+              style={{
+                maskImage: "radial-gradient(circle, black 55%, transparent 75%)",
+                WebkitMaskImage: "radial-gradient(circle, black 55%, transparent 75%)",
+              }}
+            />
+          </div>
+          <p className="mt-4 max-w-xl text-[15px] leading-[1.55] text-white/85">
             Our creative studio helps enterprise brands and market leaders navigate digital, evolve profitably, and launch unforgettable websites, products, and campaigns.
           </p>
         </div>
+
       </div>
     );
   }
