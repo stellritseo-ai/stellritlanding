@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import Hero from "@/components/Hero";
 import Welcome from "@/components/Welcome";
+import Services from "@/components/Services";
 import ScrollBackground from "@/components/ScrollBackground";
 
 export const Route = createFileRoute("/")({
@@ -21,6 +22,7 @@ function Index() {
       <ScrollBackground />
       <Hero />
       <Welcome />
+      <Services />
       <section className="relative z-10 bg-[#180028] py-32 text-center">
         <p className="mx-auto max-w-2xl px-6 font-serif text-3xl italic leading-snug text-white/80 md:text-4xl">
           More chapters below — services, work, and the people behind StellR.
