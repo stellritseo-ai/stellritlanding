@@ -20,7 +20,7 @@ export default function Footer() {
           {[...CLIENTS, ...CLIENTS].map((c, i) => (
             <span
               key={i}
-              className="font-serif text-2xl tracking-widest text-white/70 md:text-3xl"
+              className="font-serif text-2xl tracking-[0.2em] text-white/70 md:text-3xl"
             >
               {c}
             </span>
@@ -31,15 +31,15 @@ export default function Footer() {
       <div className="mx-auto max-w-[1400px] px-6 py-20 md:px-12 lg:px-20">
         {/* Top: brand + contact */}
         <div className="flex flex-col gap-8 border-b border-white/10 pb-16 md:flex-row md:items-start md:justify-between">
-          <div className="flex flex-col items-start gap-4 md:flex-row md:items-center md:gap-10">
-            <span className="font-serif text-5xl font-medium tracking-tight md:text-6xl">
+          <div className="flex flex-col items-start gap-4 md:flex-row md:items-end md:gap-10">
+            <span className="font-serif text-6xl font-normal tracking-tight md:text-7xl lg:text-8xl">
               StellR
             </span>
-            <span className="max-w-md text-sm text-white/60 md:text-base">
+            <span className="max-w-md text-[15px] leading-[1.55] text-white/60">
               Exceptional design, seamless collaboration.
             </span>
           </div>
-          <div className="flex flex-col items-start gap-2 text-sm md:items-end md:text-base">
+          <div className="flex flex-col items-start gap-2 text-[15px] leading-[1.55] md:items-end">
             <a href="mailto:hello@stellr.it" className="text-white/90 transition-colors hover:text-[#ff8a5b]">
               hello@stellr.it
             </a>
@@ -60,7 +60,7 @@ export default function Footer() {
                 <li key={s}>
                   <a
                     href="#"
-                    className="text-lg text-white/90 transition-colors hover:text-[#ff8a5b] md:text-xl"
+                    className="font-serif text-[22px] leading-[1.15] tracking-tight text-white/90 transition-colors hover:text-[#ff8a5b] md:text-[28px]"
                   >
                     {s}
                   </a>
@@ -78,7 +78,7 @@ export default function Footer() {
                 <li key={s}>
                   <a
                     href="#"
-                    className="text-lg text-white/90 transition-colors hover:text-[#ff8a5b] md:text-xl"
+                    className="font-serif text-[22px] leading-[1.15] tracking-tight text-white/90 transition-colors hover:text-[#ff8a5b] md:text-[28px]"
                   >
                     {s}
                   </a>
@@ -95,7 +95,7 @@ export default function Footer() {
               {HONORS.map((h) => (
                 <div
                   key={h}
-                  className="flex aspect-square items-center justify-center border border-white/15 px-2 text-center text-[10px] font-semibold uppercase tracking-widest text-white/70 transition-colors hover:border-[#ff8a5b] hover:text-white"
+                  className="flex aspect-square items-center justify-center border border-white/15 px-2 text-center text-[10px] font-semibold uppercase tracking-[0.15em] text-white/70 transition-colors hover:border-[#ff8a5b] hover:text-white"
                 >
                   {h}
                 </div>
@@ -105,7 +105,7 @@ export default function Footer() {
         </div>
 
         {/* Bottom */}
-        <div className="flex flex-col gap-4 border-t border-white/10 pt-8 text-xs text-white/50 md:flex-row md:items-center md:justify-between">
+        <div className="flex flex-col gap-4 border-t border-white/10 pt-8 text-[11px] uppercase tracking-[0.2em] text-white/50 md:flex-row md:items-center md:justify-between">
           <span>© {new Date().getFullYear()} StellR IT LLC. All rights reserved.</span>
           <nav className="flex flex-wrap gap-8">
             <a href="#" className="transition-colors hover:text-white">Environmental Sustainability</a>
