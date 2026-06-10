@@ -1,3 +1,9 @@
+import { useRef, useEffect } from "react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+gsap.registerPlugin(ScrollTrigger);
+
 const CLIENTS = ["CODA", "RATIO:", "BRIXTON", "HSBC", "LAB", "OCTOPUS MONEY", "PICNIQ", "WILDERNESS", "THREECOLTS", "BUCHERER"];
 
 const SERVICES = [
@@ -12,6 +18,78 @@ const LINKS = ["Latest case studies", "Contact us"];
 const HONORS = ["ALLIANCE", "BIMA", "NET", "AGENCY HACKERS"];
 
 export default function Footer() {
+  const topRef = useRef<HTMLDivElement>(null);
+  const columnsRef = useRef<HTMLDivElement>(null);
+  const bottomRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      // Top row reveal
+      if (topRef.current) {
+        gsap.fromTo(
+          topRef.current.children,
+          { y: 50, opacity: 0 },
+          {
+            y: 0,
+            opacity: 1,
+            duration: 1.1,
+            stagger: 0.12,
+            ease: "power3.out",
+            scrollTrigger: {
+              trigger: topRef.current,
+              start: "top 85%",
+              end: "top 40%",
+              toggleActions: "play none none none",
+            },
+          }
+        );
+      }
+
+      // Columns reveal
+      if (columnsRef.current) {
+        gsap.fromTo(
+          columnsRef.current.children,
+          { y: 60, opacity: 0, scale: 0.98 },
+          {
+            y: 0,
+            opacity: 1,
+            scale: 1,
+            duration: 1.1,
+            stagger: 0.15,
+            ease: "power3.out",
+            scrollTrigger: {
+              trigger: columnsRef.current,
+              start: "top 80%",
+              end: "top 30%",
+              toggleActions: "play none none none",
+            },
+          }
+        );
+      }
+
+      // Bottom bar reveal
+      if (bottomRef.current) {
+        gsap.fromTo(
+          bottomRef.current,
+          { y: 40, opacity: 0 },
+          {
+            y: 0,
+            opacity: 1,
+            duration: 1,
+            ease: "power3.out",
+            scrollTrigger: {
+              trigger: bottomRef.current,
+              start: "top 90%",
+              toggleActions: "play none none none",
+            },
+          }
+        );
+      }
+    });
+
+    return () => ctx.revert();
+  }, []);
+
   return (
     <footer className="relative z-10 bg-[#1a0533] text-white">
       {/* Marquee */}
@@ -30,7 +108,7 @@ export default function Footer() {
 
       <div className="mx-auto max-w-[1400px] px-6 py-20 md:px-12 lg:px-20">
         {/* Top: brand + contact */}
-        <div className="flex flex-col gap-8 border-b border-white/10 pb-16 md:flex-row md:items-start md:justify-between">
+        <div ref={topRef} className="flex flex-col gap-8 border-b border-white/10 pb-16 md:flex-row md:items-start md:justify-between">
           <div className="flex flex-col items-start gap-4 md:flex-row md:items-end md:gap-10">
             <span className="font-serif text-6xl font-normal tracking-tight md:text-7xl lg:text-8xl">
               StellR
@@ -50,7 +128,7 @@ export default function Footer() {
         </div>
 
         {/* Columns */}
-        <div className="grid grid-cols-1 gap-12 py-16 md:grid-cols-12">
+        <div ref={columnsRef} className="grid grid-cols-1 gap-12 py-16 md:grid-cols-12">
           <div className="md:col-span-5">
             <h4 className="mb-8 text-[11px] font-medium uppercase tracking-[0.2em] text-white/50">
               Our Services
@@ -105,7 +183,7 @@ export default function Footer() {
         </div>
 
         {/* Bottom */}
-        <div className="flex flex-col gap-4 border-t border-white/10 pt-8 text-[11px] uppercase tracking-[0.2em] text-white/50 md:flex-row md:items-center md:justify-between">
+        <div ref={bottomRef} className="flex flex-col gap-4 border-t border-white/10 pt-8 text-[11px] uppercase tracking-[0.2em] text-white/50 md:flex-row md:items-center md:justify-between">
           <span>© {new Date().getFullYear()} StellR IT LLC. All rights reserved.</span>
           <nav className="flex flex-wrap gap-8">
             <a href="#" className="transition-colors hover:text-white">Environmental Sustainability</a>
