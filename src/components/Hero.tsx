@@ -183,6 +183,7 @@ export default function Hero() {
           style={{
             scale: cardScale,
             x: cardX,
+            y: cardY,
             borderRadius: cardRadius,
           }}
           className="glass absolute left-6 bottom-12 z-20 h-[180px] w-[320px] origin-center overflow-hidden shadow-[0_30px_80px_-20px_rgba(0,0,0,0.7)] md:left-12 md:h-[200px] md:w-[360px]"
