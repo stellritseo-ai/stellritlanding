@@ -1,6 +1,7 @@
 import { motion, useScroll, useTransform, useMotionValue, useSpring } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { ArrowUpRight, Menu } from "lucide-react";
+import { Link } from "@tanstack/react-router";
 import MenuOverlay from "./MenuOverlay";
 
 const CENTER_VIDEO =
@@ -124,12 +125,12 @@ export default function Hero() {
             <span className="ml-1 text-xs font-sans tracking-[0.3em] text-white/60">IT LLC</span>
           </div>
           <div className="flex items-center gap-3">
-            <button className="group glass flex items-center gap-2 rounded-full bg-white/95 py-2 pl-5 pr-2 text-sm font-medium text-[#2a0860] transition hover:bg-white">
+            <Link to="/contact" className="group glass flex items-center gap-2 rounded-full bg-white/95 py-2 pl-5 pr-2 text-sm font-medium text-[#2a0860] transition hover:bg-white">
               Let's Talk
               <span className="grid h-8 w-8 place-items-center rounded-full bg-gradient-to-br from-[#a855f7] to-[#7c2dd9] text-white transition group-hover:scale-110">
                 <ArrowUpRight className="h-4 w-4" />
               </span>
-            </button>
+            </Link>
             <button onClick={() => setMenuOpen(true)} aria-label="Open menu" className="glass grid h-12 w-12 place-items-center rounded-full text-white transition hover:bg-white/10">
               <Menu className="h-5 w-5" />
             </button>
