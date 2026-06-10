@@ -169,6 +169,11 @@ export default function Footer() {
             <a href="#" className="transition-colors hover:text-white">AI Policy</a>
           </nav>
         </div>
+
+        {/* Copyright */}
+        <div className="border-t border-white/10 pt-6 text-center text-[11px] uppercase tracking-[0.2em] text-white/40">
+          © {new Date().getFullYear()} StellR IT LLC. All rights reserved.
+        </div>
       </div>
 
       <style>{`
