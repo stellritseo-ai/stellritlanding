@@ -171,8 +171,12 @@ export default function Footer() {
         </div>
 
         {/* Copyright */}
-        <div className="border-t border-white/10 pt-6 text-center text-[11px] uppercase tracking-[0.2em] text-white/40">
-          © {new Date().getFullYear()} StellR IT LLC. All rights reserved.
+        <div className="flex flex-col items-center gap-3 border-t border-white/10 pt-6 text-[11px] uppercase tracking-[0.2em] text-white/40 md:flex-row md:justify-between">
+          <span>© {new Date().getFullYear()} StellR IT LLC. All rights reserved.</span>
+          <nav className="flex gap-6">
+            <a href="/privacy" className="transition-colors hover:text-white">Privacy Policy</a>
+            <a href="/terms" className="transition-colors hover:text-white">Terms</a>
+          </nav>
         </div>
       </div>
 
