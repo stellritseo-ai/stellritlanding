@@ -209,6 +209,15 @@ export default function Footer() {
         </div>
       </div>
 
+      {/* Giant wordmark */}
+      <div className="overflow-hidden px-4 pb-4">
+        <div className="select-none whitespace-nowrap text-center font-sans font-black uppercase leading-[0.8] tracking-[-0.05em] text-white" style={{ fontSize: "clamp(80px, 28vw, 480px)" }}>
+          StellR IT
+        </div>
+      </div>
+
+
+
       <style>{`
         @keyframes marquee {
           from { transform: translateX(0); }
