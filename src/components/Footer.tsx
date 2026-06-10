@@ -1,3 +1,9 @@
+import { useRef, useEffect } from "react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+gsap.registerPlugin(ScrollTrigger);
+
 const CLIENTS = ["CODA", "RATIO:", "BRIXTON", "HSBC", "LAB", "OCTOPUS MONEY", "PICNIQ", "WILDERNESS", "THREECOLTS", "BUCHERER"];
 
 const SERVICES = [
@@ -12,6 +18,78 @@ const LINKS = ["Latest case studies", "Contact us"];
 const HONORS = ["ALLIANCE", "BIMA", "NET", "AGENCY HACKERS"];
 
 export default function Footer() {
+  const topRef = useRef<HTMLDivElement>(null);
+  const columnsRef = useRef<HTMLDivElement>(null);
+  const bottomRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      // Top row reveal
+      if (topRef.current) {
+        gsap.fromTo(
+          topRef.current.children,
+          { y: 50, opacity: 0 },
+          {
+            y: 0,
+            opacity: 1,
+            duration: 1.1,
+            stagger: 0.12,
+            ease: "power3.out",
+            scrollTrigger: {
+              trigger: topRef.current,
+              start: "top 85%",
+              end: "top 40%",
+              toggleActions: "play none none none",
+            },
+          }
+        );
+      }
+
+      // Columns reveal
+      if (columnsRef.current) {
+        gsap.fromTo(
+          columnsRef.current.children,
+          { y: 60, opacity: 0, scale: 0.98 },
+          {
+            y: 0,
+            opacity: 1,
+            scale: 1,
+            duration: 1.1,
+            stagger: 0.15,
+            ease: "power3.out",
+            scrollTrigger: {
+              trigger: columnsRef.current,
+              start: "top 80%",
+              end: "top 30%",
+              toggleActions: "play none none none",
+            },
+          }
+        );
+      }
+
+      // Bottom bar reveal
+      if (bottomRef.current) {
+        gsap.fromTo(
+          bottomRef.current,
+          { y: 40, opacity: 0 },
+          {
+            y: 0,
+            opacity: 1,
+            duration: 1,
+            ease: "power3.out",
+            scrollTrigger: {
+              trigger: bottomRef.current,
+              start: "top 90%",
+              toggleActions: "play none none none",
+            },
+          }
+        );
+      }
+    });
+
+    return () => ctx.revert();
+  }, []);
+
   return (
     <footer className="relative z-10 bg-[#1a0533] text-white">
       {/* Marquee */}
