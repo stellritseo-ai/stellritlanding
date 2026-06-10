@@ -1,6 +1,7 @@
 import { motion, useScroll, useTransform, useMotionValue, useSpring } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { ArrowUpRight, Menu } from "lucide-react";
+import MenuOverlay from "./MenuOverlay";
 
 const CENTER_VIDEO =
   "https://res.cloudinary.com/dmanafb84/video/upload/f_auto:video,q_auto/ISA_FLOR_04__444_enp2ps";
@@ -14,6 +15,7 @@ const LOGOS = [
 
 export default function Hero() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const [menuOpen, setMenuOpen] = useState(false);
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start start", "end end"],
@@ -128,11 +130,12 @@ export default function Hero() {
                 <ArrowUpRight className="h-4 w-4" />
               </span>
             </button>
-            <button className="glass grid h-12 w-12 place-items-center rounded-full text-white transition hover:bg-white/10">
+            <button onClick={() => setMenuOpen(true)} aria-label="Open menu" className="glass grid h-12 w-12 place-items-center rounded-full text-white transition hover:bg-white/10">
               <Menu className="h-5 w-5" />
             </button>
           </div>
         </header>
+        <MenuOverlay open={menuOpen} onClose={() => setMenuOpen(false)} />
 
         {/* Center hero video — on top */}
         <motion.div
