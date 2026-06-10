@@ -15,6 +15,7 @@ const LOGOS = [
 
 export default function Hero() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const [menuOpen, setMenuOpen] = useState(false);
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start start", "end end"],
