@@ -68,7 +68,7 @@ function ServiceRow({
         <div>
           <motion.h3
             animate={{ color: isActive ? "#ffffff" : "rgba(255,255,255,0.92)" }}
-            className="font-serif text-[44px] leading-[0.95] tracking-tight md:text-[72px] lg:text-[88px]"
+            className="font-serif text-[55px] leading-[0.95] tracking-tight"
             style={{ fontFamily: "'Cormorant Garamond', 'Playfair Display', Georgia, serif", fontWeight: 400 }}
           >
             {service.title}
