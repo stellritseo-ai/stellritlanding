@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { ArrowUpRight, Menu } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import MenuOverlay from "./MenuOverlay";
+import { useReducedMotion } from "@/hooks/use-reduced-motion";
 
 const CENTER_VIDEO =
   "https://res.cloudinary.com/dmanafb84/video/upload/f_auto:video,q_auto/ISA_FLOR_04__444_enp2ps";
@@ -17,6 +18,7 @@ const LOGOS = [
 export default function Hero() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [menuOpen, setMenuOpen] = useState(false);
+  const reduced = useReducedMotion();
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start start", "end end"],
