@@ -130,11 +130,12 @@ export default function Hero() {
                 <ArrowUpRight className="h-4 w-4" />
               </span>
             </button>
-            <button className="glass grid h-12 w-12 place-items-center rounded-full text-white transition hover:bg-white/10">
+            <button onClick={() => setMenuOpen(true)} aria-label="Open menu" className="glass grid h-12 w-12 place-items-center rounded-full text-white transition hover:bg-white/10">
               <Menu className="h-5 w-5" />
             </button>
           </div>
         </header>
+        <MenuOverlay open={menuOpen} onClose={() => setMenuOpen(false)} />
 
         {/* Center hero video — on top */}
         <motion.div
