@@ -1,4 +1,5 @@
 import { motion, useScroll, useSpring, useTransform, type MotionValue } from "framer-motion";
+import { useReducedMotion } from "@/hooks/use-reduced-motion";
 
 /**
  * Calm, scroll-reactive atmosphere — GPU-friendly version.
@@ -43,6 +44,17 @@ export default function ScrollBackground() {
     damping: 30,
     mass: 0.8,
   });
+  const reduced = useReducedMotion();
+
+  if (reduced) {
+    return (
+      <div aria-hidden className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
+        <div className="absolute inset-0" style={{ background: BASES[0] }} />
+        <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/30 to-transparent" />
+      </div>
+    );
+  }
+
 
   return (
     <div aria-hidden className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
