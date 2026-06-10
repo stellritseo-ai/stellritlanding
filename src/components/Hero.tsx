@@ -1,6 +1,7 @@
 import { motion, useScroll, useTransform, useMotionValue, useSpring } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { ArrowUpRight, Menu } from "lucide-react";
+import { Link } from "@tanstack/react-router";
 import MenuOverlay from "./MenuOverlay";
 
 const CENTER_VIDEO =
