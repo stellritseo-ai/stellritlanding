@@ -3,6 +3,7 @@ import Hero from "@/components/Hero";
 import Welcome from "@/components/Welcome";
 import Services from "@/components/Services";
 import CaseStudies from "@/components/CaseStudies";
+import Testimonials from "@/components/Testimonials";
 import ScrollBackground from "@/components/ScrollBackground";
 
 export const Route = createFileRoute("/")({
