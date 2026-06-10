@@ -1,29 +1,27 @@
 import { createFileRoute } from "@tanstack/react-router";
+import Hero from "@/components/Hero";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Your App" },
-      { name: "description", content: "Replace this with a one-sentence description of your app." },
-      { property: "og:title", content: "Your App" },
-      { property: "og:description", content: "Replace this with a one-sentence description of your app." },
+      { title: "StellR IT LLC — Digital Evolution for Business" },
+      { name: "description", content: "StellR IT LLC is a premium digital agency crafting unforgettable websites, products, and campaigns for enterprise brands." },
+      { property: "og:title", content: "StellR IT LLC — Digital Evolution for Business" },
+      { property: "og:description", content: "Premium digital agency for enterprise brands. Award-winning design, engineering, and storytelling." },
     ],
   }),
   component: Index,
 });
 
-// IMPORTANT: Replace this placeholder. See ./README.md for routing conventions.
 function Index() {
   return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
-      />
-    </div>
+    <main className="min-h-screen">
+      <Hero />
+      <section className="relative z-10 bg-[#180028] py-32 text-center">
+        <p className="mx-auto max-w-2xl px-6 font-serif text-3xl italic leading-snug text-white/80 md:text-4xl">
+          More chapters below — services, work, and the people behind StellR.
+        </p>
+      </section>
+    </main>
   );
 }
