@@ -128,7 +128,7 @@ export default function Footer() {
         </div>
 
         {/* Columns */}
-        <div className="grid grid-cols-1 gap-12 py-16 md:grid-cols-12">
+        <div ref={columnsRef} className="grid grid-cols-1 gap-12 py-16 md:grid-cols-12">
           <div className="md:col-span-5">
             <h4 className="mb-8 text-[11px] font-medium uppercase tracking-[0.2em] text-white/50">
               Our Services
