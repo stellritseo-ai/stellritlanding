@@ -86,20 +86,17 @@ export default function Welcome() {
       ref={sectionRef}
       className="relative isolate overflow-hidden bg-transparent pt-32 pb-24 text-white md:pt-48 md:pb-32"
     >
-      {/* Single composited background layer — one transform, no jitter */}
-      <motion.div
+      {/* Static background — no scroll-linked blur to keep things smooth */}
+      <div
         aria-hidden
         style={{
-          y: bgY,
-          willChange: "transform",
           background: `
-            radial-gradient(40% 35% at 12% 18%, rgba(255,170,140,0.55), transparent 70%),
-            radial-gradient(45% 40% at 88% 88%, rgba(180,80,200,0.45), transparent 72%),
-            radial-gradient(55% 45% at 50% 45%, rgba(255,200,170,0.40), transparent 70%)
+            radial-gradient(40% 35% at 12% 18%, rgba(255,170,140,0.45), transparent 70%),
+            radial-gradient(45% 40% at 88% 88%, rgba(180,80,200,0.35), transparent 72%),
+            radial-gradient(55% 45% at 50% 45%, rgba(255,200,170,0.30), transparent 70%)
           `,
-          filter: "blur(60px)",
         }}
-        className="pointer-events-none absolute -inset-[15%]"
+        className="pointer-events-none absolute -inset-[10%]"
       />
 
       {/* Soft grain */}
