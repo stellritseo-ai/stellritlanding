@@ -39,9 +39,10 @@ function InsightsPage() {
           </>
         }
         description="Essays on craft, strategy, design systems and growth. Written by the team, edited for signal."
+        className="py-[70px]"
       />
-      <Insights />
-      <CtaBand title="Want these in your inbox?" subtitle="One thoughtful dispatch a month. No filler, ever." />
+      <Insights className="py-[70px]" />
+      <CtaBand title="Want these in your inbox?" subtitle="One thoughtful dispatch a month. No filler, ever." className="py-[70px]" />
       <Footer />
       <ChatWidget />
     </main>

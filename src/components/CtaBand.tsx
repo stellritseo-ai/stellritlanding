@@ -5,12 +5,14 @@ import { motion } from "framer-motion";
 export default function CtaBand({
   title = "Let's build something unforgettable.",
   subtitle = "Tell us about your project. We'll get back within one business day.",
+  className = "py-24",
 }: {
   title?: string;
   subtitle?: string;
+  className?: string;
 }) {
   return (
-    <section className="relative z-10 px-6 py-24 md:px-12 lg:px-20">
+    <section className={`relative z-10 px-6 md:px-12 lg:px-20 ${className}`}>
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}

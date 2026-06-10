@@ -72,11 +72,11 @@ function AboutPage() {
             A studio for the <em className="font-serif italic text-[#c9a4ff]">next</em> era of digital brands.
           </>
         }
-        description="StellR IT LLC is a senior-only digital agency based in Los Angeles and Lahore. We help category-defining companies move faster, design sharper, and ship work that earns attention."
+        description="StellR IT LLC is a senior-only digital agency based in Garland, TX. We help category-defining companies move faster, design sharper, and ship work that earns attention."
       />
 
       {/* Stats */}
-      <section className="relative z-10 px-6 pb-24 md:px-12 lg:px-20">
+      <section className="relative z-10 px-4 sm:px-6 pb-12 md:pb-24 md:px-12 lg:px-20">
         <div className="mx-auto grid max-w-[1400px] grid-cols-2 gap-px border-y border-white/10 md:grid-cols-4">
           {STATS.map((s, i) => (
             <motion.div
@@ -87,7 +87,7 @@ function AboutPage() {
               transition={{ duration: 0.6, delay: i * 0.08 }}
               className="bg-white/[0.02] px-6 py-12 text-white"
             >
-              <div className="font-serif text-[56px] leading-none text-white md:text-[72px]">{s.v}</div>
+              <div className="font-serif text-[40px] leading-none text-white md:text-[56px] lg:text-[72px]">{s.v}</div>
               <div className="mt-3 text-[12px] uppercase tracking-[0.25em] text-white/55">{s.l}</div>
             </motion.div>
           ))}

@@ -1,5 +1,8 @@
 import { motion, useScroll, useSpring, useTransform, MotionValue } from "framer-motion";
 import { useRef } from "react";
+import aw1Img from "@/assets/aw1.png";
+import aw2Img from "@/assets/aw2.png";
+import aw3Img from "@/assets/aw3.png";
 
 
 const Laurel = ({ children }: { children: React.ReactNode }) => (
@@ -71,7 +74,7 @@ export default function Welcome() {
   return (
     <section
       ref={sectionRef}
-      className="relative isolate overflow-hidden bg-transparent pt-32 pb-24 text-white md:pt-48 md:pb-32"
+      className="relative isolate overflow-hidden bg-transparent py-[60px] text-white"
     >
       {/* Static background — no scroll-linked blur to keep things smooth */}
       <div
@@ -104,15 +107,15 @@ export default function Welcome() {
           transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
           className="mb-20 flex flex-wrap items-center justify-center gap-6 md:mb-28 md:gap-12"
         >
-          <Laurel>The Webby Awards</Laurel>
-          <Laurel>awwwards.</Laurel>
-          <Laurel>W3 Awards</Laurel>
+          <Laurel><img src={aw1Img} alt="Award 1" className="h-10 md:h-14 mx-auto w-auto object-contain" style={{ filter: "brightness(0) invert(1)" }} /></Laurel>
+          <Laurel><img src={aw2Img} alt="Award 2" className="h-10 md:h-14 mx-auto w-auto object-contain" style={{ filter: "brightness(0) invert(1)" }} /></Laurel>
+          <Laurel><img src={aw3Img} alt="Award 3" className="h-10 md:h-14 mx-auto w-auto object-contain" style={{ filter: "brightness(0) invert(1)" }} /></Laurel>
         </motion.div>
 
         {/* Scroll-revealed headline */}
         <div
           ref={textRef}
-          className="font-serif text-[40px] leading-[1.2] tracking-tight md:text-[64px] lg:text-[80px]"
+          className="font-serif text-[28px] leading-[1.2] tracking-tight md:text-[52px] lg:text-[70px] xl:text-[80px]"
           style={{ fontFamily: "'Cormorant Garamond', 'Playfair Display', Georgia, serif" }}
         >
           {words.map((w, i) => {

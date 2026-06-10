@@ -1,51 +1,56 @@
 import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from "framer-motion";
 import { useRef, useState, MouseEvent } from "react";
+import { ArrowUpRight } from "lucide-react";
 import brandImg from "@/assets/service-brand.jpg";
-import productImg from "@/assets/service-product.jpg";
+import productImg from "@/assets/pool-big-banner.webp";
 import growthImg from "@/assets/service-growth.jpg";
 
 const SERVICES = [
-  { title: "Brand Building", tags: ["Visual Identity", "Video", "Content Strategy"], image: brandImg },
-  { title: "Product Development", tags: ["Web Design", "Design Systems", "eCommerce"], image: productImg },
-  { title: "Growth Marketing", tags: ["Paid Media", "CRO", "Analytics", "SEM Strategy"], image: growthImg },
+  {
+    index: "01",
+    title: "Brand Building",
+    description: "Crafting iconic identities that command attention and build lasting equity for market leaders.",
+    tags: ["Visual Identity", "Video", "Content Strategy"],
+    image: brandImg,
+  },
+  {
+    index: "02",
+    title: "Product Development",
+    description: "From concept to conversion — beautifully engineered digital products that scale with ambition.",
+    tags: ["Web Design", "Design Systems", "eCommerce"],
+    image: productImg,
+  },
+  {
+    index: "03",
+    title: "Growth Marketing",
+    description: "Data-driven campaigns that unlock compounding growth across every channel that matters.",
+    tags: ["Paid Media", "CRO", "Analytics", "SEM Strategy"],
+    image: growthImg,
+  },
 ];
-
-const Sparkle = ({ spin }: { spin: boolean }) => (
-  <motion.svg
-    viewBox="0 0 40 40"
-    className="h-7 w-7 md:h-8 md:w-8"
-    animate={{ rotate: spin ? 180 : 0, scale: spin ? 1.18 : 1 }}
-    transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-  >
-    <g fill="#ff8a5b">
-      <path d="M20 0 L22 17 L40 20 L22 23 L20 40 L18 23 L0 20 L18 17 Z" />
-      <path d="M20 6 L21 18 L33 20 L21 22 L20 34 L19 22 L7 20 L19 18 Z" opacity="0.85" />
-    </g>
-  </motion.svg>
-);
 
 function ServiceRow({
   service,
   isActive,
   onHover,
+  idx,
 }: {
   service: typeof SERVICES[number];
   isActive: boolean;
   onHover: () => void;
+  idx: number;
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const mx = useMotionValue(0);
   const my = useMotionValue(0);
-  const sx = useSpring(mx, { stiffness: 200, damping: 20, mass: 0.4 });
-  const sy = useSpring(my, { stiffness: 200, damping: 20, mass: 0.4 });
+  const sx = useSpring(mx, { stiffness: 180, damping: 22, mass: 0.4 });
+  const sy = useSpring(my, { stiffness: 180, damping: 22, mass: 0.4 });
 
   const onMove = (e: MouseEvent<HTMLDivElement>) => {
     const r = ref.current?.getBoundingClientRect();
     if (!r) return;
-    const dx = e.clientX - (r.left + r.width / 2);
-    const dy = e.clientY - (r.top + r.height / 2);
-    mx.set(dx * 0.04);
-    my.set(dy * 0.08);
+    mx.set((e.clientX - (r.left + r.width / 2)) * 0.03);
+    my.set((e.clientY - (r.top + r.height / 2)) * 0.05);
   };
 
   const onLeave = () => {
@@ -54,52 +59,109 @@ function ServiceRow({
   };
 
   return (
-    <div
+    <motion.div
       ref={ref}
       onMouseEnter={onHover}
       onMouseMove={onMove}
       onMouseLeave={onLeave}
-      className="group relative cursor-pointer border-b border-white/15 py-10 md:py-14"
+      initial={{ opacity: 0, y: 32 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-60px" }}
+      transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1], delay: idx * 0.08 }}
+      className="group relative cursor-pointer"
     >
-      <motion.div style={{ x: sx, y: sy }} className="flex items-start gap-5 will-change-transform">
-        <div className="mt-2 md:mt-4">
-          <Sparkle spin={isActive} />
-        </div>
-        <div>
+      {/* Top border with gradient on active */}
+      <div className="relative h-px w-full overflow-hidden">
+        <div className="absolute inset-0 bg-white/10" />
+        <motion.div
+          className="absolute inset-0"
+          style={{
+            background: "linear-gradient(90deg, #7a2adc, #cc7aff, #ff8a5b)",
+          }}
+          animate={{ opacity: isActive ? 1 : 0 }}
+          transition={{ duration: 0.4 }}
+        />
+      </div>
+
+      <motion.div
+        style={{ x: sx, y: sy }}
+        className="grid grid-cols-[56px_1fr_auto] items-start gap-6 py-8 md:py-10 will-change-transform"
+      >
+        {/* Index number */}
+        <motion.span
+          animate={{ color: isActive ? "rgba(204,122,255,0.9)" : "rgba(255,255,255,0.2)" }}
+          transition={{ duration: 0.3 }}
+          className="mt-1 font-mono text-xs tracking-[0.2em] select-none"
+        >
+          {service.index}
+        </motion.span>
+
+        {/* Title + description + tags */}
+        <div className="flex flex-col gap-3">
           <motion.h3
-            animate={{ color: isActive ? "#ffffff" : "rgba(255,255,255,0.92)" }}
-            className="font-serif text-[55px] leading-[0.95] tracking-tight"
-            style={{ fontFamily: "'Cormorant Garamond', 'Playfair Display', Georgia, serif", fontWeight: 400 }}
+            animate={{
+              color: isActive ? "#ffffff" : "rgba(255,255,255,0.75)",
+            }}
+            transition={{ duration: 0.3 }}
+            className="font-serif text-[26px] leading-[0.95] tracking-tight sm:text-[32px] md:text-[40px] lg:text-[48px]"
+            style={{ fontFamily: "'Cormorant Garamond', 'Playfair Display', Georgia, serif", fontWeight: 600 }}
           >
             {service.title}
           </motion.h3>
-          <div className="mt-5 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-white/90 md:text-base">
-            {service.tags.map((t, i) => (
-              <span key={t} className="flex items-center gap-3">
-                <span>{t}</span>
-                {i < service.tags.length - 1 && <span className="text-white/50">—</span>}
+
+          <motion.p
+            animate={{ opacity: isActive ? 1 : 0, height: isActive ? "auto" : 0 }}
+            transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+            className="overflow-hidden text-sm leading-relaxed text-white/60 max-w-sm"
+          >
+            {service.description}
+          </motion.p>
+
+          <motion.div
+            animate={{ opacity: isActive ? 1 : 0.6 }}
+            transition={{ duration: 0.3 }}
+            className="flex flex-wrap items-center gap-2"
+          >
+            {service.tags.map((t) => (
+              <span
+                key={t}
+                className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[11px] font-medium uppercase tracking-widest text-white/70"
+              >
+                {t}
               </span>
             ))}
-          </div>
+          </motion.div>
         </div>
+
+        {/* Arrow icon */}
+        <motion.div
+          animate={{
+            opacity: isActive ? 1 : 0,
+            x: isActive ? 0 : 8,
+            rotate: isActive ? 0 : -20,
+          }}
+          transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+          className="mt-2 grid h-10 w-10 place-items-center rounded-full border border-white/15 bg-white/5 text-white backdrop-blur-sm"
+        >
+          <ArrowUpRight className="h-4 w-4" />
+        </motion.div>
       </motion.div>
-    </div>
+    </motion.div>
   );
 }
 
 export default function Services() {
-  const [active, setActive] = useState(1);
+  const [active, setActive] = useState(0);
   const stageRef = useRef<HTMLDivElement>(null);
 
-  // Parallax for the right image (subtle tilt + shift to follow cursor)
   const ix = useMotionValue(0);
   const iy = useMotionValue(0);
-  const six = useSpring(ix, { stiffness: 80, damping: 18, mass: 0.6 });
-  const siy = useSpring(iy, { stiffness: 80, damping: 18, mass: 0.6 });
-  const rotX = useTransform(siy, [-1, 1], [6, -6]);
-  const rotY = useTransform(six, [-1, 1], [-8, 8]);
-  const tx = useTransform(six, [-1, 1], [-12, 12]);
-  const ty = useTransform(siy, [-1, 1], [-12, 12]);
+  const six = useSpring(ix, { stiffness: 70, damping: 20, mass: 0.6 });
+  const siy = useSpring(iy, { stiffness: 70, damping: 20, mass: 0.6 });
+  const rotX = useTransform(siy, [-1, 1], [5, -5]);
+  const rotY = useTransform(six, [-1, 1], [-7, 7]);
+  const tx = useTransform(six, [-1, 1], [-10, 10]);
+  const ty = useTransform(siy, [-1, 1], [-10, 10]);
 
   const onStageMove = (e: MouseEvent<HTMLDivElement>) => {
     const r = stageRef.current?.getBoundingClientRect();
@@ -113,58 +175,130 @@ export default function Services() {
   };
 
   return (
-    <section className="relative py-24 text-white md:py-32">
+    <section className="relative py-16 text-white md:py-24 lg:py-32">
+      {/* Subtle background glow */}
       <div
-        className="mx-auto grid max-w-7xl items-center gap-10 px-6 md:grid-cols-[1.2fr_460px] md:gap-16 md:px-12"
+        aria-hidden
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background:
+            "radial-gradient(60% 50% at 80% 50%, rgba(122,42,220,0.08), transparent 70%)",
+        }}
+      />
+
+      <div
+        className="relative mx-auto max-w-7xl px-6 md:px-12"
         onMouseMove={onStageMove}
         onMouseLeave={onStageLeave}
       >
-        {/* Left: services */}
-        <div className="flex flex-col">
-          {SERVICES.map((s, i) => (
-            <ServiceRow key={s.title} service={s} isActive={active === i} onHover={() => setActive(i)} />
-          ))}
-          {/* Final gradient rule */}
-          <div
-            className="h-px w-full"
-            style={{
-              background:
-                "linear-gradient(90deg, transparent 0%, #a855f7 30%, #e879f9 60%, #ff8a5b 100%)",
-            }}
-          />
-        </div>
-
-        {/* Right: image stage */}
-        <div
-          ref={stageRef}
-          className="relative mx-auto hidden h-[560px] w-[400px] md:block lg:h-[640px] lg:w-[460px]"
-          style={{ perspective: 1200 }}
+        {/* Section header */}
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-80px" }}
+          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+          className="mb-16 flex items-end justify-between md:mb-20"
         >
-          <motion.div
-            style={{ rotateX: rotX, rotateY: rotY, x: tx, y: ty, transformStyle: "preserve-3d" }}
-            className="relative h-full w-full will-change-transform"
+          <div>
+            <span className="mb-3 block font-mono text-[11px] uppercase tracking-[0.3em] text-white/40">
+              What we do
+            </span>
+            <h2
+              className="font-serif text-[28px] font-semibold leading-tight tracking-tight text-white sm:text-[36px] md:text-[44px] lg:text-[52px]"
+              style={{ fontFamily: "'Cormorant Garamond', 'Playfair Display', Georgia, serif" }}
+            >
+              Our Services
+            </h2>
+          </div>
+          <span className="hidden text-sm text-white/30 md:block">
+            {String(active + 1).padStart(2, "0")} / {String(SERVICES.length).padStart(2, "0")}
+          </span>
+        </motion.div>
+
+        {/* Two-column layout */}
+        <div className="grid items-start gap-8 md:grid-cols-[1fr_400px] md:gap-12 lg:grid-cols-[1fr_460px]">
+          {/* Left: service rows */}
+          <div className="flex flex-col">
+            {SERVICES.map((s, i) => (
+              <ServiceRow
+                key={s.title}
+                service={s}
+                idx={i}
+                isActive={active === i}
+                onHover={() => setActive(i)}
+              />
+            ))}
+            {/* Bottom border */}
+            <div
+              className="h-px w-full"
+              style={{
+                background:
+                  "linear-gradient(90deg, transparent 0%, rgba(122,42,220,0.5) 40%, rgba(255,138,91,0.5) 100%)",
+              }}
+            />
+          </div>
+
+          {/* Right: image stage */}
+          <div
+            ref={stageRef}
+            className="relative mx-auto hidden h-[520px] w-full md:block lg:h-[600px]"
+            style={{ perspective: 1200 }}
           >
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={SERVICES[active].image}
-                initial={{ opacity: 0, scale: 1.06, filter: "blur(14px)" }}
-                animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
-                exit={{ opacity: 0, scale: 0.98, filter: "blur(10px)" }}
-                transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-                className="absolute inset-0 overflow-hidden rounded-[2px] shadow-[0_40px_120px_-20px_rgba(0,0,0,0.6)]"
-              >
-                <img
-                  src={SERVICES[active].image}
-                  alt={SERVICES[active].title}
-                  width={800}
-                  height={1024}
-                  loading="lazy"
-                  className="h-full w-full object-cover"
-                />
-                <div className="pointer-events-none absolute inset-0 ring-1 ring-inset ring-white/10" />
-              </motion.div>
-            </AnimatePresence>
-          </motion.div>
+            {/* Ambient glow behind image */}
+            <motion.div
+              key={active}
+              animate={{ opacity: [0, 0.5, 0.3] }}
+              transition={{ duration: 1.2 }}
+              className="absolute -inset-6 rounded-[32px] blur-2xl"
+              style={{
+                background:
+                  "radial-gradient(ellipse at center, rgba(122,42,220,0.3), rgba(255,138,91,0.15), transparent 70%)",
+              }}
+            />
+
+            <motion.div
+              style={{ rotateX: rotX, rotateY: rotY, x: tx, y: ty, transformStyle: "preserve-3d" }}
+              className="relative h-full w-full will-change-transform"
+            >
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={SERVICES[active].image}
+                  initial={{ opacity: 0, scale: 1.05, filter: "blur(12px)" }}
+                  animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
+                  exit={{ opacity: 0, scale: 0.97, filter: "blur(8px)" }}
+                  transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
+                  className="absolute inset-0 overflow-hidden rounded-2xl shadow-[0_40px_100px_-20px_rgba(0,0,0,0.7)]"
+                >
+                  <img
+                    src={SERVICES[active].image}
+                    alt={SERVICES[active].title}
+                    loading="lazy"
+                    className="h-full w-full object-cover"
+                  />
+                  {/* Overlay gradient */}
+                  <div
+                    className="pointer-events-none absolute inset-0"
+                    style={{
+                      background:
+                        "linear-gradient(to top, rgba(5,0,18,0.55) 0%, transparent 50%)",
+                    }}
+                  />
+                  {/* Inner ring */}
+                  <div className="pointer-events-none absolute inset-0 rounded-2xl ring-1 ring-inset ring-white/10" />
+
+                  {/* Service label at bottom of image */}
+                  <div className="absolute bottom-5 left-5 right-5 flex items-end justify-between">
+                    <span className="font-serif text-lg font-medium text-white drop-shadow-sm">
+                      {SERVICES[active].title}
+                    </span>
+                    <span className="font-mono text-xs text-white/50 tracking-widest">
+                      {SERVICES[active].index}
+                    </span>
+                  </div>
+                </motion.div>
+              </AnimatePresence>
+            </motion.div>
+          </div>
         </div>
       </div>
     </section>

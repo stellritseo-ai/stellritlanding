@@ -5,6 +5,8 @@ import { MapPin, Phone, Mail, Send } from "lucide-react";
 import { toast } from "sonner";
 import { Link } from "@tanstack/react-router";
 
+import logoImg from "@/assets/logo.png";
+
 gsap.registerPlugin(ScrollTrigger);
 
 type LinkItem = { label: string; to: string };
@@ -103,67 +105,25 @@ export default function Footer() {
 
   return (
     <footer className="relative z-10 text-white">
-      <div className="mx-auto max-w-[1400px] px-6 py-16 md:px-12 lg:px-20">
+      <div className="mx-auto max-w-[1400px] px-4 sm:px-6 pt-[60px] pb-[10px] md:px-12 lg:px-20">
         {/* Top row: logo + badges (left), socials (right) */}
         <div
           ref={topRef}
           className="flex flex-col gap-10 md:flex-row md:items-start md:justify-between"
         >
           <div className="flex flex-col gap-8">
-            <div className="flex items-center gap-2">
-              <span className="font-serif text-5xl font-normal tracking-tight bg-gradient-to-r from-[#7a2adc] via-[#be50ff] to-[#ff8a5b] bg-clip-text text-transparent">
-                StellR
-              </span>
-              <span className="text-5xl font-light text-white/80">IT</span>
-            </div>
-            <div className="flex items-center gap-4">
-              {/* EU badge */}
-              <div className="flex h-14 w-14 items-center justify-center rounded-full bg-[#003399]">
-                <div className="grid grid-cols-3 gap-[2px]">
-                  {Array.from({ length: 9 }).map((_, i) => (
-                    <span key={i} className="text-[6px] text-yellow-300">★</span>
-                  ))}
-                </div>
-              </div>
-              {/* SOC II */}
-              <div
-                className="flex h-14 w-14 items-center justify-center text-[10px] font-bold text-white"
-                style={{
-                  clipPath:
-                    "polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)",
-                  background: "rgba(255,255,255,0.1)",
-                  border: "1px solid rgba(255,255,255,0.25)",
-                }}
-              >
-                SOC II
-              </div>
-              {/* GDPR */}
-              <div className="relative flex h-14 w-14 items-center justify-center rounded-full border border-white/25">
-                <span className="text-[10px] font-bold text-white">GDPR</span>
-                <div className="pointer-events-none absolute inset-0 rounded-full">
-                  {Array.from({ length: 12 }).map((_, i) => (
-                    <span
-                      key={i}
-                      className="absolute left-1/2 top-1/2 text-[6px] text-yellow-300"
-                      style={{
-                        transform: `translate(-50%,-50%) rotate(${i * 30}deg) translateY(-24px)`,
-                      }}
-                    >
-                      ★
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </div>
+            <Link to="/" className="inline-block">
+              <img src={logoImg} alt="StellR IT" className="h-14 md:h-16 w-auto object-contain" style={{ filter: "brightness(0) invert(1)" }} />
+            </Link>
           </div>
 
           <nav className="flex items-center gap-3">
             {[
               { label: "Facebook", svg: <path d="M22 12a10 10 0 1 0-11.6 9.9v-7H7.9V12h2.5V9.8c0-2.5 1.5-3.9 3.8-3.9 1.1 0 2.2.2 2.2.2v2.5h-1.3c-1.2 0-1.6.8-1.6 1.6V12h2.8l-.5 2.9h-2.3v7A10 10 0 0 0 22 12z" /> },
-              { label: "Instagram", svg: <><rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="currentColor" strokeWidth="1.8"/><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" strokeWidth="1.8"/><circle cx="17.5" cy="6.5" r="1" /></> },
-              { label: "YouTube", svg: <path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8zM9.6 15.6V8.4l6.3 3.6-6.3 3.6z"/> },
-              { label: "LinkedIn", svg: <path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM3 9h4v12H3zM10 9h3.8v1.7h.1c.5-1 1.9-2 3.9-2 4.1 0 4.9 2.7 4.9 6.2V21h-4v-5.6c0-1.3 0-3-1.9-3s-2.1 1.4-2.1 2.9V21h-4z"/> },
-              { label: "TikTok", svg: <path d="M19.5 8.2a6.4 6.4 0 0 1-3.8-1.2v7.6a5.5 5.5 0 1 1-5.5-5.5c.3 0 .6 0 .9.1v2.8a2.7 2.7 0 1 0 1.9 2.6V2h2.7a3.7 3.7 0 0 0 3.8 3.4z"/> },
+              { label: "Instagram", svg: <><rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="currentColor" strokeWidth="1.8" /><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" strokeWidth="1.8" /><circle cx="17.5" cy="6.5" r="1" /></> },
+              { label: "YouTube", svg: <path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8zM9.6 15.6V8.4l6.3 3.6-6.3 3.6z" /> },
+              { label: "LinkedIn", svg: <path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM3 9h4v12H3zM10 9h3.8v1.7h.1c.5-1 1.9-2 3.9-2 4.1 0 4.9 2.7 4.9 6.2V21h-4v-5.6c0-1.3 0-3-1.9-3s-2.1 1.4-2.1 2.9V21h-4z" /> },
+              { label: "TikTok", svg: <path d="M19.5 8.2a6.4 6.4 0 0 1-3.8-1.2v7.6a5.5 5.5 0 1 1-5.5-5.5c.3 0 .6 0 .9.1v2.8a2.7 2.7 0 1 0 1.9 2.6V2h2.7a3.7 3.7 0 0 0 3.8 3.4z" /> },
             ].map((s) => (
               <a
                 key={s.label}
@@ -182,7 +142,7 @@ export default function Footer() {
         {/* Columns */}
         <div
           ref={columnsRef}
-          className="mt-20 grid grid-cols-2 gap-12 md:grid-cols-3 lg:grid-cols-5"
+          className="mt-12 sm:mt-20 grid grid-cols-2 gap-8 sm:gap-12 md:grid-cols-3 lg:grid-cols-5"
         >
           <Column title="Company" items={COMPANY} />
           <Column title="Resources" items={RESOURCES} />
@@ -193,22 +153,24 @@ export default function Footer() {
             <ul className="space-y-5 text-[14px] text-white/70">
               <li className="flex gap-3">
                 <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-white/60" />
-                <span>633 W 5th St floor 26, Los Angeles, CA 90071, United States</span>
-              </li>
-              <li className="flex gap-3">
-                <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-white/60" />
-                <span>576 Block Q, Phase 2 Johar Town, Lahore, 54782</span>
+                <span>5305 Creek CT, Garland, TX 75043, United States</span>
               </li>
               <li>
-                <a href="tel:8559185940" className="flex items-center gap-3 hover:text-[#ff8a5b]">
+                <a href="tel:2148380543" className="flex items-center gap-3 hover:text-[#ff8a5b]">
                   <Phone className="h-4 w-4 shrink-0 text-white/60" />
-                  855-918-5940
+                  (214) 838-0543
                 </a>
               </li>
               <li>
-                <a href="mailto:hello@stellr.it" className="flex items-center gap-3 hover:text-[#ff8a5b]">
+                <a href="tel:3254808108" className="flex items-center gap-3 hover:text-[#ff8a5b]">
+                  <Phone className="h-4 w-4 shrink-0 text-white/60" />
+                  (325) 480-8108 (Toll Free)
+                </a>
+              </li>
+              <li>
+                <a href="mailto:info@stellrit.com" className="flex items-center gap-3 hover:text-[#ff8a5b]">
                   <Mail className="h-4 w-4 shrink-0 text-white/60" />
-                  hello@stellr.it
+                  info@stellrit.com
                 </a>
               </li>
             </ul>
@@ -234,9 +196,8 @@ export default function Footer() {
                     if (error) setError(null);
                   }}
                   placeholder="Enter your email"
-                  className={`h-12 w-full rounded-full border bg-white/5 px-5 text-[15px] text-white outline-none transition-all placeholder:text-white/30 md:w-72 ${
-                    error ? "border-red-400/60 focus:border-red-400" : "border-white/15 focus:border-[#ff8a5b]"
-                  }`}
+                  className={`h-12 w-full rounded-full border bg-white/5 px-5 text-[15px] text-white outline-none transition-all placeholder:text-white/30 md:w-72 ${error ? "border-red-400/60 focus:border-red-400" : "border-white/15 focus:border-[#ff8a5b]"
+                    }`}
                 />
                 {error && <span className="px-1 text-[13px] text-red-400">{error}</span>}
               </div>
@@ -276,8 +237,8 @@ export default function Footer() {
       {/* Giant wordmark */}
       <div className="overflow-hidden px-4 pb-4">
         <div
-          className="shimmer-text select-none whitespace-nowrap text-center font-sans font-black uppercase leading-[0.8] tracking-[-0.05em]"
-          style={{ fontSize: "clamp(80px, 28vw, 480px)" }}
+          className="shimmer-text select-none whitespace-nowrap text-center font-sans font-black uppercase leading-[0.8] tracking-[0.25em] mr-[-0.25em] mt-[-10px] mb-[-33px]"
+          style={{ fontSize: "clamp(60px, 13vw, 220px)" }}
         >
           StellR IT
         </div>

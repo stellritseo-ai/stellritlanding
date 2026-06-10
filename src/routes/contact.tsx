@@ -16,7 +16,7 @@ export const Route = createFileRoute("/contact")({
       {
         name: "description",
         content:
-          "Tell us about your project. StellR IT replies within one business day. Offices in Los Angeles and Lahore.",
+          "Tell us about your project. StellR IT replies within one business day. Based in Garland, TX.",
       },
       { property: "og:title", content: "Contact — StellR IT LLC" },
       {
@@ -66,8 +66,8 @@ function ContactPage() {
         description="Tell us about your project — timeline, budget range, the problem you're solving. A senior partner replies within one business day."
       />
 
-      <section className="relative z-10 px-6 pb-24 md:px-12 lg:px-20">
-        <div className="mx-auto grid max-w-[1400px] grid-cols-1 gap-16 lg:grid-cols-[1fr_360px]">
+      <section className="relative z-10 px-4 sm:px-6 pb-16 md:pb-24 md:px-12 lg:px-20">
+        <div className="mx-auto grid max-w-[1400px] grid-cols-1 gap-10 md:gap-16 lg:grid-cols-[1fr_360px]">
           {/* Form */}
           <motion.form
             initial={{ opacity: 0, y: 24 }}
@@ -161,16 +161,16 @@ function ContactPage() {
           {/* Sidebar */}
           <aside className="space-y-10">
             <ContactBlock icon={<Mail className="h-4 w-4" />} title="Email">
-              <a href="mailto:hello@stellr.it" className="hover:text-[#ff8a5b]">hello@stellr.it</a>
+              <a href="mailto:info@stellrit.com" className="hover:text-[#ff8a5b]">info@stellrit.com</a>
             </ContactBlock>
             <ContactBlock icon={<Phone className="h-4 w-4" />} title="Phone">
-              <a href="tel:8559185940" className="hover:text-[#ff8a5b]">855‑918‑5940</a>
+              <a href="tel:2148380543" className="hover:text-[#ff8a5b]">(214) 838-0543</a>
             </ContactBlock>
-            <ContactBlock icon={<MapPin className="h-4 w-4" />} title="Los Angeles">
-              633 W 5th St, Floor 26<br />Los Angeles, CA 90071
+            <ContactBlock icon={<Phone className="h-4 w-4" />} title="Toll Free">
+              <a href="tel:3254808108" className="hover:text-[#ff8a5b]">(325) 480-8108</a>
             </ContactBlock>
-            <ContactBlock icon={<MapPin className="h-4 w-4" />} title="Lahore">
-              576 Block Q, Phase 2<br />Johar Town, Lahore 54782
+            <ContactBlock icon={<MapPin className="h-4 w-4" />} title="USA">
+              5305 Creek CT<br />Garland, TX 75043
             </ContactBlock>
           </aside>
         </div>
