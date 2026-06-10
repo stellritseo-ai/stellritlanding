@@ -208,13 +208,7 @@ export default function Hero() {
           }}
           className="glass absolute left-6 bottom-12 z-20 h-[180px] w-[320px] origin-center overflow-hidden shadow-[0_30px_80px_-20px_rgba(0,0,0,0.7)] md:left-12 md:h-[200px] md:w-[360px]"
         >
-          <iframe
-            src="https://player.cloudinary.com/embed/?cloud_name=dmanafb84&public_id=IA-Website-Homepage-Sizzle-Reel-Animation_V5_1_2-2_c6hfyj&autoplay=true&muted=true&loop=true&controls=false&show_logo=false&fluid=true"
-            allow="autoplay; fullscreen; encrypted-media; picture-in-picture"
-            allowFullScreen
-            className="h-full w-full border-0"
-            style={{ objectFit: "cover", pointerEvents: "none" }}
-          />
+          <HeroVideoFrame />
           <div className="pointer-events-none absolute inset-0 z-10 ring-1 ring-inset ring-white/15" style={{ borderRadius: "inherit" }} />
         </motion.div>
 
