@@ -24,66 +24,44 @@ export default function Footer() {
 
   useEffect(() => {
     const ctx = gsap.context(() => {
+      // Shared ScrollTrigger config — matches Testimonials section exactly
+      const revealFrom = { y: 60, opacity: 0, scale: 0.98 };
+      const revealTo = {
+        y: 0,
+        opacity: 1,
+        scale: 1,
+        duration: 1.1,
+        stagger: 0.15,
+        ease: "power3.out",
+      } as const;
+      const triggerConfig = {
+        start: "top 80%",
+        end: "top 30%",
+        toggleActions: "play none none none",
+      } as const;
+
       // Top row reveal
       if (topRef.current) {
-        gsap.fromTo(
-          topRef.current.children,
-          { y: 50, opacity: 0 },
-          {
-            y: 0,
-            opacity: 1,
-            duration: 1.1,
-            stagger: 0.12,
-            ease: "power3.out",
-            scrollTrigger: {
-              trigger: topRef.current,
-              start: "top 85%",
-              end: "top 40%",
-              toggleActions: "play none none none",
-            },
-          }
-        );
+        gsap.fromTo(topRef.current.children, revealFrom, {
+          ...revealTo,
+          scrollTrigger: { trigger: topRef.current, ...triggerConfig },
+        });
       }
 
       // Columns reveal
       if (columnsRef.current) {
-        gsap.fromTo(
-          columnsRef.current.children,
-          { y: 60, opacity: 0, scale: 0.98 },
-          {
-            y: 0,
-            opacity: 1,
-            scale: 1,
-            duration: 1.1,
-            stagger: 0.15,
-            ease: "power3.out",
-            scrollTrigger: {
-              trigger: columnsRef.current,
-              start: "top 80%",
-              end: "top 30%",
-              toggleActions: "play none none none",
-            },
-          }
-        );
+        gsap.fromTo(columnsRef.current.children, revealFrom, {
+          ...revealTo,
+          scrollTrigger: { trigger: columnsRef.current, ...triggerConfig },
+        });
       }
 
       // Bottom bar reveal
       if (bottomRef.current) {
-        gsap.fromTo(
-          bottomRef.current,
-          { y: 40, opacity: 0 },
-          {
-            y: 0,
-            opacity: 1,
-            duration: 1,
-            ease: "power3.out",
-            scrollTrigger: {
-              trigger: bottomRef.current,
-              start: "top 90%",
-              toggleActions: "play none none none",
-            },
-          }
-        );
+        gsap.fromTo(bottomRef.current, revealFrom, {
+          ...revealTo,
+          scrollTrigger: { trigger: bottomRef.current, ...triggerConfig },
+        });
       }
     });
 
