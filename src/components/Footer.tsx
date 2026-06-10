@@ -158,7 +158,14 @@ export default function Footer() {
               ))}
             </div>
           </div>
+      </div>
+
+      {/* Giant wordmark */}
+      <div className="overflow-hidden">
+        <div className="select-none whitespace-nowrap text-center font-sans font-black uppercase leading-[0.85] tracking-[-0.05em] text-white text-[28vw]">
+          StellR IT
         </div>
+      </div>
 
         {/* Copyright */}
         <div ref={bottomRef} className="flex flex-col items-start gap-6 border-t border-white/15 pt-8 md:flex-row md:items-center md:justify-between">
