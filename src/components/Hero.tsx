@@ -1,6 +1,7 @@
 import { motion, useScroll, useTransform, useMotionValue, useSpring } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { ArrowUpRight, Menu } from "lucide-react";
+import MenuOverlay from "./MenuOverlay";
 
 const CENTER_VIDEO =
   "https://res.cloudinary.com/dmanafb84/video/upload/f_auto:video,q_auto/ISA_FLOR_04__444_enp2ps";
