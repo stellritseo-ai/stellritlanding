@@ -178,7 +178,7 @@ export default function Hero() {
               WebkitMaskImage: "linear-gradient(to bottom, transparent, black 15%, black 85%, transparent)",
             }}
           >
-            <div className="animate-scroll-up flex flex-col gap-12 py-12">
+            <div className="animate-scroll-left flex flex-col gap-12 py-12">
               {[...LOGOS, ...LOGOS].map((logo, i) => (
                 <div
                   key={i}
