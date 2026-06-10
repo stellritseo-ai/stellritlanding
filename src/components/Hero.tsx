@@ -84,7 +84,7 @@ export default function Hero() {
     offset: ["start start", "end end"],
   });
   // Smooth the scroll signal so per-frame transforms coalesce.
-  const p = useSpring(scrollYProgress, { stiffness: 60, damping: 30, mass: 0.5 });
+  const p = useSpring(scrollYProgress, { stiffness: 120, damping: 30, mass: 0.25 });
 
   // Phase 1: headline scales down, center video moves up, glow intensifies
   const headlineScale = useTransform(p, [0, 0.25], [1, 0.7]);
@@ -196,7 +196,7 @@ export default function Hero() {
           style={{ opacity: glowOpacity }}
           className="pointer-events-none absolute left-1/2 top-1/2 h-[800px] w-[800px] -translate-x-1/2 -translate-y-1/2"
         >
-          <div className="h-full w-full" style={{ background: "var(--grad-glow)", filter: "blur(20px)" }} />
+          <div className="h-full w-full" style={{ background: "var(--grad-glow)" }} />
         </motion.div>
 
         {/* Nav */}

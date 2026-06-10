@@ -1,6 +1,7 @@
 import { motion, useScroll, useSpring, useTransform, MotionValue } from "framer-motion";
 import { useRef } from "react";
 
+
 const Laurel = ({ children }: { children: React.ReactNode }) => (
   <div className="flex items-center gap-3 md:gap-5">
     <svg viewBox="0 0 60 100" className="h-16 w-10 md:h-24 md:w-14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
@@ -34,15 +35,12 @@ function Word({
   progress: MotionValue<number>;
   range: [number, number];
 }) {
-  const opacity = useTransform(progress, range, [0.15, 1]);
-  const y = useTransform(progress, range, [12, 0]);
-  const blur = useTransform(progress, range, [6, 0]);
-  const filter = useTransform(blur, (b) => `blur(${b}px)`);
+  const opacity = useTransform(progress, range, [0.2, 1]);
   return (
     <span className="relative mr-[0.25em] inline-block">
       <span className="text-white/15">{children}</span>
       <motion.span
-        style={{ opacity, y, filter }}
+        style={{ opacity, willChange: "opacity" }}
         className="absolute left-0 top-0 inline-block text-white"
       >
         {children}
@@ -55,29 +53,15 @@ export default function Welcome() {
   const sectionRef = useRef<HTMLElement>(null);
   const textRef = useRef<HTMLDivElement>(null);
 
-  // Smoothed scroll for background parallax (no jitter)
-  const { scrollYProgress: sectionProgress } = useScroll({
-    target: sectionRef,
-    offset: ["start end", "end start"],
-  });
-  const smooth = useSpring(sectionProgress, {
-    stiffness: 50,
-    damping: 24,
-    mass: 0.5,
-  });
-
-  // ONE continuous transform drives the entire background layer
-  const bgY = useTransform(smooth, [0, 1], ["-12%", "12%"]);
-
   // Per-word reveal driven by scroll progress through the text block
   const { scrollYProgress: textProgress } = useScroll({
     target: textRef,
     offset: ["start 0.85", "start 0.15"],
   });
   const smoothText = useSpring(textProgress, {
-    stiffness: 60,
-    damping: 22,
-    mass: 0.5,
+    stiffness: 80,
+    damping: 28,
+    mass: 0.4,
   });
 
   const headline =
@@ -89,20 +73,17 @@ export default function Welcome() {
       ref={sectionRef}
       className="relative isolate overflow-hidden bg-transparent pt-32 pb-24 text-white md:pt-48 md:pb-32"
     >
-      {/* Single composited background layer — one transform, no jitter */}
-      <motion.div
+      {/* Static background — no scroll-linked blur to keep things smooth */}
+      <div
         aria-hidden
         style={{
-          y: bgY,
-          willChange: "transform",
           background: `
-            radial-gradient(40% 35% at 12% 18%, rgba(255,170,140,0.55), transparent 70%),
-            radial-gradient(45% 40% at 88% 88%, rgba(180,80,200,0.45), transparent 72%),
-            radial-gradient(55% 45% at 50% 45%, rgba(255,200,170,0.40), transparent 70%)
+            radial-gradient(40% 35% at 12% 18%, rgba(255,170,140,0.45), transparent 70%),
+            radial-gradient(45% 40% at 88% 88%, rgba(180,80,200,0.35), transparent 72%),
+            radial-gradient(55% 45% at 50% 45%, rgba(255,200,170,0.30), transparent 70%)
           `,
-          filter: "blur(60px)",
         }}
-        className="pointer-events-none absolute -inset-[15%]"
+        className="pointer-events-none absolute -inset-[10%]"
       />
 
       {/* Soft grain */}
