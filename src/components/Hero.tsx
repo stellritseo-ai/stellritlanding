@@ -130,9 +130,9 @@ export default function Hero() {
         {/* Headline — on top of video */}
         <motion.h1
           style={{ scale: headlineScale, opacity: headlineOpacity, y: headlineY }}
-          className="absolute left-1/2 top-[6%] z-30 w-full max-w-[1600px] -translate-x-1/2 whitespace-nowrap px-6 text-center font-serif text-[22px] font-medium leading-[1] tracking-[-0.02em] text-white text-glow sm:text-[28px] md:text-[36px] lg:text-[48px]"
+          className="absolute left-1/2 top-[14%] z-30 w-full max-w-[1800px] -translate-x-1/2 whitespace-nowrap px-6 text-center font-serif font-normal leading-[0.95] tracking-[-0.02em] text-white text-glow text-[44px] sm:text-[72px] md:text-[110px] lg:text-[150px] xl:text-[180px]"
         >
-          digital Evolution <span className="italic font-light">for business</span>
+          Digital Evolution for Business
         </motion.h1>
 
 
