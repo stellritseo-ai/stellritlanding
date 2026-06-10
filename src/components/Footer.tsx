@@ -3,13 +3,28 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { MapPin, Phone, Mail, Send } from "lucide-react";
 import { toast } from "sonner";
+import { Link } from "@tanstack/react-router";
 
 gsap.registerPlugin(ScrollTrigger);
 
-const COMPANY = ["About Us", "Career", "Case Studies", "Contact"];
-const RESOURCES = ["StellR Insights", "StellR Academy"];
-const SOLUTIONS = ["StellR Solutions"];
-const LEGAL = ["Privacy Policy", "Security", "Terms of Use", "Data Security"];
+type LinkItem = { label: string; to: string };
+const COMPANY: LinkItem[] = [
+  { label: "About Us", to: "/about" },
+  { label: "Career", to: "/careers" },
+  { label: "Case Studies", to: "/case-studies" },
+  { label: "Contact", to: "/contact" },
+];
+const RESOURCES: LinkItem[] = [
+  { label: "StellR Insights", to: "/insights" },
+  { label: "StellR Academy", to: "/insights" },
+];
+const SOLUTIONS: LinkItem[] = [{ label: "StellR Solutions", to: "/services" }];
+const LEGAL: LinkItem[] = [
+  { label: "Privacy Policy", to: "/privacy" },
+  { label: "Security", to: "/privacy" },
+  { label: "Terms of Use", to: "/terms" },
+  { label: "Data Security", to: "/privacy" },
+];
 
 export default function Footer() {
   const topRef = useRef<HTMLDivElement>(null);
