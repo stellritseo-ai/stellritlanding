@@ -16,7 +16,7 @@ export function useReducedMotion(): boolean {
     const nav = navigator as Navigator & { deviceMemory?: number };
     const cores = nav.hardwareConcurrency ?? 8;
     const memory = nav.deviceMemory ?? 8;
-    const lowEnd = cores <= 4 || memory <= 2;
+    const lowEnd = cores <= 2 && memory <= 2;
 
     const update = () => setReduced(mq.matches || lowEnd);
     update();
