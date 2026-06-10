@@ -125,29 +125,34 @@ export default function Testimonials() {
           className="mt-24 grid grid-cols-1 border-l border-t border-white/15 md:mt-32 md:grid-cols-6"
         >
           {TESTIMONIALS.map((t, i) => (
-            <div
-              key={i}
-              className={`group relative flex flex-col justify-between border-b border-r border-white/15 p-8 transition-colors duration-500 hover:bg-white/[0.03] md:p-10 ${t.span ?? "md:col-span-2"}`}
-            >
-              <span className="pointer-events-none absolute inset-0 border border-transparent transition-colors duration-500 group-hover:border-[#ff8a5b]/70" />
-              <p className="text-[15px] leading-relaxed text-white/85 md:text-base">
-                &ldquo;{t.quote}&rdquo;
-              </p>
-              <div className="mt-12 flex items-end justify-end">
-                {t.brandSub ? (
-                  <div className="flex items-center gap-2 text-white">
-                    <span className="grid h-9 w-9 place-items-center rounded-sm bg-white/10 text-[8px] font-bold leading-tight">
-                      BLUE<br/>BOOK
-                    </span>
-                    <div className="leading-tight">
-                      <div className="text-[10px] uppercase tracking-wider text-white/70">{t.brandSub}</div>
-                      <div className="text-lg font-bold tracking-wide">{t.brand}</div>
-                      <div className="text-[9px] uppercase tracking-wider text-white/60">The Trusted Resource</div>
-                    </div>
+            <div key={i} className={`group relative ${t.span ?? "md:col-span-2"}`}>
+              <div className="relative flex h-full flex-col justify-between overflow-hidden border-b border-r border-white/15 p-8 transition-all duration-500 ease-out will-change-transform md:p-10 group-hover:-translate-y-1.5 group-hover:scale-[1.01] group-hover:border-[#ff8a5b]/30 group-hover:bg-white/[0.04] group-hover:shadow-[0_0_40px_-10px_rgba(255,138,91,0.12),0_20px_50px_-15px_rgba(0,0,0,0.4)]">
+                {/* Shine sweep */}
+                <div className="pointer-events-none absolute -left-full top-0 z-0 h-full w-1/2 -skew-x-12 bg-gradient-to-r from-transparent via-white/[0.07] to-transparent transition-all duration-700 ease-in-out group-hover:left-full" />
+                {/* Border glow overlay */}
+                <span className="pointer-events-none absolute inset-0 z-0 border border-transparent transition-colors duration-500 group-hover:border-[#ff8a5b]/70" />
+
+                <div className="relative z-10 flex flex-col justify-between">
+                  <p className="text-[15px] leading-relaxed text-white/85 md:text-base">
+                    &ldquo;{t.quote}&rdquo;
+                  </p>
+                  <div className="mt-12 flex items-end justify-end">
+                    {t.brandSub ? (
+                      <div className="flex items-center gap-2 text-white">
+                        <span className="grid h-9 w-9 place-items-center rounded-sm bg-white/10 text-[8px] font-bold leading-tight">
+                          BLUE<br/>BOOK
+                        </span>
+                        <div className="leading-tight">
+                          <div className="text-[10px] uppercase tracking-wider text-white/70">{t.brandSub}</div>
+                          <div className="text-lg font-bold tracking-wide">{t.brand}</div>
+                          <div className="text-[9px] uppercase tracking-wider text-white/60">The Trusted Resource</div>
+                        </div>
+                      </div>
+                    ) : (
+                      <span className={`text-white ${t.brandClass ?? "text-2xl"}`}>{t.brand}</span>
+                    )}
                   </div>
-                ) : (
-                  <span className={`text-white ${t.brandClass ?? "text-2xl"}`}>{t.brand}</span>
-                )}
+                </div>
               </div>
             </div>
           ))}
