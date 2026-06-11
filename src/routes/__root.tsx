@@ -14,6 +14,7 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import PageTransition from "@/components/PageTransition";
 import NotFoundPage from "@/components/NotFoundPage";
+import favImg from "@/assets/fav.png";
 
 function NotFoundComponent() {
   return <NotFoundPage />;
@@ -72,7 +73,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "twitter:site", content: "@StellRIT" },
     ],
     links: [
-      { rel: "icon", href: "/favicon.png", type: "image/png" },
+      { rel: "icon", href: favImg, type: "image/png" },
       { rel: "stylesheet", href: appCss },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
