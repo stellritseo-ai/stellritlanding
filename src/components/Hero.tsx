@@ -103,18 +103,6 @@ export default function Hero() {
   // Smooth the scroll signal so per-frame transforms coalesce.
   const p = useSpring(scrollYProgress, { stiffness: 120, damping: 30, mass: 0.25 });
 
-  // Phase 1: headline scales down, center video moves up, glow intensifies
-  const headlineScale = useTransform(p, [0, 0.25], [1, 0.7]);
-  const headlineOpacity = useTransform(p, [0, 0.2, 0.3], [1, 0.6, 0]);
-  const headlineY = useTransform(p, [0, 0.25], [0, -80]);
-
-  const centerY = useTransform(p, [0, 0.3, 0.5], [0, -120, -200]);
-  const centerOpacity = useTransform(p, [0, 0.4, 0.55], [1, 0.5, 0]);
-  const glowOpacity = useTransform(p, [0, 0.3], [0.6, 1]);
-
-  const leftTextOpacity = useTransform(p, [0, 0.2], [1, 0]);
-  const logosOpacity = useTransform(p, [0, 0.35, 0.5], [1, 0.7, 0]);
-
   // Phase 2-3: left video card expands to fit screen (centered, with gutters)
   const [vp, setVp] = useState({ w: 1280, h: 720 });
   useEffect(() => {
@@ -124,11 +112,51 @@ export default function Hero() {
     return () => window.removeEventListener("resize", update);
   }, []);
 
-  // card base: w=320 (md:360), h=180 (md:200), left:24 (md:48), bottom:48
-  const CARD_W = vp.w >= 768 ? 360 : 320;
-  const CARD_H = vp.w >= 768 ? 200 : 180;
-  const CARD_LEFT = vp.w >= 768 ? 48 : 24;
-  const CARD_BOTTOM = 48;
+  const isMobile = vp.w < 768;
+
+  // Phase 1: headline scales down, center video moves up, glow intensifies
+  const headlineScale = useTransform(p, [0, 0.25], [1, 0.7]);
+  const headlineOpacity = useTransform(
+    p,
+    isMobile ? [0, 0.12, 0.2] : [0, 0.2, 0.3],
+    [1, 0.6, 0]
+  );
+  const headlineY = useTransform(
+    p,
+    isMobile ? [0, 0.2] : [0, 0.25],
+    isMobile ? [0, -40] : [0, -80]
+  );
+
+  const centerY = useTransform(
+    p,
+    isMobile ? [0, 0.25, 0.4] : [0, 0.3, 0.5],
+    isMobile ? [0, -60, -100] : [0, -120, -200]
+  );
+  const centerOpacity = useTransform(
+    p,
+    isMobile ? [0, 0.2, 0.35] : [0, 0.4, 0.55],
+    [1, 0.5, 0]
+  );
+  const glowOpacity = useTransform(p, [0, 0.3], [0.6, 1]);
+
+  const leftTextOpacity = useTransform(p, [0, 0.2], [1, 0]);
+  const logosOpacity = useTransform(p, [0, 0.35, 0.5], [1, 0.7, 0]);
+
+  // Card dimensions tailored exactly to class names at each viewport size:
+  // Mobile: left-4 (16px), w=240, h=140
+  // SM: left-6 (24px), w=280, h=160
+  // MD+: left-12 (48px), w=360, h=200
+  const getCardDims = () => {
+    if (vp.w >= 768) {
+      return { w: 360, h: 200, left: 48 };
+    }
+    if (vp.w >= 640) {
+      return { w: 280, h: 160, left: 24 };
+    }
+    return { w: 240, h: 140, left: 16 };
+  };
+  const { w: CARD_W, h: CARD_H, left: CARD_LEFT } = getCardDims();
+  const CARD_BOTTOM = 32; // bottom-8 = 32px
 
   const gutter = 48;
   const targetW = vp.w - gutter * 2;
@@ -209,7 +237,8 @@ export default function Hero() {
     <div ref={containerRef} className="relative" style={{ height: "200vh" }}>
       <div className="sticky top-0 h-screen w-full overflow-hidden noise-overlay">
 
-
+        {/* Gradient mask at the top of the viewport to fade out content scrolling behind header */}
+        <div className="pointer-events-none absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-[#180028] via-[#180028]/80 to-transparent z-[20]" />
 
         {/* Center radial glow behind video */}
         <motion.div
@@ -242,10 +271,10 @@ export default function Hero() {
         </header>
         <MenuOverlay open={menuOpen} onClose={() => setMenuOpen(false)} />
 
-        {/* Center hero video — on top */}
+        {/* Center hero video — sits below gradient mask and headline */}
         <motion.div
           style={{ y: centerY, opacity: centerOpacity }}
-          className="pointer-events-none absolute left-1/2 top-[8%] mt-[100px] sm:mt-[130px] md:mt-[150px] z-[99] h-[240px] w-[240px] sm:h-[300px] sm:w-[300px] md:h-[480px] md:w-[480px] lg:h-[540px] lg:w-[540px] -translate-x-1/2"
+          className="pointer-events-none absolute left-1/2 top-[8%] mt-[100px] sm:mt-[130px] md:mt-[150px] z-[10] h-[240px] w-[240px] sm:h-[300px] sm:w-[300px] md:h-[480px] md:w-[480px] lg:h-[540px] lg:w-[540px] -translate-x-1/2"
         >
           <video
             src={CENTER_VIDEO}
@@ -261,15 +290,13 @@ export default function Hero() {
           />
         </motion.div>
 
-
-        {/* Headline — on top of video */}
+        {/* Headline — sits on top of video, below gradient mask */}
         <motion.h1
           style={{ scale: headlineScale, opacity: headlineOpacity, y: headlineY }}
-          className="text-glow absolute left-1/2 top-[14%] z-30 w-full max-w-[1800px] -translate-x-1/2 px-4 sm:px-6 text-center font-serif text-[28px] sm:text-[38px] font-bold leading-[1.05] tracking-tight text-white md:text-[60px] lg:text-[76px] mt-[20px] sm:mt-[30px]"
+          className="text-glow absolute left-1/2 top-[14%] z-[15] w-full max-w-[1800px] -translate-x-1/2 px-4 sm:px-6 text-center font-serif text-[28px] sm:text-[38px] font-bold leading-[1.05] tracking-tight text-white md:text-[60px] lg:text-[76px] mt-[20px] sm:mt-[30px]"
         >
           Digital <span className="italic bg-gradient-to-r from-[#d9b8ff] via-[#cc7aff] to-[#ff9f7a] bg-clip-text text-transparent drop-shadow-sm">Evolution</span> <span className="font-semibold text-white/95">for Business</span>
         </motion.h1>
-
 
         {/* Left content — hidden on small screens */}
         <motion.div
@@ -334,7 +361,7 @@ export default function Hero() {
         {/* Bottom scroll hint */}
         <motion.div
           style={{ opacity: leftTextOpacity }}
-          className="absolute bottom-6 left-1/2 z-20 -translate-x-1/2 text-[10px] sm:text-[11px] uppercase tracking-[0.4em] text-white/50"
+          className="absolute bottom-6 right-6 md:right-auto md:left-1/2 md:-translate-x-1/2 z-20 text-[10px] sm:text-[11px] uppercase tracking-[0.4em] text-white/50 pointer-events-none"
         >
           Scroll to explore
         </motion.div>
