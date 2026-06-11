@@ -65,7 +65,7 @@ import { Link } from "@tanstack/react-router";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import logoImg from "@/assets/logo.png";
 import logo1 from "@/assets/logos/logo (1).png";
-import logo2 from "@/assets/logos/Logo.png";
+import logo2 from "@/assets/logos/logo.png";
 import logo3 from "@/assets/logos/cropped-logo.png";
 import logo4 from "@/assets/logos/Image-507.png";
 import logo5 from "@/assets/logos/logo-BX_kYZ7l.png";
