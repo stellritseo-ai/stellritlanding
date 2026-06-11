@@ -12,7 +12,7 @@ const NAV = [
   { to: "/careers", label: "Careers" },
 ];
 
-export default function SiteHeader({ transparent = false }: { transparent?: boolean }) {
+export default function SiteHeader({ transparent = false, homepage = false }: { transparent?: boolean; homepage?: boolean }) {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -24,9 +24,15 @@ export default function SiteHeader({ transparent = false }: { transparent?: bool
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  const positionClass = scrolled 
+    ? "fixed" 
+    : homepage 
+    ? "absolute" 
+    : "sticky";
+
   return (
     <header
-      className={`sticky top-0 z-50 flex items-center justify-between px-6 transition-all duration-300 md:px-12 ${
+      className={`${positionClass} top-0 left-0 right-0 z-50 flex items-center justify-between px-6 transition-all duration-300 md:px-12 ${
         scrolled
           ? "bg-[#180028]/85 backdrop-blur-xl border-b border-white/[0.06] py-3.5 shadow-lg shadow-black/10"
           : transparent
@@ -45,19 +51,21 @@ export default function SiteHeader({ transparent = false }: { transparent?: bool
             style={{ filter: "brightness(0) invert(1)" }}
           />
         </Link>
-        <nav className="hidden items-center gap-6 lg:flex">
-          {NAV.map((n) => (
-            <Link
-              key={n.to}
-              to={n.to}
-              className="relative py-1 text-[13px] xl:text-sm text-white/80 transition-colors hover:text-white group"
-              activeProps={{ className: "text-white font-medium" }}
-            >
-              {n.label}
-              <span className="absolute bottom-0 left-0 h-[2px] w-full scale-x-0 bg-gradient-to-r from-[#a855f7] via-[#ff8a5b] to-[#ff8a5b] transition-transform duration-300 origin-left group-hover:scale-x-100" />
-            </Link>
-          ))}
-        </nav>
+        {!homepage && (
+          <nav className="hidden items-center gap-6 lg:flex">
+            {NAV.map((n) => (
+              <Link
+                key={n.to}
+                to={n.to}
+                className="relative py-1 text-[13px] xl:text-sm text-white/80 transition-colors hover:text-white group"
+                activeProps={{ className: "text-white font-medium" }}
+              >
+                {n.label}
+                <span className="absolute bottom-0 left-0 h-[2px] w-full scale-x-0 bg-gradient-to-r from-[#a855f7] via-[#ff8a5b] to-[#ff8a5b] transition-transform duration-300 origin-left group-hover:scale-x-100" />
+              </Link>
+            ))}
+          </nav>
+        )}
       </div>
 
       <div className="flex items-center gap-3">

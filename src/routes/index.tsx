@@ -31,7 +31,7 @@ function Index() {
   return (
     <main className="relative min-h-screen">
       <ScrollBackground />
-      <SiteHeader transparent />
+      <SiteHeader transparent homepage />
       <Hero />
       <Welcome />
 
