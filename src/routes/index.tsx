@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import SiteHeader from "@/components/SiteHeader";
 import Hero from "@/components/Hero";
 import Welcome from "@/components/Welcome";
 import Services from "@/components/Services";
@@ -30,8 +31,8 @@ function Index() {
   return (
     <main className="relative min-h-screen">
       <ScrollBackground />
+      <SiteHeader transparent />
       <Hero />
-
       <Welcome />
 
 

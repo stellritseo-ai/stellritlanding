@@ -62,7 +62,6 @@ function HeroVideoFrame() {
   );
 }
 import { Link } from "@tanstack/react-router";
-import MenuOverlay from "./MenuOverlay";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import logoImg from "@/assets/logo.png";
 import logo1 from "@/assets/logos/1.png";
@@ -94,7 +93,6 @@ const LEFT_VIDEO =
 
 export default function Hero() {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [menuOpen, setMenuOpen] = useState(false);
   const reduced = useReducedMotion();
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -184,29 +182,7 @@ export default function Hero() {
   if (reduced) {
     return (
       <div className="relative h-screen w-full overflow-hidden noise-overlay">
-        <header className="relative z-30 flex items-center justify-between px-6 py-6 md:px-12 md:py-8">
-          <Link to="/" className="block">
-            <img src={logoImg} alt="StellR IT" className="h-12 sm:h-14 md:h-16 w-auto object-contain" style={{ filter: "brightness(0) invert(1)" }} />
-          </Link>
-          <div className="flex items-center gap-2 sm:gap-3">
-            <Link
-              to="/contact"
-              className="group relative hidden sm:flex items-center gap-3 rounded-full bg-white/5 border border-white/10 px-5 py-2.5 text-sm font-medium text-white transition-all duration-500 overflow-hidden hover:border-[#ff8a5b]/40 hover:bg-white/10 hover:shadow-[0_0_30px_rgba(190,80,255,0.25)]"
-            >
-              <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/5 to-transparent transition-transform duration-1000 group-hover:translate-x-full" />
-              <span className="relative z-10">Let's Talk</span>
-              <span className="relative z-10 grid h-8 w-8 place-items-center rounded-full bg-gradient-to-br from-[#7a2adc] to-[#ff8a5b] text-white shadow-md transition-all duration-300 group-hover:scale-110 group-hover:rotate-45">
-                <ArrowUpRight className="h-4 w-4" />
-              </span>
-            </Link>
-            <button onClick={() => setMenuOpen(true)} aria-label="Open menu" className="glass grid h-11 w-11 sm:h-12 sm:w-12 place-items-center rounded-full text-white hover:bg-white/10">
-              <Menu className="h-5 w-5" />
-            </button>
-          </div>
-        </header>
-        <MenuOverlay open={menuOpen} onClose={() => setMenuOpen(false)} />
-
-        <div className="relative flex flex-col items-center justify-center px-6 pt-8 text-center">
+        <div className="relative flex flex-col items-center justify-center px-6 pt-24 text-center">
           <div className="pointer-events-none relative mt-[80px] h-[240px] w-[240px] sm:h-[320px] sm:w-[320px] md:h-[440px] md:w-[440px] z-[99]">
             <video
               src={CENTER_VIDEO}
@@ -248,28 +224,7 @@ export default function Hero() {
           <div className="h-full w-full" style={{ background: "var(--grad-glow)" }} />
         </motion.div>
 
-        {/* Nav */}
-        <header className="relative z-30 flex items-center justify-between px-6 py-6 md:px-12 md:py-8">
-          <Link to="/" className="block">
-            <img src={logoImg} alt="StellR IT" className="h-12 sm:h-14 md:h-16 w-auto object-contain" style={{ filter: "brightness(0) invert(1)" }} />
-          </Link>
-          <div className="flex items-center gap-2 sm:gap-3">
-            <Link
-              to="/contact"
-              className="group relative hidden sm:flex items-center gap-3 rounded-full bg-white/5 border border-white/10 px-5 py-2.5 text-sm font-medium text-white transition-all duration-500 overflow-hidden hover:border-[#ff8a5b]/40 hover:bg-white/10 hover:shadow-[0_0_30px_rgba(190,80,255,0.25)]"
-            >
-              <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/5 to-transparent transition-transform duration-1000 group-hover:translate-x-full" />
-              <span className="relative z-10">Let's Talk</span>
-              <span className="relative z-10 grid h-8 w-8 place-items-center rounded-full bg-gradient-to-br from-[#7a2adc] to-[#ff8a5b] text-white shadow-md transition-all duration-300 group-hover:scale-110 group-hover:rotate-45">
-                <ArrowUpRight className="h-4 w-4" />
-              </span>
-            </Link>
-            <button onClick={() => setMenuOpen(true)} aria-label="Open menu" className="glass grid h-11 w-11 sm:h-12 sm:w-12 place-items-center rounded-full text-white transition hover:bg-white/10">
-              <Menu className="h-5 w-5" />
-            </button>
-          </div>
-        </header>
-        <MenuOverlay open={menuOpen} onClose={() => setMenuOpen(false)} />
+
 
         {/* Center hero video — sits below gradient mask and headline */}
         <motion.div
