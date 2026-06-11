@@ -2,8 +2,9 @@ import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from
 import { useRef, useState, MouseEvent } from "react";
 import { ArrowUpRight } from "lucide-react";
 import brandImg from "@/assets/service-brand.jpg";
-import productImg from "@/assets/pool-big-banner.webp";
-import growthImg from "@/assets/service-growth.jpg";
+import productImg from "@/assets/product.jpg";
+import growthImg from "@/assets/marketing.webp";
+import aiImg from "@/assets/ai.jpg";
 
 const SERVICES = [
   {
@@ -26,6 +27,13 @@ const SERVICES = [
     description: "Data-driven campaigns that unlock compounding growth across every channel that matters.",
     tags: ["Paid Media", "CRO", "Analytics", "SEM Strategy"],
     image: growthImg,
+  },
+  {
+    index: "04",
+    title: "AI Automation",
+    description: "Integrating intelligent agents and custom language models to streamline operations and unlock data insights.",
+    tags: ["Agentic Workflows", "LLM Integrations", "Process Automation"],
+    image: aiImg,
   },
 ];
 
@@ -85,7 +93,7 @@ function ServiceRow({
 
       <motion.div
         style={{ x: sx, y: sy }}
-        className="grid grid-cols-[56px_1fr_auto] items-start gap-6 py-8 md:py-10 will-change-transform"
+        className="grid grid-cols-[56px_1fr_auto] items-start gap-6 py-4 md:py-5 lg:py-5 will-change-transform"
       >
         {/* Index number */}
         <motion.span
@@ -97,13 +105,13 @@ function ServiceRow({
         </motion.span>
 
         {/* Title + description + tags */}
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-2">
           <motion.h3
             animate={{
               color: isActive ? "#ffffff" : "rgba(255,255,255,0.75)",
             }}
             transition={{ duration: 0.3 }}
-            className="font-serif text-[26px] leading-[0.95] tracking-tight sm:text-[32px] md:text-[40px] lg:text-[48px]"
+            className="font-serif text-[24px] leading-[0.95] tracking-tight sm:text-[28px] md:text-[36px] lg:text-[42px]"
             style={{ fontFamily: "'Cormorant Garamond', 'Playfair Display', Georgia, serif", fontWeight: 600 }}
           >
             {service.title}
@@ -175,7 +183,7 @@ export default function Services() {
   };
 
   return (
-    <section className="relative py-16 text-white md:py-24 lg:py-32">
+    <section className="relative py-12 text-white md:py-16 lg:py-20 md:h-screen md:min-h-[600px] md:max-h-[850px] flex flex-col justify-center overflow-hidden">
       {/* Subtle background glow */}
       <div
         aria-hidden
@@ -187,7 +195,7 @@ export default function Services() {
       />
 
       <div
-        className="relative mx-auto max-w-7xl px-6 md:px-12"
+        className="relative mx-auto max-w-7xl px-6 md:px-12 w-full"
         onMouseMove={onStageMove}
         onMouseLeave={onStageLeave}
       >
@@ -197,14 +205,14 @@ export default function Services() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-80px" }}
           transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-          className="mb-16 flex items-end justify-between md:mb-20"
+          className="mb-8 md:mb-10 flex items-end justify-between"
         >
           <div>
-            <span className="mb-3 block font-mono text-[11px] uppercase tracking-[0.3em] text-white/40">
+            <span className="mb-2 block font-mono text-[11px] uppercase tracking-[0.3em] text-white/40">
               What we do
             </span>
             <h2
-              className="font-serif text-[28px] font-semibold leading-tight tracking-tight text-white sm:text-[36px] md:text-[44px] lg:text-[52px]"
+              className="font-serif text-[28px] font-semibold leading-tight tracking-tight text-white sm:text-[36px] md:text-[40px] lg:text-[46px]"
               style={{ fontFamily: "'Cormorant Garamond', 'Playfair Display', Georgia, serif" }}
             >
               Our Services
@@ -241,7 +249,7 @@ export default function Services() {
           {/* Right: image stage */}
           <div
             ref={stageRef}
-            className="relative mx-auto hidden h-[520px] w-full md:block lg:h-[600px]"
+            className="relative mx-auto hidden h-[420px] w-full md:block lg:h-[480px]"
             style={{ perspective: 1200 }}
           >
             {/* Ambient glow behind image */}

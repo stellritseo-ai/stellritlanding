@@ -2,12 +2,32 @@ import { useState, useRef } from "react";
 import { motion, AnimatePresence, useMotionValue, useTransform, useSpring, useVelocity } from "framer-motion";
 import { ArrowUpRight, LayoutGrid, List } from "lucide-react";
 import brandImg from "@/assets/service-brand.jpg";
-import productImg from "@/assets/service-product.jpg";
-import liveNationImg from "@/assets/case-livenation.jpg";
+import productImg from "@/assets/product.jpg";
+import liveNationImg from "@/assets/mobile-view.jpg";
+import AppImg from "@/assets/app.jpg";
+
+// Logos
+import logo1 from "@/assets/logos/Image-507.png";
+import logo2 from "@/assets/logos/Logo.png";
+import logo3 from "@/assets/logos/cropped-logo.png";
+import logo4 from "@/assets/logos/logo (1).png";
+import logo5 from "@/assets/logos/logo-BX_kYZ7l.png";
+import logo6 from "@/assets/logos/logo-BqMKyS9S.png";
+import logo7 from "@/assets/logos/logo-BwGEonYb.png";
+import logo8 from "@/assets/logos/logo-CMAon1t6 (1).png";
+import logo9 from "@/assets/logos/logo-DdbW9O7g.png";
+import logo10 from "@/assets/logos/logo-I6fgEckf.png";
+import logo11 from "@/assets/logos/logo-nayshands.png";
+import logo12 from "@/assets/logos/logo-white-DNQTDUZa.png";
+
+const LOGOS = [
+  logo1, logo2, logo3, logo4, logo5, logo6, 
+  logo7, logo8, logo9, logo10, logo11, logo12
+];
 
 type PortfolioItem = {
   title: string;
-  category: "Branding" | "Digital Product" | "Creative Dev";
+  category: "Branding" | "Digital Product" | "Mobile Application" | "Creative Dev";
   description: string;
   image: string;
   year: string;
@@ -22,7 +42,7 @@ type Category = typeof CATEGORIES[number];
 
 const ITEMS: PortfolioItem[] = [
   {
-    title: "Aura Visual System",
+    title: "TSR Skin and Hair Care",
     category: "Branding",
     description: "Reimagining identity for a next-generation decentralized cloud platform.",
     image: brandImg,
@@ -33,7 +53,7 @@ const ITEMS: PortfolioItem[] = [
     ratio: "aspect-[4/5]",
   },
   {
-    title: "Nova Portal",
+    title: "Ping Buz Application",
     category: "Digital Product",
     description: "Designing a high-fidelity interface for automated smart contracts.",
     image: productImg,
@@ -44,10 +64,22 @@ const ITEMS: PortfolioItem[] = [
     ratio: "aspect-[4/5]",
   },
   {
-    title: "Spatial Soundscape",
+    title: "Pool Supply Wholesalers",
     category: "Creative Dev",
     description: "An immersive audio-reactive spatial web landing experience.",
     image: liveNationImg,
+    year: "'26",
+    tags: ["Creative Dev", "WebGL", "Interactive Design"],
+    accentColor: "#38bdf8",
+    glowColor: "rgba(56, 189, 248, 0.1)",
+    ratio: "aspect-[4/5]",
+  },
+
+  {
+    title: "Ping Buz Mobile Application",
+    category: "Mobile Application",
+    description: "An immersive audio-reactive spatial web landing experience.",
+    image: AppImg,
     year: "'26",
     tags: ["Creative Dev", "WebGL", "Interactive Design"],
     accentColor: "#38bdf8",
@@ -88,7 +120,7 @@ export default function Portfolio() {
     const rect = container.getBoundingClientRect();
     const xVal = e.clientX - rect.left;
     const yVal = e.clientY - rect.top;
-    
+
     cursorX.set(xVal);
     cursorY.set(yVal);
   };
@@ -100,14 +132,14 @@ export default function Portfolio() {
   return (
     <section className="relative z-10 py-[70px] overflow-hidden bg-[#070314]/20">
       {/* Background ambient radial glows */}
-      <div 
+      <div
         className="pointer-events-none absolute left-1/3 top-1/4 h-[700px] w-[700px] rounded-full opacity-25"
         style={{
           background: "radial-gradient(circle, rgba(168,85,247,0.1), transparent 70%)",
           filter: "blur(90px)",
         }}
       />
-      <div 
+      <div
         className="pointer-events-none absolute right-1/4 bottom-1/4 h-[600px] w-[600px] rounded-full opacity-20"
         style={{
           background: "radial-gradient(circle, rgba(255,138,91,0.08), transparent 70%)",
@@ -116,7 +148,7 @@ export default function Portfolio() {
       />
 
       <div className="mx-auto max-w-[1300px] px-6">
-        
+
         {/* Section Header */}
         <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between mb-16">
           <div className="max-w-4xl">
@@ -138,9 +170,8 @@ export default function Portfolio() {
                   <button
                     key={cat}
                     onClick={() => setSelectedCategory(cat)}
-                    className={`relative px-5 py-2.5 rounded-full text-[12px] font-medium transition-colors duration-300 cursor-pointer ${
-                      isActive ? "text-white" : "text-white/45 hover:text-white/80"
-                    }`}
+                    className={`relative px-5 py-2.5 rounded-full text-[12px] font-medium transition-colors duration-300 cursor-pointer ${isActive ? "text-white" : "text-white/45 hover:text-white/80"
+                      }`}
                   >
                     {isActive && (
                       <motion.div
@@ -159,9 +190,8 @@ export default function Portfolio() {
             <div className="p-1 bg-[#171127]/60 border border-white/[0.04] backdrop-blur-xl rounded-full flex gap-1">
               <button
                 onClick={() => setLayoutMode("grid")}
-                className={`relative p-2.5 rounded-full transition-colors duration-300 cursor-pointer ${
-                  layoutMode === "grid" ? "text-white" : "text-white/45 hover:text-white/80"
-                }`}
+                className={`relative p-2.5 rounded-full transition-colors duration-300 cursor-pointer ${layoutMode === "grid" ? "text-white" : "text-white/45 hover:text-white/80"
+                  }`}
                 title="Grid View"
               >
                 {layoutMode === "grid" && (
@@ -175,9 +205,8 @@ export default function Portfolio() {
               </button>
               <button
                 onClick={() => setLayoutMode("list")}
-                className={`relative p-2.5 rounded-full transition-colors duration-300 cursor-pointer ${
-                  layoutMode === "list" ? "text-white" : "text-white/45 hover:text-white/80"
-                }`}
+                className={`relative p-2.5 rounded-full transition-colors duration-300 cursor-pointer ${layoutMode === "list" ? "text-white" : "text-white/45 hover:text-white/80"
+                  }`}
                 title="List View"
               >
                 {layoutMode === "list" && (
@@ -269,6 +298,42 @@ export default function Portfolio() {
           </AnimatePresence>
         </div>
 
+        {/* Infinite Scrolling Logos */}
+        <div className="mt-24 overflow-hidden relative w-full flex flex-col items-center">
+          <span className="text-[11px] uppercase tracking-[0.2em] text-white/30 font-medium mb-10 text-center">
+            Trusted by innovative brands worldwide
+          </span>
+          <div 
+            className="w-full relative overflow-hidden"
+            style={{
+              WebkitMaskImage: "linear-gradient(to right, transparent, black 10%, black 90%, transparent)",
+              maskImage: "linear-gradient(to right, transparent, black 10%, black 90%, transparent)"
+            }}
+          >
+            <div className="flex w-max animate-infinite-scroll hover:[animation-play-state:paused] items-center">
+              {/* Double the logos array to create seamless loop */}
+              {[...LOGOS, ...LOGOS].map((logo, idx) => (
+                <div key={idx} className="w-[150px] md:w-[180px] flex-shrink-0 flex items-center justify-center px-4 md:px-8">
+                  <img
+                    src={logo}
+                    alt={`Partner Logo ${idx}`}
+                    className="max-h-12 md:max-h-12 w-auto object-contain brightness-0 invert opacity-50 hover:brightness-100 hover:invert-0 hover:opacity-100 transition-all duration-500"
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+        
+        <style>{`
+          @keyframes infinite-scroll {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+          }
+          .animate-infinite-scroll {
+            animation: infinite-scroll 40s linear infinite;
+          }
+        `}</style>
       </div>
     </section>
   );
@@ -295,14 +360,14 @@ function PortfolioCard({ item }: { item: PortfolioItem }) {
     const rect = card.getBoundingClientRect();
     const width = rect.width;
     const height = rect.height;
-    
+
     // Normalize coordinates between -0.5 and 0.5
     const xVal = (e.clientX - rect.left) / width - 0.5;
     const yVal = (e.clientY - rect.top) / height - 0.5;
-    
+
     mouseX.set(xVal);
     mouseY.set(yVal);
-    
+
     // Custom properties for spotlight position
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
@@ -339,12 +404,12 @@ function PortfolioCard({ item }: { item: PortfolioItem }) {
       className={`group relative overflow-hidden rounded-3xl border border-white/[0.06] bg-[#0c061d] ${item.ratio} transition-all duration-300 ease-out cursor-pointer`}
     >
       {/* 3D Inner Layer */}
-      <div 
+      <div
         className="absolute inset-0 z-20 flex flex-col justify-between p-6 pointer-events-none"
         style={{ transform: "translateZ(30px)", transformStyle: "preserve-3d" }}
       >
         {/* Top Header */}
-        <div 
+        <div
           className="flex justify-between items-center w-full"
           style={{ transform: "translateZ(15px)" }}
         >
@@ -357,7 +422,7 @@ function PortfolioCard({ item }: { item: PortfolioItem }) {
         </div>
 
         {/* Arrow Button Overlay */}
-        <div 
+        <div
           className="absolute top-6 right-6 h-10 w-10 rounded-full border border-white/15 flex items-center justify-center text-white transition-all duration-500 ease-out backdrop-blur-md scale-75 opacity-0 group-hover:scale-100 group-hover:opacity-100"
           style={{
             transform: "translateZ(25px)",
@@ -369,7 +434,7 @@ function PortfolioCard({ item }: { item: PortfolioItem }) {
         </div>
 
         {/* Bottom Details */}
-        <div 
+        <div
           className="flex flex-col mt-auto w-full"
           style={{ transform: "translateZ(20px)" }}
         >
@@ -385,7 +450,7 @@ function PortfolioCard({ item }: { item: PortfolioItem }) {
           {/* Title */}
           <h3 className="font-serif text-[24px] md:text-[28px] leading-tight text-white tracking-tight flex items-center gap-2 group-hover:text-white/95 transition-colors duration-300">
             {item.title}
-            <span 
+            <span
               className="w-1.5 h-1.5 rounded-full transition-transform duration-500 origin-center scale-75 group-hover:scale-125"
               style={{ background: item.accentColor }}
             />

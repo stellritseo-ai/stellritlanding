@@ -6,8 +6,8 @@ import aw3Img from "@/assets/aw3.png";
 
 
 const Laurel = ({ children }: { children: React.ReactNode }) => (
-  <div className="flex items-center gap-3 md:gap-5">
-    <svg viewBox="0 0 60 100" className="h-16 w-10 md:h-24 md:w-14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
+  <div className="flex items-center gap-1 md:gap-5">
+    <svg viewBox="0 0 60 100" className="h-10 w-5 sm:h-14 sm:w-8 md:h-24 md:w-14 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
       <path d="M50 5 Q20 30 25 95" />
       <path d="M45 18 Q30 22 28 32" />
       <path d="M40 32 Q25 36 23 46" />
@@ -15,10 +15,10 @@ const Laurel = ({ children }: { children: React.ReactNode }) => (
       <path d="M33 60 Q20 64 23 74" />
       <path d="M30 74 Q18 78 24 88" />
     </svg>
-    <div className="min-w-[80px] text-center text-xs font-semibold uppercase tracking-wider md:min-w-[110px] md:text-sm">
+    <div className="w-[75px] sm:w-[90px] md:min-w-[110px] text-center flex-shrink-0">
       {children}
     </div>
-    <svg viewBox="0 0 60 100" className="h-16 w-10 scale-x-[-1] md:h-24 md:w-14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
+    <svg viewBox="0 0 60 100" className="h-10 w-5 sm:h-14 sm:w-8 scale-x-[-1] md:h-24 md:w-14 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
       <path d="M50 5 Q20 30 25 95" />
       <path d="M45 18 Q30 22 28 32" />
       <path d="M40 32 Q25 36 23 46" />
@@ -105,11 +105,11 @@ export default function Welcome() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-80px" }}
           transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
-          className="mb-20 flex flex-wrap items-center justify-center gap-6 md:mb-28 md:gap-12"
+          className="mb-20 flex flex-nowrap md:flex-wrap items-center justify-between sm:justify-center md:justify-center gap-0.5 sm:gap-6 md:mb-28 md:gap-12 w-full"
         >
-          <Laurel><img src={aw1Img} alt="Award 1" className="h-10 md:h-14 mx-auto w-auto object-contain" style={{ filter: "brightness(0) invert(1)" }} /></Laurel>
-          <Laurel><img src={aw2Img} alt="Award 2" className="h-10 md:h-14 mx-auto w-auto object-contain" style={{ filter: "brightness(0) invert(1)" }} /></Laurel>
-          <Laurel><img src={aw3Img} alt="Award 3" className="h-10 md:h-14 mx-auto w-auto object-contain" style={{ filter: "brightness(0) invert(1)" }} /></Laurel>
+          <Laurel><img src={aw1Img} alt="Award 1" className="h-7 sm:h-12 md:h-14 mx-auto w-auto object-contain" style={{ filter: "brightness(0) invert(1)" }} /></Laurel>
+          <Laurel><img src={aw2Img} alt="Award 2" className="h-7 sm:h-12 md:h-14 mx-auto w-auto object-contain" style={{ filter: "brightness(0) invert(1)" }} /></Laurel>
+          <Laurel><img src={aw3Img} alt="Award 3" className="h-7 sm:h-12 md:h-14 mx-auto w-auto object-contain" style={{ filter: "brightness(0) invert(1)" }} /></Laurel>
         </motion.div>
 
         {/* Scroll-revealed headline */}

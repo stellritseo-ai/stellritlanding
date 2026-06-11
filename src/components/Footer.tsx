@@ -222,12 +222,12 @@ export default function Footer() {
         {/* Copyright */}
         <div
           ref={bottomRef}
-          className="mt-16 flex flex-col items-start gap-4 border-t border-white/10 pt-8 md:flex-row md:items-center md:justify-between"
+          className="mt-16 flex flex-col items-center gap-5 border-t border-white/10 pt-8 pb-20 md:pb-4 md:flex-row md:items-center md:justify-between"
         >
-          <span className="text-[14px] text-white/60">
+          <span className="text-[14px] text-white/60 text-center md:text-left">
             © StellR IT . All rights reserved {new Date().getFullYear()}
           </span>
-          <div className="flex items-center gap-8 text-[14px] text-white/70">
+          <div className="flex items-center gap-6 md:gap-8 text-[14px] text-white/70">
             <Link to="/privacy" className="transition-colors hover:text-[#ff8a5b]">Privacy Policy</Link>
             <Link to="/terms" className="transition-colors hover:text-[#ff8a5b]">Terms of Use</Link>
           </div>
@@ -235,10 +235,10 @@ export default function Footer() {
       </div>
 
       {/* Giant wordmark */}
-      <div className="overflow-hidden px-4 pb-4">
+      <div className="overflow-hidden px-2 sm:px-4 pb-4">
         <div
-          className="shimmer-text select-none whitespace-nowrap text-center font-sans font-black uppercase leading-[0.8] tracking-[0.25em] mr-[-0.25em] mt-[-10px] mb-[-33px]"
-          style={{ fontSize: "clamp(60px, 13vw, 220px)" }}
+          className="shimmer-text select-none whitespace-nowrap text-center font-sans font-black uppercase leading-[0.8] tracking-[0.1em] md:tracking-[0.25em] mr-[-0.1em] md:mr-[-0.25em] mt-[-5px] md:mt-[-10px] mb-[-15px] md:mb-[-33px]"
+          style={{ fontSize: "clamp(40px, 12vw, 220px)" }}
         >
           StellR IT
         </div>

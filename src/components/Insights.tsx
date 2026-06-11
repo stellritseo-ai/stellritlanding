@@ -35,7 +35,7 @@ export default function Insights({
   return (
     <section className={`relative z-10 px-6 md:px-12 lg:px-20 ${className}`}>
       <div className="mx-auto max-w-[1400px]">
-        <h2 className="mb-16 font-serif text-[64px] font-normal leading-[1.05] tracking-tight text-white md:text-[88px] lg:text-[110px]">
+        <h2 className="mb-16 font-serif text-[48px] font-normal leading-[1.05] tracking-tight text-white md:text-[64px] lg:text-[80px]">
           Insights and stories
         </h2>
 

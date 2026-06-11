@@ -33,6 +33,7 @@ const NAV: { label: string; to: string; children?: { label: string; to: string }
   { label: "Insights", to: "/insights" },
   { label: "Careers", to: "/careers" },
   { label: "Contact", to: "/contact" },
+  { label: "Pay Now", to: "https://buy.stripe.com/aEUg0X1pe7v52yI002" },
 ];
 
 const EASE = [0.76, 0, 0.24, 1] as const;
@@ -97,9 +98,16 @@ const fadeUp: Variants = {
   exit: { y: 20, opacity: 0, filter: "blur(6px)", transition: { duration: 0.35, ease: EASE } },
 };
 
+import { createPortal } from "react-dom";
+
 export default function MenuOverlay({ open, onClose }: { open: boolean; onClose: () => void }) {
   const [time, setTime] = useState(new Date());
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     if (!open) return;
@@ -131,7 +139,9 @@ export default function MenuOverlay({ open, onClose }: { open: boolean; onClose:
     };
   }, [open, onClose]);
 
-  return (
+  if (!mounted) return null;
+
+  return createPortal(
     <AnimatePresence>
       {open && (
         <motion.div
@@ -347,6 +357,7 @@ export default function MenuOverlay({ open, onClose }: { open: boolean; onClose:
           </motion.div>
         </motion.div>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body
   );
 }

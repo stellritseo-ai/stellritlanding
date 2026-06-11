@@ -12,7 +12,7 @@ const NAV = [
   { to: "/careers", label: "Careers" },
 ];
 
-export default function SiteHeader({ transparent = false, homepage = false }: { transparent?: boolean; homepage?: boolean }) {
+export default function SiteHeader({ transparent = false, homepage = false, hideNav = false }: { transparent?: boolean; homepage?: boolean; hideNav?: boolean }) {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -24,11 +24,7 @@ export default function SiteHeader({ transparent = false, homepage = false }: { 
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const positionClass = scrolled 
-    ? "fixed" 
-    : homepage 
-    ? "absolute" 
-    : "sticky";
+  const positionClass = transparent || homepage ? "fixed w-full" : "sticky w-full";
 
   return (
     <header
@@ -51,7 +47,7 @@ export default function SiteHeader({ transparent = false, homepage = false }: { 
             style={{ filter: "brightness(0) invert(1)" }}
           />
         </Link>
-        {!homepage && (
+        {!homepage && !hideNav && (
           <nav className="hidden items-center gap-6 lg:flex">
             {NAV.map((n) => (
               <Link

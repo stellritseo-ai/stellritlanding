@@ -1,82 +1,79 @@
 import { useRef, useEffect } from "react";
-import { motion } from "framer-motion";
+import { motion, useScroll, useSpring, useTransform, MotionValue } from "framer-motion";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 gsap.registerPlugin(ScrollTrigger);
 
+import logo1 from "@/assets/logos/logo-BX_kYZ7l.png";
+import logo2 from "@/assets/logos/logo-BqMKyS9S.png";
+import logo3 from "@/assets/logos/logo-BwGEonYb.png";
+import logo4 from "@/assets/logos/logo-DdbW9O7g.png";
+import logo5 from "@/assets/logos/logo-I6fgEckf.png";
+
 const STATS = [
-  { value: "230+", label: "Enterprise brands that have partnered with us" },
-  { value: "$95B", label: "Business sales we have been trusted with" },
-  { value: "92%", label: "Partner retention rate over seven years" },
-  { value: "62%", label: "Average boost in conversion rate" },
+  { value: "4.9", label: "Average rating on Google Reviews" },
+  { value: "50+", label: "Verified 5-star client testimonials" },
+  { value: "100%", label: "Commitment to client satisfaction" },
+  { value: "24/7", label: "Dedicated technical support" },
 ];
 
 const TESTIMONIALS = [
   {
-    quote:
-      "Isadora Agency brings empathy to human-computer interaction, setting them apart from other providers.",
-    brand: "KBB.COM",
-    brandSub: "Kelley Blue Book",
+    quote: "Stellr IT completely transformed our digital presence. Their team is incredibly responsive and delivered beyond our expectations.",
+    brand: "Sarah Jenkins",
+    logo: logo1,
     span: "md:col-span-2",
   },
   {
-    quote:
-      "Extraordinarily grateful for Isadora's dedication in propelling our brand forward.",
-    brand: "Popcornopolis",
-    brandClass: "font-serif italic text-[28px] text-white/90",
+    quote: "Exceptional service and deep technical expertise. They streamlined our entire workflow seamlessly.",
+    brand: "Michael Chen",
+    logo: logo2,
     span: "md:col-span-2",
   },
   {
-    quote:
-      "Transparent, responsive, and organized—ensuring success on time and within budget.",
-    brand: "NCCER",
-    brandClass: "font-bold tracking-wider text-[24px] text-white/90",
+    quote: "The best IT consulting firm we've worked with. Transparent, fast, and highly skilled.",
+    brand: "David R.",
+    logo: logo3,
   },
   {
-    quote: "Isadora transformed our vision into an award-winning website.",
-    brand: "logitech",
-    brandClass: "text-[24px] lowercase tracking-tight font-medium text-white/80",
+    quote: "They took our vision and built a stunning, high-converting platform. Highly recommend Stellr IT!",
+    brand: "Amanda P.",
+    logo: logo4,
   },
   {
-    quote: "They delivered exactly what we wanted. Highly recommend.",
-    brand: "✸ Razor",
-    brandClass: "font-bold text-[24px] text-white/90",
+    quote: "Professional, innovative, and reliable. A fantastic partner for any digital transformation project.",
+    brand: "James L.",
+    logo: logo5,
   },
 ];
 
 export default function Testimonials() {
   const gridRef = useRef<HTMLDivElement>(null);
-  const headingRef = useRef<HTMLHeadingElement>(null);
+  const textRef = useRef<HTMLHeadingElement>(null);
+
+  // Per-word reveal driven by scroll progress through the text block
+  const { scrollYProgress: textProgress } = useScroll({
+    target: textRef,
+    offset: ["start 0.85", "start 0.15"],
+  });
+  const smoothText = useSpring(textProgress, {
+    stiffness: 80,
+    damping: 28,
+    mass: 0.4,
+  });
+
+  const headline = "Leading brands turn to us at pivotal moments of digital evolution. Our global creative team fuses story, technology, and design to make experiences that captivate and convert.";
+  const words = headline.split(" ");
+  const highlightWords = ["team", "technology,", "design", "convert."];
 
   useEffect(() => {
     const grid = gridRef.current;
-    const heading = headingRef.current;
     if (!grid) return;
 
     const cards = gsap.utils.toArray<HTMLElement>(grid.children);
 
     const ctx = gsap.context(() => {
-      if (heading) {
-        gsap.fromTo(
-          heading,
-          {
-            y: 35,
-            opacity: 0,
-          },
-          {
-            y: 0,
-            opacity: 1,
-            duration: 1.2,
-            ease: "power3.out",
-            scrollTrigger: {
-              trigger: heading,
-              start: "top 85%",
-              toggleActions: "play none none none",
-            },
-          }
-        );
-      }
 
       gsap.fromTo(
         cards,
@@ -108,14 +105,14 @@ export default function Testimonials() {
   return (
     <section className="relative z-10 py-12 md:py-[70px] overflow-hidden">
       {/* Dynamic Background Glows */}
-      <div 
+      <div
         className="pointer-events-none absolute -right-60 top-1/3 h-[600px] w-[600px] rounded-full opacity-25"
         style={{
           background: "radial-gradient(circle, rgba(255,138,91,0.1), transparent 70%)",
           filter: "blur(80px)",
         }}
       />
-      <div 
+      <div
         className="pointer-events-none absolute -left-60 bottom-1/3 h-[500px] w-[500px] rounded-full opacity-20"
         style={{
           background: "radial-gradient(circle, rgba(168,85,247,0.08), transparent 70%)",
@@ -124,16 +121,22 @@ export default function Testimonials() {
       />
 
       <div className="mx-auto max-w-[1300px] px-6">
-        
+
         {/* Dynamic Editorial Heading */}
         <h2
-          ref={headingRef}
-          className="font-serif text-[22px] leading-[1.2] tracking-tight text-white/95 max-w-5xl sm:text-[28px] md:text-[38px] lg:text-[50px] opacity-0"
+          ref={textRef}
+          className="font-serif text-[22px] leading-[1.2] tracking-tight max-w-5xl sm:text-[28px] md:text-[38px] lg:text-[50px]"
         >
-          Leading brands turn to us at pivotal moments of digital evolution. Our
-          global creative <Highlight>team</Highlight> fuses story,{" "}
-          <Highlight>technology,</Highlight> and <Highlight>design</Highlight>{" "}
-          to make experiences that captivate and <Highlight>convert.</Highlight>
+          {words.map((w, i) => {
+            const start = i / words.length;
+            const end = start + 1 / words.length;
+            const isHighlight = highlightWords.includes(w);
+            return (
+              <Word key={i} progress={smoothText} range={[start, end]} isHighlight={isHighlight}>
+                {w}
+              </Word>
+            );
+          })}
         </h2>
 
         {/* Stats Dashboard Grid */}
@@ -147,8 +150,8 @@ export default function Testimonials() {
               transition={{ duration: 0.8, delay: i * 0.08, ease: [0.16, 1, 0.3, 1] }}
               className="flex flex-col relative group"
             >
-              <div 
-                className="absolute top-0 left-0 w-8 h-px transition-all duration-300 group-hover:w-16" 
+              <div
+                className="absolute top-0 left-0 w-8 h-px transition-all duration-300 group-hover:w-16"
                 style={{ background: "linear-gradient(90deg, #ff8a5b, #a855f7)" }}
               />
               <span className="font-serif text-[36px] md:text-[56px] lg:text-[64px] font-medium leading-none tracking-tight text-white mt-4 transition-colors duration-300 group-hover:text-[#ff8a5b]">
@@ -170,6 +173,7 @@ export default function Testimonials() {
             <TestimonialCard key={i} t={t} />
           ))}
         </div>
+
       </div>
     </section>
   );
@@ -195,7 +199,7 @@ function TestimonialCard({ t }: { t: typeof TESTIMONIALS[0] }) {
       className={`group relative ${t.span ?? "md:col-span-2"} overflow-hidden border-b border-r border-white/[0.08]`}
     >
       <div className="relative flex h-full flex-col justify-between p-8 md:p-10 min-h-[280px] md:min-h-[320px] transition-all duration-500 ease-out bg-[#070314]/20 group-hover:bg-[#0c0721]/30">
-        
+
         {/* Spotlight dynamic follow overlay */}
         <div
           className="pointer-events-none absolute -translate-x-1/2 -translate-y-1/2 h-[320px] w-[320px] rounded-full opacity-0 transition-opacity duration-500 ease-out blur-[40px] group-hover:opacity-100"
@@ -216,28 +220,34 @@ function TestimonialCard({ t }: { t: typeof TESTIMONIALS[0] }) {
 
         {/* Quote details */}
         <div className="relative z-10 transition-transform duration-500 group-hover:-translate-y-1">
+          {/* 5 Stars */}
+          <div className="flex gap-1.5 mb-5">
+            {[1, 2, 3, 4, 5].map((star) => (
+              <svg key={star} className="w-4 h-4 text-yellow-500 fill-current drop-shadow-[0_0_8px_rgba(234,179,8,0.4)]" viewBox="0 0 20 20">
+                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+              </svg>
+            ))}
+          </div>
           <p className="text-[15px] md:text-[16px] leading-[1.65] text-white/75 font-medium transition-colors duration-500 group-hover:text-white/95">
-            &ldquo;{t.quote}&rdquo;
+            "{t.quote}"
           </p>
         </div>
 
         {/* Citation details */}
-        <div className="relative z-10 mt-10 flex items-center justify-end transition-transform duration-500 group-hover:-translate-y-0.5">
-          {t.brandSub ? (
-            <div className="flex items-center gap-3 text-white">
-              <span className="grid h-9 w-9 place-items-center rounded bg-white/[0.06] border border-white/[0.08] text-[8px] font-bold leading-none tracking-tighter transition-colors duration-300 group-hover:border-white/20">
-                BLUE<br/>BOOK
-              </span>
-              <div className="leading-none">
-                <div className="text-[9px] uppercase tracking-widest text-[#ff8a5b] font-semibold">{t.brandSub}</div>
-                <div className="text-base font-bold tracking-wide mt-1">{t.brand}</div>
-              </div>
+        <div className="relative z-10 mt-10 flex items-center justify-between transition-transform duration-500 group-hover:-translate-y-0.5 border-t border-white/5 pt-5">
+          <div className="flex items-center gap-3">
+            <div className="h-10 w-10 rounded-full bg-gradient-to-br from-[#a855f7] to-[#ff8a5b] flex items-center justify-center text-white font-bold text-sm shadow-lg">
+              {t.brand.charAt(0)}
             </div>
-          ) : (
-            <span className={`${t.brandClass ?? "text-xl font-bold tracking-wide text-white/80"} transition-all duration-300 group-hover:text-white`}>
+            <span className="text-[15px] font-bold tracking-wide text-white/90">
               {t.brand}
             </span>
-          )}
+          </div>
+
+          {/* Client Logo Indicator */}
+          <div className="flex items-center justify-center">
+            <img src={t.logo} alt={`${t.brand} logo`} className="h-8 md:h-10 max-w-[100px] object-contain brightness-0 invert opacity-60 transition-all duration-500 group-hover:opacity-100" />
+          </div>
         </div>
 
       </div>
@@ -247,7 +257,7 @@ function TestimonialCard({ t }: { t: typeof TESTIMONIALS[0] }) {
 
 function Highlight({ children }: { children: React.ReactNode }) {
   return (
-    <span 
+    <span
       className="relative inline-block italic font-serif font-normal text-transparent bg-clip-text"
       style={{
         background: "linear-gradient(135deg, #ff8a5b 0%, #c084fc 50%, #a855f7 100%)",
@@ -256,6 +266,39 @@ function Highlight({ children }: { children: React.ReactNode }) {
       }}
     >
       {children}
+    </span>
+  );
+}
+
+function Word({
+  children,
+  progress,
+  range,
+  isHighlight
+}: {
+  children: string;
+  progress: MotionValue<number>;
+  range: [number, number];
+  isHighlight?: boolean;
+}) {
+  const opacity = useTransform(progress, range, [0.2, 1]);
+  return (
+    <span className="relative mr-[0.25em] inline-block">
+      <span className="text-white/15">{children}</span>
+      <motion.span
+        className={`absolute left-0 top-0 inline-block ${isHighlight ? "italic font-serif font-normal" : "text-white"}`}
+        style={{
+          opacity,
+          willChange: "opacity",
+          ...(isHighlight ? {
+            background: "linear-gradient(135deg, #ff8a5b 0%, #c084fc 50%, #a855f7 100%)",
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent"
+          } : {})
+        }}
+      >
+        {children}
+      </motion.span>
     </span>
   );
 }
