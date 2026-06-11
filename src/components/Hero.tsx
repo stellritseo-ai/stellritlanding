@@ -74,6 +74,18 @@ import logoDuk from "@/assets/logos/logo-DUKsLZX9.png";
 import logoPng from "@/assets/logos/logo.png";
 import logoTsr from "@/assets/logos/tsr.png";
 
+// New logos
+import logoImg507 from "@/assets/logos/Image-507.png";
+import logoCropped from "@/assets/logos/cropped-logo.png";
+import logoBx from "@/assets/logos/logo-BX_kYZ7l.png";
+import logoBq from "@/assets/logos/logo-BqMKyS9S.png";
+import logoBw from "@/assets/logos/logo-BwGEonYb.png";
+import logoCma from "@/assets/logos/logo-CMAon1t6.png";
+import logoDdb from "@/assets/logos/logo-DdbW9O7g.png";
+import logoI6 from "@/assets/logos/logo-I6fgEckf.png";
+import logoNays from "@/assets/logos/logo-nayshands.png";
+import logoWhite from "@/assets/logos/logo-white-DNQTDUZa.png";
+
 const CLIENT_LOGOS = [
   logo1,
   logoImage660,
@@ -84,6 +96,16 @@ const CLIENT_LOGOS = [
   logoDuk,
   logoPng,
   logoTsr,
+  logoImg507,
+  logoCropped,
+  logoBx,
+  logoBq,
+  logoBw,
+  logoCma,
+  logoDdb,
+  logoI6,
+  logoNays,
+  logoWhite,
 ];
 
 const CENTER_VIDEO =
@@ -303,7 +325,7 @@ export default function Hero() {
                       <img
                         src={logo}
                         alt={`Client Logo ${i}`}
-                        className="h-14 lg:h-16 w-auto max-w-[120px] lg:max-w-[150px] object-contain opacity-85 hover:opacity-100 transition-opacity duration-300"
+                        className="h-14 lg:h-16 w-auto max-w-[120px] lg:max-w-[150px] object-contain opacity-80 hover:opacity-100 transition-opacity duration-300 brightness-0 invert"
                       />
                     </div>
                   ))}
