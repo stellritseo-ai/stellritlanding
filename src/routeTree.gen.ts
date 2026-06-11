@@ -18,6 +18,10 @@ import { Route as CaseStudiesRouteImport } from './routes/case-studies'
 import { Route as CareersRouteImport } from './routes/careers'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as CaseStudiesIndexRouteImport } from './routes/case-studies.index'
+import { Route as CaseStudiesUxUiConversionsRouteImport } from './routes/case-studies.ux-ui-conversions'
+import { Route as CaseStudiesImpressionsToClicksRouteImport } from './routes/case-studies.impressions-to-clicks'
+import { Route as CaseStudiesCybersecurityZeroTrustRouteImport } from './routes/case-studies.cybersecurity-zero-trust'
 import { Route as CaseStudiesSlugRouteImport } from './routes/case-studies.$slug'
 
 const TermsRoute = TermsRouteImport.update({
@@ -65,6 +69,29 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CaseStudiesIndexRoute = CaseStudiesIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => CaseStudiesRoute,
+} as any)
+const CaseStudiesUxUiConversionsRoute =
+  CaseStudiesUxUiConversionsRouteImport.update({
+    id: '/ux-ui-conversions',
+    path: '/ux-ui-conversions',
+    getParentRoute: () => CaseStudiesRoute,
+  } as any)
+const CaseStudiesImpressionsToClicksRoute =
+  CaseStudiesImpressionsToClicksRouteImport.update({
+    id: '/impressions-to-clicks',
+    path: '/impressions-to-clicks',
+    getParentRoute: () => CaseStudiesRoute,
+  } as any)
+const CaseStudiesCybersecurityZeroTrustRoute =
+  CaseStudiesCybersecurityZeroTrustRouteImport.update({
+    id: '/cybersecurity-zero-trust',
+    path: '/cybersecurity-zero-trust',
+    getParentRoute: () => CaseStudiesRoute,
+  } as any)
 const CaseStudiesSlugRoute = CaseStudiesSlugRouteImport.update({
   id: '/$slug',
   path: '/$slug',
@@ -82,18 +109,25 @@ export interface FileRoutesByFullPath {
   '/services': typeof ServicesRoute
   '/terms': typeof TermsRoute
   '/case-studies/$slug': typeof CaseStudiesSlugRoute
+  '/case-studies/cybersecurity-zero-trust': typeof CaseStudiesCybersecurityZeroTrustRoute
+  '/case-studies/impressions-to-clicks': typeof CaseStudiesImpressionsToClicksRoute
+  '/case-studies/ux-ui-conversions': typeof CaseStudiesUxUiConversionsRoute
+  '/case-studies/': typeof CaseStudiesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/careers': typeof CareersRoute
-  '/case-studies': typeof CaseStudiesRouteWithChildren
   '/contact': typeof ContactRoute
   '/insights': typeof InsightsRoute
   '/privacy': typeof PrivacyRoute
   '/services': typeof ServicesRoute
   '/terms': typeof TermsRoute
   '/case-studies/$slug': typeof CaseStudiesSlugRoute
+  '/case-studies/cybersecurity-zero-trust': typeof CaseStudiesCybersecurityZeroTrustRoute
+  '/case-studies/impressions-to-clicks': typeof CaseStudiesImpressionsToClicksRoute
+  '/case-studies/ux-ui-conversions': typeof CaseStudiesUxUiConversionsRoute
+  '/case-studies': typeof CaseStudiesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -107,6 +141,10 @@ export interface FileRoutesById {
   '/services': typeof ServicesRoute
   '/terms': typeof TermsRoute
   '/case-studies/$slug': typeof CaseStudiesSlugRoute
+  '/case-studies/cybersecurity-zero-trust': typeof CaseStudiesCybersecurityZeroTrustRoute
+  '/case-studies/impressions-to-clicks': typeof CaseStudiesImpressionsToClicksRoute
+  '/case-studies/ux-ui-conversions': typeof CaseStudiesUxUiConversionsRoute
+  '/case-studies/': typeof CaseStudiesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -121,18 +159,25 @@ export interface FileRouteTypes {
     | '/services'
     | '/terms'
     | '/case-studies/$slug'
+    | '/case-studies/cybersecurity-zero-trust'
+    | '/case-studies/impressions-to-clicks'
+    | '/case-studies/ux-ui-conversions'
+    | '/case-studies/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/about'
     | '/careers'
-    | '/case-studies'
     | '/contact'
     | '/insights'
     | '/privacy'
     | '/services'
     | '/terms'
     | '/case-studies/$slug'
+    | '/case-studies/cybersecurity-zero-trust'
+    | '/case-studies/impressions-to-clicks'
+    | '/case-studies/ux-ui-conversions'
+    | '/case-studies'
   id:
     | '__root__'
     | '/'
@@ -145,6 +190,10 @@ export interface FileRouteTypes {
     | '/services'
     | '/terms'
     | '/case-studies/$slug'
+    | '/case-studies/cybersecurity-zero-trust'
+    | '/case-studies/impressions-to-clicks'
+    | '/case-studies/ux-ui-conversions'
+    | '/case-studies/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -224,6 +273,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/case-studies/': {
+      id: '/case-studies/'
+      path: '/'
+      fullPath: '/case-studies/'
+      preLoaderRoute: typeof CaseStudiesIndexRouteImport
+      parentRoute: typeof CaseStudiesRoute
+    }
+    '/case-studies/ux-ui-conversions': {
+      id: '/case-studies/ux-ui-conversions'
+      path: '/ux-ui-conversions'
+      fullPath: '/case-studies/ux-ui-conversions'
+      preLoaderRoute: typeof CaseStudiesUxUiConversionsRouteImport
+      parentRoute: typeof CaseStudiesRoute
+    }
+    '/case-studies/impressions-to-clicks': {
+      id: '/case-studies/impressions-to-clicks'
+      path: '/impressions-to-clicks'
+      fullPath: '/case-studies/impressions-to-clicks'
+      preLoaderRoute: typeof CaseStudiesImpressionsToClicksRouteImport
+      parentRoute: typeof CaseStudiesRoute
+    }
+    '/case-studies/cybersecurity-zero-trust': {
+      id: '/case-studies/cybersecurity-zero-trust'
+      path: '/cybersecurity-zero-trust'
+      fullPath: '/case-studies/cybersecurity-zero-trust'
+      preLoaderRoute: typeof CaseStudiesCybersecurityZeroTrustRouteImport
+      parentRoute: typeof CaseStudiesRoute
+    }
     '/case-studies/$slug': {
       id: '/case-studies/$slug'
       path: '/$slug'
@@ -236,10 +313,19 @@ declare module '@tanstack/react-router' {
 
 interface CaseStudiesRouteChildren {
   CaseStudiesSlugRoute: typeof CaseStudiesSlugRoute
+  CaseStudiesCybersecurityZeroTrustRoute: typeof CaseStudiesCybersecurityZeroTrustRoute
+  CaseStudiesImpressionsToClicksRoute: typeof CaseStudiesImpressionsToClicksRoute
+  CaseStudiesUxUiConversionsRoute: typeof CaseStudiesUxUiConversionsRoute
+  CaseStudiesIndexRoute: typeof CaseStudiesIndexRoute
 }
 
 const CaseStudiesRouteChildren: CaseStudiesRouteChildren = {
   CaseStudiesSlugRoute: CaseStudiesSlugRoute,
+  CaseStudiesCybersecurityZeroTrustRoute:
+    CaseStudiesCybersecurityZeroTrustRoute,
+  CaseStudiesImpressionsToClicksRoute: CaseStudiesImpressionsToClicksRoute,
+  CaseStudiesUxUiConversionsRoute: CaseStudiesUxUiConversionsRoute,
+  CaseStudiesIndexRoute: CaseStudiesIndexRoute,
 }
 
 const CaseStudiesRouteWithChildren = CaseStudiesRoute._addFileChildren(

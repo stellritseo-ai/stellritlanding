@@ -81,35 +81,35 @@ export default function PartnershipModels() {
   const ActiveIcon = activeModel.icon;
 
   return (
-    <section className="relative z-10 px-4 py-12 sm:px-6 md:px-12 lg:px-20 md:py-[70px] overflow-hidden">
+    <section className="relative z-10 px-4 py-8 sm:px-6 md:px-12 lg:px-20 md:py-10 md:h-screen md:min-h-[600px] md:max-h-[850px] flex flex-col justify-center overflow-hidden">
       {/* Background dynamic radial glow linked to the active tab */}
       <div
-        className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[700px] w-[700px] rounded-full transition-all duration-1000 ease-in-out opacity-70"
+        className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[600px] w-[600px] rounded-full transition-all duration-1000 ease-in-out opacity-70"
         style={{
           background: `radial-gradient(circle, ${activeModel.accentGlow}, transparent 65%)`,
           filter: "blur(80px)",
         }}
       />
 
-      <div className="mx-auto max-w-[1400px]">
+      <div className="mx-auto max-w-[1400px] w-full">
         {/* Header Section */}
         <div className="max-w-3xl">
-          <span className="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.5em] text-[#ff8a5b] font-medium mb-3">
+          <span className="inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.5em] text-[#ff8a5b] font-medium mb-2">
             <span className="w-1.5 h-1.5 rounded-full bg-[#ff8a5b]" />
             How we partner
           </span>
-          <h2 className="font-serif text-[28px] leading-[1.08] tracking-tight text-white sm:text-[36px] md:text-[46px] lg:text-[58px]">
+          <h2 className="font-serif text-[28px] leading-[1.08] tracking-tight text-white sm:text-[34px] md:text-[42px] lg:text-[50px]">
             Transparent models,
-            <span className="text-white/40 italic font-normal">built for velocity.</span>
+            <span className="text-white/40 italic font-normal"> built for velocity.</span>
           </h2>
-          <p className="mt-6 text-[15px] md:text-[17px] leading-[1.65] text-white/55 max-w-xl">
+          <p className="mt-3 text-[14px] md:text-[15px] leading-[1.5] text-white/55 max-w-xl">
             We replace bloated agency retainers and junior account management with three transparent, execution-focused engagement structures.
           </p>
         </div>
 
         {/* Apple-style Dock Tab Selector */}
-          <div className="mt-0 flex justify-start overflow-x-auto pb-2">
-            <div className="p-1.5 bg-[#171127]/60 border border-white/[0.04] backdrop-blur-xl rounded-full flex gap-1 mt-0 flex-shrink-0">
+          <div className="mt-3 flex justify-start overflow-x-auto pb-2">
+            <div className="p-1.5 bg-[#171127]/60 border border-white/[0.04] backdrop-blur-xl rounded-full flex gap-1 flex-shrink-0">
             {MODELS.map((model) => {
               const Icon = model.icon;
               const isActive = model.id === activeTab;
@@ -139,7 +139,7 @@ export default function PartnershipModels() {
         </div>
 
         {/* Dynamic Details Card & Layout */}
-        <div className="mt-10 min-h-[520px]">
+        <div className="mt-6 min-h-[420px]">
           <AnimatePresence mode="wait">
             <motion.div
               key={activeTab}
@@ -147,7 +147,7 @@ export default function PartnershipModels() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -15 }}
               transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-              className="grid grid-cols-1 gap-12 border-t border-white/[0.08] pt-12 lg:grid-cols-[1.15fr_0.85fr] lg:pt-16 lg:gap-24"
+              className="grid grid-cols-1 gap-8 border-t border-white/[0.08] pt-6 lg:grid-cols-[1.15fr_0.85fr] lg:pt-8 lg:gap-16"
             >
               {/* Left Column: Details & Metric Dashboard */}
               <div className="flex flex-col justify-between">
@@ -175,23 +175,23 @@ export default function PartnershipModels() {
                   </div>
 
                   {/* Model Description */}
-                  <p className="mt-8 text-[15px] md:text-base leading-relaxed text-white/75 max-w-2xl">
+                  <p className="mt-4 text-[14px] md:text-[15px] leading-relaxed text-white/75 max-w-2xl">
                     {activeModel.description}
                   </p>
 
                   {/* Dashboard Metrics Cards */}
-                  <div className="mt-12 grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2">
                     {/* Budget Card */}
-                    <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/[0.06] backdrop-blur-sm relative overflow-hidden group hover:border-white/[0.1] transition-all duration-300">
+                    <div className="p-4 rounded-2xl bg-white/[0.02] border border-white/[0.06] backdrop-blur-sm relative overflow-hidden group hover:border-white/[0.1] transition-all duration-300">
                       <div
                         className="absolute top-0 left-0 h-1 w-full opacity-60 transition-transform duration-500 origin-left scale-x-0 group-hover:scale-x-100"
                         style={{ background: activeModel.accentColor }}
                       />
-                      <span className="text-[10px] uppercase tracking-widest text-[#ff8a5b] font-semibold flex items-center gap-1.5">
+                      <span className="text-[9px] uppercase tracking-widest text-[#ff8a5b] font-semibold flex items-center gap-1.5">
                         <ShieldCheck className="h-3 w-3" /> EXPECTED INVESTMENT
                       </span>
-                      <div className="mt-3 flex items-baseline gap-1.5">
-                        <span className="font-serif text-3xl md:text-4xl text-white font-medium tracking-tight">
+                      <div className="mt-2 flex items-baseline gap-1.5">
+                        <span className="font-serif text-2xl md:text-3xl text-white font-medium tracking-tight">
                           {activeModel.budget}
                         </span>
                         <span className="text-xs text-white/45 font-medium">
@@ -201,16 +201,16 @@ export default function PartnershipModels() {
                     </div>
 
                     {/* Timeline Card */}
-                    <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/[0.06] backdrop-blur-sm relative overflow-hidden group hover:border-white/[0.1] transition-all duration-300">
+                    <div className="p-4 rounded-2xl bg-white/[0.02] border border-white/[0.06] backdrop-blur-sm relative overflow-hidden group hover:border-white/[0.1] transition-all duration-300">
                       <div
                         className="absolute top-0 left-0 h-1 w-full opacity-60 transition-transform duration-500 origin-left scale-x-0 group-hover:scale-x-100"
                         style={{ background: activeModel.accentColor }}
                       />
-                      <span className="text-[10px] uppercase tracking-widest text-[#ff8a5b] font-semibold flex items-center gap-1.5">
+                      <span className="text-[9px] uppercase tracking-widest text-[#ff8a5b] font-semibold flex items-center gap-1.5">
                         <Clock className="h-3.5 w-3.5" /> TYPICAL TIMELINE
                       </span>
-                      <div className="mt-3 flex items-baseline gap-1.5">
-                        <span className="font-serif text-3xl md:text-4xl text-white font-medium tracking-tight">
+                      <div className="mt-2 flex items-baseline gap-1.5">
+                        <span className="font-serif text-2xl md:text-3xl text-white font-medium tracking-tight">
                           {activeModel.timeline}
                         </span>
                         <span className="text-xs text-white/45 font-medium">
@@ -220,7 +220,7 @@ export default function PartnershipModels() {
                     </div>
 
                     {/* Team Allocation Card */}
-                    <div className="sm:col-span-2 p-6 rounded-2xl bg-white/[0.01] border border-white/[0.04] backdrop-blur-sm flex items-start gap-4">
+                    <div className="sm:col-span-2 p-4 rounded-2xl bg-white/[0.01] border border-white/[0.04] backdrop-blur-sm flex items-start gap-4">
                       <div className="p-2 rounded-xl bg-white/[0.03] text-white/50 mt-0.5">
                         <Users className="h-4 w-4" />
                       </div>
@@ -228,7 +228,7 @@ export default function PartnershipModels() {
                         <span className="text-[9px] uppercase tracking-widest text-white/40 font-semibold">
                           TEAM ALLOCATION
                         </span>
-                        <p className="mt-1.5 text-sm md:text-[15px] text-white/85 font-medium leading-relaxed">
+                        <p className="mt-1 text-xs md:text-sm text-white/85 font-medium leading-relaxed">
                           {activeModel.team}
                         </p>
                       </div>
@@ -237,17 +237,17 @@ export default function PartnershipModels() {
                 </div>
 
                 {/* Discuss CTA Action Button */}
-                <div className="mt-12 lg:mt-16">
+                <div className="mt-6 lg:mt-8">
                   <Link
                     to="/contact"
-                    className="group inline-flex items-center gap-3.5 rounded-full border border-white/10 bg-white/5 px-9 py-4.5 text-sm font-semibold text-white backdrop-blur-md transition-all duration-300 hover:border-white/20 hover:bg-white/10 hover:shadow-[0_0_35px_rgba(255,255,255,0.06)]"
+                    className="group inline-flex items-center gap-3 rounded-full border border-white/10 bg-white/5 px-7 py-3 text-xs md:text-sm font-semibold text-white backdrop-blur-md transition-all duration-300 hover:border-white/20 hover:bg-white/10 hover:shadow-[0_0_35px_rgba(255,255,255,0.06)]"
                   >
                     Discuss this model
                     <span
-                      className="grid h-8 w-8 place-items-center rounded-full text-white transition-all duration-500 group-hover:scale-110 group-hover:rotate-45"
+                      className="grid h-7 w-7 place-items-center rounded-full text-white transition-all duration-500 group-hover:scale-110 group-hover:rotate-45"
                       style={{ background: `linear-gradient(135deg, ${activeModel.accentColor}, #7c2dd9)` }}
                     >
-                      <ArrowUpRight className="h-4 w-4" />
+                      <ArrowUpRight className="h-3.5 w-3.5" />
                     </span>
                   </Link>
                 </div>
@@ -255,18 +255,18 @@ export default function PartnershipModels() {
 
               {/* Right Column: Premium Deliverables Card */}
               <div className="relative self-start rounded-3xl p-px overflow-hidden bg-gradient-to-b from-white/[0.08] to-transparent">
-                <div className="rounded-[23px] bg-[#0c061d]/90 border border-white/[0.02] backdrop-blur-xl p-8 md:p-10">
-                  <h4 className="font-serif text-xl md:text-2xl text-white tracking-tight pb-5 border-b border-white/[0.08]">
+                <div className="rounded-[23px] bg-[#0c061d]/90 border border-white/[0.02] backdrop-blur-xl p-6 md:p-8">
+                  <h4 className="font-serif text-lg md:text-xl text-white tracking-tight pb-3 border-b border-white/[0.08]">
                     Key Deliverables
                   </h4>
-                  <ul className="mt-8 space-y-6">
+                  <ul className="mt-6 space-y-4">
                     {activeModel.features.map((feature, idx) => (
                       <motion.li
                         key={feature}
                         initial={{ opacity: 0, x: 10 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ duration: 0.3, delay: idx * 0.06 }}
-                        className="flex items-start gap-4 text-sm md:text-[15px] text-white/70 leading-relaxed"
+                        className="flex items-start gap-3.5 text-xs md:text-sm text-white/70 leading-relaxed"
                       >
                         <span
                           className="grid h-5.5 w-5.5 shrink-0 place-items-center rounded-full border text-white mt-0.5 transition-all duration-300"

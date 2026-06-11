@@ -2,10 +2,9 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { Link } from "@tanstack/react-router";
 import { ArrowUpRight } from "lucide-react";
-import liveNation from "@/assets/case-livenation.jpg";
-import upli from "@/assets/case-upli.jpg";
-import tilton from "@/assets/case-tilton.jpg";
-import newscorp from "@/assets/case-newscorp.jpg";
+import imgAnalytics from "@/assets/conver.webp";
+import imgFintech from "@/assets/uxui.png";
+import imgCyber from "@/assets/cyber.jpg";
 
 type Study = {
   slug: string;
@@ -22,49 +21,37 @@ type Study = {
 
 const STUDIES: Study[] = [
   {
-    slug: "livenation",
-    title: "LiveNation",
-    subtitle: "Bold, Interactive Live Entertainment",
-    tags: ["Concept", "Mobile First Design", "UX/UI"],
-    image: liveNation,
+    slug: "impressions-to-clicks",
+    title: "Converting Impressions to Clicks",
+    subtitle: "Converting ad impressions into action for National Home Services",
+    tags: ["SEM Strategy", "A/B Testing", "Conversion Rate", "SEO"],
+    image: imgAnalytics,
     ratio: "aspect-[16/10]",
     align: "left",
     accentColor: "#a855f7",
     glowColor: "rgba(168, 85, 247, 0.15)",
   },
   {
-    slug: "upli",
-    title: "Upli",
-    subtitle: "Financial Wellness at your Fingertips",
-    tags: ["App UI Design", "Mobile App Strategy", "Mobile App Design"],
-    image: upli,
+    slug: "ux-ui-conversions",
+    title: "How UX/UI Increases Conversion Rates",
+    subtitle: "Redesigning Finvise to reduce bounce rates and maximize signups",
+    tags: ["UX/UI Design", "Frictionless Checkout", "Conversion Optimization"],
+    image: imgFintech,
     ratio: "aspect-[9/11]",
     align: "right",
-    offsetY: "md:mt-24",
-    accentColor: "#ff8a5b",
-    glowColor: "rgba(255, 138, 91, 0.12)",
+    offsetY: "md:mt-12 lg:mt-16",
+    accentColor: "#10b981", // Emerald to match the new case study theme
+    glowColor: "rgba(16, 185, 129, 0.15)",
   },
   {
-    slug: "tilton",
-    title: "Tilton School",
-    subtitle: "Encouraging Enrollment through Authenticity",
-    tags: ["Art Direction", "Communication Strategy", "Content Strategy"],
-    image: tilton,
-    ratio: "aspect-[9/11]",
-    align: "left",
-    offsetY: "md:-mt-[450px]",
-    accentColor: "#eab308",
-    glowColor: "rgba(234, 179, 8, 0.12)",
-  },
-  {
-    slug: "newscorp",
-    title: "News Corp",
-    subtitle: "A Better Benefits Selection Experience",
-    tags: ["Strategy", "Web Audit", "UX/UI"],
-    image: newscorp,
+    slug: "cybersecurity-zero-trust",
+    title: "Cybersecurity – Zero Trust for a Financial Institution",
+    subtitle: "Deploying complete security framework for Meridian Trust Bank",
+    tags: ["Zero Trust Network", "Multi-Factor Authentication", "Compliance", "SIEM"],
+    image: imgCyber,
     ratio: "aspect-[16/11]",
-    align: "right",
-    offsetY: "md:-mt-[30px]",
+    align: "left",
+    offsetY: "md:-mt-[425px]",
     accentColor: "#38bdf8",
     glowColor: "rgba(56, 189, 248, 0.12)",
   },
@@ -72,7 +59,7 @@ const STUDIES: Study[] = [
 
 export default function CaseStudies() {
   return (
-    <section className="relative z-10 py-12 md:py-[70px] overflow-hidden">
+    <section className="relative z-10 py-10 md:py-14 overflow-hidden">
       {/* Background ambient glows */}
       <div
         className="pointer-events-none absolute -left-40 top-1/4 h-[600px] w-[600px] rounded-full opacity-30"
@@ -89,27 +76,27 @@ export default function CaseStudies() {
         }}
       />
 
-      <div className="mx-auto max-w-[1300px] px-6">
+      <div className="mx-auto max-w-[1150px] px-6">
         {/* Section Title */}
-        <div className="max-w-4xl mb-12 md:mb-20 lg:mb-28">
+        <div className="max-w-4xl mb-10 md:mb-14">
           <span className="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.5em] text-[#ff8a5b] font-medium mb-3">
             <span className="w-1.5 h-1.5 rounded-full bg-[#ff8a5b]" />
             Case Studies
           </span>
-          <h2 className="font-serif text-[32px] leading-[1.05] tracking-tight text-white sm:text-[44px] md:text-[60px] lg:text-[76px]">
+          <h2 className="font-serif text-[32px] leading-[1.05] tracking-tight text-white sm:text-[44px] md:text-[60px] lg:text-[72px]">
             Selected digital <span className="text-white/40 italic font-normal">craftsmanship.</span>
           </h2>
         </div>
 
         {/* Dynamic Grid */}
-        <div className="grid grid-cols-1 gap-x-12 gap-y-24 md:grid-cols-2 md:gap-y-12">
+        <div className="grid grid-cols-1 gap-x-10 gap-y-16 md:grid-cols-2 md:gap-y-10">
           {STUDIES.map((s, i) => (
             <CaseCard key={s.title} study={s} index={i} />
           ))}
         </div>
 
         {/* Global CTA */}
-        <div className="mt-[-60px] flex justify-start">
+        <div className="mt-[14px] flex justify-start">
           <Link
             to="/case-studies"
             className="group inline-flex items-center gap-3.5 rounded-full border border-white/10 bg-white/5 px-9 py-4.5 text-sm font-semibold text-white backdrop-blur-md transition-all duration-300 hover:border-white/20 hover:bg-white/10 hover:shadow-[0_0_35px_rgba(255,255,255,0.06)]"
@@ -128,17 +115,23 @@ export default function CaseStudies() {
 function CaseCard({ study, index }: { study: Study; index: number }) {
   const [isHovered, setIsHovered] = useState(false);
 
+  const isLinked = study.slug === "impressions-to-clicks" || study.slug === "ux-ui-conversions" || study.slug === "cybersecurity-zero-trust";
+  const Wrapper = isLinked ? Link : "div";
+  const wrapperProps = isLinked
+    ? { to: `/case-studies/${study.slug}` as any, className: "block" }
+    : { className: "block" };
+
   return (
     <motion.article
       initial={{ opacity: 0, y: 40 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-85px" }}
       transition={{ duration: 0.8, delay: index * 0.05, ease: [0.16, 1, 0.3, 1] }}
-      className={`group relative ${study.offsetY ?? ""}`}
+      className={`group relative ${study.offsetY ?? ""} ${isLinked ? "cursor-pointer" : ""}`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <Link to="/case-studies/$slug" params={{ slug: study.slug }} className="block">
+      <Wrapper {...(wrapperProps as any)}>
         {/* Image Card Frame */}
         <div
           className={`overflow-hidden rounded-2xl ${study.ratio} relative border border-white/[0.06] bg-[#0c061d] transition-all duration-500 ease-out`}
@@ -206,7 +199,7 @@ function CaseCard({ study, index }: { study: Study; index: number }) {
             {study.subtitle}
           </p>
         </div>
-      </Link>
+      </Wrapper>
     </motion.article>
   );
 }
