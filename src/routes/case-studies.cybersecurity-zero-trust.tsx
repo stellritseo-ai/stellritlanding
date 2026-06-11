@@ -177,7 +177,7 @@ function CyberSecurityPage() {
 
             {/* Back link */}
             <Link
-              to="/case-studies/"
+              to="/case-studies"
               className="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.35em] text-white/45 hover:text-white transition-colors duration-300 mb-16"
             >
               <ArrowLeft className="h-3 w-3" /> All case studies
