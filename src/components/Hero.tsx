@@ -64,48 +64,32 @@ function HeroVideoFrame() {
 import { Link } from "@tanstack/react-router";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import logoImg from "@/assets/logo.png";
-import logo1 from "@/assets/logos/1.png";
-import logoImage660 from "@/assets/logos/Image-660.png";
-import logoP1 from "@/assets/logos/Logo (1).png";
-import logoP2 from "@/assets/logos/Logo (2).png";
-import logoP3 from "@/assets/logos/Logo (3).png";
-import logoSite from "@/assets/logos/Site-Logo.png";
-import logoDuk from "@/assets/logos/logo-DUKsLZX9.png";
-import logoPng from "@/assets/logos/logo.png";
-import logoTsr from "@/assets/logos/tsr.png";
-
-// New logos
-import logoImg507 from "@/assets/logos/Image-507.png";
-import logoCropped from "@/assets/logos/cropped-logo.png";
-import logoBx from "@/assets/logos/logo-BX_kYZ7l.png";
-import logoBq from "@/assets/logos/logo-BqMKyS9S.png";
-import logoBw from "@/assets/logos/logo-BwGEonYb.png";
-import logoCma from "@/assets/logos/logo-CMAon1t6.png";
-import logoDdb from "@/assets/logos/logo-DdbW9O7g.png";
-import logoI6 from "@/assets/logos/logo-I6fgEckf.png";
-import logoNays from "@/assets/logos/logo-nayshands.png";
-import logoWhite from "@/assets/logos/logo-white-DNQTDUZa.png";
+import logo1 from "@/assets/logos/logo (1).png";
+import logo2 from "@/assets/logos/Logo.png";
+import logo3 from "@/assets/logos/cropped-logo.png";
+import logo4 from "@/assets/logos/Image-507.png";
+import logo5 from "@/assets/logos/logo-BX_kYZ7l.png";
+import logo6 from "@/assets/logos/logo-BqMKyS9S.png";
+import logo7 from "@/assets/logos/logo-BwGEonYb.png";
+import logo8 from "@/assets/logos/logo-CMAon1t6 (1).png";
+import logo9 from "@/assets/logos/logo-DdbW9O7g.png";
+import logo10 from "@/assets/logos/logo-I6fgEckf.png";
+import logo11 from "@/assets/logos/logo-nayshands.png";
+import logo12 from "@/assets/logos/logo-white-DNQTDUZa.png";
 
 const CLIENT_LOGOS = [
   logo1,
-  logoImage660,
-  logoP1,
-  logoP2,
-  logoP3,
-  logoSite,
-  logoDuk,
-  logoPng,
-  logoTsr,
-  logoImg507,
-  logoCropped,
-  logoBx,
-  logoBq,
-  logoBw,
-  logoCma,
-  logoDdb,
-  logoI6,
-  logoNays,
-  logoWhite,
+  logo2,
+  logo3,
+  logo4,
+  logo5,
+  logo6,
+  logo7,
+  logo8,
+  logo9,
+  logo10,
+  logo11,
+  logo12,
 ];
 
 const CENTER_VIDEO =
@@ -325,7 +309,8 @@ export default function Hero() {
                       <img
                         src={logo}
                         alt={`Client Logo ${i}`}
-                        className="h-14 lg:h-16 w-auto max-w-[120px] lg:max-w-[150px] object-contain opacity-80 hover:opacity-100 transition-opacity duration-300 brightness-0 invert"
+                        className="h-14 lg:h-16 w-auto max-w-[120px] lg:max-w-[150px] object-contain opacity-85 hover:opacity-100 transition-opacity duration-300"
+                        style={{ filter: "brightness(0) invert(1)" }}
                       />
                     </div>
                   ))}
