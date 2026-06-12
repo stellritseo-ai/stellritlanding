@@ -63,6 +63,7 @@ function HeroVideoFrame() {
 }
 import { Link } from "@tanstack/react-router";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
+import { TransparentVideo } from "./TransparentVideo";
 import logoImg from "@/assets/logo.png";
 import logo1 from "@/assets/logos/logo (1).png";
 import logo2 from "@/assets/logos/logo.png";
@@ -189,13 +190,9 @@ export default function Hero() {
     return (
       <div className="relative h-screen w-full overflow-hidden noise-overlay">
         <div className="relative flex flex-col items-center justify-center px-6 pt-24 text-center">
-          <div className="pointer-events-none relative mt-[80px] h-[440px] w-[440px] md:h-[440px] md:w-[440px] z-[99]" style={{ mixBlendMode: "screen" }}>
-            <video
+          <div className="pointer-events-none relative mt-[80px] h-[440px] w-[440px] md:h-[440px] md:w-[440px] z-[99]">
+            <TransparentVideo
               src={CENTER_VIDEO}
-              autoPlay
-              muted
-              loop
-              playsInline
               className="h-full w-full object-cover"
             />
           </div>
@@ -233,16 +230,10 @@ export default function Hero() {
           style={{ y: centerY, opacity: centerOpacity }}
           className="pointer-events-none absolute left-1/2 top-[8%] mt-[100px] sm:mt-[130px] md:mt-[150px] z-[10] h-[440px] w-[440px] sm:h-[460px] sm:w-[460px] md:h-[480px] md:w-[480px] lg:h-[540px] lg:w-[540px] -translate-x-1/2"
         >
-          <div className="w-full h-full" style={{ mixBlendMode: "screen" }}>
-            <video
-              src={CENTER_VIDEO}
-              autoPlay
-              muted
-              loop
-              playsInline
-              className="h-full w-full object-cover"
-            />
-          </div>
+          <TransparentVideo
+            src={CENTER_VIDEO}
+            className="h-full w-full object-cover"
+          />
         </motion.div>
 
         {/* Headline — sits on top of video, below gradient mask */}
