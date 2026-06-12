@@ -94,7 +94,7 @@ const CLIENT_LOGOS = [
 ];
 
 const CENTER_VIDEO =
-  "https://res.cloudinary.com/dmanafb84/video/upload/f_auto:video,q_auto/ISA_FLOR_04__444_enp2ps";
+  "https://res.cloudinary.com/dmanafb84/video/upload/f_auto:video,q_auto:best/ISA_FLOR_04__444_enp2ps";
 const LEFT_VIDEO =
   "https://res.cloudinary.com/dmanafb84/video/upload/f_auto:video,q_auto/IA-Website-Homepage-Sizzle-Reel-Animation_V5_1_2-2_c6hfyj";
 
@@ -105,8 +105,8 @@ export default function Hero() {
     target: containerRef,
     offset: ["start start", "end end"],
   });
-  // Smooth the scroll signal so per-frame transforms coalesce.
-  const p = useSpring(scrollYProgress, { stiffness: 120, damping: 30, mass: 0.25 });
+  // Use direct scroll progress instead of useSpring for buttery smooth, off-main-thread native scroll animations on mobile
+  const p = scrollYProgress;
 
   // Phase 2-3: left video card expands to fit screen (centered, with gutters)
   const [vp, setVp] = useState({ w: 1280, h: 720 });
