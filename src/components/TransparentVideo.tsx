@@ -31,33 +31,35 @@ export function TransparentVideo({ src, className }: TransparentVideoProps) {
         return;
       }
 
-      ctx.drawImage(video, 0, 0, width, height);
+      if (video.readyState >= 2) {
+        ctx.drawImage(video, 0, 0, width, height);
 
-      try {
-        const frame = ctx.getImageData(0, 0, width, height);
-        const data = frame.data;
-        const len = data.length;
+        try {
+          const frame = ctx.getImageData(0, 0, width, height);
+          const data = frame.data;
+          const len = data.length;
 
-        for (let i = 0; i < len; i += 4) {
-          const r = data[i];
-          const g = data[i + 1];
-          const b = data[i + 2];
+          for (let i = 0; i < len; i += 4) {
+            const r = data[i];
+            const g = data[i + 1];
+            const b = data[i + 2];
 
-          // Calculate perceived brightness
-          const brightness = (r + g + b) / 3;
+            // Calculate perceived brightness
+            const brightness = (r + g + b) / 3;
 
-          // If pixel is near black, make it transparent
-          if (brightness < 18) {
-            data[i + 3] = 0; // alpha = 0
-          } else if (brightness < 38) {
-            // Smooth edge transition
-            data[i + 3] = ((brightness - 18) / 20) * 255;
+            // If pixel is near black, make it transparent
+            if (brightness < 18) {
+              data[i + 3] = 0; // alpha = 0
+            } else if (brightness < 38) {
+              // Smooth edge transition
+              data[i + 3] = ((brightness - 18) / 20) * 255;
+            }
           }
+          ctx.putImageData(frame, 0, 0);
+        } catch (e) {
+          console.error("Canvas transparent video chromakey error:", e);
+          setError(true);
         }
-        ctx.putImageData(frame, 0, 0);
-      } catch (e) {
-        console.error("Canvas transparent video chromakey error:", e);
-        setError(true);
       }
 
       animationFrameId = requestAnimationFrame(processFrame);
@@ -69,6 +71,11 @@ export function TransparentVideo({ src, className }: TransparentVideoProps) {
 
     video.addEventListener("play", handlePlay);
     video.addEventListener("playing", handlePlay);
+
+    // Force play in case browser autoplay policy delayed it
+    video.play().catch((err) => {
+      console.warn("Video play was prevented:", err);
+    });
 
     if (!video.paused) {
       processFrame();
@@ -106,8 +113,16 @@ export function TransparentVideo({ src, className }: TransparentVideoProps) {
         loop
         playsInline
         crossOrigin="anonymous"
-        className="hidden"
-        style={{ display: "none", opacity: 0, width: 1, height: 1, position: "absolute" }}
+        style={{
+          opacity: 0,
+          width: "1px",
+          height: "1px",
+          position: "absolute",
+          top: 0,
+          left: 0,
+          pointerEvents: "none",
+          zIndex: -1,
+        }}
       />
       <canvas
         ref={canvasRef}
