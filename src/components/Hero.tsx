@@ -198,7 +198,7 @@ export default function Hero() {
               playsInline
               className="h-full w-full object-cover"
               style={{
-                mixBlendMode: "screen",
+                mixBlendMode: "lighten",
                 maskImage: "radial-gradient(circle, black 55%, transparent 75%)",
                 WebkitMaskImage: "radial-gradient(circle, black 55%, transparent 75%)",
               }}
@@ -246,7 +246,7 @@ export default function Hero() {
             playsInline
             className="h-full w-full object-cover"
             style={{
-              mixBlendMode: "screen",
+              mixBlendMode: "lighten",
               maskImage: "radial-gradient(circle, black 55%, transparent 75%)",
               WebkitMaskImage: "radial-gradient(circle, black 55%, transparent 75%)",
             }}
