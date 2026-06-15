@@ -130,6 +130,21 @@ function ChatPage() {
         if (data.sessionId === activeSessionId) {
           setMessages((prev) => {
             if (prev.some((m) => m.id === data.id)) return prev;
+
+            // Check if there is an optimistic message that matches this message content
+            const optIdx = prev.findIndex(
+              (m) =>
+                m.id.startsWith("opt-") &&
+                m.senderType === data.senderType &&
+                m.message === data.message
+            );
+
+            if (optIdx !== -1) {
+              const next = [...prev];
+              next[optIdx] = data as unknown as ChatMessage;
+              return next;
+            }
+
             return [...prev, data as unknown as ChatMessage];
           });
         }

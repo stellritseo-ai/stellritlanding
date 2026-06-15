@@ -1,54 +1,77 @@
 import http from 'node:http';
 import fs from 'node:fs';
 import path from 'node:path';
+import dotenv from 'dotenv';
+import mongoose from 'mongoose';
+import { ChatSession } from './models/ChatSession.js';
+import { ChatMessage } from './models/ChatMessage.js';
+
+// Try loading env from root or current directory
+const envPaths = [
+  path.join(process.cwd(), '../.env'),
+  path.join(process.cwd(), '.env'),
+];
+for (const envPath of envPaths) {
+  if (fs.existsSync(envPath)) {
+    dotenv.config({ path: envPath });
+    break;
+  }
+}
 
 const PORT = Number(process.env.CHAT_SERVER_PORT ?? 3001);
-const DB_PATH = path.join(process.cwd(), 'chat-db.json');
+const MONGO_URI = process.env.DATABASE_URL;
 
-// ─── Database Types & Helpers ────────────────────────────────────────────────
-interface DbSession {
-  id: string;
-  visitorId: string;
-  visitorName: string;
-  visitorPhoneOrEmail: string;
-  status: 'open' | 'closed';
-  createdAt: string;
-  updatedAt: string;
+if (!MONGO_URI) {
+  console.error('❌ Error: DATABASE_URL environment variable is not set.');
+  process.exit(1);
 }
 
-interface DbMessage {
-  id: string;
-  sessionId: string;
-  senderType: 'visitor' | 'admin';
-  message: string;
-  createdAt: string;
-  readAt: string | null;
-}
-
-interface DbSchema {
-  sessions: DbSession[];
-  messages: DbMessage[];
-}
-
-function readDb(): DbSchema {
+async function getStandardMongoUri(srvUri: string): Promise<string> {
+  if (!srvUri.startsWith('mongodb+srv://')) {
+    return srvUri;
+  }
   try {
-    if (!fs.existsSync(DB_PATH)) {
-      return { sessions: [], messages: [] };
+    console.log('🔄 Resolving mongodb+srv:// SRV records via Google DNS-over-HTTPS...');
+    const match = srvUri.match(/^mongodb\+srv:\/\/([^:]+):([^@]+)@([^/?#\s]+)/);
+    if (!match) return srvUri;
+    const [_, user, pass, host] = match;
+
+    const srvRes = await fetch(`https://dns.google/resolve?name=_mongodb._tcp.${host}&type=SRV`);
+    const srvJson: any = await srvRes.json();
+    if (!srvJson.Answer || srvJson.Answer.length === 0) {
+      throw new Error('No SRV answers found');
     }
-    const data = fs.readFileSync(DB_PATH, 'utf-8');
-    return JSON.parse(data) as DbSchema;
+    const hosts = srvJson.Answer.map((ans: any) => {
+      const parts = ans.data.split(' ');
+      const targetHost = parts[3].replace(/\.$/, '');
+      const port = parts[2];
+      return `${targetHost}:${port}`;
+    }).join(',');
+
+    const txtRes = await fetch(`https://dns.google/resolve?name=${host}&type=TXT`);
+    const txtJson: any = await txtRes.json();
+    let options = 'ssl=true';
+    if (txtJson.Answer && txtJson.Answer.length > 0) {
+      const rawTxt = txtJson.Answer.map((a: any) => a.data).join('&').replace(/"/g, '');
+      options += `&${rawTxt}`;
+    }
+
+    const standardUri = `mongodb://${user}:${pass}@${hosts}/?${options}`;
+    return standardUri;
   } catch (err) {
-    console.error('Error reading db:', err);
-    return { sessions: [], messages: [] };
+    console.warn('⚠️ Google DNS-over-HTTPS resolution failed, using original URI:', err);
+    return srvUri;
   }
 }
 
-function writeDb(db: DbSchema): void {
-  try {
-    fs.writeFileSync(DB_PATH, JSON.stringify(db, null, 2), 'utf-8');
-  } catch (err) {
-    console.error('Error writing db:', err);
-  }
+// Connect to MongoDB
+try {
+  const resolvedUri = await getStandardMongoUri(MONGO_URI);
+  await mongoose.connect(resolvedUri);
+  console.log('🔌 Connected to MongoDB successfully via Mongoose.');
+} catch (err) {
+  console.error('❌ MongoDB connection error:', err);
+  process.exit(1);
 }
 
 // ─── Sanitization helper ──────────────────────────────────────────────────────
@@ -191,29 +214,44 @@ const server = http.createServer(async (req, res) => {
       const body = await getRequestBody(req);
       const visitorName = sanitize(body.visitorName || 'Visitor');
       const visitorPhoneOrEmail = sanitize(body.visitorPhoneOrEmail || '');
-      const visitorId = body.visitorId || `visitor-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+      const visitorId = body.visitorId || `visitor-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
 
-      const db = readDb();
-      let session = db.sessions.find((s) => s.visitorId === visitorId && s.status === 'open');
+      let session = await ChatSession.findOne({ visitorId, status: 'open' });
 
       if (!session) {
-        session = {
-          id: `session-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+        session = await ChatSession.create({
           visitorId,
           visitorName,
           visitorPhoneOrEmail,
           status: 'open',
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        };
-        db.sessions.push(session);
-        writeDb(db);
+        });
 
-        broadcast({ type: 'session-created', data: session });
+        broadcast({
+          type: 'session-created',
+          data: {
+            id: session._id.toString(),
+            visitorId: session.visitorId,
+            visitorName: session.visitorName,
+            visitorPhoneOrEmail: session.visitorPhoneOrEmail,
+            status: session.status,
+            createdAt: session.createdAt.toISOString(),
+            updatedAt: session.updatedAt.toISOString(),
+          }
+        });
       }
 
       res.writeHead(201, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify(session));
+      res.end(
+        JSON.stringify({
+          id: session._id.toString(),
+          visitorId: session.visitorId,
+          visitorName: session.visitorName,
+          visitorPhoneOrEmail: session.visitorPhoneOrEmail,
+          status: session.status,
+          createdAt: session.createdAt.toISOString(),
+          updatedAt: session.updatedAt.toISOString(),
+        })
+      );
       return;
     }
 
@@ -221,8 +259,15 @@ const server = http.createServer(async (req, res) => {
     const getSessionMatch = pathname.match(/^\/api\/chat\/session\/([^/]+)$/);
     if (req.method === 'GET' && getSessionMatch) {
       const sessionId = getSessionMatch[1];
-      const db = readDb();
-      const session = db.sessions.find((s) => s.id === sessionId);
+      
+      if (!mongoose.Types.ObjectId.isValid(sessionId)) {
+        res.statusCode = 404;
+        res.setHeader('Content-Type', 'application/json');
+        res.end(JSON.stringify({ error: 'Session not found' }));
+        return;
+      }
+
+      const session = await ChatSession.findById(sessionId);
 
       if (!session) {
         res.statusCode = 404;
@@ -232,7 +277,17 @@ const server = http.createServer(async (req, res) => {
       }
 
       res.writeHead(200, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify(session));
+      res.end(
+        JSON.stringify({
+          id: session._id.toString(),
+          visitorId: session.visitorId,
+          visitorName: session.visitorName,
+          visitorPhoneOrEmail: session.visitorPhoneOrEmail,
+          status: session.status,
+          createdAt: session.createdAt.toISOString(),
+          updatedAt: session.updatedAt.toISOString(),
+        })
+      );
       return;
     }
 
@@ -240,8 +295,15 @@ const server = http.createServer(async (req, res) => {
     const getMessagesMatch = pathname.match(/^\/api\/chat\/session\/([^/]+)\/messages$/);
     if (req.method === 'GET' && getMessagesMatch) {
       const sessionId = getMessagesMatch[1];
-      const db = readDb();
-      const session = db.sessions.find((s) => s.id === sessionId);
+
+      if (!mongoose.Types.ObjectId.isValid(sessionId)) {
+        res.statusCode = 404;
+        res.setHeader('Content-Type', 'application/json');
+        res.end(JSON.stringify({ error: 'Session not found' }));
+        return;
+      }
+
+      const session = await ChatSession.findById(sessionId);
 
       if (!session) {
         res.statusCode = 404;
@@ -250,9 +312,20 @@ const server = http.createServer(async (req, res) => {
         return;
       }
 
-      const messages = db.messages.filter((m) => m.sessionId === sessionId);
+      const messages = await ChatMessage.find({ sessionId: session._id }).sort({ createdAt: 1 });
       res.writeHead(200, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify(messages));
+      res.end(
+        JSON.stringify(
+          messages.map((m) => ({
+            id: m._id.toString(),
+            sessionId: m.sessionId.toString(),
+            senderType: m.senderType,
+            message: m.message,
+            createdAt: m.createdAt.toISOString(),
+            readAt: m.readAt ? m.readAt.toISOString() : null,
+          }))
+        )
+      );
       return;
     }
 
@@ -270,8 +343,14 @@ const server = http.createServer(async (req, res) => {
         return;
       }
 
-      const db = readDb();
-      const session = db.sessions.find((s) => s.id === sessionId);
+      if (!mongoose.Types.ObjectId.isValid(sessionId)) {
+        res.statusCode = 404;
+        res.setHeader('Content-Type', 'application/json');
+        res.end(JSON.stringify({ error: 'Session not found' }));
+        return;
+      }
+
+      const session = await ChatSession.findById(sessionId);
 
       if (!session) {
         res.statusCode = 404;
@@ -287,23 +366,28 @@ const server = http.createServer(async (req, res) => {
         return;
       }
 
-      const savedMsg: DbMessage = {
-        id: `msg-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-        sessionId,
+      const savedMsg = await ChatMessage.create({
+        sessionId: session._id,
         senderType: 'visitor',
         message: messageText,
-        createdAt: new Date().toISOString(),
+      });
+
+      session.updatedAt = new Date();
+      await session.save();
+
+      const msgPayload = {
+        id: savedMsg._id.toString(),
+        sessionId: savedMsg.sessionId.toString(),
+        senderType: savedMsg.senderType,
+        message: savedMsg.message,
+        createdAt: savedMsg.createdAt.toISOString(),
         readAt: null,
       };
 
-      db.messages.push(savedMsg);
-      session.updatedAt = new Date().toISOString();
-      writeDb(db);
-
-      broadcast({ type: 'new-message', data: savedMsg }, sessionId);
+      broadcast({ type: 'new-message', data: msgPayload }, sessionId);
 
       res.writeHead(201, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify(savedMsg));
+      res.end(JSON.stringify(msgPayload));
       return;
     }
 
@@ -319,42 +403,39 @@ const server = http.createServer(async (req, res) => {
       const statusFilter = urlObj.searchParams.get('status');
       const searchFilter = urlObj.searchParams.get('search');
 
-      const db = readDb();
-      let filteredSessions = db.sessions;
-
+      const filter: any = {};
       if (statusFilter === 'open' || statusFilter === 'closed') {
-        filteredSessions = filteredSessions.filter((s) => s.status === statusFilter);
+        filter.status = statusFilter;
       }
       if (searchFilter) {
-        const term = searchFilter.toLowerCase();
-        filteredSessions = filteredSessions.filter(
-          (s) =>
-            s.visitorName.toLowerCase().includes(term) ||
-            s.visitorPhoneOrEmail.toLowerCase().includes(term)
-        );
+        const regex = new RegExp(searchFilter, 'i');
+        filter.$or = [{ visitorName: regex }, { visitorPhoneOrEmail: regex }];
       }
 
-      filteredSessions.sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
+      const sessions = await ChatSession.find(filter).sort({ updatedAt: -1 });
 
-      const withUnread = filteredSessions.map((s) => {
-        const unreadCount = db.messages.filter(
-          (m) => m.sessionId === s.id && m.senderType === 'visitor' && !m.readAt
-        ).length;
-        const sessionMsgs = db.messages.filter((m) => m.sessionId === s.id);
-        const lastMsg = sessionMsgs.length > 0 ? sessionMsgs[sessionMsgs.length - 1] : null;
-        return {
-          id: s.id,
-          visitorId: s.visitorId,
-          visitorName: s.visitorName,
-          visitorPhoneOrEmail: s.visitorPhoneOrEmail,
-          status: s.status,
-          createdAt: s.createdAt,
-          updatedAt: s.updatedAt,
-          unreadCount,
-          lastMessage: lastMsg?.message ?? '',
-          lastMessageAt: lastMsg?.createdAt ?? s.createdAt,
-        };
-      });
+      const withUnread = await Promise.all(
+        sessions.map(async (s) => {
+          const unreadCount = await ChatMessage.countDocuments({
+            sessionId: s._id,
+            senderType: 'visitor',
+            readAt: null,
+          });
+          const lastMsg = await ChatMessage.findOne({ sessionId: s._id }).sort({ createdAt: -1 });
+          return {
+            id: s._id.toString(),
+            visitorId: s.visitorId,
+            visitorName: s.visitorName,
+            visitorPhoneOrEmail: s.visitorPhoneOrEmail,
+            status: s.status,
+            createdAt: s.createdAt.toISOString(),
+            updatedAt: s.updatedAt.toISOString(),
+            unreadCount,
+            lastMessage: lastMsg?.message ?? '',
+            lastMessageAt: lastMsg?.createdAt ? lastMsg.createdAt.toISOString() : s.createdAt.toISOString(),
+          };
+        })
+      );
 
       res.writeHead(200, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify(withUnread));
@@ -372,8 +453,15 @@ const server = http.createServer(async (req, res) => {
       }
 
       const sessionId = getAdminSessionMatch[1];
-      const db = readDb();
-      const session = db.sessions.find((s) => s.id === sessionId);
+
+      if (!mongoose.Types.ObjectId.isValid(sessionId)) {
+        res.statusCode = 404;
+        res.setHeader('Content-Type', 'application/json');
+        res.end(JSON.stringify({ error: 'Session not found' }));
+        return;
+      }
+
+      const session = await ChatSession.findById(sessionId);
 
       if (!session) {
         res.statusCode = 404;
@@ -382,12 +470,27 @@ const server = http.createServer(async (req, res) => {
         return;
       }
 
-      const messages = db.messages.filter((m) => m.sessionId === sessionId);
+      const messages = await ChatMessage.find({ sessionId: session._id }).sort({ createdAt: 1 });
       res.writeHead(200, { 'Content-Type': 'application/json' });
       res.end(
         JSON.stringify({
-          session,
-          messages,
+          session: {
+            id: session._id.toString(),
+            visitorId: session.visitorId,
+            visitorName: session.visitorName,
+            visitorPhoneOrEmail: session.visitorPhoneOrEmail,
+            status: session.status,
+            createdAt: session.createdAt.toISOString(),
+            updatedAt: session.updatedAt.toISOString(),
+          },
+          messages: messages.map((m) => ({
+            id: m._id.toString(),
+            sessionId: m.sessionId.toString(),
+            senderType: m.senderType,
+            message: m.message,
+            createdAt: m.createdAt.toISOString(),
+            readAt: m.readAt ? m.readAt.toISOString() : null,
+          })),
         })
       );
       return;
@@ -414,8 +517,14 @@ const server = http.createServer(async (req, res) => {
         return;
       }
 
-      const db = readDb();
-      const session = db.sessions.find((s) => s.id === sessionId);
+      if (!mongoose.Types.ObjectId.isValid(sessionId)) {
+        res.statusCode = 404;
+        res.setHeader('Content-Type', 'application/json');
+        res.end(JSON.stringify({ error: 'Session not found' }));
+        return;
+      }
+
+      const session = await ChatSession.findById(sessionId);
 
       if (!session) {
         res.statusCode = 404;
@@ -424,23 +533,28 @@ const server = http.createServer(async (req, res) => {
         return;
       }
 
-      const savedMsg: DbMessage = {
-        id: `msg-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-        sessionId,
+      const savedMsg = await ChatMessage.create({
+        sessionId: session._id,
         senderType: 'admin',
         message: messageText,
-        createdAt: new Date().toISOString(),
+      });
+
+      session.updatedAt = new Date();
+      await session.save();
+
+      const msgPayload = {
+        id: savedMsg._id.toString(),
+        sessionId: savedMsg.sessionId.toString(),
+        senderType: savedMsg.senderType,
+        message: savedMsg.message,
+        createdAt: savedMsg.createdAt.toISOString(),
         readAt: null,
       };
 
-      db.messages.push(savedMsg);
-      session.updatedAt = new Date().toISOString();
-      writeDb(db);
-
-      broadcast({ type: 'new-message', data: savedMsg }, sessionId);
+      broadcast({ type: 'new-message', data: msgPayload }, sessionId);
 
       res.writeHead(201, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify(savedMsg));
+      res.end(JSON.stringify(msgPayload));
       return;
     }
 
@@ -465,8 +579,18 @@ const server = http.createServer(async (req, res) => {
         return;
       }
 
-      const db = readDb();
-      const session = db.sessions.find((s) => s.id === sessionId);
+      if (!mongoose.Types.ObjectId.isValid(sessionId)) {
+        res.statusCode = 404;
+        res.setHeader('Content-Type', 'application/json');
+        res.end(JSON.stringify({ error: 'Session not found' }));
+        return;
+      }
+
+      const session = await ChatSession.findByIdAndUpdate(
+        sessionId,
+        { status, updatedAt: new Date() },
+        { new: true }
+      );
 
       if (!session) {
         res.statusCode = 404;
@@ -474,10 +598,6 @@ const server = http.createServer(async (req, res) => {
         res.end(JSON.stringify({ error: 'Session not found' }));
         return;
       }
-
-      session.status = status;
-      session.updatedAt = new Date().toISOString();
-      writeDb(db);
 
       broadcast({ type: 'session-updated', data: { id: sessionId, status } }, sessionId);
 
@@ -523,18 +643,23 @@ const server = http.createServer(async (req, res) => {
         return;
       }
 
-      const db = readDb();
-      let updated = false;
-      db.messages.forEach((m) => {
-        if (m.sessionId === sessionId && m.senderType !== readBy && !m.readAt) {
-          m.readAt = new Date().toISOString();
-          updated = true;
-        }
-      });
-
-      if (updated) {
-        writeDb(db);
+      if (!mongoose.Types.ObjectId.isValid(sessionId)) {
+        res.statusCode = 400;
+        res.setHeader('Content-Type', 'application/json');
+        res.end(JSON.stringify({ error: 'Invalid sessionId' }));
+        return;
       }
+
+      const oppositeSender = readBy === 'admin' ? 'visitor' : 'admin';
+
+      await ChatMessage.updateMany(
+        {
+          sessionId: new mongoose.Types.ObjectId(sessionId),
+          senderType: oppositeSender,
+          readAt: null,
+        },
+        { readAt: new Date() }
+      );
 
       broadcast({ type: 'message-read', data: { sessionId, readBy } }, sessionId);
 
