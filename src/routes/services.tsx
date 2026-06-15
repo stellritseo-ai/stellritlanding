@@ -1,76 +1,53 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
-import { Check } from "lucide-react";
 import SiteHeader from "@/components/SiteHeader";
 import PageHero from "@/components/PageHero";
-import Footer from "@/components/Footer";
-import CtaBand from "@/components/CtaBand";
 import ScrollBackground from "@/components/ScrollBackground";
+import Footer from "@/components/Footer";
 import ChatWidget from "@/components/ChatWidget";
+
+import uxVideo from "@/assets/video/UX.mp4";
+import brandVideo from "@/assets/video/Brand.mp4";
+import webProductVideo from "@/assets/video/Web-Product.mp4";
+import webDevVideo from "@/assets/video/Web-Development.mp4";
+import marketingVideo from "@/assets/video/Website-Management.mp4";
 
 export const Route = createFileRoute("/services")({
   head: () => ({
     meta: [
-      { title: "Services — Brand, Product, Growth | StellR IT LLC" },
+      { title: "Services — Our Perspective | StellR IT LLC" },
       {
         name: "description",
         content:
-          "Brand identity, product design, full-stack engineering and growth marketing for enterprise leaders. Explore the StellR IT service stack.",
-      },
-      { property: "og:title", content: "Services — StellR IT LLC" },
-      {
-        property: "og:description",
-        content: "End-to-end design, engineering and growth for enterprise brands.",
+          "UX Research, Brand Identity, Web Design, Web Development and Digital Marketing for enterprise leaders.",
       },
     ],
   }),
   component: ServicesPage,
 });
 
-const SERVICES = [
-  {
-    num: "01",
-    title: "Brand Building",
-    blurb:
-      "Distinctive identity systems, naming, editorial and motion. We build brands that feel inevitable.",
-    items: ["Visual Identity", "Naming & Verbal", "Editorial Design", "Brand Motion", "Guidelines"],
-  },
-  {
-    num: "02",
-    title: "Product Design",
-    blurb:
-      "Strategy-led UX and UI for web, SaaS and mobile. Calm interfaces engineered to convert and retain.",
-    items: ["UX Research", "Design Systems", "Web & SaaS", "Mobile Apps", "Prototyping"],
-  },
-  {
-    num: "03",
-    title: "Engineering",
-    blurb:
-      "Full-stack delivery in TypeScript, React, Next, TanStack and edge runtimes. Performance is a feature.",
-    items: ["Web Platforms", "Headless Commerce", "CMS Architecture", "Edge & APIs", "DevOps"],
-  },
-  {
-    num: "04",
-    title: "Growth Marketing",
-    blurb:
-      "Paid, organic and lifecycle programs powered by analytics. We measure what matters and compound it.",
-    items: ["Paid Media", "SEO & SEM", "Conversion Rate Optimisation", "Lifecycle & Email", "Analytics"],
-  },
-];
+const avatar1 = "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&q=80&auto=format&fit=crop";
+const avatar2 = "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&q=80&auto=format&fit=crop";
 
-const PROCESS = [
-  { t: "Discover", d: "Workshops, audits and stakeholder interviews to align on the actual problem." },
-  { t: "Define", d: "Strategy, IA, positioning and a measurable success model the team rallies behind." },
-  { t: "Design", d: "Concept exploration, design systems, prototypes and iterative refinement." },
-  { t: "Develop", d: "Production engineering with the same craft as the design. Shipped and observable." },
-  { t: "Distribute", d: "Launch, growth programs and continuous optimisation against KPIs." },
-];
+function BulletList({ items }: { items: string[] }) {
+  return (
+    <ul className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 mb-10">
+      {items.map((item, i) => (
+        <li key={i} className="flex items-start text-[14px] text-[#240945]/80 font-medium">
+          <span className="mr-3 mt-1.5 h-1 w-1 shrink-0 rounded-full bg-[#ff8a5b]" />
+          {item}
+        </li>
+      ))}
+    </ul>
+  );
+}
 
 function ServicesPage() {
   return (
-    <main className="relative min-h-screen">
+    <main className="relative min-h-screen selection:bg-[#ff8a5b]/30">
       <ScrollBackground />
       <SiteHeader transparent />
+      
       <PageHero
         eyebrow="Services"
         title={
@@ -81,62 +58,299 @@ function ServicesPage() {
         description="From brand foundations to engineered platforms and the growth programs that scale them. We replace the agency-of-agencies model with one accountable senior team."
       />
 
-      {/* Service blocks */}
-      <section className="relative z-10 px-6 pb-24 md:px-12 lg:px-20">
-        <div className="mx-auto max-w-[1400px] space-y-px">
-          {SERVICES.map((s, i) => (
-            <motion.div
-              key={s.title}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-60px" }}
-              transition={{ duration: 0.7, delay: i * 0.05 }}
-              className="grid grid-cols-1 gap-8 border-t border-white/15 py-14 md:grid-cols-[120px_1fr_1fr] md:gap-14"
-            >
-              <div className="font-serif text-[44px] text-[#ff8a5b]">{s.num}</div>
-              <div>
-                <h3 className="font-serif text-[40px] leading-tight text-white md:text-[56px]">{s.title}</h3>
-                <p className="mt-4 max-w-md text-[15px] leading-[1.65] text-white/70">{s.blurb}</p>
-              </div>
-              <ul className="space-y-3 self-center">
-                {s.items.map((it) => (
-                  <li key={it} className="flex items-center gap-3 text-[15px] text-white/85">
-                    <Check className="h-4 w-4 text-[#c9a4ff]" />
-                    {it}
-                  </li>
-                ))}
-              </ul>
-            </motion.div>
-          ))}
-        </div>
-      </section>
+      <section className="bg-[#FAF5EE] text-[#240945] py-[60px]">
+        <div className="mx-auto max-w-[1400px] px-6 md:px-12 lg:px-20">
+          <motion.h1
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="font-serif text-[60px] md:text-[96px] lg:text-[120px] font-bold leading-none tracking-tight mb-[60px]"
+          >
+            Our Perspective
+          </motion.h1>
 
-      {/* Process */}
-      <section className="relative z-10 px-6 py-24 md:px-12 lg:px-20">
-        <div className="mx-auto max-w-[1400px]">
-          <h2 className="font-serif text-[44px] leading-[1.05] tracking-tight text-white md:text-[72px]">
-            How we work.
-          </h2>
-          <div className="mt-16 grid grid-cols-1 gap-8 md:grid-cols-5">
-            {PROCESS.map((p, i) => (
-              <motion.div
-                key={p.t}
-                initial={{ opacity: 0, y: 24 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: i * 0.07 }}
-                className="rounded-2xl border border-white/10 bg-white/[0.03] p-6"
-              >
-                <div className="text-[11px] uppercase tracking-[0.3em] text-[#ff8a5b]">Step 0{i + 1}</div>
-                <h3 className="mt-3 font-serif text-[26px] text-white">{p.t}</h3>
-                <p className="mt-2 text-[14px] leading-[1.6] text-white/65">{p.d}</p>
-              </motion.div>
-            ))}
+          {/* 1. UX Research */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 items-center mb-[60px]">
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              className="relative"
+            >
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-[80%] bg-[#a855f7]/20 blur-[80px] rounded-full pointer-events-none" />
+              <video
+                src={uxVideo}
+                autoPlay
+                muted
+                loop
+                playsInline
+                className="relative z-10 w-full h-auto rounded-2xl shadow-[0_20px_40px_rgba(36,9,69,0.1)] bg-white/50 border border-[#240945]/5"
+              />
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, x: 30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+            >
+              <span className="text-[12px] font-bold uppercase tracking-[0.2em] text-[#240945]/60 mb-4 block">UX Research & Strategy</span>
+              <h2 className="font-serif text-[32px] md:text-[40px] font-bold leading-[1.15] mb-8">
+                Strategy-led UX and UI for web, SaaS, and mobile. We engineer calm, intuitive interfaces designed to convert and retain your users.
+              </h2>
+              <BulletList
+                items={[
+                  "UX Research & Discovery",
+                  "User Personas & Journeys",
+                  "Information Architecture",
+                  "Wireframing & Prototyping",
+                  "Usability Testing",
+                  "UX/UI Design Workshops",
+                ]}
+              />
+              <Link to="/contact" className="inline-flex items-center justify-center px-8 py-3.5 bg-[#180028] text-[#FAF5EE] rounded-full text-[13px] font-semibold transition-transform hover:bg-[#240945] hover:scale-105 shadow-xl">
+                View UX Research Service
+              </Link>
+            </motion.div>
+          </div>
+
+          {/* 2. Brand Identity */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 items-center mb-[60px]">
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              className="order-2 lg:order-1"
+            >
+              <span className="text-[12px] font-bold uppercase tracking-[0.2em] text-[#240945]/60 mb-4 block">Brand Identity</span>
+              <h2 className="font-serif text-[32px] md:text-[40px] font-bold leading-[1.15] mb-8">
+                Crafting iconic identities that command attention. We build distinctive brand systems, naming, and messaging that feel inevitable.
+              </h2>
+              <BulletList
+                items={[
+                  "Brand Positioning",
+                  "Visual Identity",
+                  "Naming & Verbal Strategy",
+                  "Brand Architecture",
+                  "Brand Guidelines",
+                  "Content Strategy",
+                ]}
+              />
+              <Link to="/contact" className="inline-flex items-center justify-center px-8 py-3.5 bg-[#180028] text-[#FAF5EE] rounded-full text-[13px] font-semibold transition-transform hover:bg-[#240945] hover:scale-105 shadow-xl">
+                View Brand Services
+              </Link>
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, x: 30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              className="relative order-1 lg:order-2"
+            >
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-[80%] bg-[#ff8a5b]/20 blur-[80px] rounded-full pointer-events-none" />
+              <video
+                src={brandVideo}
+                autoPlay
+                muted
+                loop
+                playsInline
+                className="relative z-10 w-full h-auto rounded-2xl shadow-[0_20px_40px_rgba(36,9,69,0.1)] bg-white/50 border border-[#240945]/5"
+              />
+            </motion.div>
+          </div>
+
+          {/* Testimonial 1 */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="bg-[#180028] text-white rounded-[24px] px-8 md:px-12 py-[60px] text-center relative overflow-hidden mb-[60px] shadow-2xl"
+          >
+            <p className="font-serif text-[24px] md:text-[32px] leading-[1.3] text-white/95 mb-12 max-w-4xl mx-auto">
+              "StellR IT LLC completely transformed our digital presence. Their attention to detail and engineering speed helped us launch our new platform months ahead of schedule."
+            </p>
+            <div className="flex flex-col md:flex-row items-center justify-center gap-6">
+              <div className="flex items-center gap-4">
+                <img src={avatar1} alt="Avatar" className="w-12 h-12 rounded-full object-cover" />
+                <div className="text-left">
+                  <strong className="block text-[14px] font-bold">David Chen</strong>
+                  <span className="block text-[12px] text-white/60">CTO</span>
+                </div>
+              </div>
+              <div className="hidden md:block w-px h-10 bg-white/20 mx-4" />
+              <span className="font-serif italic font-bold text-[28px] text-white/90">TechNova</span>
+            </div>
+          </motion.div>
+
+          {/* 3. Web & Product Design */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 items-center mb-[60px]">
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              className="relative"
+            >
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-[80%] bg-[#cc7aff]/20 blur-[80px] rounded-full pointer-events-none" />
+              <video
+                src={webProductVideo}
+                autoPlay
+                muted
+                loop
+                playsInline
+                className="relative z-10 w-full h-auto rounded-2xl shadow-[0_20px_40px_rgba(36,9,69,0.1)] bg-white/50 border border-[#240945]/5"
+              />
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, x: 30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+            >
+              <span className="text-[12px] font-bold uppercase tracking-[0.2em] text-[#240945]/60 mb-4 block">Web & Product Design</span>
+              <h2 className="font-serif text-[32px] md:text-[40px] font-bold leading-[1.15] mb-8">
+                From concept to conversion — we design beautifully engineered digital products and SaaS platforms that scale with your ambition.
+              </h2>
+              <BulletList
+                items={[
+                  "Web Design & Architecture",
+                  "SaaS Product Design",
+                  "Design Systems",
+                  "Mobile Applications",
+                  "Interactive Prototyping",
+                ]}
+              />
+              <Link to="/contact" className="inline-flex items-center justify-center px-8 py-3.5 bg-[#180028] text-[#FAF5EE] rounded-full text-[13px] font-semibold transition-transform hover:bg-[#240945] hover:scale-105 shadow-xl">
+                View Design Services
+              </Link>
+            </motion.div>
+          </div>
+
+          {/* 4. Web Development */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 items-center mb-[60px]">
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              className="order-2 lg:order-1"
+            >
+              <span className="text-[12px] font-bold uppercase tracking-[0.2em] text-[#240945]/60 mb-4 block">Web Development</span>
+              <h2 className="font-serif text-[32px] md:text-[40px] font-bold leading-[1.15] mb-8">
+                Full-stack delivery in modern frameworks. For us, performance and reliability are core features, not afterthoughts.
+              </h2>
+              <BulletList
+                items={[
+                  "Custom Web Platforms",
+                  "Headless Commerce",
+                  "CMS Architecture",
+                  "Edge & APIs",
+                  "DevOps & Automation",
+                ]}
+              />
+              <Link to="/contact" className="inline-flex items-center justify-center px-8 py-3.5 bg-[#180028] text-[#FAF5EE] rounded-full text-[13px] font-semibold transition-transform hover:bg-[#240945] hover:scale-105 shadow-xl">
+                View Web Services
+              </Link>
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, x: 30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              className="relative order-1 lg:order-2"
+            >
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-[80%] bg-[#7a2adc]/20 blur-[80px] rounded-full pointer-events-none" />
+              <video
+                src={webDevVideo}
+                autoPlay
+                muted
+                loop
+                playsInline
+                className="relative z-10 w-full h-auto rounded-2xl shadow-[0_20px_40px_rgba(36,9,69,0.1)] bg-white/50 border border-[#240945]/5"
+              />
+            </motion.div>
+          </div>
+
+          {/* Testimonial 2 */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="bg-[#180028] text-white rounded-[24px] px-8 md:px-12 py-[60px] text-center relative overflow-hidden mb-[60px] shadow-2xl"
+          >
+            <p className="font-serif text-[24px] md:text-[32px] leading-[1.3] text-white/95 mb-12 max-w-4xl mx-auto">
+              "The brand identity and product design work from StellR has elevated our market positioning entirely. The team is incredibly talented and accountable."
+            </p>
+            <div className="flex flex-col md:flex-row items-center justify-center gap-6">
+              <div className="flex items-center gap-4">
+                <img src={avatar2} alt="Avatar" className="w-12 h-12 rounded-full object-cover" />
+                <div className="text-left">
+                  <strong className="block text-[14px] font-bold">Sarah Jenkins</strong>
+                  <span className="block text-[12px] text-white/60">CMO</span>
+                </div>
+              </div>
+              <div className="hidden md:block w-px h-10 bg-white/20 mx-4" />
+              <span className="font-serif tracking-[0.2em] uppercase font-bold text-[24px] text-white/90">NEXUS</span>
+            </div>
+          </motion.div>
+
+          {/* 5. Digital Marketing & CRO */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 items-center mb-0">
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              className="relative"
+            >
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-[80%] bg-[#ff8a5b]/20 blur-[80px] rounded-full pointer-events-none" />
+              <video
+                src={marketingVideo}
+                autoPlay
+                muted
+                loop
+                playsInline
+                className="relative z-10 w-full h-auto rounded-2xl shadow-[0_20px_40px_rgba(36,9,69,0.1)] bg-white/50 border border-[#240945]/5"
+              />
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, x: 30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+            >
+              <span className="text-[12px] font-bold uppercase tracking-[0.2em] text-[#240945]/60 mb-4 block">Digital Marketing & CRO</span>
+              <h2 className="font-serif text-[32px] md:text-[40px] font-bold leading-[1.15] mb-8">
+                Data-driven paid and organic campaigns that unlock compounding growth across every channel that matters.
+              </h2>
+              <BulletList
+                items={[
+                  "Paid Media & Advertising",
+                  "SEO & SEM Strategy",
+                  "Conversion Rate Optimization",
+                  "Lifecycle & Email Marketing",
+                  "Advanced Analytics",
+                ]}
+              />
+              <Link to="/contact" className="inline-flex items-center justify-center px-8 py-3.5 bg-[#180028] text-[#FAF5EE] rounded-full text-[13px] font-semibold transition-transform hover:bg-[#240945] hover:scale-105 shadow-xl">
+                View Marketing Services
+              </Link>
+            </motion.div>
           </div>
         </div>
       </section>
 
-      <CtaBand title="Have a project in mind?" subtitle="Share the brief — we'll respond with a senior point of view, fast." />
+      {/* Footer CTA */}
+      <section className="bg-[#180028] border-t border-white/10 py-[60px]">
+        <div className="mx-auto max-w-[1400px] px-6 md:px-12 lg:px-20 relative">
+          <div className="absolute top-0 right-10 w-[400px] h-[400px] bg-gradient-to-tl from-[#ff8a5b]/20 to-transparent blur-[80px] rounded-full pointer-events-none" />
+          
+          <motion.h2 
+            initial={{ opacity: 0, y: 40, scale: 0.95 }}
+            whileInView={{ opacity: 1, y: 0, scale: 1 }}
+            viewport={{ once: true, amount: 0.1 }}
+            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+            className="font-serif text-[40px] md:text-[50px] leading-[1.05] tracking-tight text-white mb-10 max-w-[1000px] relative z-10"
+          >
+            We look forward to hearing about your project. Let's collaborate, win new customers, and move your brand forward.
+          </motion.h2>
+          <Link to="/contact" className="inline-flex relative z-10 items-center justify-center px-10 py-5 bg-[#a855f7] text-white rounded-full text-[15px] font-bold tracking-wide transition-transform hover:scale-105 shadow-[0_0_30px_rgba(168,85,247,0.3)]">
+            Start a Project
+          </Link>
+        </div>
+      </section>
+
       <Footer />
       <ChatWidget />
     </main>

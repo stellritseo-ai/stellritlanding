@@ -12,16 +12,25 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as ServicesRouteImport } from './routes/services'
 import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as PortfolioRouteImport } from './routes/portfolio'
 import { Route as InsightsRouteImport } from './routes/insights'
+import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as CaseStudiesRouteImport } from './routes/case-studies'
 import { Route as CareersRouteImport } from './routes/careers'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as DashboardIndexRouteImport } from './routes/dashboard/index'
 import { Route as CaseStudiesIndexRouteImport } from './routes/case-studies.index'
-import { Route as CaseStudiesUxUiConversionsRouteImport } from './routes/case-studies.ux-ui-conversions'
-import { Route as CaseStudiesImpressionsToClicksRouteImport } from './routes/case-studies.impressions-to-clicks'
-import { Route as CaseStudiesCybersecurityZeroTrustRouteImport } from './routes/case-studies.cybersecurity-zero-trust'
+import { Route as DashboardTasksRouteImport } from './routes/dashboard/tasks'
+import { Route as DashboardSettingsRouteImport } from './routes/dashboard/settings'
+import { Route as DashboardProjectsRouteImport } from './routes/dashboard/projects'
+import { Route as DashboardMembersRouteImport } from './routes/dashboard/members'
+import { Route as DashboardManagementRouteImport } from './routes/dashboard/management'
+import { Route as DashboardClientsRouteImport } from './routes/dashboard/clients'
+import { Route as DashboardChatRouteImport } from './routes/dashboard/chat'
+import { Route as DashboardAssetsRouteImport } from './routes/dashboard/assets'
+import { Route as DashboardAdminRouteImport } from './routes/dashboard/admin'
 import { Route as CaseStudiesSlugRouteImport } from './routes/case-studies.$slug'
 
 const TermsRoute = TermsRouteImport.update({
@@ -39,9 +48,19 @@ const PrivacyRoute = PrivacyRouteImport.update({
   path: '/privacy',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PortfolioRoute = PortfolioRouteImport.update({
+  id: '/portfolio',
+  path: '/portfolio',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const InsightsRoute = InsightsRouteImport.update({
   id: '/insights',
   path: '/insights',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardRoute = DashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ContactRoute = ContactRouteImport.update({
@@ -69,29 +88,61 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DashboardIndexRoute = DashboardIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => DashboardRoute,
+} as any)
 const CaseStudiesIndexRoute = CaseStudiesIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => CaseStudiesRoute,
 } as any)
-const CaseStudiesUxUiConversionsRoute =
-  CaseStudiesUxUiConversionsRouteImport.update({
-    id: '/ux-ui-conversions',
-    path: '/ux-ui-conversions',
-    getParentRoute: () => CaseStudiesRoute,
-  } as any)
-const CaseStudiesImpressionsToClicksRoute =
-  CaseStudiesImpressionsToClicksRouteImport.update({
-    id: '/impressions-to-clicks',
-    path: '/impressions-to-clicks',
-    getParentRoute: () => CaseStudiesRoute,
-  } as any)
-const CaseStudiesCybersecurityZeroTrustRoute =
-  CaseStudiesCybersecurityZeroTrustRouteImport.update({
-    id: '/cybersecurity-zero-trust',
-    path: '/cybersecurity-zero-trust',
-    getParentRoute: () => CaseStudiesRoute,
-  } as any)
+const DashboardTasksRoute = DashboardTasksRouteImport.update({
+  id: '/tasks',
+  path: '/tasks',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardSettingsRoute = DashboardSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardProjectsRoute = DashboardProjectsRouteImport.update({
+  id: '/projects',
+  path: '/projects',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardMembersRoute = DashboardMembersRouteImport.update({
+  id: '/members',
+  path: '/members',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardManagementRoute = DashboardManagementRouteImport.update({
+  id: '/management',
+  path: '/management',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardClientsRoute = DashboardClientsRouteImport.update({
+  id: '/clients',
+  path: '/clients',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardChatRoute = DashboardChatRouteImport.update({
+  id: '/chat',
+  path: '/chat',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardAssetsRoute = DashboardAssetsRouteImport.update({
+  id: '/assets',
+  path: '/assets',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardAdminRoute = DashboardAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => DashboardRoute,
+} as any)
 const CaseStudiesSlugRoute = CaseStudiesSlugRouteImport.update({
   id: '/$slug',
   path: '/$slug',
@@ -104,15 +155,24 @@ export interface FileRoutesByFullPath {
   '/careers': typeof CareersRoute
   '/case-studies': typeof CaseStudiesRouteWithChildren
   '/contact': typeof ContactRoute
+  '/dashboard': typeof DashboardRouteWithChildren
   '/insights': typeof InsightsRoute
+  '/portfolio': typeof PortfolioRoute
   '/privacy': typeof PrivacyRoute
   '/services': typeof ServicesRoute
   '/terms': typeof TermsRoute
   '/case-studies/$slug': typeof CaseStudiesSlugRoute
-  '/case-studies/cybersecurity-zero-trust': typeof CaseStudiesCybersecurityZeroTrustRoute
-  '/case-studies/impressions-to-clicks': typeof CaseStudiesImpressionsToClicksRoute
-  '/case-studies/ux-ui-conversions': typeof CaseStudiesUxUiConversionsRoute
+  '/dashboard/admin': typeof DashboardAdminRoute
+  '/dashboard/assets': typeof DashboardAssetsRoute
+  '/dashboard/chat': typeof DashboardChatRoute
+  '/dashboard/clients': typeof DashboardClientsRoute
+  '/dashboard/management': typeof DashboardManagementRoute
+  '/dashboard/members': typeof DashboardMembersRoute
+  '/dashboard/projects': typeof DashboardProjectsRoute
+  '/dashboard/settings': typeof DashboardSettingsRoute
+  '/dashboard/tasks': typeof DashboardTasksRoute
   '/case-studies/': typeof CaseStudiesIndexRoute
+  '/dashboard/': typeof DashboardIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -120,14 +180,22 @@ export interface FileRoutesByTo {
   '/careers': typeof CareersRoute
   '/contact': typeof ContactRoute
   '/insights': typeof InsightsRoute
+  '/portfolio': typeof PortfolioRoute
   '/privacy': typeof PrivacyRoute
   '/services': typeof ServicesRoute
   '/terms': typeof TermsRoute
   '/case-studies/$slug': typeof CaseStudiesSlugRoute
-  '/case-studies/cybersecurity-zero-trust': typeof CaseStudiesCybersecurityZeroTrustRoute
-  '/case-studies/impressions-to-clicks': typeof CaseStudiesImpressionsToClicksRoute
-  '/case-studies/ux-ui-conversions': typeof CaseStudiesUxUiConversionsRoute
+  '/dashboard/admin': typeof DashboardAdminRoute
+  '/dashboard/assets': typeof DashboardAssetsRoute
+  '/dashboard/chat': typeof DashboardChatRoute
+  '/dashboard/clients': typeof DashboardClientsRoute
+  '/dashboard/management': typeof DashboardManagementRoute
+  '/dashboard/members': typeof DashboardMembersRoute
+  '/dashboard/projects': typeof DashboardProjectsRoute
+  '/dashboard/settings': typeof DashboardSettingsRoute
+  '/dashboard/tasks': typeof DashboardTasksRoute
   '/case-studies': typeof CaseStudiesIndexRoute
+  '/dashboard': typeof DashboardIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -136,15 +204,24 @@ export interface FileRoutesById {
   '/careers': typeof CareersRoute
   '/case-studies': typeof CaseStudiesRouteWithChildren
   '/contact': typeof ContactRoute
+  '/dashboard': typeof DashboardRouteWithChildren
   '/insights': typeof InsightsRoute
+  '/portfolio': typeof PortfolioRoute
   '/privacy': typeof PrivacyRoute
   '/services': typeof ServicesRoute
   '/terms': typeof TermsRoute
   '/case-studies/$slug': typeof CaseStudiesSlugRoute
-  '/case-studies/cybersecurity-zero-trust': typeof CaseStudiesCybersecurityZeroTrustRoute
-  '/case-studies/impressions-to-clicks': typeof CaseStudiesImpressionsToClicksRoute
-  '/case-studies/ux-ui-conversions': typeof CaseStudiesUxUiConversionsRoute
+  '/dashboard/admin': typeof DashboardAdminRoute
+  '/dashboard/assets': typeof DashboardAssetsRoute
+  '/dashboard/chat': typeof DashboardChatRoute
+  '/dashboard/clients': typeof DashboardClientsRoute
+  '/dashboard/management': typeof DashboardManagementRoute
+  '/dashboard/members': typeof DashboardMembersRoute
+  '/dashboard/projects': typeof DashboardProjectsRoute
+  '/dashboard/settings': typeof DashboardSettingsRoute
+  '/dashboard/tasks': typeof DashboardTasksRoute
   '/case-studies/': typeof CaseStudiesIndexRoute
+  '/dashboard/': typeof DashboardIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -154,15 +231,24 @@ export interface FileRouteTypes {
     | '/careers'
     | '/case-studies'
     | '/contact'
+    | '/dashboard'
     | '/insights'
+    | '/portfolio'
     | '/privacy'
     | '/services'
     | '/terms'
     | '/case-studies/$slug'
-    | '/case-studies/cybersecurity-zero-trust'
-    | '/case-studies/impressions-to-clicks'
-    | '/case-studies/ux-ui-conversions'
+    | '/dashboard/admin'
+    | '/dashboard/assets'
+    | '/dashboard/chat'
+    | '/dashboard/clients'
+    | '/dashboard/management'
+    | '/dashboard/members'
+    | '/dashboard/projects'
+    | '/dashboard/settings'
+    | '/dashboard/tasks'
     | '/case-studies/'
+    | '/dashboard/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -170,14 +256,22 @@ export interface FileRouteTypes {
     | '/careers'
     | '/contact'
     | '/insights'
+    | '/portfolio'
     | '/privacy'
     | '/services'
     | '/terms'
     | '/case-studies/$slug'
-    | '/case-studies/cybersecurity-zero-trust'
-    | '/case-studies/impressions-to-clicks'
-    | '/case-studies/ux-ui-conversions'
+    | '/dashboard/admin'
+    | '/dashboard/assets'
+    | '/dashboard/chat'
+    | '/dashboard/clients'
+    | '/dashboard/management'
+    | '/dashboard/members'
+    | '/dashboard/projects'
+    | '/dashboard/settings'
+    | '/dashboard/tasks'
     | '/case-studies'
+    | '/dashboard'
   id:
     | '__root__'
     | '/'
@@ -185,15 +279,24 @@ export interface FileRouteTypes {
     | '/careers'
     | '/case-studies'
     | '/contact'
+    | '/dashboard'
     | '/insights'
+    | '/portfolio'
     | '/privacy'
     | '/services'
     | '/terms'
     | '/case-studies/$slug'
-    | '/case-studies/cybersecurity-zero-trust'
-    | '/case-studies/impressions-to-clicks'
-    | '/case-studies/ux-ui-conversions'
+    | '/dashboard/admin'
+    | '/dashboard/assets'
+    | '/dashboard/chat'
+    | '/dashboard/clients'
+    | '/dashboard/management'
+    | '/dashboard/members'
+    | '/dashboard/projects'
+    | '/dashboard/settings'
+    | '/dashboard/tasks'
     | '/case-studies/'
+    | '/dashboard/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -202,7 +305,9 @@ export interface RootRouteChildren {
   CareersRoute: typeof CareersRoute
   CaseStudiesRoute: typeof CaseStudiesRouteWithChildren
   ContactRoute: typeof ContactRoute
+  DashboardRoute: typeof DashboardRouteWithChildren
   InsightsRoute: typeof InsightsRoute
+  PortfolioRoute: typeof PortfolioRoute
   PrivacyRoute: typeof PrivacyRoute
   ServicesRoute: typeof ServicesRoute
   TermsRoute: typeof TermsRoute
@@ -231,11 +336,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PrivacyRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/portfolio': {
+      id: '/portfolio'
+      path: '/portfolio'
+      fullPath: '/portfolio'
+      preLoaderRoute: typeof PortfolioRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/insights': {
       id: '/insights'
       path: '/insights'
       fullPath: '/insights'
       preLoaderRoute: typeof InsightsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dashboard': {
+      id: '/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof DashboardRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/contact': {
@@ -273,6 +392,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/dashboard/': {
+      id: '/dashboard/'
+      path: '/'
+      fullPath: '/dashboard/'
+      preLoaderRoute: typeof DashboardIndexRouteImport
+      parentRoute: typeof DashboardRoute
+    }
     '/case-studies/': {
       id: '/case-studies/'
       path: '/'
@@ -280,26 +406,68 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CaseStudiesIndexRouteImport
       parentRoute: typeof CaseStudiesRoute
     }
-    '/case-studies/ux-ui-conversions': {
-      id: '/case-studies/ux-ui-conversions'
-      path: '/ux-ui-conversions'
-      fullPath: '/case-studies/ux-ui-conversions'
-      preLoaderRoute: typeof CaseStudiesUxUiConversionsRouteImport
-      parentRoute: typeof CaseStudiesRoute
+    '/dashboard/tasks': {
+      id: '/dashboard/tasks'
+      path: '/tasks'
+      fullPath: '/dashboard/tasks'
+      preLoaderRoute: typeof DashboardTasksRouteImport
+      parentRoute: typeof DashboardRoute
     }
-    '/case-studies/impressions-to-clicks': {
-      id: '/case-studies/impressions-to-clicks'
-      path: '/impressions-to-clicks'
-      fullPath: '/case-studies/impressions-to-clicks'
-      preLoaderRoute: typeof CaseStudiesImpressionsToClicksRouteImport
-      parentRoute: typeof CaseStudiesRoute
+    '/dashboard/settings': {
+      id: '/dashboard/settings'
+      path: '/settings'
+      fullPath: '/dashboard/settings'
+      preLoaderRoute: typeof DashboardSettingsRouteImport
+      parentRoute: typeof DashboardRoute
     }
-    '/case-studies/cybersecurity-zero-trust': {
-      id: '/case-studies/cybersecurity-zero-trust'
-      path: '/cybersecurity-zero-trust'
-      fullPath: '/case-studies/cybersecurity-zero-trust'
-      preLoaderRoute: typeof CaseStudiesCybersecurityZeroTrustRouteImport
-      parentRoute: typeof CaseStudiesRoute
+    '/dashboard/projects': {
+      id: '/dashboard/projects'
+      path: '/projects'
+      fullPath: '/dashboard/projects'
+      preLoaderRoute: typeof DashboardProjectsRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/members': {
+      id: '/dashboard/members'
+      path: '/members'
+      fullPath: '/dashboard/members'
+      preLoaderRoute: typeof DashboardMembersRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/management': {
+      id: '/dashboard/management'
+      path: '/management'
+      fullPath: '/dashboard/management'
+      preLoaderRoute: typeof DashboardManagementRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/clients': {
+      id: '/dashboard/clients'
+      path: '/clients'
+      fullPath: '/dashboard/clients'
+      preLoaderRoute: typeof DashboardClientsRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/chat': {
+      id: '/dashboard/chat'
+      path: '/chat'
+      fullPath: '/dashboard/chat'
+      preLoaderRoute: typeof DashboardChatRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/assets': {
+      id: '/dashboard/assets'
+      path: '/assets'
+      fullPath: '/dashboard/assets'
+      preLoaderRoute: typeof DashboardAssetsRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/admin': {
+      id: '/dashboard/admin'
+      path: '/admin'
+      fullPath: '/dashboard/admin'
+      preLoaderRoute: typeof DashboardAdminRouteImport
+      parentRoute: typeof DashboardRoute
     }
     '/case-studies/$slug': {
       id: '/case-studies/$slug'
@@ -313,23 +481,46 @@ declare module '@tanstack/react-router' {
 
 interface CaseStudiesRouteChildren {
   CaseStudiesSlugRoute: typeof CaseStudiesSlugRoute
-  CaseStudiesCybersecurityZeroTrustRoute: typeof CaseStudiesCybersecurityZeroTrustRoute
-  CaseStudiesImpressionsToClicksRoute: typeof CaseStudiesImpressionsToClicksRoute
-  CaseStudiesUxUiConversionsRoute: typeof CaseStudiesUxUiConversionsRoute
   CaseStudiesIndexRoute: typeof CaseStudiesIndexRoute
 }
 
 const CaseStudiesRouteChildren: CaseStudiesRouteChildren = {
   CaseStudiesSlugRoute: CaseStudiesSlugRoute,
-  CaseStudiesCybersecurityZeroTrustRoute:
-    CaseStudiesCybersecurityZeroTrustRoute,
-  CaseStudiesImpressionsToClicksRoute: CaseStudiesImpressionsToClicksRoute,
-  CaseStudiesUxUiConversionsRoute: CaseStudiesUxUiConversionsRoute,
   CaseStudiesIndexRoute: CaseStudiesIndexRoute,
 }
 
 const CaseStudiesRouteWithChildren = CaseStudiesRoute._addFileChildren(
   CaseStudiesRouteChildren,
+)
+
+interface DashboardRouteChildren {
+  DashboardAdminRoute: typeof DashboardAdminRoute
+  DashboardAssetsRoute: typeof DashboardAssetsRoute
+  DashboardChatRoute: typeof DashboardChatRoute
+  DashboardClientsRoute: typeof DashboardClientsRoute
+  DashboardManagementRoute: typeof DashboardManagementRoute
+  DashboardMembersRoute: typeof DashboardMembersRoute
+  DashboardProjectsRoute: typeof DashboardProjectsRoute
+  DashboardSettingsRoute: typeof DashboardSettingsRoute
+  DashboardTasksRoute: typeof DashboardTasksRoute
+  DashboardIndexRoute: typeof DashboardIndexRoute
+}
+
+const DashboardRouteChildren: DashboardRouteChildren = {
+  DashboardAdminRoute: DashboardAdminRoute,
+  DashboardAssetsRoute: DashboardAssetsRoute,
+  DashboardChatRoute: DashboardChatRoute,
+  DashboardClientsRoute: DashboardClientsRoute,
+  DashboardManagementRoute: DashboardManagementRoute,
+  DashboardMembersRoute: DashboardMembersRoute,
+  DashboardProjectsRoute: DashboardProjectsRoute,
+  DashboardSettingsRoute: DashboardSettingsRoute,
+  DashboardTasksRoute: DashboardTasksRoute,
+  DashboardIndexRoute: DashboardIndexRoute,
+}
+
+const DashboardRouteWithChildren = DashboardRoute._addFileChildren(
+  DashboardRouteChildren,
 )
 
 const rootRouteChildren: RootRouteChildren = {
@@ -338,7 +529,9 @@ const rootRouteChildren: RootRouteChildren = {
   CareersRoute: CareersRoute,
   CaseStudiesRoute: CaseStudiesRouteWithChildren,
   ContactRoute: ContactRoute,
+  DashboardRoute: DashboardRouteWithChildren,
   InsightsRoute: InsightsRoute,
+  PortfolioRoute: PortfolioRoute,
   PrivacyRoute: PrivacyRoute,
   ServicesRoute: ServicesRoute,
   TermsRoute: TermsRoute,

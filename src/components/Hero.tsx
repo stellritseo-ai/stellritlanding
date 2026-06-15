@@ -105,8 +105,16 @@ export default function Hero() {
     target: containerRef,
     offset: ["start start", "end end"],
   });
-  // Use direct scroll progress instead of useSpring for buttery smooth, off-main-thread native scroll animations on mobile
-  const p = scrollYProgress;
+  // Use a highly responsive spring to smooth out scroll increments (wheel stepping)
+  // while maintaining absolute snappiness and lightweight feel
+  const smoothProgress = useSpring(scrollYProgress, {
+    stiffness: 150,
+    damping: 38,
+    mass: 0.2,
+    restDelta: 0.0001
+  });
+  
+  const p = smoothProgress;
 
   // Phase 2-3: left video card expands to fit screen (centered, with gutters)
   const [vp, setVp] = useState({ w: 1280, h: 720 });
@@ -209,7 +217,7 @@ export default function Hero() {
   }
 
   return (
-    <div ref={containerRef} className="relative" style={{ height: "200vh" }}>
+    <div ref={containerRef} className="relative" style={{ height: "150vh" }}>
       <div className="sticky top-0 h-screen w-full overflow-hidden noise-overlay">
 
         {/* Gradient mask at the top of the viewport to fade out content scrolling behind header */}

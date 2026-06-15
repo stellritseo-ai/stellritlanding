@@ -1,6 +1,7 @@
 import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from "framer-motion";
 import { useRef, useState, MouseEvent } from "react";
 import { ArrowUpRight } from "lucide-react";
+import { Link } from "@tanstack/react-router";
 import brandImg from "@/assets/service-brand.jpg";
 import productImg from "@/assets/product.jpg";
 import growthImg from "@/assets/marketing.webp";
@@ -13,6 +14,7 @@ const SERVICES = [
     description: "Crafting iconic identities that command attention and build lasting equity for market leaders.",
     tags: ["Visual Identity", "Video", "Content Strategy"],
     image: brandImg,
+    category: "brand",
   },
   {
     index: "02",
@@ -20,6 +22,7 @@ const SERVICES = [
     description: "From concept to conversion — beautifully engineered digital products that scale with ambition.",
     tags: ["Web Design", "Design Systems", "eCommerce"],
     image: productImg,
+    category: "product",
   },
   {
     index: "03",
@@ -27,6 +30,7 @@ const SERVICES = [
     description: "Data-driven campaigns that unlock compounding growth across every channel that matters.",
     tags: ["Paid Media", "CRO", "Analytics", "SEM Strategy"],
     image: growthImg,
+    category: "marketing",
   },
   {
     index: "04",
@@ -34,6 +38,7 @@ const SERVICES = [
     description: "Integrating intelligent agents and custom language models to streamline operations and unlock data insights.",
     tags: ["Agentic Workflows", "LLM Integrations", "Process Automation"],
     image: aiImg,
+    category: "ai",
   },
 ];
 
@@ -67,94 +72,98 @@ function ServiceRow({
   };
 
   return (
-    <motion.div
-      ref={ref}
-      onMouseEnter={onHover}
-      onMouseMove={onMove}
-      onMouseLeave={onLeave}
-      initial={{ opacity: 0, y: 32 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-60px" }}
-      transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1], delay: idx * 0.08 }}
-      className="group relative cursor-pointer"
+    <Link
+      to="/portfolio"
+      search={{ filter: service.category } as any}
+      className="block group relative cursor-pointer"
     >
-      {/* Top border with gradient on active */}
-      <div className="relative h-px w-full overflow-hidden">
-        <div className="absolute inset-0 bg-white/10" />
-        <motion.div
-          className="absolute inset-0"
-          style={{
-            background: "linear-gradient(90deg, #7a2adc, #cc7aff, #ff8a5b)",
-          }}
-          animate={{ opacity: isActive ? 1 : 0 }}
-          transition={{ duration: 0.4 }}
-        />
-      </div>
-
       <motion.div
-        style={{ x: sx, y: sy }}
-        className="grid grid-cols-[56px_1fr_auto] items-start gap-6 py-4 md:py-5 lg:py-5 will-change-transform"
+        ref={ref}
+        onMouseEnter={onHover}
+        onMouseMove={onMove}
+        onMouseLeave={onLeave}
+        initial={{ opacity: 0, y: 32 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-60px" }}
+        transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1], delay: idx * 0.08 }}
       >
-        {/* Index number */}
-        <motion.span
-          animate={{ color: isActive ? "rgba(204,122,255,0.9)" : "rgba(255,255,255,0.2)" }}
-          transition={{ duration: 0.3 }}
-          className="mt-1 font-mono text-xs tracking-[0.2em] select-none"
-        >
-          {service.index}
-        </motion.span>
-
-        {/* Title + description + tags */}
-        <div className="flex flex-col gap-2">
-          <motion.h3
-            animate={{
-              color: isActive ? "#ffffff" : "rgba(255,255,255,0.75)",
-            }}
-            transition={{ duration: 0.3 }}
-            className="font-serif text-[24px] leading-[0.95] tracking-tight sm:text-[28px] md:text-[36px] lg:text-[42px]"
-            style={{ fontFamily: "'Cormorant Garamond', 'Playfair Display', Georgia, serif", fontWeight: 600 }}
-          >
-            {service.title}
-          </motion.h3>
-
-          <motion.p
-            animate={{ opacity: isActive ? 1 : 0, height: isActive ? "auto" : 0 }}
-            transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-            className="overflow-hidden text-sm leading-relaxed text-white/60 max-w-sm"
-          >
-            {service.description}
-          </motion.p>
-
+        {/* Top border with gradient on active */}
+        <div className="relative h-px w-full overflow-hidden">
+          <div className="absolute inset-0 bg-white/10" />
           <motion.div
-            animate={{ opacity: isActive ? 1 : 0.6 }}
-            transition={{ duration: 0.3 }}
-            className="flex flex-wrap items-center gap-2"
-          >
-            {service.tags.map((t) => (
-              <span
-                key={t}
-                className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[11px] font-medium uppercase tracking-widest text-white/70"
-              >
-                {t}
-              </span>
-            ))}
-          </motion.div>
+            className="absolute inset-0"
+            style={{
+              background: "linear-gradient(90deg, #7a2adc, #cc7aff, #ff8a5b)",
+            }}
+            animate={{ opacity: isActive ? 1 : 0 }}
+            transition={{ duration: 0.4 }}
+          />
         </div>
 
-        {/* Arrow icon */}
         <motion.div
-          animate={{
-            opacity: isActive ? 1 : 0,
-            x: isActive ? 0 : 8,
-            rotate: isActive ? 0 : -20,
-          }}
-          transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-          className="mt-2 grid h-10 w-10 place-items-center rounded-full border border-white/15 bg-white/5 text-white backdrop-blur-sm"
+          style={{ x: sx, y: sy }}
+          className="grid grid-cols-[56px_1fr_auto] items-start gap-6 py-4 md:py-5 lg:py-5 will-change-transform"
         >
-          <ArrowUpRight className="h-4 w-4" />
+          {/* Index number */}
+          <motion.span
+            animate={{ color: isActive ? "rgba(204,122,255,0.9)" : "rgba(255,255,255,0.2)" }}
+            transition={{ duration: 0.3 }}
+            className="mt-1 font-mono text-xs tracking-[0.2em] select-none"
+          >
+            {service.index}
+          </motion.span>
+
+          {/* Title + description + tags */}
+          <div className="flex flex-col gap-2">
+            <motion.h3
+              animate={{
+                color: isActive ? "#ffffff" : "rgba(255,255,255,0.75)",
+              }}
+              transition={{ duration: 0.3 }}
+              className="font-serif text-[24px] leading-[0.95] tracking-tight sm:text-[28px] md:text-[36px] lg:text-[42px]"
+              style={{ fontFamily: "'Cormorant Garamond', 'Playfair Display', Georgia, serif", fontWeight: 600 }}
+            >
+              {service.title}
+            </motion.h3>
+
+            <motion.p
+              animate={{ opacity: isActive ? 1 : 0, height: isActive ? "auto" : 0 }}
+              transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+              className="overflow-hidden text-sm leading-relaxed text-white/60 max-w-sm"
+            >
+              {service.description}
+            </motion.p>
+
+            <motion.div
+              animate={{ opacity: isActive ? 1 : 0.6 }}
+              transition={{ duration: 0.3 }}
+              className="flex flex-wrap items-center gap-2"
+            >
+              {service.tags.map((t) => (
+                <span
+                  key={t}
+                  className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[11px] font-medium uppercase tracking-widest text-white/70"
+                >
+                  {t}
+                </span>
+              ))}
+            </motion.div>
+          </div>
+
+          <motion.div
+            animate={{
+              opacity: isActive ? 1 : 0,
+              x: isActive ? 0 : 8,
+              rotate: isActive ? 0 : -20,
+            }}
+            transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+            className="mt-2 grid h-10 w-10 place-items-center rounded-full border border-white/15 bg-white/5 text-white backdrop-blur-sm"
+          >
+            <ArrowUpRight className="h-4 w-4" />
+          </motion.div>
         </motion.div>
       </motion.div>
-    </motion.div>
+    </Link>
   );
 }
 

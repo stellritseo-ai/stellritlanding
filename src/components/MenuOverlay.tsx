@@ -9,7 +9,7 @@ const MENU_IMAGES: Record<string, string> = {
   "Agency": "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=600&q=80&auto=format&fit=crop",
   "Services": "https://images.unsplash.com/photo-1581291518633-83b4ebd1d83e?w=600&q=80&auto=format&fit=crop",
   "Insights": "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=600&q=80&auto=format&fit=crop",
-  "Careers": "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=600&q=80&auto=format&fit=crop",
+  "Portfolio": "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=600&q=80&auto=format&fit=crop",
   "Contact": "https://images.unsplash.com/photo-1423666639041-f56000c27a9a?w=600&q=80&auto=format&fit=crop",
 };
 const DEFAULT_IMAGE = "https://images.unsplash.com/photo-1542744094-3a31f103e35f?w=600&q=80&auto=format&fit=crop";
@@ -31,7 +31,7 @@ const NAV: { label: string; to: string; children?: { label: string; to: string }
     ],
   },
   { label: "Insights", to: "/insights" },
-  { label: "Careers", to: "/careers" },
+  { label: "Portfolio", to: "/portfolio" },
   { label: "Contact", to: "/contact" },
   { label: "Pay Now", to: "https://buy.stripe.com/aEUg0X1pe7v52yI002" },
 ];

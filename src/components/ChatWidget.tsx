@@ -1,46 +1,290 @@
-import { useEffect, useRef, useState } from "react";
-import { MessageCircle, X, Send, Calendar } from "lucide-react";
+import { useEffect, useRef, useState, useCallback } from "react";
+import { MessageCircle, X, Send, Calendar, Loader2, AlertCircle } from "lucide-react";
+import { useChatSocket, type ChatMessagePayload } from "@/hooks/useChatSocket";
 
-type Msg = { role: "bot" | "user"; text: string };
+// ─── Config ───────────────────────────────────────────────────────────────────
+const API_URL = import.meta.env.VITE_CHAT_API_URL ?? "http://localhost:3001";
+const SESSION_KEY = "stellr_chat_session_id";
+const VISITOR_KEY = "stellr_chat_visitor_id";
 
-const QUICK_ACTIONS = [
-  { label: "Services", emoji: "🧩", reply: "We offer Strategy, Web & Product Design, Engineering, Brand, and Growth Marketing. Which area fits your project?" },
-  { label: "Case Studies", emoji: "📈", reply: "Our work spans fintech, retail, healthcare, and SaaS. Want me to pull up a relevant case study?" },
-  { label: "Pricing", emoji: "💰", reply: "Engagements typically start at $25k for sprints and scale up for retainers and platform builds. Want a tailored estimate?" },
-  { label: "Timeline", emoji: "🗓️", reply: "Sprints run 2–4 weeks, full builds 8–16 weeks. When are you hoping to launch?" },
-  { label: "Careers", emoji: "🚀", reply: "We're hiring across design, engineering, and strategy. I can point you to open roles." },
-  { label: "Contact", emoji: "📞", reply: "You can reach us at hello@stellrit.com or book a call below." },
-];
+// ─── Types ────────────────────────────────────────────────────────────────────
+type Step = "intro" | "form" | "chat";
 
-const INITIAL: Msg = {
-  role: "bot",
-  text: "Hi, I'm StellR — your digital strategy concierge. I can help with services, case studies, pricing, and timelines. What are you exploring today?",
-};
+interface Message {
+  id: string;
+  senderType: "visitor" | "admin";
+  message: string;
+  createdAt: string;
+  readAt: string | null;
+  sending?: boolean;
+  error?: boolean;
+}
 
+interface Session {
+  id: string;
+  visitorName: string;
+  status: "open" | "closed";
+}
+
+// ─── Helpers ─────────────────────────────────────────────────────────────────
+function formatTime(iso: string): string {
+  return new Date(iso).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+}
+
+async function apiFetch<T>(path: string, opts?: RequestInit): Promise<T> {
+  const res = await fetch(`${API_URL}${path}`, {
+    headers: { "Content-Type": "application/json" },
+    ...opts,
+  });
+  if (!res.ok) throw new Error(`API ${res.status}: ${await res.text()}`);
+  return res.json() as Promise<T>;
+}
+
+// ─── Component ────────────────────────────────────────────────────────────────
 export default function ChatWidget() {
   const [open, setOpen] = useState(false);
-  const [messages, setMessages] = useState<Msg[]>([INITIAL]);
+  const [step, setStep] = useState<Step>("intro");
+
+  // Session state
+  const [session, setSession] = useState<Session | null>(null);
+  const [sessionLoading, setSessionLoading] = useState(false);
+
+  // Messages
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [historyLoading, setHistoryLoading] = useState(false);
+
+  // Input
   const [input, setInput] = useState("");
+  const [sending, setSending] = useState(false);
+  const [sendError, setSendError] = useState<string | null>(null);
+
+  // Visitor info form
+  const [visitorName, setVisitorName] = useState("");
+  const [visitorContact, setVisitorContact] = useState("");
+  const [formError, setFormError] = useState<string | null>(null);
+
+  // Typing
+  const [adminTyping, setAdminTyping] = useState(false);
+  const typingTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const myTypingTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Refs
   const scrollRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
+  // ─── Socket.IO ──────────────────────────────────────────────────────────
+  const { joinChat, emitTypingStart, emitTypingStop, markRead } = useChatSocket({
+    onMessage: (data: ChatMessagePayload) => {
+      if (data.senderType === "admin" && data.sessionId === session?.id) {
+        setMessages((prev) => {
+          if (prev.some((m) => m.id === data.id)) return prev;
+          return [
+            ...prev,
+            {
+              id: data.id,
+              senderType: "admin",
+              message: data.message,
+              createdAt: data.createdAt,
+              readAt: data.readAt,
+            },
+          ];
+        });
+        setAdminTyping(false);
+      }
+    },
+    onTypingStart: (data) => {
+      if (data.senderType === "admin" && data.sessionId === session?.id) {
+        setAdminTyping(true);
+        if (typingTimeout.current) clearTimeout(typingTimeout.current);
+        typingTimeout.current = setTimeout(() => setAdminTyping(false), 4000);
+      }
+    },
+    onTypingStop: (data) => {
+      if (data.senderType === "admin" && data.sessionId === session?.id) {
+        setAdminTyping(false);
+      }
+    },
+    onSessionUpdated: (data) => {
+      if (data.id === session?.id) {
+        setSession((prev) => prev ? { ...prev, status: data.status } : prev);
+      }
+    },
+  });
+
+  // ─── Auto-scroll ────────────────────────────────────────────────────────
   useEffect(() => {
-    scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
-  }, [messages, open]);
+    if (scrollRef.current) {
+      scrollRef.current.scrollTo({
+        top: scrollRef.current.scrollHeight,
+        behavior: "smooth",
+      });
+    }
+  }, [messages, adminTyping, open]);
 
-  const send = (text: string) => {
-    if (!text.trim()) return;
-    setMessages((m) => [...m, { role: "user", text }]);
-    setInput("");
-    const match = QUICK_ACTIONS.find((q) => text.toLowerCase().includes(q.label.toLowerCase()));
-    const reply = match?.reply ??
-      "Thanks for the note — a strategist will follow up shortly. In the meantime, you can book a discovery call below.";
-    setTimeout(() => setMessages((m) => [...m, { role: "bot", text: reply }]), 600);
+  // ─── On widget open: initialize session ─────────────────────────────────
+  useEffect(() => {
+    if (!open) return;
+
+    const storedSessionId = localStorage.getItem(SESSION_KEY);
+
+    if (storedSessionId) {
+      // Try to load existing session
+      setSessionLoading(true);
+      apiFetch<Session>(`/api/chat/session/${storedSessionId}`)
+        .then((sess) => {
+          setSession(sess);
+          setStep("chat");
+          joinChat(sess.id);
+          markRead(sess.id, "visitor");
+          return loadHistory(sess.id);
+        })
+        .catch(() => {
+          // Session gone — start fresh
+          localStorage.removeItem(SESSION_KEY);
+          setStep("intro");
+        })
+        .finally(() => setSessionLoading(false));
+    } else {
+      setStep("intro");
+    }
+  }, [open]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // ─── Load history ───────────────────────────────────────────────────────
+  const loadHistory = useCallback(async (sessionId: string) => {
+    setHistoryLoading(true);
+    try {
+      const msgs = await apiFetch<Message[]>(`/api/chat/session/${sessionId}/messages`);
+      setMessages(msgs);
+    } catch {
+      // non-fatal
+    } finally {
+      setHistoryLoading(false);
+    }
+  }, []);
+
+  // ─── Create new session ─────────────────────────────────────────────────
+  const createSession = async () => {
+    if (!visitorName.trim()) {
+      setFormError("Please enter your name.");
+      return;
+    }
+    if (!visitorContact.trim()) {
+      setFormError("Please enter your email or phone.");
+      return;
+    }
+    setFormError(null);
+    setSessionLoading(true);
+
+    try {
+      let visitorId = localStorage.getItem(VISITOR_KEY);
+      if (!visitorId) {
+        visitorId = crypto.randomUUID();
+        localStorage.setItem(VISITOR_KEY, visitorId);
+      }
+
+      const sess = await apiFetch<Session>("/api/chat/session", {
+        method: "POST",
+        body: JSON.stringify({
+          visitorId,
+          visitorName: visitorName.trim(),
+          visitorPhoneOrEmail: visitorContact.trim(),
+        }),
+      });
+
+      localStorage.setItem(SESSION_KEY, sess.id);
+      setSession(sess);
+      setStep("chat");
+      joinChat(sess.id);
+
+      // Send the initial greeting message from the bot
+      setMessages([
+        {
+          id: "welcome",
+          senderType: "admin",
+          message: `Hi ${visitorName.split(" ")[0]}! 👋 I'm StellR — your digital strategy concierge. How can I help you today?`,
+          createdAt: new Date().toISOString(),
+          readAt: null,
+        },
+      ]);
+    } catch {
+      setFormError("Failed to connect. Please try again.");
+    } finally {
+      setSessionLoading(false);
+    }
   };
+
+  // ─── Send message ───────────────────────────────────────────────────────
+  const sendMessage = async (text = input) => {
+    if (!text.trim() || !session || session.status === "closed" || sending) return;
+
+    const optimisticId = `opt-${Date.now()}`;
+    const optimisticMsg: Message = {
+      id: optimisticId,
+      senderType: "visitor",
+      message: text.trim(),
+      createdAt: new Date().toISOString(),
+      readAt: null,
+      sending: true,
+    };
+
+    setMessages((prev) => [...prev, optimisticMsg]);
+    setInput("");
+    setSending(true);
+    setSendError(null);
+
+    // Stop typing indicator
+    emitTypingStop(session.id, "visitor");
+    if (myTypingTimeout.current) clearTimeout(myTypingTimeout.current);
+
+    try {
+      const saved = await apiFetch<Message>(`/api/chat/session/${session.id}/message`, {
+        method: "POST",
+        body: JSON.stringify({ message: text.trim() }),
+      });
+
+      setMessages((prev) =>
+        prev.map((m) =>
+          m.id === optimisticId ? { ...saved, sending: false } : m
+        )
+      );
+    } catch {
+      setMessages((prev) =>
+        prev.map((m) =>
+          m.id === optimisticId ? { ...m, sending: false, error: true } : m
+        )
+      );
+      setSendError("Failed to send. Tap to retry.");
+    } finally {
+      setSending(false);
+    }
+  };
+
+  // ─── Typing emit ────────────────────────────────────────────────────────
+  const handleInputChange = (val: string) => {
+    setInput(val);
+    if (!session) return;
+
+    emitTypingStart(session.id, "visitor");
+    if (myTypingTimeout.current) clearTimeout(myTypingTimeout.current);
+    myTypingTimeout.current = setTimeout(() => {
+      emitTypingStop(session.id, "visitor");
+    }, 3000);
+  };
+
+  // ─── Retry failed message ───────────────────────────────────────────────
+  const retryMessage = (msg: Message) => {
+    setMessages((prev) => prev.filter((m) => m.id !== msg.id));
+    sendMessage(msg.message);
+  };
+
+  // ─── UI ─────────────────────────────────────────────────────────────────
+  const isClosed = session?.status === "closed";
 
   return (
     <>
-      {/* Floating launcher */}
+      {/* ── Floating launcher button ─────────────────────────────────────── */}
       <button
+        id="chat-widget-launcher"
         aria-label={open ? "Close chat" : "Open chat"}
         onClick={() => setOpen((v) => !v)}
         className="fixed bottom-6 right-6 z-[60] grid h-14 w-14 place-items-center rounded-full bg-gradient-to-br from-[#a855f7] to-[#6a18c8] text-white shadow-[0_10px_40px_-10px_rgba(168,85,247,0.8)] ring-1 ring-white/20 transition hover:scale-105"
@@ -49,10 +293,12 @@ export default function ChatWidget() {
         {open ? <X className="h-6 w-6" /> : <MessageCircle className="h-6 w-6" />}
       </button>
 
-      {/* Panel */}
+      {/* ── Panel ────────────────────────────────────────────────────────── */}
       <div
-        className={`fixed bottom-24 right-6 z-[60] w-[min(380px,calc(100vw-3rem))] origin-bottom-right overflow-hidden rounded-2xl border border-white/10 bg-[#120025]/95 text-white shadow-[0_30px_80px_-20px_rgba(0,0,0,0.7)] backdrop-blur-xl transition-all duration-300 ${
-          open ? "pointer-events-auto translate-y-0 scale-100 opacity-100" : "pointer-events-none translate-y-3 scale-95 opacity-0"
+        className={`fixed bottom-24 right-6 z-[60] w-[min(390px,calc(100vw-1.5rem))] origin-bottom-right overflow-hidden rounded-2xl border border-white/10 bg-[#120025]/95 text-white shadow-[0_30px_80px_-20px_rgba(0,0,0,0.7)] backdrop-blur-xl transition-all duration-300 ${
+          open
+            ? "pointer-events-auto translate-y-0 scale-100 opacity-100"
+            : "pointer-events-none translate-y-3 scale-95 opacity-0"
         }`}
       >
         {/* Header */}
@@ -63,80 +309,245 @@ export default function ChatWidget() {
           <div className="flex-1">
             <div className="text-[15px] font-semibold leading-tight">StellR IT</div>
             <div className="flex items-center gap-1.5 text-xs text-white/70">
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
-              Online — typically replies instantly
+              {isClosed ? (
+                <>
+                  <span className="h-1.5 w-1.5 rounded-full bg-gray-400" />
+                  Conversation closed
+                </>
+              ) : (
+                <>
+                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                  Online — typically replies instantly
+                </>
+              )}
             </div>
           </div>
-          <button onClick={() => setOpen(false)} aria-label="Close" className="rounded-full p-1 text-white/80 transition hover:bg-white/10 hover:text-white">
+          <button
+            id="chat-widget-close"
+            onClick={() => setOpen(false)}
+            aria-label="Close"
+            className="rounded-full p-1 text-white/80 transition hover:bg-white/10 hover:text-white"
+          >
             <X className="h-5 w-5" />
           </button>
         </div>
 
-        {/* Messages */}
-        <div ref={scrollRef} className="max-h-[42vh] min-h-[260px] space-y-3 overflow-y-auto px-4 py-4">
-          {messages.map((m, i) => (
-            <div key={i} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
-              <div
-                className={`max-w-[85%] rounded-2xl px-3.5 py-2.5 text-sm leading-snug ${
-                  m.role === "user"
-                    ? "bg-gradient-to-br from-[#ff8a5b] to-[#e8674a] text-white"
-                    : "bg-white/[0.06] text-white/90 ring-1 ring-white/10"
-                }`}
+        {/* ── Loading state ─────────────────────────────────────────────── */}
+        {sessionLoading && (
+          <div className="flex min-h-[260px] items-center justify-center">
+            <Loader2 className="h-6 w-6 animate-spin text-[#a855f7]" />
+          </div>
+        )}
+
+        {/* ── Intro step: welcome message ─────────────────────────────── */}
+        {!sessionLoading && step === "intro" && (
+          <div className="flex min-h-[260px] flex-col items-center justify-center gap-4 px-5 py-8 text-center">
+            <div className="grid h-14 w-14 place-items-center rounded-2xl bg-gradient-to-br from-[#a855f7]/30 to-[#6a18c8]/30 ring-1 ring-[#a855f7]/40">
+              <MessageCircle className="h-7 w-7 text-[#c084fc]" />
+            </div>
+            <div>
+              <p className="text-[15px] font-semibold text-white">Hi there! 👋</p>
+              <p className="mt-1 text-sm leading-relaxed text-white/60">
+                We typically reply in minutes. Start a conversation below.
+              </p>
+            </div>
+            <button
+              id="chat-start-btn"
+              onClick={() => setStep("form")}
+              className="mt-1 w-full rounded-xl bg-gradient-to-br from-[#a855f7] to-[#6a18c8] px-4 py-2.5 text-sm font-semibold text-white shadow-lg transition hover:opacity-90"
+            >
+              Start a conversation
+            </button>
+          </div>
+        )}
+
+        {/* ── Form step: visitor name + contact ───────────────────────── */}
+        {!sessionLoading && step === "form" && (
+          <div className="flex min-h-[260px] flex-col gap-4 px-5 py-6">
+            <p className="text-sm text-white/70">Tell us a bit about yourself so we can help you better.</p>
+
+            <div className="flex flex-col gap-3">
+              <div>
+                <label className="mb-1 block text-xs text-white/50" htmlFor="chat-visitor-name">
+                  Your name *
+                </label>
+                <input
+                  id="chat-visitor-name"
+                  value={visitorName}
+                  onChange={(e) => setVisitorName(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && createSession()}
+                  placeholder="Jane Smith"
+                  className="w-full rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 text-sm text-white placeholder:text-white/30 focus:border-[#a855f7]/60 focus:outline-none"
+                />
+              </div>
+
+              <div>
+                <label className="mb-1 block text-xs text-white/50" htmlFor="chat-visitor-contact">
+                  Email or phone *
+                </label>
+                <input
+                  id="chat-visitor-contact"
+                  value={visitorContact}
+                  onChange={(e) => setVisitorContact(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && createSession()}
+                  placeholder="jane@company.com"
+                  className="w-full rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 text-sm text-white placeholder:text-white/30 focus:border-[#a855f7]/60 focus:outline-none"
+                />
+              </div>
+
+              {formError && (
+                <p className="flex items-center gap-1.5 text-xs text-red-400">
+                  <AlertCircle className="h-3.5 w-3.5 shrink-0" />
+                  {formError}
+                </p>
+              )}
+
+              <button
+                id="chat-form-submit"
+                onClick={createSession}
+                disabled={sessionLoading}
+                className="mt-1 flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-br from-[#a855f7] to-[#6a18c8] px-4 py-2.5 text-sm font-semibold text-white shadow-lg transition hover:opacity-90 disabled:opacity-60"
               >
-                {m.text}
-              </div>
+                {sessionLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Start chatting →"}
+              </button>
+
+              <button
+                onClick={() => setStep("intro")}
+                className="text-center text-xs text-white/40 hover:text-white/60"
+              >
+                ← Back
+              </button>
             </div>
-          ))}
+          </div>
+        )}
 
-          {messages.length === 1 && (
-            <div className="pt-2">
-              <div className="mb-2 text-xs font-medium uppercase tracking-wider text-white/50">Quick actions</div>
-              <div className="grid grid-cols-2 gap-2">
-                {QUICK_ACTIONS.map((q) => (
-                  <button
-                    key={q.label}
-                    onClick={() => send(q.label)}
-                    className="rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 text-left text-sm text-white/90 transition hover:border-[#ff8a5b]/40 hover:bg-white/[0.08]"
-                  >
-                    <span className="mr-1.5">{q.emoji}</span>
-                    {q.label}
-                  </button>
-                ))}
-              </div>
+        {/* ── Chat step ───────────────────────────────────────────────── */}
+        {!sessionLoading && step === "chat" && (
+          <>
+            {/* Messages feed */}
+            <div
+              ref={scrollRef}
+              className="flex max-h-[42vh] min-h-[260px] flex-col gap-3 overflow-y-auto px-4 py-4"
+            >
+              {historyLoading ? (
+                <div className="flex flex-1 items-center justify-center py-10">
+                  <Loader2 className="h-5 w-5 animate-spin text-[#a855f7]" />
+                </div>
+              ) : (
+                <>
+                  {messages.map((m) => {
+                    const isVisitor = m.senderType === "visitor";
+                    return (
+                      <div
+                        key={m.id}
+                        className={`flex flex-col ${isVisitor ? "items-end" : "items-start"}`}
+                      >
+                        <button
+                          onClick={() => m.error && retryMessage(m)}
+                          className={`max-w-[85%] rounded-2xl px-3.5 py-2.5 text-sm leading-snug text-left transition ${
+                            isVisitor
+                              ? m.error
+                                ? "bg-red-900/40 ring-1 ring-red-500/40 text-white/80 cursor-pointer hover:bg-red-900/60"
+                                : m.sending
+                                ? "bg-gradient-to-br from-[#ff8a5b]/70 to-[#e8674a]/70 text-white opacity-70"
+                                : "bg-gradient-to-br from-[#ff8a5b] to-[#e8674a] text-white"
+                              : "bg-white/[0.06] text-white/90 ring-1 ring-white/10"
+                          } ${!isVisitor ? "cursor-default" : ""}`}
+                        >
+                          {m.message}
+                          {m.error && (
+                            <span className="ml-2 text-xs text-red-400">(tap to retry)</span>
+                          )}
+                        </button>
+                        <div className="mt-0.5 flex items-center gap-1 text-[10px] text-white/35">
+                          {m.sending && <Loader2 className="h-2.5 w-2.5 animate-spin" />}
+                          {m.error && <AlertCircle className="h-2.5 w-2.5 text-red-400" />}
+                          {formatTime(m.createdAt)}
+                        </div>
+                      </div>
+                    );
+                  })}
+
+                  {/* Typing indicator */}
+                  {adminTyping && (
+                    <div className="flex items-start">
+                      <div className="flex items-center gap-1 rounded-2xl bg-white/[0.06] px-4 py-3 ring-1 ring-white/10">
+                        <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-white/50 [animation-delay:-0.3s]" />
+                        <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-white/50 [animation-delay:-0.15s]" />
+                        <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-white/50" />
+                      </div>
+                    </div>
+                  )}
+                </>
+              )}
             </div>
-          )}
-        </div>
 
-        {/* Book CTA */}
-        <div className="px-4 pb-3">
-          <a
-            href="mailto:hello@stellrit.com?subject=Book%20a%20discovery%20call"
-            className="flex items-center justify-center gap-2 rounded-xl border border-white/15 bg-white/[0.05] px-4 py-2.5 text-sm font-medium text-white transition hover:border-[#ff8a5b]/50 hover:bg-white/[0.1]"
-          >
-            <Calendar className="h-4 w-4" />
-            Book a discovery call
-          </a>
-        </div>
+            {/* Closed banner */}
+            {isClosed && (
+              <div className="mx-4 mb-3 rounded-xl border border-gray-500/30 bg-gray-800/40 px-4 py-3 text-center text-xs text-white/60">
+                This conversation has been closed. Start a new one below.
+              </div>
+            )}
 
-        {/* Composer */}
-        <form
-          onSubmit={(e) => { e.preventDefault(); send(input); }}
-          className="flex items-center gap-2 border-t border-white/10 bg-black/20 px-3 py-3"
-        >
-          <input
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder="Ask about services, pricing, timelines…"
-            className="flex-1 rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 text-sm text-white placeholder:text-white/40 focus:border-[#a855f7]/60 focus:outline-none"
-          />
-          <button
-            type="submit"
-            aria-label="Send"
-            className="grid h-9 w-9 place-items-center rounded-lg bg-gradient-to-br from-[#a855f7] to-[#6a18c8] text-white transition hover:opacity-90"
-          >
-            <Send className="h-4 w-4" />
-          </button>
-        </form>
+            {/* Book CTA */}
+            <div className="px-4 pb-3">
+              <a
+                id="chat-book-call"
+                href="mailto:hello@stellrit.com?subject=Book%20a%20discovery%20call"
+                className="flex items-center justify-center gap-2 rounded-xl border border-white/15 bg-white/[0.05] px-4 py-2.5 text-sm font-medium text-white transition hover:border-[#ff8a5b]/50 hover:bg-white/[0.1]"
+              >
+                <Calendar className="h-4 w-4" />
+                Book a discovery call
+              </a>
+            </div>
+
+            {/* Composer */}
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                sendMessage();
+              }}
+              className="flex items-center gap-2 border-t border-white/10 bg-black/20 px-3 py-3"
+            >
+              <input
+                ref={inputRef}
+                id="chat-message-input"
+                value={input}
+                onChange={(e) => handleInputChange(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
+                    sendMessage();
+                  }
+                }}
+                placeholder={
+                  isClosed
+                    ? "Conversation closed"
+                    : "Ask about services, pricing, timelines…"
+                }
+                disabled={isClosed || sending}
+                className="flex-1 rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 text-sm text-white placeholder:text-white/40 focus:border-[#a855f7]/60 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+              />
+              <button
+                id="chat-send-btn"
+                type="submit"
+                aria-label="Send"
+                disabled={!input.trim() || isClosed || sending}
+                className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-gradient-to-br from-[#a855f7] to-[#6a18c8] text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
+              >
+                {sending ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Send className="h-4 w-4" />
+                )}
+              </button>
+            </form>
+
+            {sendError && (
+              <p className="px-4 pb-2 text-center text-xs text-red-400">{sendError}</p>
+            )}
+          </>
+        )}
       </div>
     </>
   );

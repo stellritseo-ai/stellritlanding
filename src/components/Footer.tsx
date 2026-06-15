@@ -12,7 +12,7 @@ gsap.registerPlugin(ScrollTrigger);
 type LinkItem = { label: string; to: string };
 const COMPANY: LinkItem[] = [
   { label: "About Us", to: "/about" },
-  { label: "Career", to: "/careers" },
+  { label: "Portfolio", to: "/portfolio" },
   { label: "Case Studies", to: "/case-studies" },
   { label: "Contact", to: "/contact" },
 ];

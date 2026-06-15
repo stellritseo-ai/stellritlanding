@@ -12,7 +12,9 @@
     "build:dev": "vite build --mode development",
     "preview": "vite preview",
     "lint": "eslint .",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "copy-assets": "node copy.cjs",
+    "chat-server": "cd chat-server && npm run dev"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",

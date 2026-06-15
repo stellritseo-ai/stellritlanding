@@ -1,0 +1,47 @@
+{
+  "sessions": [
+    {
+      "id": "session-1781519411824-131qzsp2m",
+      "visitorId": "2c39e2e9-dda7-4ea2-b43f-7cb78d987ee2",
+      "visitorName": "Jack",
+      "visitorPhoneOrEmail": "Jack@stellrit.com",
+      "status": "closed",
+      "createdAt": "2026-06-15T10:30:11.825Z",
+      "updatedAt": "2026-06-15T10:35:19.893Z"
+    }
+  ],
+  "messages": [
+    {
+      "id": "msg-1781519416062-lqzvaa5y3",
+      "sessionId": "session-1781519411824-131qzsp2m",
+      "senderType": "visitor",
+      "message": "Hello",
+      "createdAt": "2026-06-15T10:30:16.063Z",
+      "readAt": "2026-06-15T10:30:22.291Z"
+    },
+    {
+      "id": "msg-1781519439184-0zz6b4k0t",
+      "sessionId": "session-1781519411824-131qzsp2m",
+      "senderType": "admin",
+      "message": "how are you doing?",
+      "createdAt": "2026-06-15T10:30:39.184Z",
+      "readAt": "2026-06-15T10:35:35.287Z"
+    },
+    {
+      "id": "msg-1781519459943-hbton49zq",
+      "sessionId": "session-1781519411824-131qzsp2m",
+      "senderType": "visitor",
+      "message": "good what about you?",
+      "createdAt": "2026-06-15T10:30:59.943Z",
+      "readAt": "2026-06-15T10:36:04.057Z"
+    },
+    {
+      "id": "msg-1781519473362-f2ovhgb4o",
+      "sessionId": "session-1781519411824-131qzsp2m",
+      "senderType": "admin",
+      "message": "i am also good.",
+      "createdAt": "2026-06-15T10:31:13.362Z",
+      "readAt": "2026-06-15T10:35:35.287Z"
+    }
+  ]
+}

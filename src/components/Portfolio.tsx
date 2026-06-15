@@ -1,6 +1,7 @@
 import { useState, useRef } from "react";
 import { motion, AnimatePresence, useMotionValue, useTransform, useSpring, useVelocity } from "framer-motion";
 import { ArrowUpRight, LayoutGrid, List } from "lucide-react";
+import { Link } from "@tanstack/react-router";
 import brandImg from "@/assets/service-brand.jpg";
 import productImg from "@/assets/product.jpg";
 import liveNationImg from "@/assets/mobile-view.jpg";
@@ -35,6 +36,7 @@ type PortfolioItem = {
   accentColor: string;
   glowColor: string;
   ratio: string;
+  slug: string;
 };
 
 const CATEGORIES = ["All", "Branding", "Digital Product", "Creative Dev"] as const;
@@ -51,6 +53,7 @@ const ITEMS: PortfolioItem[] = [
     accentColor: "#a855f7",
     glowColor: "rgba(168, 85, 247, 0.12)",
     ratio: "aspect-[4/5]",
+    slug: "brand-building",
   },
   {
     title: "Ping Buz Application",
@@ -62,6 +65,7 @@ const ITEMS: PortfolioItem[] = [
     accentColor: "#ff8a5b",
     glowColor: "rgba(255, 138, 91, 0.1)",
     ratio: "aspect-[4/5]",
+    slug: "ux-ui-conversions",
   },
   {
     title: "Pool Supply Wholesalers",
@@ -73,6 +77,7 @@ const ITEMS: PortfolioItem[] = [
     accentColor: "#38bdf8",
     glowColor: "rgba(56, 189, 248, 0.1)",
     ratio: "aspect-[4/5]",
+    slug: "pool-supply-wholesalers",
   },
 
   {
@@ -85,6 +90,7 @@ const ITEMS: PortfolioItem[] = [
     accentColor: "#38bdf8",
     glowColor: "rgba(56, 189, 248, 0.1)",
     ratio: "aspect-[4/5]",
+    slug: "app-development",
   },
 ];
 
@@ -382,115 +388,121 @@ function PortfolioCard({ item }: { item: PortfolioItem }) {
   };
 
   return (
-    <motion.div
-      ref={cardRef}
-      onMouseMove={handleMouseMove}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={handleMouseLeave}
-      layout
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.95 }}
-      transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-      style={{
-        rotateX: rotateX,
-        rotateY: rotateY,
-        transformStyle: "preserve-3d",
-        perspective: 1000,
-        boxShadow: isHovered
-          ? `0 20px 40px rgba(0, 0, 0, 0.5), 0 0 50px ${item.glowColor}`
-          : "0 10px 30px rgba(0, 0, 0, 0.3)",
-      }}
-      className={`group relative overflow-hidden rounded-3xl border border-white/[0.06] bg-[#0c061d] ${item.ratio} transition-all duration-300 ease-out cursor-pointer`}
+    <Link
+      to="/case-studies/$slug"
+      params={{ slug: item.slug }}
+      className="block w-full h-full"
     >
-      {/* 3D Inner Layer */}
-      <div
-        className="absolute inset-0 z-20 flex flex-col justify-between p-6 pointer-events-none"
-        style={{ transform: "translateZ(30px)", transformStyle: "preserve-3d" }}
+      <motion.div
+        ref={cardRef}
+        onMouseMove={handleMouseMove}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={handleMouseLeave}
+        layout
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.95 }}
+        transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+        style={{
+          rotateX: rotateX,
+          rotateY: rotateY,
+          transformStyle: "preserve-3d",
+          perspective: 1000,
+          boxShadow: isHovered
+            ? `0 20px 40px rgba(0, 0, 0, 0.5), 0 0 50px ${item.glowColor}`
+            : "0 10px 30px rgba(0, 0, 0, 0.3)",
+        }}
+        className={`group relative overflow-hidden rounded-3xl border border-white/[0.06] bg-[#0c061d] ${item.ratio} transition-all duration-300 ease-out cursor-pointer`}
       >
-        {/* Top Header */}
+        {/* 3D Inner Layer */}
         <div
-          className="flex justify-between items-center w-full"
-          style={{ transform: "translateZ(15px)" }}
+          className="absolute inset-0 z-20 flex flex-col justify-between p-6 pointer-events-none"
+          style={{ transform: "translateZ(30px)", transformStyle: "preserve-3d" }}
         >
-          <span className="text-[10px] tracking-wider uppercase font-semibold text-white bg-[#0f0a20]/80 border border-white/[0.08] backdrop-blur-md px-3 py-1 rounded-full shadow-[0_4px_12px_rgba(0,0,0,0.1)]">
-            {item.category}
-          </span>
-          <span className="text-[10px] tracking-wider uppercase font-bold text-white/45 bg-[#0f0a20]/80 border border-white/[0.08] backdrop-blur-md px-2.5 py-1 rounded-full font-mono shadow-[0_4px_12px_rgba(0,0,0,0.1)]">
-            {item.year}
-          </span>
+          {/* Top Header */}
+          <div
+            className="flex justify-between items-center w-full"
+            style={{ transform: "translateZ(15px)" }}
+          >
+            <span className="text-[10px] tracking-wider uppercase font-semibold text-white bg-[#0f0a20]/80 border border-white/[0.08] backdrop-blur-md px-3 py-1 rounded-full shadow-[0_4px_12px_rgba(0,0,0,0.1)]">
+              {item.category}
+            </span>
+            <span className="text-[10px] tracking-wider uppercase font-bold text-white/45 bg-[#0f0a20]/80 border border-white/[0.08] backdrop-blur-md px-2.5 py-1 rounded-full font-mono shadow-[0_4px_12px_rgba(0,0,0,0.1)]">
+              {item.year}
+            </span>
+          </div>
+
+          {/* Arrow Button Overlay */}
+          <div
+            className="absolute top-6 right-6 h-10 w-10 rounded-full border border-white/15 flex items-center justify-center text-white transition-all duration-500 ease-out backdrop-blur-md scale-75 opacity-0 group-hover:scale-100 group-hover:opacity-100"
+            style={{
+              transform: "translateZ(25px)",
+              borderColor: `${item.accentColor}50`,
+              background: `${item.accentColor}25`,
+            }}
+          >
+            <ArrowUpRight className="h-4.5 w-4.5 group-hover:rotate-45 transition-transform duration-300" />
+          </div>
+
+          {/* Bottom Details */}
+          <div
+            className="flex flex-col mt-auto w-full"
+            style={{ transform: "translateZ(20px)" }}
+          >
+            {/* Tags */}
+            <div className="flex flex-wrap gap-1.5 mb-2.5">
+              {item.tags.map((tag) => (
+                <span key={tag} className="text-[9px] uppercase tracking-widest text-white/40">
+                  {tag}
+                </span>
+              ))}
+            </div>
+
+            {/* Title */}
+            <h3 className="font-serif text-[24px] md:text-[28px] leading-tight text-white tracking-tight flex items-center gap-2 group-hover:text-white/95 transition-colors duration-300">
+              {item.title}
+              <span
+                className="w-1.5 h-1.5 rounded-full transition-transform duration-500 origin-center scale-75 group-hover:scale-125"
+                style={{ background: item.accentColor }}
+              />
+            </h3>
+
+            {/* Description reveal wrapper */}
+            <div className="h-0 opacity-0 overflow-hidden transition-all duration-500 ease-out group-hover:h-[45px] group-hover:opacity-100 group-hover:mt-2">
+              <p className="text-[12px] leading-relaxed text-white/60 font-medium">
+                {item.description}
+              </p>
+            </div>
+          </div>
         </div>
 
-        {/* Arrow Button Overlay */}
+        {/* Spotlight dynamic follow overlay */}
         <div
-          className="absolute top-6 right-6 h-10 w-10 rounded-full border border-white/15 flex items-center justify-center text-white transition-all duration-500 ease-out backdrop-blur-md scale-75 opacity-0 group-hover:scale-100 group-hover:opacity-100"
+          className="pointer-events-none absolute -translate-x-1/2 -translate-y-1/2 h-[320px] w-[320px] rounded-full opacity-0 transition-opacity duration-500 ease-out blur-[40px] group-hover:opacity-100 z-10"
           style={{
-            transform: "translateZ(25px)",
-            borderColor: `${item.accentColor}50`,
-            background: `${item.accentColor}25`,
+            left: "var(--mouse-x, 0px)",
+            top: "var(--mouse-y, 0px)",
+            background: `radial-gradient(circle, ${item.glowColor} 0%, rgba(255,255,255,0.01) 60%, transparent 100%)`,
           }}
-        >
-          <ArrowUpRight className="h-4.5 w-4.5 group-hover:rotate-45 transition-transform duration-300" />
-        </div>
+        />
 
-        {/* Bottom Details */}
-        <div
-          className="flex flex-col mt-auto w-full"
-          style={{ transform: "translateZ(20px)" }}
-        >
-          {/* Tags */}
-          <div className="flex flex-wrap gap-1.5 mb-2.5">
-            {item.tags.map((tag) => (
-              <span key={tag} className="text-[9px] uppercase tracking-widest text-white/40">
-                {tag}
-              </span>
-            ))}
-          </div>
+        {/* Dynamic vignette border */}
+        <div className="absolute inset-0 bg-gradient-to-t from-[#070314]/95 via-[#070314]/20 to-transparent opacity-85 z-10 transition-opacity duration-300 group-hover:opacity-95" />
 
-          {/* Title */}
-          <h3 className="font-serif text-[24px] md:text-[28px] leading-tight text-white tracking-tight flex items-center gap-2 group-hover:text-white/95 transition-colors duration-300">
-            {item.title}
-            <span
-              className="w-1.5 h-1.5 rounded-full transition-transform duration-500 origin-center scale-75 group-hover:scale-125"
-              style={{ background: item.accentColor }}
-            />
-          </h3>
-
-          {/* Description reveal wrapper */}
-          <div className="h-0 opacity-0 overflow-hidden transition-all duration-500 ease-out group-hover:h-[45px] group-hover:opacity-100 group-hover:mt-2">
-            <p className="text-[12px] leading-relaxed text-white/60 font-medium">
-              {item.description}
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* Spotlight dynamic follow overlay */}
-      <div
-        className="pointer-events-none absolute -translate-x-1/2 -translate-y-1/2 h-[320px] w-[320px] rounded-full opacity-0 transition-opacity duration-500 ease-out blur-[40px] group-hover:opacity-100 z-10"
-        style={{
-          left: "var(--mouse-x, 0px)",
-          top: "var(--mouse-y, 0px)",
-          background: `radial-gradient(circle, ${item.glowColor} 0%, rgba(255,255,255,0.01) 60%, transparent 100%)`,
-        }}
-      />
-
-      {/* Dynamic vignette border */}
-      <div className="absolute inset-0 bg-gradient-to-t from-[#070314]/95 via-[#070314]/20 to-transparent opacity-85 z-10 transition-opacity duration-300 group-hover:opacity-95" />
-
-      {/* Card Image */}
-      <motion.img
-        src={item.image}
-        alt={item.title}
-        style={{
-          x: imgX,
-          y: imgY,
-          scale: 1.12,
-          transform: "translateZ(-10px)",
-        }}
-        className="absolute inset-0 h-full w-full object-cover select-none pointer-events-none"
-      />
-    </motion.div>
+        {/* Card Image */}
+        <motion.img
+          src={item.image}
+          alt={item.title}
+          style={{
+            x: imgX,
+            y: imgY,
+            scale: 1.12,
+            transform: "translateZ(-10px)",
+          }}
+          className="absolute inset-0 h-full w-full object-cover select-none pointer-events-none"
+        />
+      </motion.div>
+    </Link>
   );
 }
 
@@ -506,52 +518,58 @@ function PortfolioListItem({ item, idx, hoveredIndex, setHoveredIndex }: Portfol
   const isAnyHovered = hoveredIndex !== null;
 
   return (
-    <motion.div
-      layout
-      initial={{ opacity: 0 }}
-      animate={{ opacity: isAnyHovered && !isHovered ? 0.35 : 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-      onMouseEnter={() => setHoveredIndex(idx)}
-      onMouseLeave={() => setHoveredIndex(null)}
-      className="group relative flex flex-col md:flex-row md:items-center justify-between py-8 border-b border-white/[0.06] transition-all duration-300 cursor-pointer overflow-hidden px-4 -mx-4 rounded-xl"
+    <Link
+      to="/case-studies/$slug"
+      params={{ slug: item.slug }}
+      className="block w-full"
     >
-      {/* Sliding Glassy Background Overlay */}
-      <div className="absolute inset-0 bg-white/[0.01] translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-out -z-10" />
+      <motion.div
+        layout
+        initial={{ opacity: 0 }}
+        animate={{ opacity: isAnyHovered && !isHovered ? 0.35 : 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+        onMouseEnter={() => setHoveredIndex(idx)}
+        onMouseLeave={() => setHoveredIndex(null)}
+        className="group relative flex flex-col md:flex-row md:items-center justify-between py-8 border-b border-white/[0.06] transition-all duration-300 cursor-pointer overflow-hidden px-4 -mx-4 rounded-xl"
+      >
+        {/* Sliding Glassy Background Overlay */}
+        <div className="absolute inset-0 bg-white/[0.01] translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-out -z-10" />
 
-      {/* Left Column: Index & Category */}
-      <div className="flex items-center gap-6 md:gap-12 mb-3 md:mb-0">
-        <span className="font-mono text-[13px] tracking-tight text-white/30 group-hover:text-white transition-colors duration-300">
-          {(idx + 1).toString().padStart(2, "0")}
-        </span>
-        <span className="text-[11px] uppercase tracking-wider font-semibold text-[#ff8a5b] bg-[#ff8a5b]/10 border border-[#ff8a5b]/20 px-3 py-1 rounded-full shadow-[0_4px_12px_rgba(0,0,0,0.1)]">
-          {item.category}
-        </span>
-      </div>
-
-      {/* Middle Column: Title & Tags */}
-      <div className="flex-1 md:px-12 flex flex-col gap-1.5 md:flex-row md:items-center md:justify-between">
-        <h3 className="font-serif text-[28px] md:text-[34px] leading-tight text-white tracking-tight group-hover:translate-x-2 transition-transform duration-500 ease-out">
-          {item.title}
-        </h3>
-        <div className="flex flex-wrap gap-2 md:opacity-50 group-hover:opacity-100 transition-opacity duration-300">
-          {item.tags.map((tag) => (
-            <span key={tag} className="text-[10px] uppercase tracking-widest text-white/50 border border-white/[0.06] px-2.5 py-0.5 rounded-full">
-              {tag}
-            </span>
-          ))}
+        {/* Left Column: Index & Category */}
+        <div className="flex items-center gap-6 md:gap-12 mb-3 md:mb-0">
+          <span className="font-mono text-[13px] tracking-tight text-white/30 group-hover:text-white transition-colors duration-300">
+            {(idx + 1).toString().padStart(2, "0")}
+          </span>
+          <span className="text-[11px] uppercase tracking-wider font-semibold text-[#ff8a5b] bg-[#ff8a5b]/10 border border-[#ff8a5b]/20 px-3 py-1 rounded-full shadow-[0_4px_12px_rgba(0,0,0,0.1)]">
+            {item.category}
+          </span>
         </div>
-      </div>
 
-      {/* Right Column: Year & Action */}
-      <div className="flex items-center gap-6 mt-4 md:mt-0 justify-between md:justify-end">
-        <span className="font-mono text-[13px] text-white/40 group-hover:text-white/80 transition-colors duration-300">
-          {item.year === "'26" ? "2026" : "2025"}
-        </span>
-        <div className="h-10 w-10 rounded-full border border-white/10 flex items-center justify-center text-white/40 transition-all duration-500 ease-out group-hover:text-white group-hover:bg-white/10 group-hover:border-white/20 group-hover:rotate-45">
-          <ArrowUpRight className="h-4.5 w-4.5" />
+        {/* Middle Column: Title & Tags */}
+        <div className="flex-1 md:px-12 flex flex-col gap-1.5 md:flex-row md:items-center md:justify-between">
+          <h3 className="font-serif text-[28px] md:text-[34px] leading-tight text-white tracking-tight group-hover:translate-x-2 transition-transform duration-500 ease-out">
+            {item.title}
+          </h3>
+          <div className="flex flex-wrap gap-2 md:opacity-50 group-hover:opacity-100 transition-opacity duration-300">
+            {item.tags.map((tag) => (
+              <span key={tag} className="text-[10px] uppercase tracking-widest text-white/50 border border-white/[0.06] px-2.5 py-0.5 rounded-full">
+                {tag}
+              </span>
+            ))}
+          </div>
         </div>
-      </div>
-    </motion.div>
+
+        {/* Right Column: Year & Action */}
+        <div className="flex items-center gap-6 mt-4 md:mt-0 justify-between md:justify-end">
+          <span className="font-mono text-[13px] text-white/40 group-hover:text-white/80 transition-colors duration-300">
+            {item.year === "'26" ? "2026" : "2025"}
+          </span>
+          <div className="h-10 w-10 rounded-full border border-white/10 flex items-center justify-center text-white/40 transition-all duration-500 ease-out group-hover:text-white group-hover:bg-white/10 group-hover:border-white/20 group-hover:rotate-45">
+            <ArrowUpRight className="h-4.5 w-4.5" />
+          </div>
+        </div>
+      </motion.div>
+    </Link>
   );
 }

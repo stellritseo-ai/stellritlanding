@@ -28,8 +28,8 @@ export function TransparentVideo({ src, className }: TransparentVideoProps) {
       style={{
         // A smooth radial mask fades the edges of the video's black background out,
         // creating the soft background shadow effect against the purple page
-        maskImage: "radial-gradient(circle at center, black 35%, transparent 70%)",
-        WebkitMaskImage: "radial-gradient(circle at center, black 35%, transparent 70%)",
+        maskImage: "radial-gradient(circle at center, black 30%, transparent 70%)",
+        WebkitMaskImage: "radial-gradient(circle at center, black 30%, transparent 70%)",
         pointerEvents: "none",
         // Hardware acceleration fix to ensure the mask renders smoothly
         transform: "translateZ(0)",

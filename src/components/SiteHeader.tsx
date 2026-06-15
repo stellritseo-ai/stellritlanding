@@ -4,13 +4,6 @@ import { ArrowUpRight, Menu } from "lucide-react";
 import MenuOverlay from "./MenuOverlay";
 import logoImg from "@/assets/logo.png";
 
-const NAV = [
-  { to: "/case-studies", label: "Work" },
-  { to: "/services", label: "Services" },
-  { to: "/about", label: "Agency" },
-  { to: "/insights", label: "Insights" },
-  { to: "/careers", label: "Careers" },
-];
 
 export default function SiteHeader({ transparent = false, homepage = false, hideNav = false }: { transparent?: boolean; homepage?: boolean; hideNav?: boolean }) {
   const [open, setOpen] = useState(false);
@@ -47,21 +40,7 @@ export default function SiteHeader({ transparent = false, homepage = false, hide
             style={{ filter: "brightness(0) invert(1)" }}
           />
         </Link>
-        {!homepage && !hideNav && (
-          <nav className="hidden items-center gap-6 lg:flex">
-            {NAV.map((n) => (
-              <Link
-                key={n.to}
-                to={n.to}
-                className="relative py-1 text-[13px] xl:text-sm text-white/80 transition-colors hover:text-white group"
-                activeProps={{ className: "text-white font-medium" }}
-              >
-                {n.label}
-                <span className="absolute bottom-0 left-0 h-[2px] w-full scale-x-0 bg-gradient-to-r from-[#a855f7] via-[#ff8a5b] to-[#ff8a5b] transition-transform duration-300 origin-left group-hover:scale-x-100" />
-              </Link>
-            ))}
-          </nav>
-        )}
+
       </div>
 
       <div className="flex items-center gap-3">

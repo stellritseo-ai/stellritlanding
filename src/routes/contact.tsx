@@ -1,13 +1,27 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { motion } from "framer-motion";
+import { motion, useScroll, useTransform } from "framer-motion";
 import { toast } from "sonner";
-import { Mail, Phone, MapPin, ArrowUpRight } from "lucide-react";
+import { Mail, Phone, MapPin, ArrowUpRight, Paperclip, UploadCloud } from "lucide-react";
 import SiteHeader from "@/components/SiteHeader";
 import PageHero from "@/components/PageHero";
 import Footer from "@/components/Footer";
 import ScrollBackground from "@/components/ScrollBackground";
 import ChatWidget from "@/components/ChatWidget";
+
+// Importing all logos for the Marquee
+import logo1 from "@/assets/logos/logo-BX_kYZ7l.png";
+import logo2 from "@/assets/logos/logo-BqMKyS9S.png";
+import logo3 from "@/assets/logos/logo-BwGEonYb.png";
+import logo4 from "@/assets/logos/logo-DdbW9O7g.png";
+import logo5 from "@/assets/logos/cropped-logo.png";
+import logo6 from "@/assets/logos/logo-CMAon1t6 (1).png";
+import logo7 from "@/assets/logos/Image-507.png";
+import logo8 from "@/assets/logos/Logo.png";
+import logo9 from "@/assets/logos/logo (1).png";
+import logo10 from "@/assets/logos/logo-I6fgEckf.png";
+import logo11 from "@/assets/logos/logo-nayshands.png";
+import logo12 from "@/assets/logos/logo-white-DNQTDUZa.png";
 
 export const Route = createFileRoute("/contact")({
   head: () => ({
@@ -28,12 +42,23 @@ export const Route = createFileRoute("/contact")({
   component: ContactPage,
 });
 
-const BUDGETS = ["< $25k", "$25k – $75k", "$75k – $200k", "$200k+"];
+const BUDGETS = ["< $1K", "$2k – $10k", "$10k – $20k", "$20+"];
 const SERVICES = ["Brand", "Product Design", "Engineering", "Growth", "Other"];
 
 function ContactPage() {
   const [form, setForm] = useState({ name: "", email: "", company: "", budget: BUDGETS[1], service: SERVICES[0], message: "" });
+  const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
+
+  const { scrollY } = useScroll();
+  // Parallax background blobs that shift/glow on scroll
+  const blobY1 = useTransform(scrollY, [0, 800], [0, -100]);
+  const blobScale1 = useTransform(scrollY, [0, 800], [1, 1.3]);
+  const blobOpacity1 = useTransform(scrollY, [0, 800], [0.15, 0.4]);
+
+  const blobY2 = useTransform(scrollY, [0, 1000], [0, 150]);
+  const blobScale2 = useTransform(scrollY, [0, 1000], [1, 0.75]);
+  const blobOpacity2 = useTransform(scrollY, [0, 1000], [0.2, 0.5]);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -46,16 +71,19 @@ function ContactPage() {
       return;
     }
     setLoading(true);
-    await new Promise((r) => setTimeout(r, 900));
+    // Simulate network delay
+    await new Promise((r) => setTimeout(r, 1200));
     setLoading(false);
     setForm({ name: "", email: "", company: "", budget: BUDGETS[1], service: SERVICES[0], message: "" });
+    setFile(null);
     toast.success("Thanks — we'll be in touch within one business day.");
   };
 
   return (
-    <main className="relative min-h-screen">
+    <main className="relative min-h-screen selection:bg-[#a855f7]/30">
       <ScrollBackground />
       <SiteHeader transparent />
+
       <PageHero
         eyebrow="Contact"
         title={
@@ -66,18 +94,67 @@ function ContactPage() {
         description="Tell us about your project — timeline, budget range, the problem you're solving. A senior partner replies within one business day."
       />
 
-      <section className="relative z-10 px-4 sm:px-6 pb-16 md:pb-24 md:px-12 lg:px-20">
-        <div className="mx-auto grid max-w-[1400px] grid-cols-1 gap-10 md:gap-16 lg:grid-cols-[1fr_360px]">
-          {/* Form */}
+      {/* Main Content Area in Premium Glassmorphism */}
+      <section className="bg-gradient-to-b from-[#180028] via-[#180028]/85 to-transparent text-white pt-24 pb-32 relative z-10 overflow-clip">
+        {/* Subtle grid lines background overlay */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff03_1px,transparent_1px),linear-gradient(to_bottom,#ffffff03_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] pointer-events-none z-0" />
+        
+        {/* Scroll-Reactive Glowing Blobs (Parallax) */}
+        <motion.div
+          style={{ y: blobY1, scale: blobScale1, opacity: blobOpacity1 }}
+          className="absolute top-[10%] left-[-15%] w-[500px] h-[500px] rounded-full bg-gradient-to-br from-[#a855f7] to-[#ff8a5b] blur-[120px] pointer-events-none z-0"
+        />
+        <motion.div
+          style={{ y: blobY2, scale: blobScale2, opacity: blobOpacity2 }}
+          className="absolute bottom-[20%] right-[-15%] w-[600px] h-[600px] rounded-full bg-gradient-to-tr from-[#7a2adc] to-[#c9a4ff] blur-[140px] pointer-events-none z-0"
+        />
+
+        <div className="mx-auto max-w-[1400px] px-6 md:px-12 lg:px-20 grid grid-cols-1 gap-16 lg:grid-cols-[4fr_6fr] relative z-10">
+
+          {/* Left Sidebar */}
+          <aside className="space-y-12 pr-0 lg:pr-8 lg:sticky lg:top-32 self-start">
+            <div>
+              <h3 className="font-serif text-[36px] md:text-[48px] font-bold leading-[1.05] mb-6 tracking-tight text-white text-glow">
+                Let's build something <em className="italic font-light text-[#c9a4ff]">extraordinary.</em>
+              </h3>
+              <p className="text-[16px] leading-[1.6] text-white/70 max-w-[95%]">
+                From pixel-perfect platform engineering to scaling digital growth, StellR IT acts as your dedicated product and marketing arm. Let's discuss your vision.
+              </p>
+            </div>
+            
+            <div className="space-y-8 p-8 md:p-10 glass rounded-[24px] shadow-[0_20px_50px_rgba(0,0,0,0.3)] border border-white/10 relative overflow-hidden backdrop-blur-xl bg-white/5">
+              <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-bl from-[#a855f7]/10 to-transparent blur-[50px] rounded-full pointer-events-none" />
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 relative z-10">
+                <ContactBlock icon={<Mail className="h-4 w-4" />} title="Email">
+                  <a href="mailto:info@stellrit.com" className="font-medium hover:text-[#ff8a5b] transition-colors duration-300">info@stellrit.com</a>
+                </ContactBlock>
+                <ContactBlock icon={<Phone className="h-4 w-4" />} title="Direct">
+                  <a href="tel:2148380543" className="font-medium hover:text-[#ff8a5b] transition-colors duration-300">(214) 838-0543</a>
+                </ContactBlock>
+                <ContactBlock icon={<Phone className="h-4 w-4" />} title="Toll Free">
+                  <a href="tel:3254808108" className="font-medium hover:text-[#ff8a5b] transition-colors duration-300">(325) 480-8108</a>
+                </ContactBlock>
+                <ContactBlock icon={<MapPin className="h-4 w-4" />} title="Office">
+                  <span className="font-medium text-[14px] text-white/90">5305 Creek CT<br />Garland, TX 75043</span>
+                </ContactBlock>
+              </div>
+            </div>
+          </aside>
+
+          {/* Right Form Card */}
           <motion.form
-            initial={{ opacity: 0, y: 24 }}
+            initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.7 }}
             onSubmit={submit}
-            className="rounded-3xl border border-white/10 bg-white/[0.03] p-8 md:p-12"
+            className="glass rounded-[32px] p-8 md:p-14 shadow-[0_30px_100px_rgba(0,0,0,0.5)] border border-white/10 relative overflow-hidden backdrop-blur-2xl bg-white/5"
           >
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+            {/* Subtle decorative glow in top right */}
+            <div className="absolute -top-32 -right-32 w-64 h-64 bg-gradient-to-bl from-[#a855f7]/30 to-transparent blur-[80px] rounded-full pointer-events-none" />
+
+            <div className="grid grid-cols-1 gap-8 md:grid-cols-2 relative z-10">
               <Field label="Your name">
                 <input
                   type="text"
@@ -105,74 +182,173 @@ function ContactPage() {
                   placeholder="Acme Inc."
                 />
               </Field>
-              <Field label="Service interest">
-                <select
-                  value={form.service}
-                  onChange={(e) => setForm({ ...form, service: e.target.value })}
-                  className={inputCls}
-                >
-                  {SERVICES.map((s) => (
-                    <option key={s} value={s} className="bg-[#1a0533]">
-                      {s}
-                    </option>
-                  ))}
-                </select>
+              <Field label="Select Service">
+                <div className="relative">
+                  <select
+                    value={form.service}
+                    onChange={(e) => setForm({ ...form, service: e.target.value })}
+                    className={inputCls + " appearance-none cursor-pointer"}
+                  >
+                    {SERVICES.map((s) => (
+                      <option key={s} value={s} className="bg-[#180028] text-white">
+                        {s}
+                      </option>
+                    ))}
+                  </select>
+                  {/* Custom dropdown arrow */}
+                  <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
+                    <svg className="w-4 h-4 text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </div>
+                </div>
               </Field>
             </div>
-            <Field label="Budget range" className="mt-6">
-              <div className="flex flex-wrap gap-2">
+
+            <Field label="Your budget" className="mt-8 relative z-10">
+              <div className="flex flex-wrap gap-3">
                 {BUDGETS.map((b) => (
                   <button
                     key={b}
                     type="button"
                     onClick={() => setForm({ ...form, budget: b })}
-                    className={`rounded-full border px-4 py-2 text-[13px] transition ${
-                      form.budget === b
-                        ? "border-[#ff8a5b] bg-[#ff8a5b]/10 text-white"
-                        : "border-white/15 text-white/70 hover:border-white/40"
-                    }`}
+                    className={`rounded-full border px-5 py-2.5 text-[13px] font-bold tracking-wide transition-all duration-300 ${form.budget === b
+                        ? "border-[#a855f7] bg-[#a855f7] text-white shadow-[0_0_20px_rgba(168,85,247,0.4)] cursor-pointer"
+                        : "border-white/10 bg-white/5 text-white/60 hover:border-[#a855f7]/50 hover:bg-white/10 hover:text-white cursor-pointer"
+                      }`}
                   >
                     {b}
                   </button>
                 ))}
               </div>
             </Field>
-            <Field label="Tell us about your project" className="mt-6">
+
+            <Field label="Tell us about your project" className="mt-8 relative z-10">
               <textarea
                 value={form.message}
                 onChange={(e) => setForm({ ...form, message: e.target.value })}
-                rows={6}
-                className={inputCls + " resize-none"}
+                rows={5}
+                className={inputCls + " resize-none py-4"}
                 placeholder="Goals, timeline, what success looks like…"
               />
             </Field>
+
+            <Field label="Upload Image or Document (Optional)" className="mt-8 relative z-10">
+              <div className="relative flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-white/10 rounded-xl bg-white/5 hover:bg-white/10 hover:border-[#a855f7]/50 transition-all duration-300 cursor-pointer group">
+                <input
+                  type="file"
+                  onChange={(e) => setFile(e.target.files?.[0] || null)}
+                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                  accept="image/*,.pdf,.doc,.docx"
+                />
+                {file ? (
+                  <div className="text-center px-4 relative z-0">
+                    <Paperclip className="w-6 h-6 text-[#c9a4ff] mx-auto mb-2 text-glow" />
+                    <p className="text-[14px] font-bold text-[#c9a4ff] mb-1 truncate max-w-xs md:max-w-sm">{file.name}</p>
+                    <p className="text-[11px] text-white/40 uppercase tracking-[0.2em] font-medium">Click to change file</p>
+                  </div>
+                ) : (
+                  <div className="text-center px-4 relative z-0">
+                    <UploadCloud className="w-6 h-6 text-white/30 mx-auto mb-2 group-hover:text-[#c9a4ff] transition-colors" />
+                    <p className="text-[13px] font-bold text-white/70">Drag and drop, or click to browse</p>
+                    <p className="text-[11px] text-white/40 mt-1">PDF, DOC, JPG, PNG up to 10MB</p>
+                  </div>
+                )}
+              </div>
+            </Field>
+
             <button
               type="submit"
               disabled={loading}
-              className="group mt-8 inline-flex items-center gap-3 rounded-full bg-white px-7 py-4 text-[15px] font-semibold text-[#2a0860] transition hover:bg-white/90 disabled:opacity-60"
+              className="group mt-10 inline-flex items-center gap-4 rounded-full bg-gradient-to-r from-[#7a2adc] to-[#ff8a5b] px-8 py-4 text-[15px] font-bold tracking-wide text-white transition-all duration-300 hover:scale-105 active:scale-95 disabled:opacity-70 disabled:hover:scale-100 relative z-10 shadow-[0_8px_30px_rgba(122,42,220,0.3)] cursor-pointer"
             >
-              {loading ? "Sending…" : "Send message"}
-              <span className="grid h-9 w-9 place-items-center rounded-full bg-gradient-to-br from-[#a855f7] to-[#7c2dd9] text-white transition group-hover:scale-110">
+              {loading ? "Sending securely…" : "Send message"}
+              <span className="grid h-8 w-8 place-items-center rounded-full bg-white/20 text-white transition-transform group-hover:rotate-45 group-hover:bg-[#a855f7] shadow-sm">
                 <ArrowUpRight className="h-4 w-4" />
               </span>
             </button>
           </motion.form>
+        </div>
 
-          {/* Sidebar */}
-          <aside className="space-y-10">
-            <ContactBlock icon={<Mail className="h-4 w-4" />} title="Email">
-              <a href="mailto:info@stellrit.com" className="hover:text-[#ff8a5b]">info@stellrit.com</a>
-            </ContactBlock>
-            <ContactBlock icon={<Phone className="h-4 w-4" />} title="Phone">
-              <a href="tel:2148380543" className="hover:text-[#ff8a5b]">(214) 838-0543</a>
-            </ContactBlock>
-            <ContactBlock icon={<Phone className="h-4 w-4" />} title="Toll Free">
-              <a href="tel:3254808108" className="hover:text-[#ff8a5b]">(325) 480-8108</a>
-            </ContactBlock>
-            <ContactBlock icon={<MapPin className="h-4 w-4" />} title="USA">
-              5305 Creek CT<br />Garland, TX 75043
-            </ContactBlock>
-          </aside>
+        {/* What Happens Next - 3 Cards Row */}
+        <div className="mx-auto max-w-[1400px] px-6 md:px-12 lg:px-20 mt-24 md:mt-32 animate-fade-in">
+          <h4 className="text-center text-[12px] font-bold uppercase tracking-[0.25em] text-white/40 mb-12">
+            What happens next?
+          </h4>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {/* Step 1 */}
+            <div className="glass p-8 rounded-[24px] bg-white/5 border border-white/10 relative overflow-hidden transition-all duration-300 hover:scale-[1.02] hover:border-[#a855f7]/40 shadow-lg group">
+              <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-[#a855f7]/10 to-transparent blur-2xl rounded-full pointer-events-none" />
+              <div className="w-12 h-12 rounded-full border border-white/20 bg-white/5 flex items-center justify-center text-[#c9a4ff] text-[18px] font-extrabold mb-6 shadow-[0_0_15px_rgba(168,85,247,0.25)] group-hover:bg-[#a855f7] group-hover:text-white transition-all duration-300">
+                1
+              </div>
+              <h5 className="text-[18px] font-bold text-white mb-3">Project Review</h5>
+              <p className="text-[14px] text-white/60 leading-[1.6]">
+                A senior partner reviews your requirements and responds within 1 business day.
+              </p>
+            </div>
+
+            {/* Step 2 */}
+            <div className="glass p-8 rounded-[24px] bg-white/5 border border-white/10 relative overflow-hidden transition-all duration-300 hover:scale-[1.02] hover:border-[#a855f7]/40 shadow-lg group">
+              <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-[#a855f7]/10 to-transparent blur-2xl rounded-full pointer-events-none" />
+              <div className="w-12 h-12 rounded-full border border-white/20 bg-white/5 flex items-center justify-center text-[#c9a4ff] text-[18px] font-extrabold mb-6 shadow-[0_0_15px_rgba(168,85,247,0.25)] group-hover:bg-[#a855f7] group-hover:text-white transition-all duration-300">
+                2
+              </div>
+              <h5 className="text-[18px] font-bold text-white mb-3">Discovery Call</h5>
+              <p className="text-[14px] text-white/60 leading-[1.6]">
+                We schedule a 30-minute session to align on your vision, budget, and timeline.
+              </p>
+            </div>
+
+            {/* Step 3 */}
+            <div className="glass p-8 rounded-[24px] bg-white/5 border border-white/10 relative overflow-hidden transition-all duration-300 hover:scale-[1.02] hover:border-[#a855f7]/40 shadow-lg group">
+              <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-[#a855f7]/10 to-transparent blur-2xl rounded-full pointer-events-none" />
+              <div className="w-12 h-12 rounded-full border border-white/20 bg-white/5 flex items-center justify-center text-[#c9a4ff] text-[18px] font-extrabold mb-6 shadow-[0_0_15px_rgba(168,85,247,0.25)] group-hover:bg-[#a855f7] group-hover:text-white transition-all duration-300">
+                3
+              </div>
+              <h5 className="text-[18px] font-bold text-white mb-3">Custom Proposal</h5>
+              <p className="text-[14px] text-white/60 leading-[1.6]">
+                You receive a comprehensive execution strategy and pixel-perfect design concepts.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Trust / Scrolling Logos Section */}
+      <section className="bg-transparent pb-24 relative z-10">
+        <div className="mx-auto max-w-[1400px] px-6 md:px-12 lg:px-20 mb-8 border-t border-white/10 pt-16">
+          <p className="text-center text-[12px] font-medium uppercase tracking-[0.25em] text-white/40 mb-10">
+            Trusted by innovative companies worldwide
+          </p>
+        </div>
+        <div className="relative overflow-hidden w-full max-w-[1600px] mx-auto">
+          {/* Subtle gradient fades on edges */}
+          <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-[#0d0220] to-transparent z-10 pointer-events-none" />
+          <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-[#0d0220] to-transparent z-10 pointer-events-none" />
+
+          <div className="flex w-max" style={{ animation: "marquee-contact 45s linear infinite" }}>
+            {/* Repeat the logos array twice to create a seamless infinite loop */}
+            {[...Array(2)].map((_, i) => (
+              <div key={i} className="flex items-center">
+                {[logo1, logo2, logo3, logo4, logo5, logo6, logo7, logo8, logo9, logo10, logo11, logo12].map((logo, idx) => (
+                  <img
+                    key={idx}
+                    src={logo}
+                    alt="Partner Logo"
+                    className="mx-10 md:mx-16 h-12 md:h-14 w-auto object-contain opacity-35 hover:opacity-100 transition-all duration-500"
+                    style={{ filter: "brightness(0) invert(1)" }}
+                  />
+                ))}
+              </div>
+            ))}
+          </div>
+          <style>{`
+            @keyframes marquee-contact {
+              from { transform: translateX(0); }
+              to { transform: translateX(-50%); }
+            }
+          `}</style>
         </div>
       </section>
 
@@ -183,12 +359,12 @@ function ContactPage() {
 }
 
 const inputCls =
-  "h-12 w-full rounded-xl border border-white/15 bg-white/5 px-4 text-[15px] text-white outline-none transition placeholder:text-white/30 focus:border-[#ff8a5b]";
+  "h-14 w-full rounded-xl border border-white/10 bg-white/5 px-5 text-[15px] font-medium text-white outline-none transition-all placeholder:text-white/30 focus:border-[#a855f7] focus:bg-white/10 focus:ring-4 focus:ring-[#a855f7]/20 shadow-inner";
 
 function Field({ label, children, className = "" }: { label: string; children: React.ReactNode; className?: string }) {
   return (
     <label className={`block ${className}`}>
-      <span className="mb-2 block text-[12px] uppercase tracking-[0.25em] text-white/55">{label}</span>
+      <span className="mb-3 block text-[11px] font-bold uppercase tracking-[0.2em] text-white/50">{label}</span>
       {children}
     </label>
   );
@@ -197,11 +373,11 @@ function Field({ label, children, className = "" }: { label: string; children: R
 function ContactBlock({ icon, title, children }: { icon: React.ReactNode; title: string; children: React.ReactNode }) {
   return (
     <div>
-      <div className="flex items-center gap-2 text-[12px] uppercase tracking-[0.3em] text-[#ff8a5b]">
-        <span className="text-white/70">{icon}</span>
+      <div className="flex items-center gap-3 text-[11px] font-bold uppercase tracking-[0.2em] text-white/40">
+        <span className="text-[#c9a4ff]">{icon}</span>
         {title}
       </div>
-      <div className="mt-3 text-[15px] leading-[1.6] text-white/80">{children}</div>
+      <div className="mt-2 text-[15px] leading-[1.6] text-white/90">{children}</div>
     </div>
   );
 }

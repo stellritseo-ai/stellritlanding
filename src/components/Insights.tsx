@@ -1,4 +1,6 @@
 import { ArrowRight } from "lucide-react";
+import productImg from "@/assets/product.jpg";
+import brandImg from "@/assets/service-brand.jpg";
 
 type Story = {
   title: string;
@@ -16,16 +18,15 @@ const STORIES: Story[] = [
   {
     title: "The Importance of Iteration: Why Product Design Never Really Ends",
     tags: ["UX AGENCY", "WEB DESIGN COMPANY"],
-    image:
-      "https://images.unsplash.com/photo-1558655146-9f40138edfeb?w=800&q=80&auto=format&fit=crop",
+    image: productImg,
   },
   {
     title: "The Art of Transformative Rebranding",
     tags: ["BRANDING AGENCY", "DIGITAL TRANSFORMATION", "MARKETING STRATEGIES"],
-    image:
-      "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800&q=80&auto=format&fit=crop",
+    image: brandImg,
   },
 ];
+
 
 export default function Insights({
   className = "py-28",

@@ -21,8 +21,8 @@ type Study = {
 
 const STUDIES: Study[] = [
   {
-    slug: "impressions-to-clicks",
-    title: "Converting Impressions to Clicks",
+    slug: "growth-marketing",
+    title: "National Home Services Campaign",
     subtitle: "Converting ad impressions into action for National Home Services",
     tags: ["SEM Strategy", "A/B Testing", "Conversion Rate", "SEO"],
     image: imgAnalytics,
@@ -44,10 +44,10 @@ const STUDIES: Study[] = [
     glowColor: "rgba(16, 185, 129, 0.15)",
   },
   {
-    slug: "cybersecurity-zero-trust",
-    title: "Cybersecurity – Zero Trust for a Financial Institution",
-    subtitle: "Deploying complete security framework for Meridian Trust Bank",
-    tags: ["Zero Trust Network", "Multi-Factor Authentication", "Compliance", "SIEM"],
+    slug: "ai-automation",
+    title: "Enterprise AI Automated Systems",
+    subtitle: "Deploying autonomous AI support agent networks and automated task routing",
+    tags: ["AI Agents", "Workflow Automation", "NLP Routing", "Enterprise Integration"],
     image: imgCyber,
     ratio: "aspect-[16/11]",
     align: "left",
@@ -115,11 +115,9 @@ export default function CaseStudies() {
 function CaseCard({ study, index }: { study: Study; index: number }) {
   const [isHovered, setIsHovered] = useState(false);
 
-  const isLinked = study.slug === "impressions-to-clicks" || study.slug === "ux-ui-conversions" || study.slug === "cybersecurity-zero-trust";
-  const Wrapper = isLinked ? Link : "div";
-  const wrapperProps = isLinked
-    ? { to: `/case-studies/${study.slug}` as any, className: "block" }
-    : { className: "block" };
+  const isLinked = true;
+  const Wrapper = Link;
+  const wrapperProps = { to: `/case-studies/${study.slug}` as any, className: "block" };
 
   return (
     <motion.article
