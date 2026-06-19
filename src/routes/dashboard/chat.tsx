@@ -20,7 +20,7 @@ import {
   updateChatStatusFn,
   type ChatSession,
   type ChatMessage,
-} from "@/lib/chat.functions";
+} from "@/lib/chat.functions.server";
 
 export const Route = createFileRoute("/dashboard/chat")({
   component: ChatPage,

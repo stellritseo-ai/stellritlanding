@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import { motion } from "framer-motion";
 import logoImg from "@/assets/logo.png";
-import { loginAdminFn } from "@/lib/chat.functions";
+import { loginAdminFn } from "@/lib/chat.functions.server";
 
 
 export const Route = createFileRoute("/login")({

@@ -6,7 +6,7 @@ import {
   sendChatMessageFn,
   type ChatSession,
   type ChatMessage,
-} from "@/lib/chat.functions";
+} from "@/lib/chat.functions.server";
 
 // ── Config ────────────────────────────────────────────────────────────────────
 const RELAY_URL = import.meta.env.VITE_RELAY_URL ?? "http://localhost:3001";
