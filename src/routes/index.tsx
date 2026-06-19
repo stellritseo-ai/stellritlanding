@@ -10,14 +10,10 @@ import Footer from "@/components/Footer";
 import ScrollBackground from "@/components/ScrollBackground";
 import ChatWidget from "@/components/ChatWidget";
 import MarqueeStrip from "@/components/MarqueeStrip";
-
 import ParallaxText from "@/components/ParallaxText";
 import PartnershipModels from "@/components/PartnershipModels";
 import Portfolio from "@/components/Portfolio";
-import { useState, useEffect } from "react";
 import MaintenanceModePage from "@/components/MaintenanceModePage";
-
-const PUBLIC_API_URL = import.meta.env.VITE_CHAT_API_URL ?? "http://localhost:3001";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -32,25 +28,8 @@ export const Route = createFileRoute("/")({
 });
 
 function Index() {
-  const [maintenance, setMaintenance] = useState<boolean | null>(null);
-
-  const checkMaintenance = async () => {
-    try {
-      const res = await fetch(`${PUBLIC_API_URL}/api/public/site-config`);
-      if (res.ok) {
-        const data = await res.json();
-        setMaintenance(data.maintenanceMode ?? false);
-      } else {
-        setMaintenance(false);
-      }
-    } catch (e) {
-      setMaintenance(false);
-    }
-  };
-
-  useEffect(() => {
-    checkMaintenance();
-  }, []);
+  // Maintenance mode disabled — managed via admin dashboard when needed
+  const maintenance = false;
 
   if (maintenance === null) {
     return (

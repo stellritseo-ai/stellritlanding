@@ -1,0 +1,16 @@
+{
+  "name": "stellrit-chat-relay",
+  "version": "1.0.0",
+  "description": "Tiny Socket.IO relay for StellR IT real-time chat",
+  "main": "chat-relay.js",
+  "type": "module",
+  "scripts": {
+    "start": "node chat-relay.js"
+  },
+  "dependencies": {
+    "socket.io": "^4.7.5"
+  },
+  "engines": {
+    "node": ">=18.x"
+  }
+}

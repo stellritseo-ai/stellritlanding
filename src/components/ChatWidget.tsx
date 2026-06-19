@@ -1,211 +1,161 @@
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { MessageCircle, X, Send, Calendar, Loader2, AlertCircle } from "lucide-react";
-import { useChatSocket, type ChatMessagePayload } from "@/hooks/useChatSocket";
+import {
+  createChatSessionFn,
+  getChatSessionFn,
+  sendChatMessageFn,
+  type ChatSession,
+  type ChatMessage,
+} from "@/lib/chat.functions";
 
-// ─── Config ───────────────────────────────────────────────────────────────────
-const API_URL = import.meta.env.VITE_CHAT_API_URL ?? "http://localhost:3001";
+// ── Config ────────────────────────────────────────────────────────────────────
+const RELAY_URL = import.meta.env.VITE_RELAY_URL ?? "http://localhost:3001";
 const SESSION_KEY = "stellr_chat_session_id";
-const VISITOR_KEY = "stellr_chat_visitor_id";
 
-// ─── Types ────────────────────────────────────────────────────────────────────
-type Step = "intro" | "form" | "chat";
-
-interface Message {
-  id: string;
-  senderType: "visitor" | "admin";
-  message: string;
-  createdAt: string;
-  readAt: string | null;
-  sending?: boolean;
-  error?: boolean;
-}
-
-interface Session {
-  id: string;
-  visitorName: string;
-  status: "open" | "closed";
-}
-
-// ─── Helpers ─────────────────────────────────────────────────────────────────
+// ── Helpers ───────────────────────────────────────────────────────────────────
 function formatTime(iso: string): string {
-  return new Date(iso).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  try {
+    return new Date(iso).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  } catch {
+    return iso;
+  }
 }
 
-async function apiFetch<T>(path: string, opts?: RequestInit): Promise<T> {
-  const res = await fetch(`${API_URL}${path}`, {
-    headers: { "Content-Type": "application/json" },
-    ...opts,
-  });
-  if (!res.ok) throw new Error(`API ${res.status}: ${await res.text()}`);
-  return res.json() as Promise<T>;
-}
-
-// ─── Component ────────────────────────────────────────────────────────────────
+// ── Component ─────────────────────────────────────────────────────────────────
 export default function ChatWidget() {
   const [open, setOpen] = useState(false);
-  const [step, setStep] = useState<Step>("intro");
+  const [showNotification, setShowNotification] = useState(false);
+  const [step, setStep] = useState<"intro" | "form" | "chat">("intro");
 
-  // Session state
-  const [session, setSession] = useState<Session | null>(null);
+  const [session, setSession] = useState<ChatSession | null>(null);
   const [sessionLoading, setSessionLoading] = useState(false);
-
-  // Messages
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [historyLoading, setHistoryLoading] = useState(false);
-
-  // Input
-  const [input, setInput] = useState("");
-  const [sending, setSending] = useState(false);
-  const [sendError, setSendError] = useState<string | null>(null);
-
-  // Visitor info form
-  const [visitorName, setVisitorName] = useState("");
-  const [visitorContact, setVisitorContact] = useState("");
   const [formError, setFormError] = useState<string | null>(null);
 
-  // Typing
+  const [visitorName, setVisitorName] = useState("");
+  const [visitorContact, setVisitorContact] = useState("");
+
+  const [input, setInput] = useState("");
+  const [sending, setSending] = useState(false);
   const [adminTyping, setAdminTyping] = useState(false);
   const typingTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const myTypingTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Refs
   const scrollRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const socketRef = useRef<any>(null);
 
-  // ─── Socket.IO ──────────────────────────────────────────────────────────
-  const { joinChat, emitTypingStart, emitTypingStop, markRead } = useChatSocket({
-    onMessage: (data: ChatMessagePayload) => {
-      if (data.senderType === "admin" && data.sessionId === session?.id) {
-        setMessages((prev) => {
-          if (prev.some((m) => m.id === data.id)) return prev;
-          return [
-            ...prev,
-            {
-              id: data.id,
-              senderType: "admin",
-              message: data.message,
-              createdAt: data.createdAt,
-              readAt: data.readAt,
-            },
-          ];
-        });
-        setAdminTyping(false);
-      }
-    },
-    onTypingStart: (data) => {
-      if (data.senderType === "admin" && data.sessionId === session?.id) {
-        setAdminTyping(true);
-        if (typingTimeout.current) clearTimeout(typingTimeout.current);
-        typingTimeout.current = setTimeout(() => setAdminTyping(false), 4000);
-      }
-    },
-    onTypingStop: (data) => {
-      if (data.senderType === "admin" && data.sessionId === session?.id) {
-        setAdminTyping(false);
-      }
-    },
-    onSessionUpdated: (data) => {
-      if (data.id === session?.id) {
-        setSession((prev) => prev ? { ...prev, status: data.status } : prev);
-      }
-    },
-  });
-
-  // ─── Auto-scroll ────────────────────────────────────────────────────────
+  // ── Show tooltip after 4s ─────────────────────────────────────────────────
   useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTo({
-        top: scrollRef.current.scrollHeight,
-        behavior: "smooth",
-      });
-    }
-  }, [messages, adminTyping, open]);
+    const t = setTimeout(() => {
+      if (!open) setShowNotification(true);
+    }, 4000);
+    return () => clearTimeout(t);
+  }, [open]);
 
-  // ─── On widget open: initialize session ─────────────────────────────────
+  // ── Auto-scroll ───────────────────────────────────────────────────────────
+  useEffect(() => {
+    scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
+  }, [session?.messages, adminTyping, open]);
+
+  // ── Socket.IO relay connection ────────────────────────────────────────────
+  useEffect(() => {
+    if (!session?.id) return;
+
+    // Lazily import socket.io-client
+    import("socket.io-client").then(({ io }) => {
+      const socket = io(RELAY_URL);
+      socketRef.current = socket;
+
+      socket.on("connect", () => {
+        socket.emit("join-room", session.id);
+      });
+
+      // Admin reply comes in — add to messages
+      socket.on("receive-message", (msg: any) => {
+        if (msg.sender === "admin") {
+          setAdminTyping(false);
+          setSession((prev) => {
+            if (!prev) return null;
+            const exists = prev.messages.some((m) => m.id === msg.id || m.id === msg._id);
+            if (exists) return prev;
+            const newMsg: ChatMessage = {
+              id: msg.id || msg._id || Math.random().toString(36),
+              sender: "admin",
+              text: msg.text,
+              timestamp: msg.timestamp,
+            };
+            return {
+              ...prev,
+              messages: [...prev.messages, newMsg],
+              lastMessage: msg.text,
+              lastMessageTime: msg.timestamp,
+            };
+          });
+        }
+      });
+
+      return () => { socket.disconnect(); };
+    });
+  }, [session?.id]);
+
+  // ── 3-second polling fallback (same as JRM) ───────────────────────────────
+  useEffect(() => {
+    if (!session?.id) return;
+    const interval = setInterval(async () => {
+      try {
+        const refreshed = await getChatSessionFn({ data: { sessionId: session.id } });
+        if (refreshed) setSession(refreshed);
+      } catch { /* non-fatal */ }
+    }, 3000);
+    return () => clearInterval(interval);
+  }, [session?.id]);
+
+  // ── On open: restore session from localStorage ────────────────────────────
   useEffect(() => {
     if (!open) return;
+    const storedId = localStorage.getItem(SESSION_KEY);
+    if (!storedId) { setStep("intro"); return; }
 
-    const storedSessionId = localStorage.getItem(SESSION_KEY);
-
-    if (storedSessionId) {
-      // Try to load existing session
-      setSessionLoading(true);
-      apiFetch<Session>(`/api/chat/session/${storedSessionId}`)
-        .then((sess) => {
+    setSessionLoading(true);
+    getChatSessionFn({ data: { sessionId: storedId } })
+      .then((sess) => {
+        if (sess) {
           setSession(sess);
           setStep("chat");
-          joinChat(sess.id);
-          markRead(sess.id, "visitor");
-          return loadHistory(sess.id);
-        })
-        .catch(() => {
-          // Session gone — start fresh
+        } else {
           localStorage.removeItem(SESSION_KEY);
           setStep("intro");
-        })
-        .finally(() => setSessionLoading(false));
-    } else {
-      setStep("intro");
-    }
-  }, [open]); // eslint-disable-line react-hooks/exhaustive-deps
+        }
+      })
+      .catch(() => {
+        localStorage.removeItem(SESSION_KEY);
+        setStep("intro");
+      })
+      .finally(() => setSessionLoading(false));
+  }, [open]);
 
-  // ─── Load history ───────────────────────────────────────────────────────
-  const loadHistory = useCallback(async (sessionId: string) => {
-    setHistoryLoading(true);
-    try {
-      const msgs = await apiFetch<Message[]>(`/api/chat/session/${sessionId}/messages`);
-      setMessages(msgs);
-    } catch {
-      // non-fatal
-    } finally {
-      setHistoryLoading(false);
-    }
-  }, []);
-
-  // ─── Create new session ─────────────────────────────────────────────────
-  const createSession = async () => {
-    if (!visitorName.trim()) {
-      setFormError("Please enter your name.");
-      return;
-    }
-    if (!visitorContact.trim()) {
-      setFormError("Please enter your email or phone.");
-      return;
-    }
+  // ── Create new session ────────────────────────────────────────────────────
+  const startChat = async () => {
+    if (!visitorName.trim()) { setFormError("Please enter your name."); return; }
+    if (!visitorContact.trim()) { setFormError("Please enter your email or phone."); return; }
     setFormError(null);
     setSessionLoading(true);
 
     try {
-      let visitorId = localStorage.getItem(VISITOR_KEY);
-      if (!visitorId) {
-        visitorId = crypto.randomUUID();
-        localStorage.setItem(VISITOR_KEY, visitorId);
-      }
+      const sess = await createChatSessionFn({
+        data: { visitorName: visitorName.trim(), visitorContact: visitorContact.trim() },
+      });
 
-      const sess = await apiFetch<Session>("/api/chat/session", {
-        method: "POST",
-        body: JSON.stringify({
-          visitorId,
-          visitorName: visitorName.trim(),
-          visitorPhoneOrEmail: visitorContact.trim(),
-        }),
+      // Seed welcome message
+      const welcomed = await sendChatMessageFn({
+        data: {
+          sessionId: sess.id,
+          sender: "admin",
+          text: `Hi ${visitorName.split(" ")[0]}! 👋 Thanks for reaching out to StellR IT. How can we help you today?`,
+        },
       });
 
       localStorage.setItem(SESSION_KEY, sess.id);
-      setSession(sess);
+      setSession(welcomed || sess);
       setStep("chat");
-      joinChat(sess.id);
-
-      // Send the initial greeting message from the bot
-      setMessages([
-        {
-          id: "welcome",
-          senderType: "admin",
-          message: `Hi ${visitorName.split(" ")[0]}! 👋 I'm StellR — your digital strategy concierge. How can I help you today?`,
-          createdAt: new Date().toISOString(),
-          readAt: null,
-        },
-      ]);
     } catch {
       setFormError("Failed to connect. Please try again.");
     } finally {
@@ -213,80 +163,78 @@ export default function ChatWidget() {
     }
   };
 
-  // ─── Send message ───────────────────────────────────────────────────────
-  const sendMessage = async (text = input) => {
+  // ── Send visitor message ──────────────────────────────────────────────────
+  const sendMessage = useCallback(async (text = input) => {
     if (!text.trim() || !session || session.status === "closed" || sending) return;
 
-    const optimisticId = `opt-${Date.now()}`;
-    const optimisticMsg: Message = {
-      id: optimisticId,
-      senderType: "visitor",
-      message: text.trim(),
-      createdAt: new Date().toISOString(),
-      readAt: null,
-      sending: true,
-    };
-
-    setMessages((prev) => [...prev, optimisticMsg]);
     setInput("");
     setSending(true);
-    setSendError(null);
 
-    // Stop typing indicator
-    emitTypingStop(session.id, "visitor");
-    if (myTypingTimeout.current) clearTimeout(myTypingTimeout.current);
+    // Optimistic
+    const optimisticMsg: ChatMessage = {
+      id: `opt-${Date.now()}`,
+      sender: "visitor",
+      text: text.trim(),
+      timestamp: new Date().toISOString(),
+    };
+    setSession((prev) => prev ? { ...prev, messages: [...prev.messages, optimisticMsg] } : prev);
 
     try {
-      const saved = await apiFetch<Message>(`/api/chat/session/${session.id}/message`, {
-        method: "POST",
-        body: JSON.stringify({ message: text.trim() }),
+      const updated = await sendChatMessageFn({
+        data: { sessionId: session.id, sender: "visitor", text: text.trim() },
       });
+      if (updated) setSession(updated);
 
-      setMessages((prev) =>
-        prev.map((m) =>
-          m.id === optimisticId ? { ...saved, sending: false } : m
-        )
-      );
+      // Relay via Socket.IO so admin sees it instantly
+      const lastMsg = updated?.messages[updated.messages.length - 1];
+      if (socketRef.current && lastMsg) {
+        socketRef.current.emit("new-message", {
+          sessionId: session.id,
+          message: { ...lastMsg, sessionId: session.id },
+        });
+      }
+
+      // Show typing indicator for 12 seconds (simulated agent response wait)
+      setAdminTyping(true);
+      if (typingTimeout.current) clearTimeout(typingTimeout.current);
+      typingTimeout.current = setTimeout(() => setAdminTyping(false), 12000);
     } catch {
-      setMessages((prev) =>
-        prev.map((m) =>
-          m.id === optimisticId ? { ...m, sending: false, error: true } : m
-        )
+      setSession((prev) =>
+        prev
+          ? { ...prev, messages: prev.messages.filter((m) => m.id !== optimisticMsg.id) }
+          : prev
       );
-      setSendError("Failed to send. Tap to retry.");
     } finally {
       setSending(false);
     }
+  }, [input, session, sending]);
+
+  const handleToggle = () => {
+    setOpen((v) => !v);
+    setShowNotification(false);
   };
 
-  // ─── Typing emit ────────────────────────────────────────────────────────
-  const handleInputChange = (val: string) => {
-    setInput(val);
-    if (!session) return;
-
-    emitTypingStart(session.id, "visitor");
-    if (myTypingTimeout.current) clearTimeout(myTypingTimeout.current);
-    myTypingTimeout.current = setTimeout(() => {
-      emitTypingStop(session.id, "visitor");
-    }, 3000);
-  };
-
-  // ─── Retry failed message ───────────────────────────────────────────────
-  const retryMessage = (msg: Message) => {
-    setMessages((prev) => prev.filter((m) => m.id !== msg.id));
-    sendMessage(msg.message);
-  };
-
-  // ─── UI ─────────────────────────────────────────────────────────────────
   const isClosed = session?.status === "closed";
+  const messages = session?.messages ?? [];
 
   return (
     <>
-      {/* ── Floating launcher button ─────────────────────────────────────── */}
+      {/* ── Tooltip notification ──────────────────────────────────────────── */}
+      {showNotification && !open && (
+        <div className="fixed bottom-24 right-6 z-[60] mb-2 flex items-center gap-2 rounded-xl border border-white/10 bg-[#1a003a] px-4 py-2.5 text-sm text-white shadow-xl backdrop-blur-xl animate-bounce">
+          <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+          <span className="font-medium">Have questions? Chat with us!</span>
+          <button onClick={() => setShowNotification(false)} className="ml-1 text-white/50 hover:text-white">
+            <X className="h-3.5 w-3.5" />
+          </button>
+        </div>
+      )}
+
+      {/* ── Floating launcher button ──────────────────────────────────────── */}
       <button
         id="chat-widget-launcher"
         aria-label={open ? "Close chat" : "Open chat"}
-        onClick={() => setOpen((v) => !v)}
+        onClick={handleToggle}
         className="fixed bottom-6 right-6 z-[60] grid h-14 w-14 place-items-center rounded-full bg-gradient-to-br from-[#a855f7] to-[#6a18c8] text-white shadow-[0_10px_40px_-10px_rgba(168,85,247,0.8)] ring-1 ring-white/20 transition hover:scale-105"
       >
         <span className="absolute inset-0 -z-10 rounded-full bg-[#a855f7] opacity-60 blur-xl animate-pulse" />
@@ -310,15 +258,9 @@ export default function ChatWidget() {
             <div className="text-[15px] font-semibold leading-tight">StellR IT</div>
             <div className="flex items-center gap-1.5 text-xs text-white/70">
               {isClosed ? (
-                <>
-                  <span className="h-1.5 w-1.5 rounded-full bg-gray-400" />
-                  Conversation closed
-                </>
+                <><span className="h-1.5 w-1.5 rounded-full bg-gray-400" />Conversation closed</>
               ) : (
-                <>
-                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
-                  Online — typically replies instantly
-                </>
+                <><span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />Online — typically replies instantly</>
               )}
             </div>
           </div>
@@ -332,14 +274,14 @@ export default function ChatWidget() {
           </button>
         </div>
 
-        {/* ── Loading state ─────────────────────────────────────────────── */}
+        {/* Loading */}
         {sessionLoading && (
           <div className="flex min-h-[260px] items-center justify-center">
             <Loader2 className="h-6 w-6 animate-spin text-[#a855f7]" />
           </div>
         )}
 
-        {/* ── Intro step: welcome message ─────────────────────────────── */}
+        {/* Intro */}
         {!sessionLoading && step === "intro" && (
           <div className="flex min-h-[260px] flex-col items-center justify-center gap-4 px-5 py-8 text-center">
             <div className="grid h-14 w-14 place-items-center rounded-2xl bg-gradient-to-br from-[#a855f7]/30 to-[#6a18c8]/30 ring-1 ring-[#a855f7]/40">
@@ -361,35 +303,29 @@ export default function ChatWidget() {
           </div>
         )}
 
-        {/* ── Form step: visitor name + contact ───────────────────────── */}
+        {/* Form */}
         {!sessionLoading && step === "form" && (
           <div className="flex min-h-[260px] flex-col gap-4 px-5 py-6">
             <p className="text-sm text-white/70">Tell us a bit about yourself so we can help you better.</p>
-
             <div className="flex flex-col gap-3">
               <div>
-                <label className="mb-1 block text-xs text-white/50" htmlFor="chat-visitor-name">
-                  Your name *
-                </label>
+                <label className="mb-1 block text-xs text-white/50" htmlFor="chat-visitor-name">Your name *</label>
                 <input
                   id="chat-visitor-name"
                   value={visitorName}
                   onChange={(e) => setVisitorName(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && createSession()}
+                  onKeyDown={(e) => e.key === "Enter" && startChat()}
                   placeholder="Jane Smith"
                   className="w-full rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 text-sm text-white placeholder:text-white/30 focus:border-[#a855f7]/60 focus:outline-none"
                 />
               </div>
-
               <div>
-                <label className="mb-1 block text-xs text-white/50" htmlFor="chat-visitor-contact">
-                  Email or phone *
-                </label>
+                <label className="mb-1 block text-xs text-white/50" htmlFor="chat-visitor-contact">Email or phone *</label>
                 <input
                   id="chat-visitor-contact"
                   value={visitorContact}
                   onChange={(e) => setVisitorContact(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && createSession()}
+                  onKeyDown={(e) => e.key === "Enter" && startChat()}
                   placeholder="jane@company.com"
                   className="w-full rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 text-sm text-white placeholder:text-white/30 focus:border-[#a855f7]/60 focus:outline-none"
                 />
@@ -404,92 +340,60 @@ export default function ChatWidget() {
 
               <button
                 id="chat-form-submit"
-                onClick={createSession}
+                onClick={startChat}
                 disabled={sessionLoading}
                 className="mt-1 flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-br from-[#a855f7] to-[#6a18c8] px-4 py-2.5 text-sm font-semibold text-white shadow-lg transition hover:opacity-90 disabled:opacity-60"
               >
                 {sessionLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Start chatting →"}
               </button>
 
-              <button
-                onClick={() => setStep("intro")}
-                className="text-center text-xs text-white/40 hover:text-white/60"
-              >
+              <button onClick={() => setStep("intro")} className="text-center text-xs text-white/40 hover:text-white/60">
                 ← Back
               </button>
             </div>
           </div>
         )}
 
-        {/* ── Chat step ───────────────────────────────────────────────── */}
+        {/* Chat */}
         {!sessionLoading && step === "chat" && (
           <>
-            {/* Messages feed */}
-            <div
-              ref={scrollRef}
-              className="flex max-h-[42vh] min-h-[260px] flex-col gap-3 overflow-y-auto px-4 py-4"
-            >
-              {historyLoading ? (
-                <div className="flex flex-1 items-center justify-center py-10">
-                  <Loader2 className="h-5 w-5 animate-spin text-[#a855f7]" />
-                </div>
-              ) : (
-                <>
-                  {messages.map((m) => {
-                    const isVisitor = m.senderType === "visitor";
-                    return (
-                      <div
-                        key={m.id}
-                        className={`flex flex-col ${isVisitor ? "items-end" : "items-start"}`}
-                      >
-                        <button
-                          onClick={() => m.error && retryMessage(m)}
-                          className={`max-w-[85%] rounded-2xl px-3.5 py-2.5 text-sm leading-snug text-left transition ${
-                            isVisitor
-                              ? m.error
-                                ? "bg-red-900/40 ring-1 ring-red-500/40 text-white/80 cursor-pointer hover:bg-red-900/60"
-                                : m.sending
-                                ? "bg-gradient-to-br from-[#ff8a5b]/70 to-[#e8674a]/70 text-white opacity-70"
-                                : "bg-gradient-to-br from-[#ff8a5b] to-[#e8674a] text-white"
-                              : "bg-white/[0.06] text-white/90 ring-1 ring-white/10"
-                          } ${!isVisitor ? "cursor-default" : ""}`}
-                        >
-                          {m.message}
-                          {m.error && (
-                            <span className="ml-2 text-xs text-red-400">(tap to retry)</span>
-                          )}
-                        </button>
-                        <div className="mt-0.5 flex items-center gap-1 text-[10px] text-white/35">
-                          {m.sending && <Loader2 className="h-2.5 w-2.5 animate-spin" />}
-                          {m.error && <AlertCircle className="h-2.5 w-2.5 text-red-400" />}
-                          {formatTime(m.createdAt)}
-                        </div>
-                      </div>
-                    );
-                  })}
-
-                  {/* Typing indicator */}
-                  {adminTyping && (
-                    <div className="flex items-start">
-                      <div className="flex items-center gap-1 rounded-2xl bg-white/[0.06] px-4 py-3 ring-1 ring-white/10">
-                        <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-white/50 [animation-delay:-0.3s]" />
-                        <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-white/50 [animation-delay:-0.15s]" />
-                        <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-white/50" />
-                      </div>
+            <div ref={scrollRef} className="flex max-h-[42vh] min-h-[260px] flex-col gap-3 overflow-y-auto px-4 py-4">
+              {messages.map((m) => {
+                const isVisitor = m.sender === "visitor";
+                return (
+                  <div key={m.id} className={`flex flex-col ${isVisitor ? "items-end" : "items-start"}`}>
+                    <div
+                      className={`max-w-[85%] rounded-2xl px-3.5 py-2.5 text-sm leading-snug ${
+                        isVisitor
+                          ? "bg-gradient-to-br from-[#ff8a5b] to-[#e8674a] text-white"
+                          : "bg-white/[0.06] text-white/90 ring-1 ring-white/10"
+                      }`}
+                    >
+                      {m.text}
                     </div>
-                  )}
-                </>
+                    <div className="mt-0.5 text-[10px] text-white/35">{formatTime(m.timestamp)}</div>
+                  </div>
+                );
+              })}
+
+              {/* Typing indicator */}
+              {adminTyping && (
+                <div className="flex items-start">
+                  <div className="flex items-center gap-1 rounded-2xl bg-white/[0.06] px-4 py-3 ring-1 ring-white/10">
+                    <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-white/50 [animation-delay:-0.3s]" />
+                    <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-white/50 [animation-delay:-0.15s]" />
+                    <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-white/50" />
+                  </div>
+                </div>
               )}
             </div>
 
-            {/* Closed banner */}
             {isClosed && (
               <div className="mx-4 mb-3 rounded-xl border border-gray-500/30 bg-gray-800/40 px-4 py-3 text-center text-xs text-white/60">
-                This conversation has been closed. Start a new one below.
+                This conversation has been closed.
               </div>
             )}
 
-            {/* Book CTA */}
             <div className="px-4 pb-3">
               <a
                 id="chat-book-call"
@@ -501,30 +405,16 @@ export default function ChatWidget() {
               </a>
             </div>
 
-            {/* Composer */}
             <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                sendMessage();
-              }}
+              onSubmit={(e) => { e.preventDefault(); sendMessage(); }}
               className="flex items-center gap-2 border-t border-white/10 bg-black/20 px-3 py-3"
             >
               <input
-                ref={inputRef}
                 id="chat-message-input"
                 value={input}
-                onChange={(e) => handleInputChange(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" && !e.shiftKey) {
-                    e.preventDefault();
-                    sendMessage();
-                  }
-                }}
-                placeholder={
-                  isClosed
-                    ? "Conversation closed"
-                    : "Ask about services, pricing, timelines…"
-                }
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMessage(); } }}
+                placeholder={isClosed ? "Conversation closed" : "Ask about services, pricing, timelines…"}
                 disabled={isClosed || sending}
                 className="flex-1 rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 text-sm text-white placeholder:text-white/40 focus:border-[#a855f7]/60 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
               />
@@ -535,17 +425,9 @@ export default function ChatWidget() {
                 disabled={!input.trim() || isClosed || sending}
                 className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-gradient-to-br from-[#a855f7] to-[#6a18c8] text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
               >
-                {sending ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : (
-                  <Send className="h-4 w-4" />
-                )}
+                {sending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
               </button>
             </form>
-
-            {sendError && (
-              <p className="px-4 pb-2 text-center text-xs text-red-400">{sendError}</p>
-            )}
           </>
         )}
       </div>
