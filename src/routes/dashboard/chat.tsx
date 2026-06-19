@@ -96,19 +96,40 @@ function ChatPage() {
             if (sess) setActiveSession(sess);
           });
         }
-        // Bump the session to top of list with unread badge
-        setSessions((prev) =>
-          prev.map((s) =>
+        // Bump the session to top of list with unread badge, or fetch all if it is a new chat
+        setSessions((prev) => {
+          const exists = prev.some((s) => s.id === sessionId);
+          if (!exists) {
+            fetchSessions();
+            return prev;
+          }
+          return prev.map((s) =>
             s.id === sessionId
-              ? { ...s, unread: s.id !== activeSessionId ? true : s.unread }
+              ? { 
+                  ...s, 
+                  lastMessage: message.text, 
+                  lastMessageTime: message.timestamp, 
+                  unread: s.id !== activeSessionId ? true : s.unread 
+                }
               : s
-          )
-        );
+          );
+        });
       });
 
       return () => { socket.disconnect(); };
     });
-  }, [activeSessionId]);
+  }, [activeSessionId, fetchSessions]);
+
+  // Poll database every 5 seconds to sync new chats automatically
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      try {
+        const data = await getAllChatSessionsFn();
+        setSessions(data);
+      } catch { /* non-fatal */ }
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
 
   // ── Fetch all sessions ──────────────────────────────────────────────────
   const fetchSessions = useCallback(async () => {
@@ -277,7 +298,7 @@ function ChatPage() {
       >
         {/* ── Left: Sessions list ─────────────────────────────────────── */}
         <div
-          className={`flex h-full flex-col border-r ${
+          className={`flex h-full flex-col border-r min-h-0 ${
             isDark ? "border-white/5 bg-[#12052c]/40" : "border-slate-100 bg-slate-50/50"
           }`}
         >
@@ -389,7 +410,7 @@ function ChatPage() {
         </div>
 
         {/* ── Right: Conversation area ──────────────────────────────── */}
-        <div className="flex h-full flex-col lg:col-span-2">
+        <div className="flex h-full flex-col lg:col-span-2 min-h-0">
           {!activeSession ? (
             <div className="flex flex-1 flex-col items-center justify-center gap-3 text-center">
               <MessageSquare className={`h-10 w-10 ${isDark ? "text-white/15" : "text-slate-200"}`} />
@@ -462,7 +483,7 @@ function ChatPage() {
               </div>
 
               {/* Messages */}
-              <div ref={scrollRef} className="flex-1 overflow-y-auto space-y-4 p-5">
+              <div ref={scrollRef} className="flex-1 overflow-y-auto space-y-4 p-5 min-h-0">
                 {messagesLoading ? (
                   <div className="flex h-full items-center justify-center">
                     <Loader2 className="h-5 w-5 animate-spin text-[#a855f7]" />
