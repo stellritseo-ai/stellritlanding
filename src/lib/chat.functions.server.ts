@@ -33,6 +33,22 @@ function mapSession(c: any): ChatSession {
   };
 }
 
+// Helper to automatically close inactive sessions (> 5 minutes)
+async function checkAndAutoClose(ChatSessionModel: any, sessionId?: string) {
+  const fiveMinsAgo = new Date(Date.now() - 5 * 60 * 1000).toISOString();
+  if (sessionId) {
+    await ChatSessionModel.updateOne(
+      { _id: sessionId, status: "open", lastMessageTime: { $lt: fiveMinsAgo } },
+      { status: "closed" }
+    );
+  } else {
+    await ChatSessionModel.updateMany(
+      { status: "open", lastMessageTime: { $lt: fiveMinsAgo } },
+      { status: "closed" }
+    );
+  }
+}
+
 // ── Visitor: create session ───────────────────────────────────────────────────
 export const createChatSessionFn = createServerFn({ method: "POST" }).handler(
   async ({ data }: { data: { visitorName: string; visitorContact: string } }) => {
@@ -59,6 +75,7 @@ export const getChatSessionFn = createServerFn({ method: "POST" }).handler(
   async ({ data }: { data: { sessionId: string } }) => {
     const { connectDB, ChatSessionModel } = await import("./db.server");
     await connectDB();
+    await checkAndAutoClose(ChatSessionModel, data.sessionId);
     const chat = await ChatSessionModel.findById(data.sessionId).lean();
     return chat ? mapSession(chat) : null;
   }
@@ -69,6 +86,14 @@ export const sendChatMessageFn = createServerFn({ method: "POST" }).handler(
   async ({ data }: { data: { sessionId: string; sender: "visitor" | "admin"; text: string } }) => {
     const { connectDB, ChatSessionModel } = await import("./db.server");
     await connectDB();
+
+    await checkAndAutoClose(ChatSessionModel, data.sessionId);
+
+    // Verify if it has been closed
+    const session = await ChatSessionModel.findById(data.sessionId).lean();
+    if (!session || session.status === "closed") {
+      throw new Error("This conversation has been closed.");
+    }
 
     const now = new Date().toISOString();
     const updated = await ChatSessionModel.findByIdAndUpdate(
@@ -90,6 +115,7 @@ export const sendChatMessageFn = createServerFn({ method: "POST" }).handler(
 export const getAllChatSessionsFn = createServerFn({ method: "GET" }).handler(async () => {
   const { connectDB, ChatSessionModel } = await import("./db.server");
   await connectDB();
+  await checkAndAutoClose(ChatSessionModel);
   const chats = await ChatSessionModel.find().sort({ lastMessageTime: -1 }).lean();
   return chats.map(mapSession);
 });

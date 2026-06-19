@@ -389,8 +389,22 @@ export default function ChatWidget() {
             </div>
 
             {isClosed && (
-              <div className="mx-4 mb-3 rounded-xl border border-gray-500/30 bg-gray-800/40 px-4 py-3 text-center text-xs text-white/60">
-                This conversation has been closed.
+              <div className="mx-4 mb-3 flex flex-col gap-2">
+                <div className="rounded-xl border border-gray-500/30 bg-gray-800/40 px-4 py-3 text-center text-xs text-white/60">
+                  This conversation has been closed due to inactivity.
+                </div>
+                <button
+                  onClick={() => {
+                    localStorage.removeItem(SESSION_KEY);
+                    setSession(null);
+                    setVisitorName("");
+                    setVisitorContact("");
+                    setStep("intro");
+                  }}
+                  className="w-full rounded-xl bg-gradient-to-br from-[#a855f7] to-[#6a18c8] px-4 py-2.5 text-xs font-semibold text-white shadow-lg transition hover:opacity-90 active:scale-95"
+                >
+                  Start New Chat
+                </button>
               </div>
             )}
 
