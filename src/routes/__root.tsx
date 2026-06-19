@@ -15,6 +15,8 @@ import { reportLovableError } from "../lib/lovable-error-reporting";
 import PageTransition from "@/components/PageTransition";
 import NotFoundPage from "@/components/NotFoundPage";
 import favImg from "@/assets/fav.png";
+import MaintenanceModePage from "@/components/MaintenanceModePage";
+import { getSiteConfigFn } from "@/lib/dashboard.functions.server";
 
 function NotFoundComponent() {
   return <NotFoundPage />;
@@ -59,6 +61,23 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
 }
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
+  loader: async ({ location }) => {
+    // Bypass maintenance mode check for dashboard, login, and upload pages
+    const isPublic = !["/dashboard", "/login", "/upload"].some(path => 
+      location.pathname.startsWith(path)
+    );
+    if (!isPublic) return { maintenance: false };
+
+    try {
+      const config = await getSiteConfigFn();
+      return {
+        maintenance: config?.maintenanceMode ?? false,
+      };
+    } catch (err) {
+      console.error("Failed to load maintenance configuration:", err);
+      return { maintenance: false };
+    }
+  },
   head: () => ({
     meta: [
       { charSet: "utf-8" },
@@ -105,6 +124,16 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const { maintenance } = Route.useLoaderData() as { maintenance: boolean };
+
+  if (maintenance) {
+    return (
+      <QueryClientProvider client={queryClient}>
+        <MaintenanceModePage onRefresh={() => window.location.reload()} />
+        <Toaster position="bottom-right" richColors />
+      </QueryClientProvider>
+    );
+  }
 
   return (
     <QueryClientProvider client={queryClient}>

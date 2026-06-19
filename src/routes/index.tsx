@@ -13,7 +13,6 @@ import MarqueeStrip from "@/components/MarqueeStrip";
 import ParallaxText from "@/components/ParallaxText";
 import PartnershipModels from "@/components/PartnershipModels";
 import Portfolio from "@/components/Portfolio";
-import MaintenanceModePage from "@/components/MaintenanceModePage";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -28,24 +27,6 @@ export const Route = createFileRoute("/")({
 });
 
 function Index() {
-  // Maintenance mode disabled — managed via admin dashboard when needed
-  const maintenance = false;
-
-  if (maintenance === null) {
-    return (
-      <div className="min-h-screen bg-[#070213] flex items-center justify-center">
-        <div className="relative flex h-3 w-3">
-          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75"></span>
-          <span className="relative inline-flex rounded-full h-3 w-3 bg-purple-500"></span>
-        </div>
-      </div>
-    );
-  }
-
-  if (maintenance) {
-    return <MaintenanceModePage onRefresh={checkMaintenance} />;
-  }
-
   return (
     <main className="relative min-h-screen">
       <ScrollBackground />
