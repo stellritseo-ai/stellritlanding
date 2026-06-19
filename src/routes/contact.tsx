@@ -44,7 +44,13 @@ export const Route = createFileRoute("/contact")({
 });
 
 const BUDGETS = ["< $1K", "$2k – $10k", "$10k – $20k", "$20+"];
-const SERVICES = ["Website Design", "AI Automation", "Make Growth to Marketing", "Other"];
+const SERVICES = [
+  "UX Research & Strategy",
+  "Brand Identity",
+  "Web & Product Design",
+  "Web Development",
+  "Digital Marketing"
+];
 
 function ContactPage() {
   const [form, setForm] = useState({ name: "", email: "", phone: "", company: "", budget: BUDGETS[1], service: SERVICES[0], message: "" });
