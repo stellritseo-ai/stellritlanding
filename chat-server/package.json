@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "StellR IT Live Chat Backend — Express + Socket.IO + MongoDB",
   "type": "module",
+  "engines": {
+    "node": "22.x"
+  },
   "scripts": {
     "dev": "tsc && node dist/index.js",
     "build": "tsc",

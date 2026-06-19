@@ -29,7 +29,7 @@ for (const envPath of envPaths) {
   }
 }
 
-const PORT = Number(process.env.CHAT_SERVER_PORT ?? 3001);
+const PORT = Number(process.env.PORT ?? process.env.CHAT_SERVER_PORT ?? 3001);
 const MONGO_URI = process.env.DATABASE_URL;
 
 if (!MONGO_URI) {
