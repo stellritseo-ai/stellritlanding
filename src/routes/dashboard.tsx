@@ -1,5 +1,5 @@
-import { createFileRoute, Link, Outlet } from "@tanstack/react-router";
-import { useState } from "react";
+import { createFileRoute, Link, Outlet, redirect, useNavigate } from "@tanstack/react-router";
+import { useState, useEffect } from "react";
 import {
   LayoutDashboard,
   ShieldAlert,
@@ -26,12 +26,55 @@ import logoImg from "@/assets/logo.png";
 import { DashboardThemeContext } from "../hooks/useDashboardTheme";
 
 export const Route = createFileRoute("/dashboard")({
+  beforeLoad: ({ location }) => {
+    const token = typeof window !== "undefined" ? localStorage.getItem("stellr_admin_token") : null;
+    if (!token && location.pathname !== "/login") {
+      throw redirect({
+        to: "/login",
+        search: {
+          redirect: location.href,
+        },
+      });
+    }
+  },
   component: DashboardLayout,
 });
 
 function DashboardLayout() {
+  const navigate = useNavigate();
+  const handleLogout = () => {
+    if (confirm("Are you sure you want to log out?")) {
+      localStorage.removeItem("stellr_admin_token");
+      localStorage.removeItem("stellr_admin_user");
+      navigate({ to: "/login" });
+    }
+  };
+
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [theme, setTheme] = useState<"dark" | "light">("dark");
+  const [theme, setTheme] = useState<"dark" | "light">(() => {
+    if (typeof window !== "undefined") {
+      const savedTheme = localStorage.getItem("dashboard-theme");
+      if (savedTheme === "dark" || savedTheme === "light") {
+        return savedTheme;
+      }
+      if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+        return "dark";
+      }
+    }
+    return "dark";
+  });
+
+  useEffect(() => {
+    localStorage.setItem("dashboard-theme", theme);
+    if (theme === "dark") {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+  }, [theme]);
+
+  const toggleTheme = () => setTheme((t) => (t === "dark" ? "light" : "dark"));
+
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [notifications, setNotifications] = useState([
     {
@@ -232,14 +275,15 @@ function DashboardLayout() {
                   Operator
                 </span>
               </div>
-              <Link
-                to="/"
-                className={`h-8 w-8 rounded-lg flex items-center justify-center transition ${
+              <button
+                onClick={handleLogout}
+                className={`h-8 w-8 rounded-lg flex items-center justify-center transition cursor-pointer ${
                   isDark ? "text-white/60 hover:text-white hover:bg-white/10" : "text-slate-400 hover:text-slate-700 hover:bg-slate-100"
                 }`}
+                title="Log Out"
               >
                 <LogOut className="h-4 w-4" />
-              </Link>
+              </button>
             </div>
           </div>
         </aside>
@@ -311,7 +355,7 @@ function DashboardLayout() {
 
               {/* Theme Toggle Button */}
               <button
-                onClick={() => setTheme((t) => (t === "dark" ? "light" : "dark"))}
+                onClick={toggleTheme}
                 type="button"
                 className={`h-10 w-10 flex items-center justify-center rounded-full border transition duration-300 ${
                   isDark
@@ -459,7 +503,7 @@ function DashboardLayout() {
 
           {/* Main Outlet (renders subpages, passes down theme context value) */}
           <main className="flex-1 overflow-y-auto px-6 py-8 md:px-10 md:py-10">
-            <DashboardThemeContext.Provider value={{ theme }}>
+            <DashboardThemeContext.Provider value={{ theme, setTheme, toggleTheme }}>
               <Outlet />
             </DashboardThemeContext.Provider>
           </main>
@@ -559,7 +603,7 @@ function DashboardLayout() {
                   Back to Website
                 </Link>
 
-                <div
+                 <div
                   className={`flex items-center gap-3 p-2 rounded-xl border transition ${
                     isDark ? "bg-white/5 border-white/5" : "bg-slate-50 border-slate-100"
                   }`}
@@ -572,10 +616,19 @@ function DashboardLayout() {
                       Jiten Sony
                     </span>
                     <span className={`block text-[10px] truncate flex items-center gap-1 ${isDark ? "text-white/50" : "text-slate-400"}`}>
-                      <span className="h-1 w-1 rounded-full bg-emerald-500 animate-pulse" />
+                      <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
                       Operator
                     </span>
                   </div>
+                  <button
+                    onClick={handleLogout}
+                    className={`h-8 w-8 rounded-lg flex items-center justify-center transition cursor-pointer ${
+                      isDark ? "text-white/60 hover:text-white hover:bg-white/10" : "text-slate-400 hover:text-slate-700 hover:bg-slate-100"
+                    }`}
+                    title="Log Out"
+                  >
+                    <LogOut className="h-4 w-4" />
+                  </button>
                 </div>
               </div>
             </motion.aside>

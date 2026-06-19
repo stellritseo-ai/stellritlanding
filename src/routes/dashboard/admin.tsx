@@ -16,6 +16,7 @@ import {
   Server,
   AlertCircle,
   ShieldAlert,
+  HardDrive
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -40,6 +41,29 @@ interface Flag {
   category: "Security" | "Performance" | "Beta Features";
 }
 
+const API_URL = import.meta.env.VITE_CHAT_API_URL ?? "http://localhost:3001";
+const ADMIN_TOKEN = import.meta.env.VITE_ADMIN_TOKEN ?? "stellr-admin-dev-2024";
+
+async function adminFetch<T>(path: string, opts?: RequestInit): Promise<T> {
+  const res = await fetch(`${API_URL}${path}`, {
+    headers: {
+      "Content-Type": "application/json",
+      "x-admin-token": ADMIN_TOKEN,
+    },
+    ...opts,
+  });
+  if (!res.ok) throw new Error(`API ${res.status}: ${await res.text()}`);
+  return res.json() as Promise<T>;
+}
+
+function formatSize(bytes: number) {
+  if (bytes === 0) return "0 B";
+  const k = 1024;
+  const sizes = ["B", "KB", "MB", "GB", "TB"];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
+}
+
 // Custom Premium Toggle Switch Component
 function Switch({ checked, onChange }: { checked: boolean; onChange: () => void }) {
   return (
@@ -60,19 +84,7 @@ function Switch({ checked, onChange }: { checked: boolean; onChange: () => void 
   );
 }
 
-function CpuDiagnosticsCard({ isDark }: { isDark: boolean }) {
-  const [cpuUsage, setCpuUsage] = useState(14.8);
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCpuUsage((prev) => {
-        const delta = (Math.random() - 0.5) * 4;
-        const next = prev + delta;
-        return parseFloat(Math.max(5, Math.min(85, next)).toFixed(1));
-      });
-    }, 3000);
-    return () => clearInterval(interval);
-  }, []);
-
+function CpuDiagnosticsCard({ isDark, cpuUsage }: { isDark: boolean; cpuUsage: number }) {
   return (
     <div className={`relative overflow-hidden rounded-2xl border p-6 shadow-2xl transition duration-300 group ${
       isDark ? "bg-gradient-to-b from-[#12052c]/90 to-[#0e0220]/95 border-white/5 shadow-[0_20px_50px_rgba(0,0,0,0.5)]" : "bg-white border-slate-200/60 shadow-sm"
@@ -141,43 +153,29 @@ function DashboardAdmin() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedRoleFilter, setSelectedRoleFilter] = useState<string>("All");
 
-  // Mock Users State
-  const [users, setUsers] = useState<User[]>([
-    {
-      id: "u1",
-      name: "Jiten Sony",
-      email: "jiten@stellr.space",
-      role: "Super Admin",
-      status: "Active",
-      joinedDate: "2026-01-15",
-    },
-    {
-      id: "u2",
-      name: "David Chen",
-      email: "david.c@technova.com",
-      role: "Developer",
-      status: "Active",
-      joinedDate: "2026-03-10",
-    },
-    {
-      id: "u3",
-      name: "Sarah Jenkins",
-      email: "sarah.j@nexus.io",
-      role: "Analyst",
-      status: "Active",
-      joinedDate: "2026-04-02",
-    },
-    {
-      id: "u4",
-      name: "Alex Rivera",
-      email: "alex@riveradesign.co",
-      role: "Developer",
-      status: "Inactive",
-      joinedDate: "2026-05-28",
-    },
-  ]);
+  // Dynamic Operators State
+  const [users, setUsers] = useState<User[]>([]);
 
-  // Mock Feature Flags State
+  // Diagnostics State
+  const [diagnostics, setDiagnostics] = useState<{
+    cpuUsage: number;
+    heapUsed: number;
+    heapTotal: number;
+    uptime: number;
+    databaseStatus: string;
+    totalAssets: number;
+    totalSize: number;
+  }>({
+    cpuUsage: 14.8,
+    heapUsed: 428 * 1024 * 1024,
+    heapTotal: 1024 * 1024 * 1024,
+    uptime: 120,
+    databaseStatus: "Connecting...",
+    totalAssets: 0,
+    totalSize: 0
+  });
+
+  // Feature Flags State
   const [flags, setFlags] = useState<Flag[]>([
     {
       id: "f1",
@@ -209,44 +207,180 @@ function DashboardAdmin() {
     },
   ]);
 
-  const toggleFlag = (id: string) => {
+  const fetchOperators = async () => {
+    try {
+      const data = await adminFetch<User[]>("/api/admin/operators");
+      setUsers(data);
+    } catch (err) {
+      console.error("Failed to fetch operators:", err);
+    }
+  };
+
+  const fetchDiagnostics = async () => {
+    try {
+      const data = await adminFetch<{
+        cpuUsage: number;
+        heapUsed: number;
+        heapTotal: number;
+        uptime: number;
+        databaseStatus: string;
+        totalAssets: number;
+        totalSize: number;
+      }>("/api/admin/diagnostics");
+      setDiagnostics(data);
+    } catch (err) {
+      console.error("Failed to fetch diagnostics:", err);
+    }
+  };
+
+  const loadConfig = async () => {
+    try {
+      const configData = await adminFetch<{
+        maintenanceMode: boolean;
+        aiHelpdeskAutoplay: boolean;
+        edgeCacheCompression: boolean;
+        dynamicCaseStudies: boolean;
+      }>("/api/admin/site-config");
+      
+      setFlags([
+        {
+          id: "f1",
+          name: "Global Maintenance Mode",
+          desc: "Redirects all incoming visitor traffic to an optimized placeholder screen.",
+          enabled: configData.maintenanceMode,
+          category: "Security",
+        },
+        {
+          id: "f2",
+          name: "AI Helpdesk Autoplay",
+          desc: "Triggers helpdesk widget initialization 5s post-interaction.",
+          enabled: configData.aiHelpdeskAutoplay,
+          category: "Beta Features",
+        },
+        {
+          id: "f3",
+          name: "Edge Cache Compression",
+          desc: "Compresses static asset trees at CDN edges using Brotli encoding.",
+          enabled: configData.edgeCacheCompression,
+          category: "Performance",
+        },
+        {
+          id: "f4",
+          name: "Dynamic Case Studies",
+          desc: "Exposes work-in-progress case logs directly inside website routes.",
+          enabled: configData.dynamicCaseStudies,
+          category: "Beta Features",
+        },
+      ]);
+    } catch (err) {
+      console.error("Failed to load global configurations:", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchOperators();
+    loadConfig();
+    fetchDiagnostics();
+
+    const interval = setInterval(fetchDiagnostics, 5000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const toggleFlag = async (id: string) => {
+    const flag = flags.find(f => f.id === id);
+    if (!flag) return;
+    const nextVal = !flag.enabled;
+    
+    // Optimistic UI update
     setFlags((prev) =>
-      prev.map((f) => (f.id === id ? { ...f, enabled: !f.enabled } : f))
+      prev.map((f) => (f.id === id ? { ...f, enabled: nextVal } : f))
     );
+
+    try {
+      const payload: any = {};
+      if (id === "f1") payload.maintenanceMode = nextVal;
+      if (id === "f2") payload.aiHelpdeskAutoplay = nextVal;
+      if (id === "f3") payload.edgeCacheCompression = nextVal;
+      if (id === "f4") payload.dynamicCaseStudies = nextVal;
+
+      await adminFetch("/api/admin/site-config", {
+        method: "PUT",
+        body: JSON.stringify(payload),
+      });
+    } catch (err) {
+      console.error("Failed to toggle feature flag:", err);
+      // Revert optimistic update
+      setFlags((prev) =>
+        prev.map((f) => (f.id === id ? { ...f, enabled: !nextVal } : f))
+      );
+    }
   };
 
-  const toggleUserStatus = (id: string) => {
+  const toggleUserStatus = async (id: string) => {
+    const user = users.find(u => u.id === id);
+    if (!user) return;
+    const nextStatus = user.status === "Active" ? "Inactive" : "Active";
+
+    // Optimistic UI update
     setUsers((prev) =>
-      prev.map((u) =>
-        u.id === id
-          ? { ...u, status: u.status === "Active" ? "Inactive" : "Active" }
-          : u
-      )
+      prev.map((u) => (u.id === id ? { ...u, status: nextStatus } : u))
     );
+
+    try {
+      await adminFetch(`/api/admin/operators/${id}`, {
+        method: "PATCH",
+        body: JSON.stringify({ status: nextStatus }),
+      });
+    } catch (err) {
+      console.error("Failed to toggle operator status:", err);
+      // Revert optimistic update
+      setUsers((prev) =>
+        prev.map((u) => (u.id === id ? { ...u, status: user.status } : u))
+      );
+    }
   };
 
-  const deleteUser = (id: string) => {
+  const deleteUser = async (id: string) => {
+    if (!confirm(`Are you sure you want to revoke permissions for this operator?`)) return;
+    
+    // Optimistic UI update
     setUsers((prev) => prev.filter((u) => u.id !== id));
+
+    try {
+      await adminFetch(`/api/admin/operators/${id}`, {
+        method: "DELETE",
+      });
+    } catch (err) {
+      console.error("Failed to revoke operator permissions:", err);
+      fetchOperators();
+    }
   };
 
-  const handleAddUser = (e: React.FormEvent) => {
+  const handleAddUser = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newUserName || !newUserEmail) return;
 
-    const newUser: User = {
-      id: `u-${Date.now()}`,
-      name: newUserName,
-      email: newUserEmail,
-      role: newUserRole,
-      status: "Active",
-      joinedDate: new Date().toISOString().split("T")[0],
-    };
+    try {
+      const response = await adminFetch<User>("/api/admin/operators", {
+        method: "POST",
+        body: JSON.stringify({
+          name: newUserName,
+          email: newUserEmail,
+          role: newUserRole,
+          status: "Active",
+          joinedDate: new Date().toISOString().split("T")[0],
+        }),
+      });
 
-    setUsers((prev) => [...prev, newUser]);
-    setNewUserName("");
-    setNewUserEmail("");
-    setNewUserRole("Developer");
-    setAddModalOpen(false);
+      setUsers((prev) => [...prev, response]);
+      setNewUserName("");
+      setNewUserEmail("");
+      setNewUserRole("Developer");
+      setAddModalOpen(false);
+    } catch (err) {
+      console.error("Failed to provision operator:", err);
+      alert("Failed to provision new operator access role.");
+    }
   };
 
   // Filtered Users list
@@ -297,7 +431,7 @@ function DashboardAdmin() {
       {/* High-Fidelity Diagnostics Section */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Card 1: CPU Load */}
-        <CpuDiagnosticsCard isDark={isDark} />
+        <CpuDiagnosticsCard isDark={isDark} cpuUsage={diagnostics.cpuUsage} />
 
         {/* Card 2: Memory Heap */}
         <div className={`relative overflow-hidden rounded-2xl border p-6 shadow-2xl transition duration-300 group ${
@@ -318,17 +452,18 @@ function DashboardAdmin() {
 
           <div className="flex items-baseline gap-2">
             <span className={`text-4xl font-bold font-mono tracking-tight ${isDark ? "text-white" : "text-slate-800"}`}>
-              428MB
+              {Math.round(diagnostics.heapUsed / (1024 * 1024))}MB
             </span>
             <span className={`text-[10px] font-semibold ${isDark ? "text-white/40" : "text-slate-450"}`}>
-              Of 1024MB Pool
+              Of {Math.round(diagnostics.heapTotal / (1024 * 1024))}MB Pool
             </span>
           </div>
 
           {/* Segmented memory status blocks */}
           <div className="flex gap-1.5 mt-6">
             {Array.from({ length: 16 }).map((_, idx) => {
-              const lit = idx < 6; // 38%
+              const activeSegments = Math.round((diagnostics.heapUsed / diagnostics.heapTotal) * 16);
+              const lit = idx < activeSegments;
               return (
                 <div
                   key={idx}
@@ -346,11 +481,11 @@ function DashboardAdmin() {
             isDark ? "text-white/40 border-white/5" : "text-slate-400 border-slate-100"
           }`}>
             <span>Partition Code V8</span>
-            <span>Allocated: 38%</span>
+            <span>Allocated: {Math.round((diagnostics.heapUsed / diagnostics.heapTotal) * 100)}%</span>
           </div>
         </div>
 
-        {/* Card 3: Network Bandwidth */}
+        {/* Card 3: Asset Storage Footprint */}
         <div className={`relative overflow-hidden rounded-2xl border p-6 shadow-2xl transition duration-300 group ${
           isDark ? "bg-gradient-to-b from-[#12052c]/90 to-[#0e0220]/95 border-white/5 shadow-[0_20px_50px_rgba(0,0,0,0.5)]" : "bg-white border-slate-200/60 shadow-sm"
         }`}>
@@ -358,25 +493,25 @@ function DashboardAdmin() {
           <div className="flex items-center justify-between mb-6">
             <div className="space-y-1">
               <span className={`text-[10px] uppercase tracking-widest font-bold ${isDark ? "text-white/40" : "text-slate-400"}`}>
-                Edge Ingress
+                Asset Vault Storage
               </span>
-              <h4 className={`text-sm font-semibold ${isDark ? "text-white/80" : "text-slate-700"}`}>Bandwidth Surge</h4>
+              <h4 className={`text-sm font-semibold ${isDark ? "text-white/80" : "text-slate-700"}`}>Vault Footprint</h4>
             </div>
             <div className="h-9 w-9 rounded-xl bg-emerald-400/10 border border-emerald-400/20 flex items-center justify-center">
-              <Server className="h-4.5 w-4.5 text-emerald-400" />
+              <HardDrive className="h-4.5 w-4.5 text-emerald-400" />
             </div>
           </div>
 
           <div className="flex items-baseline gap-2">
             <span className={`text-4xl font-bold font-mono tracking-tight ${isDark ? "text-white" : "text-slate-800"}`}>
-              18.4G
+              {formatSize(diagnostics.totalSize)}
             </span>
             <span className="text-[10px] font-semibold text-emerald-400">
-              Peak Transfer
+              {diagnostics.totalAssets} File{diagnostics.totalAssets !== 1 ? 's' : ''}
             </span>
           </div>
 
-          {/* Animating SVG Network Wave */}
+          {/* SVG Wave */}
           <div className={`h-4.5 mt-6 relative overflow-hidden border rounded-sm ${isDark ? "bg-white/5 border-white/[0.02]" : "bg-slate-50 border-slate-150"}`}>
             <svg
               className="absolute inset-x-0 bottom-0 w-full h-8 text-emerald-400/30"
@@ -401,8 +536,8 @@ function DashboardAdmin() {
           <div className={`mt-5 flex items-center justify-between text-[10px] border-t pt-4 ${
             isDark ? "text-white/40 border-white/5" : "text-slate-400 border-slate-100"
           }`}>
-            <span>CDN Gate: Cloudflare</span>
-            <span>Threshold Limit: 62%</span>
+            <span>Database Status: {diagnostics.databaseStatus}</span>
+            <span>Uptime: {Math.floor(diagnostics.uptime / 3600)}h {Math.floor((diagnostics.uptime % 3600) / 60)}m</span>
           </div>
         </div>
       </div>
@@ -684,7 +819,7 @@ function DashboardAdmin() {
                     <input
                       type="email"
                       required
-                      placeholder="e.g. operator@stellr.space"
+                      placeholder="e.g. operator@stellrit.com"
                       value={newUserEmail}
                       onChange={(e) => setNewUserEmail(e.target.value)}
                       className={`w-full h-10 px-3.5 rounded-xl border text-sm transition duration-300 ${

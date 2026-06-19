@@ -28,7 +28,7 @@ function MembersPage() {
     {
       id: "m1",
       name: "Jiten Sony",
-      email: "jiten@stellr.space",
+      email: "jiten@stellrit.com",
       role: "Super Admin",
       status: "Active",
       joinedDate: "2026-01-15",
@@ -206,7 +206,7 @@ function MembersPage() {
                     <input
                       type="email"
                       required
-                      placeholder="e.g. member@stellr.space"
+                      placeholder="e.g. member@stellrit.com"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       className={`w-full h-10 px-3.5 rounded-xl border text-sm transition duration-300 focus:outline-none focus:border-[#a855f7]/50 focus:ring-1 focus:ring-[#a855f7]/50 ${

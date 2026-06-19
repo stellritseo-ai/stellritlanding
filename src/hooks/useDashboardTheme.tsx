@@ -1,6 +1,16 @@
 import { createContext, useContext } from "react";
 
-export const DashboardThemeContext = createContext<{ theme: "dark" | "light" }>({ theme: "dark" });
+export interface DashboardThemeContextType {
+  theme: "dark" | "light";
+  setTheme: (theme: "dark" | "light") => void;
+  toggleTheme: () => void;
+}
+
+export const DashboardThemeContext = createContext<DashboardThemeContextType>({
+  theme: "dark",
+  setTheme: () => {},
+  toggleTheme: () => {},
+});
 
 export function useDashboardTheme() {
   return useContext(DashboardThemeContext);

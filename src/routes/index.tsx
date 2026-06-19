@@ -14,6 +14,10 @@ import MarqueeStrip from "@/components/MarqueeStrip";
 import ParallaxText from "@/components/ParallaxText";
 import PartnershipModels from "@/components/PartnershipModels";
 import Portfolio from "@/components/Portfolio";
+import { useState, useEffect } from "react";
+import MaintenanceModePage from "@/components/MaintenanceModePage";
+
+const PUBLIC_API_URL = import.meta.env.VITE_CHAT_API_URL ?? "http://localhost:3001";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -28,6 +32,41 @@ export const Route = createFileRoute("/")({
 });
 
 function Index() {
+  const [maintenance, setMaintenance] = useState<boolean | null>(null);
+
+  const checkMaintenance = async () => {
+    try {
+      const res = await fetch(`${PUBLIC_API_URL}/api/public/site-config`);
+      if (res.ok) {
+        const data = await res.json();
+        setMaintenance(data.maintenanceMode ?? false);
+      } else {
+        setMaintenance(false);
+      }
+    } catch (e) {
+      setMaintenance(false);
+    }
+  };
+
+  useEffect(() => {
+    checkMaintenance();
+  }, []);
+
+  if (maintenance === null) {
+    return (
+      <div className="min-h-screen bg-[#070213] flex items-center justify-center">
+        <div className="relative flex h-3 w-3">
+          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75"></span>
+          <span className="relative inline-flex rounded-full h-3 w-3 bg-purple-500"></span>
+        </div>
+      </div>
+    );
+  }
+
+  if (maintenance) {
+    return <MaintenanceModePage onRefresh={checkMaintenance} />;
+  }
+
   return (
     <main className="relative min-h-screen">
       <ScrollBackground />

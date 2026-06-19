@@ -1,0 +1,25 @@
+[
+  {
+    "clientName": "Nexus Group",
+    "projectName": "Nexus SaaS Dashboard",
+    "businessName": "Nexus SaaS",
+    "salesDate": "2026-04-15",
+    "ownerName": "Sarah Jenkins",
+    "domainName": "nexusdashboard.app",
+    "phoneNumber": "+1 (512) 555-8833",
+    "projectCost": 1000,
+    "accountSetup": 30,
+    "firstInstallment": 100,
+    "secondInstallment": 0,
+    "thirdInstallment": 0,
+    "hostingFee": 0,
+    "closeBy": "Jack",
+    "cardDetails": "Mastercard ending in 9876",
+    "projectDetails": "Enterprise SaaS analytics visualizer with real-time web socket integrations.",
+    "isCompleted": false,
+    "color": "from-amber-500 to-orange-500",
+    "_id": "a17a79ecfc7a969b42418ddc",
+    "createdAt": "2026-06-19T14:14:04.882Z",
+    "updatedAt": "2026-06-19T16:23:14.946Z"
+  }
+]

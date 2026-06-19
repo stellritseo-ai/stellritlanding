@@ -1,0 +1,50 @@
+[
+  {
+    "_id": "u1",
+    "name": "Jiten Sony",
+    "email": "jiten@stellrit.com",
+    "role": "Super Admin",
+    "status": "Active",
+    "joinedDate": "2026-01-15",
+    "username": "stellr",
+    "password": "stellr123",
+    "createdAt": "2026-06-19T17:49:28.609Z",
+    "updatedAt": "2026-06-19T17:49:28.610Z"
+  },
+  {
+    "_id": "u2",
+    "name": "David Chen",
+    "email": "david.c@technova.com",
+    "role": "Developer",
+    "status": "Active",
+    "joinedDate": "2026-03-10",
+    "username": "david",
+    "password": "david123",
+    "createdAt": "2026-06-19T17:49:28.610Z",
+    "updatedAt": "2026-06-19T17:49:28.610Z"
+  },
+  {
+    "_id": "u3",
+    "name": "Sarah Jenkins",
+    "email": "sarah.j@nexus.io",
+    "role": "Analyst",
+    "status": "Active",
+    "joinedDate": "2026-04-02",
+    "username": "sarah",
+    "password": "sarah123",
+    "createdAt": "2026-06-19T17:49:28.610Z",
+    "updatedAt": "2026-06-19T17:49:28.610Z"
+  },
+  {
+    "_id": "u4",
+    "name": "Alex Rivera",
+    "email": "alex@riveradesign.co",
+    "role": "Developer",
+    "status": "Inactive",
+    "joinedDate": "2026-05-28",
+    "username": "alex",
+    "password": "alex123",
+    "createdAt": "2026-06-19T17:49:28.610Z",
+    "updatedAt": "2026-06-19T17:49:28.610Z"
+  }
+]

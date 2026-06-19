@@ -1,0 +1,47 @@
+[
+  {
+    "_id": "sp1",
+    "path": "/",
+    "title": "Homepage — StellR IT",
+    "status": "Published",
+    "speedScore": 98,
+    "createdAt": "2026-06-19T15:09:56.892Z",
+    "updatedAt": "2026-06-19T15:09:56.892Z"
+  },
+  {
+    "_id": "sp2",
+    "path": "/about",
+    "title": "About Us — StellR IT",
+    "status": "Published",
+    "speedScore": 96,
+    "createdAt": "2026-06-19T15:09:56.892Z",
+    "updatedAt": "2026-06-19T15:09:56.892Z"
+  },
+  {
+    "_id": "sp3",
+    "path": "/services",
+    "title": "Services — StellR IT",
+    "status": "Published",
+    "speedScore": 94,
+    "createdAt": "2026-06-19T15:09:56.892Z",
+    "updatedAt": "2026-06-19T15:09:56.892Z"
+  },
+  {
+    "_id": "sp4",
+    "path": "/contact",
+    "title": "Contact — StellR IT",
+    "status": "Published",
+    "speedScore": 97,
+    "createdAt": "2026-06-19T15:09:56.892Z",
+    "updatedAt": "2026-06-19T15:09:56.892Z"
+  },
+  {
+    "_id": "sp5",
+    "path": "/insights",
+    "title": "Insights — StellR IT",
+    "status": "Draft",
+    "speedScore": 0,
+    "createdAt": "2026-06-19T15:09:56.892Z",
+    "updatedAt": "2026-06-19T15:09:56.892Z"
+  }
+]

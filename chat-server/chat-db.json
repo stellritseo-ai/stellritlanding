@@ -1,6 +1,15 @@
 {
   "sessions": [
     {
+      "visitorId": "b2de369f-ce9f-41ca-868d-7d1a6d7df678",
+      "visitorName": "jack",
+      "visitorPhoneOrEmail": "jack@test.com",
+      "status": "open",
+      "_id": "f0e8b80e159a6d7d8c1fd2d3",
+      "createdAt": "2026-06-19T14:12:57.671Z",
+      "updatedAt": "2026-06-19T15:05:24.821Z"
+    },
+    {
       "id": "session-1781519411824-131qzsp2m",
       "visitorId": "2c39e2e9-dda7-4ea2-b43f-7cb78d987ee2",
       "visitorName": "Jack",
@@ -42,6 +51,46 @@
       "message": "i am also good.",
       "createdAt": "2026-06-15T10:31:13.362Z",
       "readAt": "2026-06-15T10:35:35.287Z"
+    },
+    {
+      "sessionId": "f0e8b80e159a6d7d8c1fd2d3",
+      "senderType": "admin",
+      "message": "Hi jack",
+      "_id": "aa640fa960d7e7ae2b9b0cca",
+      "createdAt": "2026-06-19T14:13:11.041Z",
+      "readAt": "2026-06-19T15:05:16.900Z"
+    },
+    {
+      "sessionId": "f0e8b80e159a6d7d8c1fd2d3",
+      "senderType": "visitor",
+      "message": "I need help with website price",
+      "_id": "6773e56ff6f5192ff8abd2d0",
+      "createdAt": "2026-06-19T14:13:46.634Z",
+      "readAt": "2026-06-19T15:05:02.319Z"
+    },
+    {
+      "sessionId": "f0e8b80e159a6d7d8c1fd2d3",
+      "senderType": "admin",
+      "message": "okay let me explain",
+      "_id": "98f339d3a69160456333def4",
+      "createdAt": "2026-06-19T14:13:56.879Z",
+      "readAt": "2026-06-19T15:05:16.900Z"
+    },
+    {
+      "sessionId": "f0e8b80e159a6d7d8c1fd2d3",
+      "senderType": "admin",
+      "message": "okay",
+      "_id": "6be91cfed6e95067afb885f8",
+      "createdAt": "2026-06-19T15:05:08.956Z",
+      "readAt": "2026-06-19T15:05:16.900Z"
+    },
+    {
+      "sessionId": "f0e8b80e159a6d7d8c1fd2d3",
+      "senderType": "visitor",
+      "message": "its take too much time",
+      "_id": "405bfe2b47e8cc369c60d138",
+      "createdAt": "2026-06-19T15:05:24.820Z",
+      "readAt": "2026-06-19T16:31:19.422Z"
     }
   ]
 }

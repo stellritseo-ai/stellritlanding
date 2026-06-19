@@ -63,7 +63,7 @@ function SettingsPage() {
               <label className={`block text-xs font-semibold ${isDark ? "text-white/70" : "text-slate-500"}`}>Email Address</label>
               <input
                 type="email"
-                defaultValue="jiten@stellr.space"
+                defaultValue="jiten@stellrit.com"
                 className={`w-full h-10 px-3.5 rounded-xl border text-sm transition duration-300 focus:outline-none focus:border-[#a855f7]/50 focus:ring-1 focus:ring-[#a855f7]/50 ${
                   isDark ? "bg-white/5 border-white/10 text-white" : "bg-slate-50 border-slate-200 text-slate-800"
                 }`}

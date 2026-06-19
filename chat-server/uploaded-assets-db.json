@@ -1,0 +1,20 @@
+[
+  {
+    "requestId": "ceaeb8aba46cff8a4f7109fb",
+    "businessName": "Jack",
+    "clientName": "Jack",
+    "email": "",
+    "phone": "",
+    "originalFilename": "Screenshot 2026-06-19 at 8.03.26â¯PM.png",
+    "fileType": "image",
+    "mimeType": "image/png",
+    "fileSize": 171207,
+    "cloudinaryUrl": "http://localhost:3001/public/uploads/1781889071375-134032840-Screenshot 2026-06-19 at 8.03.26â¯PM.png",
+    "status": "Completed",
+    "notes": "",
+    "uploadedBy": "client_portal",
+    "_id": "8d26116e2d4dbfcac9f0aa3a",
+    "createdAt": "2026-06-19T17:11:11.409Z",
+    "updatedAt": "2026-06-19T17:11:11.409Z"
+  }
+]

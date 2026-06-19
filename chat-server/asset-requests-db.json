@@ -1,0 +1,40 @@
+[
+  {
+    "token": "pcb9zc7oo2ocwra5fj361r",
+    "businessName": "Jack",
+    "clientName": "Jack",
+    "email": "",
+    "phone": "",
+    "notes": "",
+    "relatedProjectId": "",
+    "maxUploadSize": 104857600,
+    "allowedFileTypes": [
+      "images",
+      "videos",
+      "documents"
+    ],
+    "status": "Completed",
+    "_id": "ceaeb8aba46cff8a4f7109fb",
+    "createdAt": "2026-06-19T17:10:42.174Z",
+    "updatedAt": "2026-06-19T17:11:11.409Z"
+  },
+  {
+    "token": "9bzajdvn84kh9wufymzf4",
+    "businessName": "test",
+    "clientName": "test",
+    "email": "",
+    "phone": "",
+    "notes": "",
+    "relatedProjectId": "",
+    "maxUploadSize": 104857600,
+    "allowedFileTypes": [
+      "images",
+      "videos",
+      "documents"
+    ],
+    "status": "Completed",
+    "_id": "273d358c375773ed88559758",
+    "createdAt": "2026-06-19T16:59:25.582Z",
+    "updatedAt": "2026-06-19T17:05:20.906Z"
+  }
+]
