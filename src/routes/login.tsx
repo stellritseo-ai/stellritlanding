@@ -11,6 +11,8 @@ import {
 } from "lucide-react";
 import { motion } from "framer-motion";
 import logoImg from "@/assets/logo.png";
+import { loginAdminFn } from "@/lib/chat.functions";
+
 
 export const Route = createFileRoute("/login")({
   component: LoginPage,
@@ -42,23 +44,11 @@ function LoginPage() {
     setError(null);
 
     try {
-      const res = await fetch(`${API_URL}/api/auth/login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ username, password }),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.error || "Authentication failed");
-      }
+      const data = await loginAdminFn({ data: { username, password } });
 
       // Save token & user metadata
       localStorage.setItem("stellr_admin_token", data.token);
-      localStorage.setItem("stellr_admin_user", JSON.stringify(data.user));
+      localStorage.setItem("stellr_admin_user", JSON.stringify({ name: data.name, role: data.role, username }));
 
       // Direct redirection
       navigate({ to: redirectUrl || "/dashboard" });
