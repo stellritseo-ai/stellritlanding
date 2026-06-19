@@ -19,6 +19,20 @@ import { useState, useEffect, useRef } from "react";
 import logoImg from "@/assets/logo.png";
 
 export const Route = createFileRoute("/upload/$token")({
+  loader: async ({ params }) => {
+    try {
+      const data = await getAssetRequestByTokenFn({ data: { token: params.token } });
+      if (!data) {
+        return { metadata: null, error: "Invalid or expired upload request token link." };
+      }
+      if (data.status === "Completed") {
+        return { metadata: null, error: "This secure upload portal has already been completed." };
+      }
+      return { metadata: data, error: null };
+    } catch (err: any) {
+      return { metadata: null, error: err.message || "Failed to load secure portal metadata." };
+    }
+  },
   component: ClientUploadPortal,
 });
 
@@ -76,12 +90,12 @@ function ClientUploadPortal() {
   const { token } = Route.useParams();
 
   // Portal status & data
-  const [metadata, setMetadata] = useState<RequestMetadata | null>(null);
-  const [loadingMetadata, setLoadingMetadata] = useState(true);
-  const [portalError, setPortalError] = useState<string | null>(null);
+  const loaderData = Route.useLoaderData() as { metadata: RequestMetadata | null; error: string | null };
+  const metadata = loaderData.metadata;
+  const portalError = loaderData.error;
 
   // Form inputs
-  const [businessName, setBusinessName] = useState("");
+  const [businessName, setBusinessName] = useState(metadata?.businessName || "");
   const [notes, setNotes] = useState("");
 
   // File selection
@@ -110,27 +124,6 @@ function ClientUploadPortal() {
     totalSize: number;
   } | null>(null);
 
-  // Fetch Request settings & Captcha
-  const fetchPortalInfo = async () => {
-    setLoadingMetadata(true);
-    setPortalError(null);
-    try {
-      const data = await getAssetRequestByTokenFn({ data: { token } });
-      if (!data) {
-        throw new Error("Invalid or expired upload request token link.");
-      }
-      if (data.status === "Completed") {
-        throw new Error("This secure upload portal has already been completed.");
-      }
-      setMetadata(data as any);
-      if (data.businessName) setBusinessName(data.businessName);
-    } catch (err: any) {
-      setPortalError(err.message || "Failed to parse metadata.");
-    } finally {
-      setLoadingMetadata(false);
-    }
-  };
-
   const fetchCaptcha = () => {
     const num1 = Math.floor(Math.random() * 10) + 1;
     const num2 = Math.floor(Math.random() * 10) + 1;
@@ -141,7 +134,6 @@ function ClientUploadPortal() {
   };
 
   useEffect(() => {
-    fetchPortalInfo();
     fetchCaptcha();
   }, [token]);
 
@@ -384,12 +376,7 @@ function ClientUploadPortal() {
           </div>
         </div>
 
-        {loadingMetadata ? (
-          <div className="flex flex-col items-center justify-center py-20 gap-3">
-            <Loader2 className="h-8 w-8 text-[#a855f7] animate-spin" />
-            <span className="text-xs text-white/40">Loading secure portal handshake...</span>
-          </div>
-        ) : portalError ? (
+        {portalError ? (
           /* PORTAL METADATA ERROR / EXPIRED LINK */
           <div className="text-center py-12 space-y-4">
             <div className="h-16 w-16 mx-auto rounded-full bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-400">

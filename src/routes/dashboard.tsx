@@ -20,6 +20,7 @@ import {
   Sun,
   Moon,
   UserPlus,
+  RotateCw,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import logoImg from "@/assets/logo.png";
@@ -27,7 +28,8 @@ import { DashboardThemeContext } from "../hooks/useDashboardTheme";
 
 export const Route = createFileRoute("/dashboard")({
   beforeLoad: ({ location }) => {
-    const token = typeof window !== "undefined" ? localStorage.getItem("stellr_admin_token") : null;
+    if (typeof window === "undefined") return;
+    const token = localStorage.getItem("stellr_admin_token");
     if (!token && location.pathname !== "/login") {
       throw redirect({
         to: "/login",
@@ -352,6 +354,20 @@ function DashboardLayout() {
                 <Activity className="h-3 w-3 animate-pulse" />
                 System Online
               </div>
+
+              {/* Refresh Button */}
+              <button
+                onClick={() => window.location.reload()}
+                type="button"
+                className={`h-10 w-10 flex items-center justify-center rounded-full border transition duration-300 ${
+                  isDark
+                    ? "bg-white/5 border-white/10 hover:bg-white/10 text-white/80"
+                    : "bg-white border-slate-200 hover:bg-slate-50 text-slate-700"
+                }`}
+                title="Refresh Dashboard"
+              >
+                <RotateCw className="h-4.5 w-4.5 hover:rotate-180 transition-transform duration-500" />
+              </button>
 
               {/* Theme Toggle Button */}
               <button

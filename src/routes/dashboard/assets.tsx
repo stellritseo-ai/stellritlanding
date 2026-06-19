@@ -42,7 +42,7 @@ import {
 } from "@/lib/dashboard.functions.server";
 
 interface UploadedAsset {
-  _id: string;
+  id: string;
   requestId?: string;
   businessName: string;
   clientName?: string;
@@ -58,7 +58,7 @@ interface UploadedAsset {
 }
 
 interface AssetRequest {
-  _id: string;
+  id: string;
   token: string;
   businessName: string;
   clientName?: string;
@@ -486,7 +486,7 @@ function AssetsPage() {
                               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
                                 {imageAssets.map((asset) => (
                                   <div 
-                                    key={asset._id}
+                                    key={asset.id}
                                     className="group relative rounded-xl border border-white/5 overflow-hidden bg-black/35 aspect-square flex flex-col justify-between"
                                   >
                                     <img 
@@ -512,7 +512,7 @@ function AssetsPage() {
                                         <Download className="h-4 w-4" />
                                       </a>
                                       <button 
-                                        onClick={() => setDeleteConfirmTarget({ type: "asset", idOrName: asset._id, extraLabel: asset.originalFilename })}
+                                        onClick={() => setDeleteConfirmTarget({ type: "asset", idOrName: asset.id, extraLabel: asset.originalFilename })}
                                         className="h-8 w-8 rounded-lg bg-rose-500/20 hover:bg-rose-500/30 flex items-center justify-center text-rose-400 transition active:scale-90"
                                       >
                                         <Trash2 className="h-4 w-4" />
@@ -538,7 +538,7 @@ function AssetsPage() {
                               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                                 {videoAssets.map((asset) => (
                                   <div 
-                                    key={asset._id}
+                                    key={asset.id}
                                     className="group rounded-xl border border-white/5 overflow-hidden bg-black/25 flex flex-col justify-between hover:border-[#a855f7]/30 transition"
                                   >
                                     <div className="aspect-video bg-black flex items-center justify-center relative">
@@ -565,7 +565,7 @@ function AssetsPage() {
                                           <Download className="h-3.5 w-3.5" />
                                         </a>
                                         <button 
-                                          onClick={() => setDeleteConfirmTarget({ type: "asset", idOrName: asset._id, extraLabel: asset.originalFilename })}
+                                          onClick={() => setDeleteConfirmTarget({ type: "asset", idOrName: asset.id, extraLabel: asset.originalFilename })}
                                           className="h-7 w-7 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 flex items-center justify-center text-rose-400 transition"
                                         >
                                           <Trash2 className="h-3.5 w-3.5" />
@@ -597,7 +597,7 @@ function AssetsPage() {
                                   </thead>
                                   <tbody>
                                     {docAssets.map((asset) => (
-                                      <tr key={asset._id} className="border-b border-white/5 hover:bg-white/5 text-white/80 transition">
+                                      <tr key={asset.id} className="border-b border-white/5 hover:bg-white/5 text-white/80 transition">
                                         <td className="p-3.5 flex items-center gap-2">
                                           <FileText className="h-4 w-4 text-[#ff8a5b]" />
                                           <span className="font-semibold truncate max-w-sm">{asset.originalFilename}</span>
@@ -615,7 +615,7 @@ function AssetsPage() {
                                             <Download className="h-3.5 w-3.5" />
                                           </a>
                                           <button 
-                                            onClick={() => setDeleteConfirmTarget({ type: "asset", idOrName: asset._id, extraLabel: asset.originalFilename })}
+                                            onClick={() => setDeleteConfirmTarget({ type: "asset", idOrName: asset.id, extraLabel: asset.originalFilename })}
                                             className="h-7 w-7 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 flex items-center justify-center text-rose-400 transition"
                                           >
                                             <Trash2 className="h-3.5 w-3.5" />
@@ -667,7 +667,7 @@ function AssetsPage() {
                   const isExpired = req.expirationDate && new Date(req.expirationDate) < new Date();
                   
                   return (
-                    <tr key={req._id} className="border-b border-white/5 hover:bg-white/5 text-white/80 transition">
+                    <tr key={req.id} className="border-b border-white/5 hover:bg-white/5 text-white/80 transition">
                       <td className="p-4">
                         <span className="block font-bold text-white">{req.businessName}</span>
                         <span className="block text-[10px] text-white/40 mt-0.5">{req.clientName || "Unknown Client"}</span>
@@ -712,7 +712,7 @@ function AssetsPage() {
                           <ExternalLink className="h-3.5 w-3.5" />
                         </a>
                         <button 
-                          onClick={() => setDeleteConfirmTarget({ type: "request", idOrName: req._id, extraLabel: `Upload Request for ${req.businessName}` })}
+                          onClick={() => setDeleteConfirmTarget({ type: "request", idOrName: req.id, extraLabel: `Upload Request for ${req.businessName}` })}
                           className="h-7 w-7 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/20 flex items-center justify-center text-rose-400 transition"
                         >
                           <Trash2 className="h-3.5 w-3.5" />
