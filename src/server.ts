@@ -1,3 +1,8 @@
+import { createRequire } from "node:module";
+if (typeof globalThis.require === "undefined") {
+  (globalThis as any).require = createRequire(import.meta.url);
+}
+
 if (typeof process !== "undefined" && process.env && import.meta.env.PROD) {
   process.env.NODE_ENV = "production";
 }
