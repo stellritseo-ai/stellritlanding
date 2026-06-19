@@ -29,6 +29,7 @@ import { Route as DashboardSettingsRouteImport } from './routes/dashboard/settin
 import { Route as DashboardProjectsRouteImport } from './routes/dashboard/projects'
 import { Route as DashboardMembersRouteImport } from './routes/dashboard/members'
 import { Route as DashboardManagementRouteImport } from './routes/dashboard/management'
+import { Route as DashboardEmailsRouteImport } from './routes/dashboard/emails'
 import { Route as DashboardClientsRouteImport } from './routes/dashboard/clients'
 import { Route as DashboardChatRouteImport } from './routes/dashboard/chat'
 import { Route as DashboardAssetsRouteImport } from './routes/dashboard/assets'
@@ -135,6 +136,11 @@ const DashboardManagementRoute = DashboardManagementRouteImport.update({
   path: '/management',
   getParentRoute: () => DashboardRoute,
 } as any)
+const DashboardEmailsRoute = DashboardEmailsRouteImport.update({
+  id: '/emails',
+  path: '/emails',
+  getParentRoute: () => DashboardRoute,
+} as any)
 const DashboardClientsRoute = DashboardClientsRouteImport.update({
   id: '/clients',
   path: '/clients',
@@ -179,6 +185,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/assets': typeof DashboardAssetsRoute
   '/dashboard/chat': typeof DashboardChatRoute
   '/dashboard/clients': typeof DashboardClientsRoute
+  '/dashboard/emails': typeof DashboardEmailsRoute
   '/dashboard/management': typeof DashboardManagementRoute
   '/dashboard/members': typeof DashboardMembersRoute
   '/dashboard/projects': typeof DashboardProjectsRoute
@@ -204,6 +211,7 @@ export interface FileRoutesByTo {
   '/dashboard/assets': typeof DashboardAssetsRoute
   '/dashboard/chat': typeof DashboardChatRoute
   '/dashboard/clients': typeof DashboardClientsRoute
+  '/dashboard/emails': typeof DashboardEmailsRoute
   '/dashboard/management': typeof DashboardManagementRoute
   '/dashboard/members': typeof DashboardMembersRoute
   '/dashboard/projects': typeof DashboardProjectsRoute
@@ -232,6 +240,7 @@ export interface FileRoutesById {
   '/dashboard/assets': typeof DashboardAssetsRoute
   '/dashboard/chat': typeof DashboardChatRoute
   '/dashboard/clients': typeof DashboardClientsRoute
+  '/dashboard/emails': typeof DashboardEmailsRoute
   '/dashboard/management': typeof DashboardManagementRoute
   '/dashboard/members': typeof DashboardMembersRoute
   '/dashboard/projects': typeof DashboardProjectsRoute
@@ -261,6 +270,7 @@ export interface FileRouteTypes {
     | '/dashboard/assets'
     | '/dashboard/chat'
     | '/dashboard/clients'
+    | '/dashboard/emails'
     | '/dashboard/management'
     | '/dashboard/members'
     | '/dashboard/projects'
@@ -286,6 +296,7 @@ export interface FileRouteTypes {
     | '/dashboard/assets'
     | '/dashboard/chat'
     | '/dashboard/clients'
+    | '/dashboard/emails'
     | '/dashboard/management'
     | '/dashboard/members'
     | '/dashboard/projects'
@@ -313,6 +324,7 @@ export interface FileRouteTypes {
     | '/dashboard/assets'
     | '/dashboard/chat'
     | '/dashboard/clients'
+    | '/dashboard/emails'
     | '/dashboard/management'
     | '/dashboard/members'
     | '/dashboard/projects'
@@ -481,6 +493,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardManagementRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/dashboard/emails': {
+      id: '/dashboard/emails'
+      path: '/emails'
+      fullPath: '/dashboard/emails'
+      preLoaderRoute: typeof DashboardEmailsRouteImport
+      parentRoute: typeof DashboardRoute
+    }
     '/dashboard/clients': {
       id: '/dashboard/clients'
       path: '/clients'
@@ -538,6 +557,7 @@ interface DashboardRouteChildren {
   DashboardAssetsRoute: typeof DashboardAssetsRoute
   DashboardChatRoute: typeof DashboardChatRoute
   DashboardClientsRoute: typeof DashboardClientsRoute
+  DashboardEmailsRoute: typeof DashboardEmailsRoute
   DashboardManagementRoute: typeof DashboardManagementRoute
   DashboardMembersRoute: typeof DashboardMembersRoute
   DashboardProjectsRoute: typeof DashboardProjectsRoute
@@ -551,6 +571,7 @@ const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardAssetsRoute: DashboardAssetsRoute,
   DashboardChatRoute: DashboardChatRoute,
   DashboardClientsRoute: DashboardClientsRoute,
+  DashboardEmailsRoute: DashboardEmailsRoute,
   DashboardManagementRoute: DashboardManagementRoute,
   DashboardMembersRoute: DashboardMembersRoute,
   DashboardProjectsRoute: DashboardProjectsRoute,

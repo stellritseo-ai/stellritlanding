@@ -359,3 +359,33 @@ export const generateCloudinarySignatureFn = createServerFn({ method: "POST" }).
     };
   }
 );
+
+// ── Website Emails ──────────────────────────────────────────────────────────
+export const getWebsiteEmailsFn = createServerFn({ method: "GET" }).handler(async () => {
+  const { connectDB, WebsiteEmailModel } = await import("./db.server");
+  await connectDB();
+  const emails = await WebsiteEmailModel.find().sort({ createdAt: -1 });
+  return emails.map(mapDoc);
+});
+
+export const submitWebsiteEmailFn = createServerFn({ method: "POST" }).handler(
+  async ({ data }: { data: any }) => {
+    const { connectDB, WebsiteEmailModel } = await import("./db.server");
+    await connectDB();
+    const emailDoc = new WebsiteEmailModel({
+      ...data,
+      submittedAt: new Date().toISOString(),
+    });
+    await emailDoc.save();
+    return mapDoc(emailDoc);
+  }
+);
+
+export const deleteWebsiteEmailFn = createServerFn({ method: "POST" }).handler(
+  async ({ data }: { data: { id: string } }) => {
+    const { connectDB, WebsiteEmailModel } = await import("./db.server");
+    await connectDB();
+    await WebsiteEmailModel.findByIdAndDelete(data.id);
+    return { success: true };
+  }
+);

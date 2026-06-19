@@ -4,6 +4,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { MapPin, Phone, Mail, Send } from "lucide-react";
 import { toast } from "sonner";
 import { Link } from "@tanstack/react-router";
+import { submitWebsiteEmailFn } from "../lib/dashboard.functions.server";
 
 import logoImg from "@/assets/logo.png";
 
@@ -79,10 +80,20 @@ export default function Footer() {
     }
 
     setLoading(true);
-    await new Promise((r) => setTimeout(r, 800));
-    setLoading(false);
-    setEmail("");
-    toast.success("You've been subscribed to the StellR IT newsletter!");
+    try {
+      await submitWebsiteEmailFn({
+        data: {
+          email: trimmed,
+          type: "newsletter",
+        },
+      });
+      setEmail("");
+      toast.success("You've been subscribed to the StellR IT newsletter!");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to subscribe. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const Column = ({ title, items }: { title: string; items: LinkItem[] }) => (

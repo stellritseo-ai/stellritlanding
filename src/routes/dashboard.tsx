@@ -22,6 +22,7 @@ import {
   Moon,
   UserPlus,
   RotateCw,
+  Mail,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import logoImg from "@/assets/logo.png";
@@ -160,6 +161,11 @@ function DashboardLayout() {
       to: "/dashboard/chat",
       label: "Live Chat",
       icon: MessageSquare,
+    },
+    {
+      to: "/dashboard/emails",
+      label: "Website Email",
+      icon: Mail,
     },
     {
       to: "/dashboard/admin",

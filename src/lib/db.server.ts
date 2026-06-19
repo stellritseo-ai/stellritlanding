@@ -259,3 +259,23 @@ const OperatorSchema = new mongoose.Schema(
 export const OperatorModel =
   mongoose.models.Operator ||
   mongoose.model("Operator", OperatorSchema);
+
+// ── Website Email schema ───────────────────────────────────────────────────
+const WebsiteEmailSchema = new mongoose.Schema(
+  {
+    name: { type: String },
+    email: { type: String, required: true },
+    phone: { type: String },
+    company: { type: String },
+    service: { type: String },
+    budget: { type: String },
+    message: { type: String },
+    type: { type: String, enum: ["contact", "newsletter"], required: true },
+    submittedAt: { type: String, required: true },
+  },
+  { timestamps: true }
+);
+
+export const WebsiteEmailModel =
+  mongoose.models.WebsiteEmail ||
+  mongoose.model("WebsiteEmail", WebsiteEmailSchema);

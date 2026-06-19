@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
+import { submitWebsiteEmailFn } from "@/lib/dashboard.functions.server";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { toast } from "sonner";
 import { Mail, Phone, MapPin, ArrowUpRight, Paperclip, UploadCloud } from "lucide-react";
@@ -46,7 +47,7 @@ const BUDGETS = ["< $1K", "$2k – $10k", "$10k – $20k", "$20+"];
 const SERVICES = ["Brand", "Product Design", "Engineering", "Growth", "Other"];
 
 function ContactPage() {
-  const [form, setForm] = useState({ name: "", email: "", company: "", budget: BUDGETS[1], service: SERVICES[0], message: "" });
+  const [form, setForm] = useState({ name: "", email: "", phone: "", company: "", budget: BUDGETS[1], service: SERVICES[0], message: "" });
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -71,12 +72,27 @@ function ContactPage() {
       return;
     }
     setLoading(true);
-    // Simulate network delay
-    await new Promise((r) => setTimeout(r, 1200));
-    setLoading(false);
-    setForm({ name: "", email: "", company: "", budget: BUDGETS[1], service: SERVICES[0], message: "" });
-    setFile(null);
-    toast.success("Thanks — we'll be in touch within one business day.");
+    try {
+      await submitWebsiteEmailFn({
+        data: {
+          name: form.name.trim(),
+          email: form.email.trim(),
+          phone: form.phone.trim(),
+          company: form.company.trim(),
+          service: form.service,
+          budget: form.budget,
+          message: form.message.trim(),
+          type: "contact",
+        },
+      });
+      setForm({ name: "", email: "", phone: "", company: "", budget: BUDGETS[1], service: SERVICES[0], message: "" });
+      setFile(null);
+      toast.success("Thanks — we'll be in touch within one business day.");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to send message. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -171,6 +187,15 @@ function ContactPage() {
                   onChange={(e) => setForm({ ...form, email: e.target.value })}
                   className={inputCls}
                   placeholder="jane@company.com"
+                />
+              </Field>
+              <Field label="Phone number">
+                <input
+                  type="tel"
+                  value={form.phone}
+                  onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                  className={inputCls}
+                  placeholder="+1 (555) 000-0000"
                 />
               </Field>
               <Field label="Company">
