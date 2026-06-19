@@ -120,6 +120,7 @@ import {
   updateTaskFn,
   deleteTaskFn,
   getProjectsFn,
+  getOperatorsFn,
 } from "@/lib/dashboard.functions.server";
 
 function TasksPage() {
@@ -129,6 +130,7 @@ function TasksPage() {
   // State Management
   const [tasks, setTasks] = useState<Task[]>([]);
   const [projects, setProjects] = useState<ProjectBrief[]>([]);
+  const [teamMembers, setTeamMembers] = useState<{ name: string; email: string; avatar: string }[]>(TEAM_MEMBERS);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -196,6 +198,30 @@ function TasksPage() {
       const fetchedProjects = await getProjectsFn();
       setTasks(fetchedTasks as any);
       setProjects(fetchedProjects as any);
+
+      // Load dynamic team members from operators DB
+      try {
+        const ops = await getOperatorsFn();
+        if (ops && ops.length > 0) {
+          setTeamMembers(
+            ops.map((o: any) => ({
+              name: o.name,
+              email: o.email,
+              avatar: o.name
+                .split(" ")
+                .map((n: string) => n[0])
+                .join("")
+                .toUpperCase()
+                .slice(0, 2),
+            }))
+          );
+        } else {
+          setTeamMembers(TEAM_MEMBERS);
+        }
+      } catch (opErr) {
+        console.error("Failed to load operators for tasks board:", opErr);
+        setTeamMembers(TEAM_MEMBERS);
+      }
     } catch (e: any) {
       setError(e.message || "Failed to sync board details with the MongoDB server.");
     } finally {
@@ -806,7 +832,7 @@ function TasksPage() {
                 }`}
               >
                 <option value="All">All Members</option>
-                {TEAM_MEMBERS.map((m) => (
+                {teamMembers.map((m) => (
                   <option key={m.name} value={m.name}>{m.name}</option>
                 ))}
               </select>
@@ -1511,7 +1537,7 @@ function TasksPage() {
                           isDark ? "bg-[#12052c] border-white/10 text-white focus:border-[#a855f7]/50" : "bg-slate-50 border-slate-200 text-slate-800"
                         }`}
                       >
-                        {TEAM_MEMBERS.map((m) => (
+                        {teamMembers.map((m) => (
                           <option key={m.name} value={m.name}>{m.name}</option>
                         ))}
                       </select>

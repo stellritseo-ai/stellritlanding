@@ -1,5 +1,5 @@
-import { createFileRoute, Link, Outlet, redirect, useNavigate } from "@tanstack/react-router";
-import { useState, useEffect } from "react";
+import { createFileRoute, Link, Outlet, redirect, useNavigate, useLocation } from "@tanstack/react-router";
+import { useState, useEffect, useMemo } from "react";
 import { ConfirmModal } from "@/components/ConfirmModal";
 import {
   LayoutDashboard,
@@ -46,6 +46,35 @@ export const Route = createFileRoute("/dashboard")({
 
 function DashboardLayout() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const currentPath = location.pathname;
+
+  const [userRole, setUserRole] = useState<string>("Viewer");
+  const [userName, setUserName] = useState<string>("Jiten Sony");
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const savedUser = localStorage.getItem("stellr_admin_user");
+      if (savedUser) {
+        try {
+          const parsed = JSON.parse(savedUser);
+          if (parsed) {
+            if (parsed.role) setUserRole(parsed.role);
+            if (parsed.name) setUserName(parsed.name);
+          }
+        } catch {}
+      }
+    }
+  }, []);
+
+  const userInitials = useMemo(() => {
+    return userName
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase()
+      .slice(0, 2);
+  }, [userName]);
+
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const handleLogout = () => {
     setShowLogoutConfirm(true);
@@ -179,6 +208,95 @@ function DashboardLayout() {
     },
   ];
 
+  const visibleMenuItems = useMemo(() => {
+    return menuItems.filter((item) => {
+      if (userRole === "Super Admin" || userRole === "Supervisor") {
+        return true;
+      }
+      if (userRole === "Manager") {
+        return [
+          "/dashboard/projects",
+          "/dashboard/tasks",
+          "/dashboard/assets",
+          "/dashboard/clients",
+          "/dashboard/chat",
+          "/dashboard/emails",
+        ].includes(item.to);
+      }
+      if (userRole === "Developer") {
+        return [
+          "/dashboard/tasks",
+        ].includes(item.to);
+      }
+      return false;
+    });
+  }, [userRole, menuItems]);
+
+  const isPathAllowed = useMemo(() => {
+    if (userRole === "Super Admin" || userRole === "Supervisor") {
+      return true;
+    }
+    if (userRole === "Manager") {
+      const managerAllowedPaths = [
+        "/dashboard/projects",
+        "/dashboard/tasks",
+        "/dashboard/assets",
+        "/dashboard/clients",
+        "/dashboard/chat",
+        "/dashboard/emails",
+      ];
+      if (currentPath === "/dashboard" || currentPath === "/dashboard/") return true;
+      return managerAllowedPaths.includes(currentPath);
+    }
+    if (userRole === "Developer") {
+      const developerAllowedPaths = [
+        "/dashboard/tasks",
+      ];
+      if (currentPath === "/dashboard" || currentPath === "/dashboard/") return true;
+      return developerAllowedPaths.includes(currentPath);
+    }
+    if (currentPath === "/dashboard" || currentPath === "/dashboard/") return true;
+    return false;
+  }, [userRole, currentPath]);
+
+  useEffect(() => {
+    if (currentPath === "/dashboard" || currentPath === "/dashboard/") {
+      if (userRole === "Manager") {
+        navigate({ to: "/dashboard/projects" });
+      } else if (userRole === "Developer") {
+        navigate({ to: "/dashboard/tasks" });
+      }
+    }
+  }, [userRole, currentPath, navigate]);
+
+  const AccessDeniedView = () => (
+    <div className="flex flex-col items-center justify-center py-20 text-center space-y-6">
+      <div className={`rounded-full p-6 border ${isDark ? "bg-red-500/10 border-red-500/20 text-red-400" : "bg-red-50 border-red-100 text-red-600"}`}>
+        <ShieldAlert className="h-12 w-12" />
+      </div>
+      <div className="space-y-2">
+        <h2 className="text-xl font-bold tracking-tight">Access Restricted</h2>
+        <p className={`text-xs max-w-sm mx-auto leading-relaxed ${isDark ? "text-white/45" : "text-slate-450"}`}>
+          Your assigned role <span className="font-semibold text-[#a855f7]">({userRole})</span> does not have authorization to view this panel.
+        </p>
+      </div>
+      <button
+        onClick={() => {
+          if (userRole === "Manager") {
+            navigate({ to: "/dashboard/projects" });
+          } else if (userRole === "Developer") {
+            navigate({ to: "/dashboard/tasks" });
+          } else {
+            navigate({ to: "/dashboard" });
+          }
+        }}
+        className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#a855f7] to-[#ff8a5b] text-white hover:opacity-90 active:scale-[0.98] transition font-bold text-xs"
+      >
+        Go to Permitted Panel
+      </button>
+    </div>
+  );
+
   const isDark = theme === "dark";
 
   return (
@@ -240,7 +358,7 @@ function DashboardLayout() {
             >
               Core Modules
             </div>
-            {menuItems.map((item) => (
+            {visibleMenuItems.map((item) => (
               <Link
                 key={item.to}
                 to={item.to}
@@ -270,15 +388,15 @@ function DashboardLayout() {
               }`}
             >
               <div className="h-10 w-10 rounded-lg bg-gradient-to-tr from-purple-500 to-indigo-500 flex items-center justify-center font-bold text-sm text-white">
-                JS
+                {userInitials}
               </div>
               <div className="flex-1 min-w-0">
                 <span className={`block text-sm font-semibold truncate ${isDark ? "text-white" : "text-slate-800"}`}>
-                  Jiten Sony
+                  {userName}
                 </span>
                 <span className={`block text-xs truncate flex items-center gap-1.5 ${isDark ? "text-white/50" : "text-slate-400"}`}>
                   <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                  Operator
+                  {userRole}
                 </span>
               </div>
               <button
@@ -524,7 +642,7 @@ function DashboardLayout() {
           {/* Main Outlet (renders subpages, passes down theme context value) */}
           <main className="flex-1 overflow-y-auto px-6 py-8 md:px-10 md:py-10">
             <DashboardThemeContext.Provider value={{ theme, setTheme, toggleTheme }}>
-              <Outlet />
+              {isPathAllowed ? <Outlet /> : <AccessDeniedView />}
             </DashboardThemeContext.Provider>
           </main>
         </div>
@@ -586,7 +704,7 @@ function DashboardLayout() {
                 >
                   Core Modules
                 </div>
-                {menuItems.map((item) => (
+                {visibleMenuItems.map((item) => (
                   <Link
                     key={item.to}
                     to={item.to}
@@ -629,15 +747,15 @@ function DashboardLayout() {
                   }`}
                 >
                   <div className="h-9 w-9 rounded-lg bg-gradient-to-tr from-purple-500 to-indigo-500 flex items-center justify-center font-bold text-xs text-white">
-                    JS
+                    {userInitials}
                   </div>
                   <div className="flex-1 min-w-0">
                     <span className={`block text-xs font-semibold truncate ${isDark ? "text-white" : "text-slate-800"}`}>
-                      Jiten Sony
+                      {userName}
                     </span>
                     <span className={`block text-[10px] truncate flex items-center gap-1 ${isDark ? "text-white/50" : "text-slate-400"}`}>
                       <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                      Operator
+                      {userRole}
                     </span>
                   </div>
                   <button

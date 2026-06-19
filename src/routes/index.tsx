@@ -13,6 +13,8 @@ import MarqueeStrip from "@/components/MarqueeStrip";
 import ParallaxText from "@/components/ParallaxText";
 import PartnershipModels from "@/components/PartnershipModels";
 import Portfolio from "@/components/Portfolio";
+import { useEffect } from "react";
+import { logVisitorFn } from "@/lib/dashboard.functions.server";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -27,6 +29,10 @@ export const Route = createFileRoute("/")({
 });
 
 function Index() {
+  useEffect(() => {
+    logVisitorFn().catch((err) => console.error("Failed to log visitor view:", err));
+  }, []);
+
   return (
     <main className="relative min-h-screen">
       <ScrollBackground />
@@ -59,4 +65,5 @@ function Index() {
     </main>
   );
 }
+
 

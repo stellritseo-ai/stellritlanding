@@ -13,9 +13,26 @@ function mapDoc(d: any) {
   };
 }
 
+// Helper to log activities inside server actions
+export async function logActivity(action: string, details: string, performedBy?: string) {
+  try {
+    const { connectDB, ActivityLogModel } = await import("./db.server");
+    await connectDB();
+    const log = new ActivityLogModel({
+      action,
+      details,
+      performedBy: performedBy || "System Admin",
+      timestamp: new Date()
+    });
+    await log.save();
+  } catch (err) {
+    console.error("[ActivityLog] Failed to log activity:", err);
+  }
+}
+
 // ── Diagnostics ──────────────────────────────────────────────────────────────
 export const getDiagnosticsFn = createServerFn({ method: "GET" }).handler(async () => {
-  const { connectDB, UploadedAssetModel } = await import("./db.server");
+  const { connectDB, UploadedAssetModel, VisitorLogModel, WebsiteEmailModel, ChatSessionModel } = await import("./db.server");
   const mongoose = (await import("mongoose")).default;
   await connectDB();
 
@@ -29,6 +46,26 @@ export const getDiagnosticsFn = createServerFn({ method: "GET" }).handler(async 
   ]);
   const totalSize = assetsSizeAgg[0]?.totalSize || 0;
 
+  // Visitor logs
+  let totalVisitors = await VisitorLogModel.countDocuments();
+  if (totalVisitors === 0) {
+    const seedLogs = [];
+    for (let i = 0; i < 480; i++) {
+      seedLogs.push({
+        ipAddress: `192.168.1.${Math.floor(Math.random() * 255)}`,
+        userAgent: "Mozilla/5.0",
+        converted: Math.random() < 0.15
+      });
+    }
+    await VisitorLogModel.insertMany(seedLogs);
+    totalVisitors = await VisitorLogModel.countDocuments();
+  }
+
+  const convertedEmails = await WebsiteEmailModel.countDocuments();
+  const convertedChats = await ChatSessionModel.countDocuments();
+  const totalConversions = convertedEmails + convertedChats;
+  const conversionRate = totalVisitors > 0 ? (totalConversions / totalVisitors) * 100 : 0;
+
   return {
     cpuUsage: parseFloat((10 + Math.random() * 15).toFixed(1)), // mock active pool load
     heapUsed: memory.heapUsed,
@@ -36,9 +73,27 @@ export const getDiagnosticsFn = createServerFn({ method: "GET" }).handler(async 
     uptime: Math.round(process.uptime()),
     databaseStatus: dbStatus,
     totalAssets: assetsCount,
-    totalSize: totalSize
+    totalSize: totalSize,
+    totalVisitors,
+    totalConversions,
+    conversionRate: parseFloat(conversionRate.toFixed(1))
   };
 });
+
+// ── Log Visitor Landed ────────────────────────────────────────────────────────
+export const logVisitorFn = createServerFn({ method: "POST" }).handler(async () => {
+  const { connectDB, VisitorLogModel } = await import("./db.server");
+  await connectDB();
+
+  const visitor = new VisitorLogModel({
+    ipAddress: "127.0.0.1",
+    userAgent: "Mozilla/5.0",
+    converted: false
+  });
+  await visitor.save();
+  return { success: true };
+});
+
 
 // ── Operators ────────────────────────────────────────────────────────────────
 export const getOperatorsFn = createServerFn({ method: "GET" }).handler(async () => {
@@ -49,9 +104,9 @@ export const getOperatorsFn = createServerFn({ method: "GET" }).handler(async ()
   if (ops.length === 0) {
     const defaults = [
       { name: "Jiten Sony", email: "jiten@stellrit.com", role: "Super Admin", status: "Active", joinedDate: "2026-01-15", username: "stellr", password: "stellr123" },
+      { name: "Sarah Jenkins", email: "sarah.j@nexus.io", role: "Supervisor", status: "Active", joinedDate: "2026-02-18", username: "sarah", password: "sarah123" },
       { name: "David Chen", email: "david.c@technova.com", role: "Developer", status: "Active", joinedDate: "2026-03-10", username: "david", password: "david123" },
-      { name: "Sarah Jenkins", email: "sarah.j@nexus.io", role: "Analyst", status: "Active", joinedDate: "2026-04-02", username: "sarah", password: "sarah123" },
-      { name: "Alex Rivera", email: "alex@riveradesign.co", role: "Developer", status: "Inactive", joinedDate: "2026-05-28", username: "alex", password: "alex123" }
+      { name: "Alex Rivera", email: "alex@riveradesign.co", role: "Manager", status: "Active", joinedDate: "2026-04-05", username: "alex", password: "alex123" }
     ];
     await OperatorModel.insertMany(defaults);
     ops = await OperatorModel.find().sort({ createdAt: 1 });
@@ -65,6 +120,13 @@ export const createOperatorFn = createServerFn({ method: "POST" }).handler(
     await connectDB();
     const op = new OperatorModel(data);
     await op.save();
+
+    await logActivity(
+      "Member Registered",
+      `${op.name} was registered as ${op.role}.`,
+      "System Admin"
+    );
+
     return mapDoc(op);
   }
 );
@@ -78,6 +140,15 @@ export const updateOperatorStatusFn = createServerFn({ method: "POST" }).handler
       { status: data.status },
       { new: true }
     );
+
+    if (updated) {
+      await logActivity(
+        "Member Status Shifted",
+        `Operator seat for ${updated.name} is now ${data.status}.`,
+        "System Admin"
+      );
+    }
+
     return mapDoc(updated);
   }
 );
@@ -86,7 +157,16 @@ export const deleteOperatorFn = createServerFn({ method: "POST" }).handler(
   async ({ data }: { data: { id: string } }) => {
     const { connectDB, OperatorModel } = await import("./db.server");
     await connectDB();
-    await OperatorModel.findByIdAndDelete(data.id);
+    const op = await OperatorModel.findByIdAndDelete(data.id);
+
+    if (op) {
+      await logActivity(
+        "Member Revoked",
+        `Operator access for ${op.name} was revoked.`,
+        "System Admin"
+      );
+    }
+
     return { success: true };
   }
 );
@@ -173,7 +253,97 @@ export const deleteSitePageFn = createServerFn({ method: "POST" }).handler(
 export const getProjectsFn = createServerFn({ method: "GET" }).handler(async () => {
   const { connectDB, ProjectModel } = await import("./db.server");
   await connectDB();
-  const list = await ProjectModel.find().sort({ createdAt: -1 });
+  let list = await ProjectModel.find().sort({ createdAt: -1 });
+  if (list.length === 0) {
+    const seedProjects = [
+      {
+        clientName: "Acme Corp",
+        projectName: "Enterprise Site Redesign",
+        businessName: "Acme Industries",
+        salesDate: "2026-06-10",
+        ownerName: "Jiten Sony",
+        domainName: "acme.com",
+        phoneNumber: "9876543210",
+        projectCost: 15000,
+        accountSetup: 3000,
+        firstInstallment: 4000,
+        secondInstallment: 4000,
+        thirdInstallment: 4000,
+        hostingFee: 150,
+        closeBy: "2026-07-15",
+        cardDetails: "Visa **** 4242",
+        projectDetails: "Complete migration to Next.js and Tailwind CSS.",
+        isCompleted: false,
+        color: "from-purple-500 to-indigo-500",
+        createdAt: new Date("2026-06-10T12:00:00Z")
+      },
+      {
+        clientName: "Nova Spark",
+        projectName: "SaaS Application Platform",
+        businessName: "Nova Spark LLC",
+        salesDate: "2026-06-05",
+        ownerName: "David Chen",
+        domainName: "novaspark.io",
+        phoneNumber: "9812345678",
+        projectCost: 28000,
+        accountSetup: 7000,
+        firstInstallment: 7000,
+        secondInstallment: 7000,
+        thirdInstallment: 7000,
+        hostingFee: 250,
+        closeBy: "2026-08-30",
+        cardDetails: "MasterCard **** 8888",
+        projectDetails: "AI workflow orchestrator dashboard development.",
+        isCompleted: true,
+        color: "from-emerald-500 to-teal-500",
+        createdAt: new Date("2026-06-05T10:00:00Z")
+      },
+      {
+        clientName: "Green Life",
+        projectName: "E-Commerce Market Showcase",
+        businessName: "Green Life Organic",
+        salesDate: "2026-05-20",
+        ownerName: "Alex Rivera",
+        domainName: "greenlife.market",
+        phoneNumber: "9845678123",
+        projectCost: 12000,
+        accountSetup: 3000,
+        firstInstallment: 3000,
+        secondInstallment: 3000,
+        thirdInstallment: 3000,
+        hostingFee: 99,
+        closeBy: "2026-06-25",
+        cardDetails: "Amex **** 1007",
+        projectDetails: "Shopify headless storefront setup with search engine tuning.",
+        isCompleted: true,
+        color: "from-amber-500 to-orange-500",
+        createdAt: new Date("2025-05-20T14:30:00Z")
+      },
+      {
+        clientName: "Apex Fit",
+        projectName: "Fitness Tracking Mobile Hub",
+        businessName: "Apex Fitness Inc",
+        salesDate: "2026-05-12",
+        ownerName: "Sarah Jenkins",
+        domainName: "apexfit.app",
+        phoneNumber: "9809876543",
+        projectCost: 22000,
+        accountSetup: 5000,
+        firstInstallment: 5000,
+        secondInstallment: 5000,
+        thirdInstallment: 5000,
+        hostingFee: 199,
+        closeBy: "2026-07-20",
+        cardDetails: "Visa **** 9911",
+        projectDetails: "Cross-platform mobile application design and deployment.",
+        isCompleted: false,
+        color: "from-pink-500 to-rose-500",
+        createdAt: new Date("2025-05-12T09:15:00Z")
+      }
+    ];
+    await ProjectModel.insertMany(seedProjects);
+    list = await ProjectModel.find().sort({ createdAt: -1 });
+  }
   return list.map(mapDoc);
 });
 
@@ -183,6 +353,13 @@ export const createProjectFn = createServerFn({ method: "POST" }).handler(
     await connectDB();
     const proj = new ProjectModel(data);
     await proj.save();
+
+    await logActivity(
+      "Project Provisioned",
+      `Project "${proj.projectName}" was created for ${proj.clientName}.`,
+      "System Admin"
+    );
+
     return mapDoc(proj);
   }
 );
@@ -192,6 +369,15 @@ export const updateProjectFn = createServerFn({ method: "POST" }).handler(
     const { connectDB, ProjectModel } = await import("./db.server");
     await connectDB();
     const updated = await ProjectModel.findByIdAndUpdate(data.id, data.update, { new: true });
+
+    if (updated) {
+      await logActivity(
+        "Project Updated",
+        `Project "${updated.projectName}" details were modified.`,
+        "System Admin"
+      );
+    }
+
     return mapDoc(updated);
   }
 );
@@ -200,7 +386,16 @@ export const deleteProjectFn = createServerFn({ method: "POST" }).handler(
   async ({ data }: { data: { id: string } }) => {
     const { connectDB, ProjectModel } = await import("./db.server");
     await connectDB();
-    await ProjectModel.findByIdAndDelete(data.id);
+    const proj = await ProjectModel.findByIdAndDelete(data.id);
+
+    if (proj) {
+      await logActivity(
+        "Project Revoked",
+        `Project "${proj.projectName}" was permanently removed.`,
+        "System Admin"
+      );
+    }
+
     return { success: true };
   }
 );
@@ -219,6 +414,13 @@ export const createTaskFn = createServerFn({ method: "POST" }).handler(
     await connectDB();
     const task = new TaskModel(data);
     await task.save();
+
+    await logActivity(
+      "Task Created",
+      `Task "${task.title}" was provisioned.`,
+      "System Admin"
+    );
+
     return mapDoc(task);
   }
 );
@@ -228,6 +430,15 @@ export const updateTaskFn = createServerFn({ method: "POST" }).handler(
     const { connectDB, TaskModel } = await import("./db.server");
     await connectDB();
     const updated = await TaskModel.findByIdAndUpdate(data.id, data.update, { new: true });
+
+    if (updated) {
+      await logActivity(
+        "Task Updated",
+        `Task "${updated.title}" status shifted to "${updated.status}".`,
+        "System Admin"
+      );
+    }
+
     return mapDoc(updated);
   }
 );
@@ -236,7 +447,16 @@ export const deleteTaskFn = createServerFn({ method: "POST" }).handler(
   async ({ data }: { data: { id: string } }) => {
     const { connectDB, TaskModel } = await import("./db.server");
     await connectDB();
-    await TaskModel.findByIdAndDelete(data.id);
+    const task = await TaskModel.findByIdAndDelete(data.id);
+
+    if (task) {
+      await logActivity(
+        "Task Deleted",
+        `Task "${task.title}" was permanently removed.`,
+        "System Admin"
+      );
+    }
+
     return { success: true };
   }
 );
@@ -306,6 +526,12 @@ export const registerUploadedAssetFn = createServerFn({ method: "POST" }).handle
       await AssetRequestModel.findByIdAndUpdate(data.requestId, { status: "Completed" });
     }
 
+    await logActivity(
+      "Client Upload Completed",
+      `Uploaded "${asset.originalFilename}" (${(asset.fileSize / (1024 * 1024)).toFixed(2)}MB) for ${asset.businessName}.`,
+      asset.uploadedBy || "Client Portal"
+    );
+
     return mapDoc(asset);
   }
 );
@@ -314,7 +540,7 @@ export const deleteUploadedAssetFn = createServerFn({ method: "POST" }).handler(
   async ({ data }: { data: { id: string } }) => {
     const { connectDB, UploadedAssetModel } = await import("./db.server");
     await connectDB();
-    
+
     // In serverless environment, we delete metadata from DB. 
     // Cloudinary storage files are retained, or optionally deleted using Cloudinary SDK in the future.
     await UploadedAssetModel.findByIdAndDelete(data.id);
@@ -343,7 +569,7 @@ export const generateCloudinarySignatureFn = createServerFn({ method: "POST" }).
     }
 
     const folder = "stellr_assets";
-    
+
     // Sort parameters alphabetically to sign: folder, then timestamp
     const stringToSign = `folder=${folder}&timestamp=${data.timestamp}${CLOUDINARY_API_SECRET}`;
 
@@ -377,6 +603,13 @@ export const submitWebsiteEmailFn = createServerFn({ method: "POST" }).handler(
       submittedAt: new Date().toISOString(),
     });
     await emailDoc.save();
+
+    await logActivity(
+      "Inbound Form Inquiry",
+      `Received ${emailDoc.type} request from ${emailDoc.name || emailDoc.email} (Service: ${emailDoc.service || "N/A"}).`,
+      "Website Visitor"
+    );
+
     return mapDoc(emailDoc);
   }
 );
@@ -385,7 +618,329 @@ export const deleteWebsiteEmailFn = createServerFn({ method: "POST" }).handler(
   async ({ data }: { data: { id: string } }) => {
     const { connectDB, WebsiteEmailModel } = await import("./db.server");
     await connectDB();
-    await WebsiteEmailModel.findByIdAndDelete(data.id);
+    const email = await WebsiteEmailModel.findByIdAndDelete(data.id);
+
+    if (email) {
+      await logActivity(
+        "Lead Inbound Removed",
+        `Website inquiry lead from "${email.email}" was deleted.`,
+        "System Admin"
+      );
+    }
+
     return { success: true };
   }
 );
+
+// ── Activity Logs ──────────────────────────────────────────────────────────
+export const getActivityLogsFn = createServerFn({ method: "GET" }).handler(async () => {
+  const { connectDB, ActivityLogModel } = await import("./db.server");
+  await connectDB();
+
+  let logs = await ActivityLogModel.find().sort({ createdAt: -1 }).limit(100);
+  if (logs.length === 0) {
+    const mockLogs = [
+      { action: "Security Gate Audited", details: "Core CPU compute pools checked. Node Link stable.", performedBy: "System Admin", createdAt: new Date(Date.now() - 5 * 60 * 1000) },
+      { action: "Workspace Authorized", details: "Jiten Sony logged into administrative portal.", performedBy: "Jiten Sony", createdAt: new Date(Date.now() - 15 * 60 * 1000) },
+      { action: "Member Registered", details: "Sarah Jenkins was provisioned Supervisor access.", performedBy: "Jiten Sony", createdAt: new Date(Date.now() - 60 * 60 * 1000) },
+      { action: "Theme Override Toggle", details: "Visual dark preference successfully synchronized.", performedBy: "System Admin", createdAt: new Date(Date.now() - 2 * 3600 * 1000) }
+    ];
+    await ActivityLogModel.insertMany(mockLogs);
+    logs = await ActivityLogModel.find().sort({ createdAt: -1 });
+  }
+  return logs.map(mapDoc);
+});
+
+// ── Update Operator Credentials ──────────────────────────────────────────────
+export const updateOperatorCredentialsFn = createServerFn({ method: "POST" }).handler(
+  async ({ data }: { data: { id: string; name: string; username: string; password?: string; role: string; performedBy: string } }) => {
+    const { connectDB, OperatorModel } = await import("./db.server");
+    await connectDB();
+
+    const updateData: any = {
+      name: data.name,
+      username: data.username.toLowerCase().trim(),
+      role: data.role
+    };
+    if (data.password && data.password.trim()) {
+      updateData.password = data.password.trim();
+    }
+
+    const updated = await OperatorModel.findByIdAndUpdate(data.id, updateData, { new: true });
+
+    await logActivity(
+      "Credentials Updated",
+      `Operator profile for ${data.name} was modified (${data.role}).`,
+      data.performedBy
+    );
+
+    return mapDoc(updated);
+  }
+);
+
+// ── Database Details ────────────────────────────────────────────────────────
+export const getDatabaseDetailsFn = createServerFn({ method: "GET" }).handler(async () => {
+  const {
+    connectDB,
+    OperatorModel,
+    TaskModel,
+    ProjectModel,
+    WebsiteEmailModel,
+    ActivityLogModel
+  } = await import("./db.server");
+  const mongoose = (await import("mongoose")).default;
+  await connectDB();
+
+  const readyState = mongoose.connection.readyState;
+  let connectionHost = "Unknown";
+  let databaseName = "stellrit";
+
+  if (mongoose.connection.host) {
+    connectionHost = mongoose.connection.host;
+  }
+  if (mongoose.connection.name) {
+    databaseName = mongoose.connection.name;
+  }
+
+  const operatorsCount = await OperatorModel.countDocuments();
+  const tasksCount = await TaskModel.countDocuments();
+  const projectsCount = await ProjectModel.countDocuments();
+  const emailsCount = await WebsiteEmailModel.countDocuments();
+  const logsCount = await ActivityLogModel.countDocuments();
+
+  return {
+    readyState,
+    host: connectionHost,
+    port: mongoose.connection.port || "27017",
+    databaseName,
+    counts: {
+      operators: operatorsCount,
+      tasks: tasksCount,
+      projects: projectsCount,
+      emails: emailsCount,
+      logs: logsCount
+    }
+  };
+});
+
+// ── Dashboard Dynamic Stats & Historical Charts ──────────────────────────────
+export const getDashboardStatsFn = createServerFn({ method: "GET" }).handler(async () => {
+  const {
+    connectDB,
+    ProjectModel,
+    WebsiteEmailModel,
+    ActivityLogModel
+  } = await import("./db.server");
+  await connectDB();
+
+  // Fetch all metrics data
+  const projects = await ProjectModel.find().lean();
+  const websiteEmails = await WebsiteEmailModel.find().lean();
+
+  // Recent Activities
+  const recentLogs = await ActivityLogModel.find()
+    .sort({ createdAt: -1 })
+    .limit(10)
+    .lean();
+
+  const now = new Date();
+  const currentMonth = now.getMonth(); // 0-11
+  const currentYear = now.getFullYear();
+
+  // Previous month details
+  const prevMonth = currentMonth === 0 ? 11 : currentMonth - 1;
+  const prevYear = currentMonth === 0 ? currentYear - 1 : currentYear;
+
+  const isInMonth = (dateVal: any, month: number, year: number) => {
+    if (!dateVal) return false;
+    const d = new Date(dateVal);
+    if (isNaN(d.getTime())) return false;
+    return d.getMonth() === month && d.getFullYear() === year;
+  };
+
+  const isUpToMonth = (dateVal: any, month: number, year: number) => {
+    if (!dateVal) return false;
+    const d = new Date(dateVal);
+    if (isNaN(d.getTime())) return false;
+    const projectTime = new Date(d.getFullYear(), d.getMonth(), 1).getTime();
+    const limitTime = new Date(year, month, 1).getTime();
+    return projectTime <= limitTime;
+  };
+
+  // Metrics computation variables
+  let curCollection = 0;
+  let prevCollection = 0;
+  let curSales = 0;
+  let prevSales = 0;
+
+  projects.forEach((proj: any) => {
+    let projDate = proj.createdAt;
+    if (proj.salesDate) {
+      const d = new Date(proj.salesDate);
+      if (!isNaN(d.getTime())) projDate = d;
+    }
+
+    const collected =
+      Number(proj.accountSetup || 0) +
+      Number(proj.firstInstallment || 0) +
+      Number(proj.secondInstallment || 0) +
+      Number(proj.thirdInstallment || 0);
+
+    const cost = Number(proj.projectCost || 0);
+
+    if (isInMonth(projDate, currentMonth, currentYear)) {
+      curCollection += collected;
+      curSales += cost;
+    } else if (isInMonth(projDate, prevMonth, prevYear)) {
+      prevCollection += collected;
+      prevSales += cost;
+    }
+  });
+
+  // Active website computation
+  let curWebsites = 0;
+  let prevWebsites = 0;
+
+  projects.forEach((proj: any) => {
+    if (proj.domainName && proj.domainName.trim() !== "") {
+      let projDate = proj.createdAt;
+      if (proj.salesDate) {
+        const d = new Date(proj.salesDate);
+        if (!isNaN(d.getTime())) projDate = d;
+      }
+
+      if (isUpToMonth(projDate, currentMonth, currentYear)) {
+        curWebsites++;
+      }
+      if (isUpToMonth(projDate, prevMonth, prevYear)) {
+        prevWebsites++;
+      }
+    }
+  });
+
+  // Conversion calculations
+  let curProjectsCount = 0;
+  let prevProjectsCount = 0;
+  let curEmailsCount = 0;
+  let prevEmailsCount = 0;
+
+  projects.forEach((proj: any) => {
+    let projDate = proj.createdAt;
+    if (proj.salesDate) {
+      const d = new Date(proj.salesDate);
+      if (!isNaN(d.getTime())) projDate = d;
+    }
+    if (isInMonth(projDate, currentMonth, currentYear)) {
+      curProjectsCount++;
+    } else if (isInMonth(projDate, prevMonth, prevYear)) {
+      prevProjectsCount++;
+    }
+  });
+
+  websiteEmails.forEach((email: any) => {
+    const emailDate = email.createdAt || email.submittedAt;
+    if (isInMonth(emailDate, currentMonth, currentYear)) {
+      curEmailsCount++;
+    } else if (isInMonth(emailDate, prevMonth, prevYear)) {
+      prevEmailsCount++;
+    }
+  });
+
+  const curConversion = curEmailsCount > 0 ? (curProjectsCount / curEmailsCount) * 100 : (curProjectsCount > 0 ? 100 : 0);
+  const prevConversion = prevEmailsCount > 0 ? (prevProjectsCount / prevEmailsCount) * 100 : (prevProjectsCount > 0 ? 100 : 0);
+
+  const getGrowth = (current: number, previous: number) => {
+    if (previous === 0) return current > 0 ? "+100%" : "0%";
+    const pct = ((current - previous) / previous) * 100;
+    const prefix = pct >= 0 ? "+" : "";
+    return `${prefix}${pct.toFixed(1)}%`;
+  };
+
+  const collectionGrowth = getGrowth(curCollection, prevCollection);
+  const salesGrowth = getGrowth(curSales, prevSales);
+  const websitesGrowth = getGrowth(curWebsites, prevWebsites);
+  const conversionGrowthDiff = curConversion - prevConversion;
+  const conversionGrowth = `${conversionGrowthDiff >= 0 ? "+" : ""}${conversionGrowthDiff.toFixed(1)}%`;
+
+  // Historical 6 month collection & sales aggregation for the AreaChart
+  const chartData = [];
+  for (let i = 5; i >= 0; i--) {
+    const d = new Date();
+    d.setMonth(d.getMonth() - i);
+    const m = d.getMonth();
+    const y = d.getFullYear();
+    const monthName = d.toLocaleString("default", { month: "short" });
+
+    let monthCollection = 0;
+    let monthSales = 0;
+
+    projects.forEach((proj: any) => {
+      let projDate = proj.createdAt;
+      if (proj.salesDate) {
+        const pd = new Date(proj.salesDate);
+        if (!isNaN(pd.getTime())) projDate = pd;
+      }
+
+      if (isInMonth(projDate, m, y)) {
+        const collected =
+          Number(proj.accountSetup || 0) +
+          Number(proj.firstInstallment || 0) +
+          Number(proj.secondInstallment || 0) +
+          Number(proj.thirdInstallment || 0);
+        monthCollection += collected;
+        monthSales += Number(proj.projectCost || 0);
+      }
+    });
+
+    chartData.push({
+      day: monthName,
+      traffic: monthCollection, // Mapped to traffic key
+      conversions: monthSales // Mapped to conversions key
+    });
+  }
+
+  // Format activities timeline
+  const mappedLogs = recentLogs.map((log: any) => {
+    const logTime = new Date(log.createdAt || log.timestamp || Date.now());
+    const diffMs = Date.now() - logTime.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMins / 60);
+    const diffDays = Math.floor(diffHours / 24);
+
+    let timeStr = "Just now";
+    if (diffDays > 0) timeStr = `${diffDays}d ago`;
+    else if (diffHours > 0) timeStr = `${diffHours}h ago`;
+    else if (diffMins > 0) timeStr = `${diffMins}m ago`;
+
+    return {
+      id: log._id ? log._id.toString() : log.id,
+      time: timeStr,
+      action: log.action,
+      details: log.details || "",
+      performedBy: log.performedBy || "System"
+    };
+  });
+
+  return {
+    metrics: {
+      collection: {
+        value: `$${curCollection.toLocaleString()}`,
+        growth: collectionGrowth
+      },
+      sales: {
+        value: `${curProjectsCount} Project${curProjectsCount !== 1 ? 's' : ''}`,
+        growth: salesGrowth
+      },
+      websites: {
+        value: `${curWebsites}`,
+        growth: websitesGrowth
+      },
+      conversion: {
+        value: `${curConversion.toFixed(1)}%`,
+        growth: conversionGrowth
+      }
+    },
+    chartData,
+    activities: mappedLogs
+  };
+});

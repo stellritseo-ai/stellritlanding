@@ -247,18 +247,20 @@ const OperatorSchema = new mongoose.Schema(
   {
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true },
-    role: { type: String, enum: ["Super Admin", "Developer", "Analyst"], default: "Developer" },
+    role: { type: String, enum: ["Super Admin", "Supervisor", "Manager", "Developer", "Viewer"], default: "Developer" },
     status: { type: String, enum: ["Active", "Inactive"], default: "Active" },
     joinedDate: { type: String, required: true },
     username: { type: String },
-    password: { type: String }
+    password: { type: String },
+    sessionToken: { type: String, default: "" }
   },
   { timestamps: true }
 );
 
-export const OperatorModel =
-  mongoose.models.Operator ||
-  mongoose.model("Operator", OperatorSchema);
+if (mongoose.models.Operator) {
+  delete (mongoose.models as any).Operator;
+}
+export const OperatorModel = mongoose.model("Operator", OperatorSchema);
 
 // ── Website Email schema ───────────────────────────────────────────────────
 const WebsiteEmailSchema = new mongoose.Schema(
@@ -279,3 +281,35 @@ const WebsiteEmailSchema = new mongoose.Schema(
 export const WebsiteEmailModel =
   mongoose.models.WebsiteEmail ||
   mongoose.model("WebsiteEmail", WebsiteEmailSchema);
+
+// ── Activity Log schema ──────────────────────────────────────────────────────
+const ActivityLogSchema = new mongoose.Schema(
+  {
+    action: { type: String, required: true },
+    details: { type: String },
+    performedBy: { type: String, required: true },
+    timestamp: { type: Date, default: Date.now },
+  },
+  { timestamps: true }
+);
+
+if (mongoose.models.ActivityLog) {
+  delete (mongoose.models as any).ActivityLog;
+}
+export const ActivityLogModel = mongoose.model("ActivityLog", ActivityLogSchema);
+
+// ── Visitor Log schema ───────────────────────────────────────────────────────
+const VisitorLogSchema = new mongoose.Schema(
+  {
+    ipAddress: { type: String, default: "127.0.0.1" },
+    userAgent: { type: String, default: "Mozilla/5.0" },
+    converted: { type: Boolean, default: false },
+  },
+  { timestamps: true }
+);
+
+if (mongoose.models.VisitorLog) {
+  delete (mongoose.models as any).VisitorLog;
+}
+export const VisitorLogModel = mongoose.model("VisitorLog", VisitorLogSchema);
+

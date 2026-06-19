@@ -1,4 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
+import { logActivity } from "./dashboard.functions.server";
+import { decryptPassword, encryptPassword } from "./crypto.server";
 
 // ── Types (shared with client) ────────────────────────────────────────────────
 export interface ChatMessage {
@@ -66,6 +68,13 @@ export const createChatSessionFn = createServerFn({ method: "POST" }).handler(
       createdAt: new Date().toISOString(),
     });
     await session.save();
+
+    await logActivity(
+      "Live Chat Started",
+      `Visitor "${session.visitorName}" initiated a live chat session.`,
+      "Website Visitor"
+    );
+
     return mapSession(session.toObject());
   }
 );
@@ -107,6 +116,14 @@ export const sendChatMessageFn = createServerFn({ method: "POST" }).handler(
       { new: true }
     ).lean();
 
+    if (updated) {
+      await logActivity(
+        "Chat Message Sent",
+        `Message in conversation with "${updated.visitorName}": "${data.text.slice(0, 45)}${data.text.length > 45 ? "..." : ""}"`,
+        data.sender === "admin" ? "Agent" : `Visitor: ${updated.visitorName}`
+      );
+    }
+
     return updated ? mapSession(updated) : null;
   }
 );
@@ -147,26 +164,41 @@ export const updateChatStatusFn = createServerFn({ method: "POST" }).handler(
 // ── Auth: login ───────────────────────────────────────────────────────────────
 export const loginAdminFn = createServerFn({ method: "POST" }).handler(
   async ({ data }: { data: { username: string; password: string } }) => {
-    const { connectDB, AdminUserModel } = await import("./db.server");
+    const { connectDB, OperatorModel } = await import("./db.server");
     await connectDB();
 
     // Seed default admin if none exists
-    const count = await AdminUserModel.countDocuments();
+    const count = await OperatorModel.countDocuments();
     if (count === 0) {
-      await new AdminUserModel({
+      await new OperatorModel({
+        name: "Jiten Sony",
+        email: "jiten@stellrit.com",
+        role: "Super Admin",
+        status: "Active",
+        joinedDate: new Date().toISOString().split("T")[0],
         username: "stellr",
         password: "stellr123",
-        name: "Jiten Sony",
-        role: "admin",
         sessionToken: "",
       }).save();
     }
 
-    const user = await AdminUserModel.findOne({
+    const user = await OperatorModel.findOne({
       username: data.username.toLowerCase().trim(),
+      status: "Active",
     });
-    if (!user || user.password !== data.password) {
-      throw new Error("Invalid username or password");
+    if (!user) {
+      throw new Error("Invalid username, password, or account inactive");
+    }
+
+    const decrypted = decryptPassword(user.password);
+    if (decrypted !== data.password) {
+      throw new Error("Invalid username, password, or account inactive");
+    }
+
+    // On-the-fly migration: if stored password is not encrypted, encrypt it now
+    if (user.password && !user.password.startsWith("enc:")) {
+      user.password = encryptPassword(user.password);
+      await user.save();
     }
 
     // Generate token
@@ -185,10 +217,10 @@ export const loginAdminFn = createServerFn({ method: "POST" }).handler(
 // ── Auth: verify token ────────────────────────────────────────────────────────
 export const verifyAdminTokenFn = createServerFn({ method: "POST" }).handler(
   async ({ data }: { data: { token: string } }) => {
-    const { connectDB, AdminUserModel } = await import("./db.server");
+    const { connectDB, OperatorModel } = await import("./db.server");
     await connectDB();
     if (!data.token) return { valid: false };
-    const user = await AdminUserModel.findOne({ sessionToken: data.token });
+    const user = await OperatorModel.findOne({ sessionToken: data.token, status: "Active" });
     if (!user) return { valid: false };
     return { valid: true, id: user._id.toString(), username: user.username, role: user.role };
   }

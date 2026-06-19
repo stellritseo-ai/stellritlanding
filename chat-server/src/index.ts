@@ -16,6 +16,64 @@ import { SiteConfig } from './models/SiteConfig.js';
 import { AssetRequest } from './models/AssetRequest.js';
 import { UploadedAsset } from './models/UploadedAsset.js';
 import { Operator } from './models/Operator.js';
+import crypto from 'node:crypto';
+
+// Encryption setup matching main application
+const ALGORITHM = 'aes-256-cbc';
+const ENCRYPTION_KEY = crypto.scryptSync('stellr_secure_encryption_key_2026', 'salt', 32);
+const IV_LENGTH = 16;
+
+function encryptPassword(text: string): string {
+  if (!text) return '';
+  if (text.startsWith('enc:')) {
+    return text;
+  }
+  const iv = crypto.randomBytes(IV_LENGTH);
+  const cipher = crypto.createCipheriv(ALGORITHM, ENCRYPTION_KEY, iv);
+  let encrypted = cipher.update(text, 'utf8', 'hex');
+  encrypted += cipher.final('hex');
+  return 'enc:' + iv.toString('hex') + ':' + encrypted;
+}
+
+function decryptPassword(encryptedText: string): string {
+  if (!encryptedText) return '';
+  if (!encryptedText.startsWith('enc:')) {
+    return encryptedText;
+  }
+  try {
+    const parts = encryptedText.split(':');
+    const iv = Buffer.from(parts[1], 'hex');
+    const encryptedTextContent = parts[2];
+    const decipher = crypto.createDecipheriv(ALGORITHM, ENCRYPTION_KEY, iv);
+    let decrypted = decipher.update(encryptedTextContent, 'hex', 'utf8');
+    decrypted += decipher.final('utf8');
+    return decrypted;
+  } catch (err) {
+    console.error('Decryption failed:', err);
+    return encryptedText;
+  }
+}
+
+// In-memory rate limiting configuration
+const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
+const RATE_LIMIT_WINDOW_MS = 15 * 60 * 1000; // 15 mins
+const MAX_REQUESTS_PER_WINDOW = 300; // max 300 requests per 15 minutes per IP
+
+function isRateLimited(ip: string): boolean {
+  const now = Date.now();
+  const record = rateLimitMap.get(ip);
+  if (!record) {
+    rateLimitMap.set(ip, { count: 1, resetTime: now + RATE_LIMIT_WINDOW_MS });
+    return false;
+  }
+  if (now > record.resetTime) {
+    record.count = 1;
+    record.resetTime = now + RATE_LIMIT_WINDOW_MS;
+    return false;
+  }
+  record.count += 1;
+  return record.count > MAX_REQUESTS_PER_WINDOW;
+}
 
 // Try loading env from root or current directory
 const envPaths = [
@@ -237,16 +295,29 @@ if (!fs.existsSync(UPLOADS_DIR)) {
   fs.mkdirSync(UPLOADS_DIR, { recursive: true });
 }
 
+const ALLOWED_EXTENSIONS = ['.png', '.jpg', '.jpeg', '.gif', '.webp', '.svg', '.pdf', '.doc', '.docx', '.xls', '.xlsx', '.zip', '.rar', '.txt', '.mp4', '.webm', '.mov'];
+
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, UPLOADS_DIR);
   },
   filename: function (req, file, cb) {
+    const safeName = path.basename(file.originalname).replace(/[^a-zA-Z0-9.\-_]/g, '_');
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, uniqueSuffix + '-' + file.originalname);
+    cb(null, uniqueSuffix + '-' + safeName);
   }
 });
-const uploadMiddleware = multer({ storage: storage }).any();
+const uploadMiddleware = multer({
+  storage: storage,
+  limits: { fileSize: 50 * 1024 * 1024 },
+  fileFilter: function (req, file, cb) {
+    const ext = path.extname(file.originalname).toLowerCase();
+    if (!ALLOWED_EXTENSIONS.includes(ext)) {
+      return cb(new Error(`File type ${ext} is not allowed.`));
+    }
+    cb(null, true);
+  }
+}).any();
 
 function runMiddleware(req: any, res: any, fn: any) {
   return new Promise((resolve, reject) => {
@@ -498,7 +569,7 @@ if (!fs.existsSync(OPERATORS_FILE)) {
   writeFallbackOperators([
     { _id: 'u1', name: 'Jiten Sony', email: 'jiten@stellrit.com', role: 'Super Admin', status: 'Active', joinedDate: '2026-01-15', username: 'stellr', password: 'stellr123', createdAt: new Date(), updatedAt: new Date() },
     { _id: 'u2', name: 'David Chen', email: 'david.c@technova.com', role: 'Developer', status: 'Active', joinedDate: '2026-03-10', username: 'david', password: 'david123', createdAt: new Date(), updatedAt: new Date() },
-    { _id: 'u3', name: 'Sarah Jenkins', email: 'sarah.j@nexus.io', role: 'Analyst', status: 'Active', joinedDate: '2026-04-02', username: 'sarah', password: 'sarah123', createdAt: new Date(), updatedAt: new Date() },
+    { _id: 'u3', name: 'Sarah Jenkins', email: 'sarah.j@nexus.io', role: 'Supervisor', status: 'Active', joinedDate: '2026-04-02', username: 'sarah', password: 'sarah123', createdAt: new Date(), updatedAt: new Date() },
     { _id: 'u4', name: 'Alex Rivera', email: 'alex@riveradesign.co', role: 'Developer', status: 'Inactive', joinedDate: '2026-05-28', username: 'alex', password: 'alex123', createdAt: new Date(), updatedAt: new Date() }
   ]);
 }
@@ -518,7 +589,7 @@ function makeOfflineDocument(doc: any, saveCallback: (doc: any) => Promise<void>
   if (!doc) return doc;
   return {
     ...doc,
-    save: async function() {
+    save: async function () {
       await saveCallback(this);
     }
   };
@@ -723,7 +794,7 @@ async function dbGetOperators(): Promise<any[]> {
     const defaults = [
       { name: 'Jiten Sony', email: 'jiten@stellrit.com', role: 'Super Admin', status: 'Active', joinedDate: '2026-01-15', username: 'stellr', password: 'stellr123' },
       { name: 'David Chen', email: 'david.c@technova.com', role: 'Developer', status: 'Active', joinedDate: '2026-03-10', username: 'david', password: 'david123' },
-      { name: 'Sarah Jenkins', email: 'sarah.j@nexus.io', role: 'Analyst', status: 'Active', joinedDate: '2026-04-02', username: 'sarah', password: 'sarah123' },
+      { name: 'Sarah Jenkins', email: 'sarah.j@nexus.io', role: 'Supervisor', status: 'Active', joinedDate: '2026-04-02', username: 'sarah', password: 'sarah123' },
       { name: 'Alex Rivera', email: 'alex@riveradesign.co', role: 'Developer', status: 'Inactive', joinedDate: '2026-05-28', username: 'alex', password: 'alex123' }
     ];
     await Operator.insertMany(defaults);
@@ -976,7 +1047,7 @@ try {
   const resolvedUri = await getStandardMongoUri(MONGO_URI);
   await mongoose.connect(resolvedUri);
   console.log('🔌 Connected to MongoDB successfully via Mongoose.');
-  
+
   // Migrate existing operators without credentials
   try {
     await Operator.updateMany(
@@ -1004,8 +1075,9 @@ try {
 }
 
 // ─── Sanitization helper ──────────────────────────────────────────────────────
-function sanitize(text: string): string {
-  return text
+function sanitize(text: any): string {
+  const str = typeof text === 'string' ? text : String(text ?? '');
+  return str
     .replace(/<[^>]*>/g, '')
     .replace(/javascript:/gi, '')
     .trim()
@@ -1062,6 +1134,14 @@ function isAuthorizedAdmin(req: http.IncomingMessage, urlObj: URL): boolean {
 
 // ─── Server ──────────────────────────────────────────────────────────────────
 const server = http.createServer(async (req, res) => {
+  const ip = (req.headers['x-forwarded-for'] as string) || req.socket.remoteAddress || '127.0.0.1';
+  if (isRateLimited(ip)) {
+    res.statusCode = 429;
+    res.setHeader('Content-Type', 'application/json');
+    res.end(JSON.stringify({ error: 'Too many requests. Please try again later.' }));
+    return;
+  }
+
   const urlObj = new URL(req.url || '', `http://${req.headers.host}`);
   const { pathname } = urlObj;
 
@@ -1234,7 +1314,7 @@ const server = http.createServer(async (req, res) => {
     const getSessionMatch = pathname.match(/^\/api\/chat\/session\/([^/]+)$/);
     if (req.method === 'GET' && getSessionMatch) {
       const sessionId = getSessionMatch[1];
-      
+
       if (!mongoose.Types.ObjectId.isValid(sessionId)) {
         res.statusCode = 404;
         res.setHeader('Content-Type', 'application/json');
@@ -1576,7 +1656,7 @@ const server = http.createServer(async (req, res) => {
 
       const body = await getRequestBody(req);
       const updateData: any = {};
-      
+
       if (body.clientName !== undefined) updateData.clientName = sanitize(body.clientName);
       if (body.projectName !== undefined) updateData.projectName = sanitize(body.projectName);
       if (body.businessName !== undefined) updateData.businessName = sanitize(body.businessName);
@@ -1674,7 +1754,7 @@ const server = http.createServer(async (req, res) => {
         res.end(JSON.stringify({ error: 'Unauthorized' }));
         return;
       }
-      
+
       const tasksList = await dbGetTasks();
       res.writeHead(200, { 'Content-Type': 'application/json' });
       res.end(
@@ -2024,25 +2104,43 @@ const server = http.createServer(async (req, res) => {
         op = await Operator.findOne({ username });
       }
 
-      if (op && op.password === password) {
-        if (op.status !== 'Active') {
-          res.statusCode = 403;
-          res.setHeader('Content-Type', 'application/json');
-          res.end(JSON.stringify({ error: 'Operator account is inactive' }));
+      if (op) {
+        const decrypted = decryptPassword(op.password);
+        if (decrypted === password) {
+          // On-the-fly migration: if stored password is not encrypted, encrypt it now
+          if (op.password && !op.password.startsWith('enc:')) {
+            op.password = encryptPassword(op.password);
+            if (isMongoOffline) {
+              const list = readFallbackOperators();
+              const idx = list.findIndex(o => o.username === username);
+              if (idx !== -1) {
+                list[idx].password = op.password;
+                writeFallbackOperators(list);
+              }
+            } else {
+              await Operator.updateOne({ _id: op._id }, { $set: { password: op.password } });
+            }
+          }
+
+          if (op.status !== 'Active') {
+            res.statusCode = 403;
+            res.setHeader('Content-Type', 'application/json');
+            res.end(JSON.stringify({ error: 'Operator account is inactive' }));
+            return;
+          }
+          const adminToken = process.env.ADMIN_TOKEN || 'stellr-admin-dev-2024';
+          res.writeHead(200, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({
+            success: true,
+            token: adminToken,
+            user: {
+              name: op.name,
+              email: op.email,
+              role: op.role
+            }
+          }));
           return;
         }
-        const adminToken = process.env.ADMIN_TOKEN || 'stellr-admin-dev-2024';
-        res.writeHead(200, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({
-          success: true,
-          token: adminToken,
-          user: {
-            name: op.name,
-            email: op.email,
-            role: op.role
-          }
-        }));
-        return;
       }
 
       res.statusCode = 401;
@@ -2662,7 +2760,7 @@ const server = http.createServer(async (req, res) => {
         // Delete all temp files
         if (cReq.files && Array.isArray(cReq.files)) {
           for (const file of cReq.files) {
-            try { fs.unlinkSync(file.path); } catch (e) {}
+            try { fs.unlinkSync(file.path); } catch (e) { }
           }
         }
         res.statusCode = 400;
@@ -2696,11 +2794,11 @@ const server = http.createServer(async (req, res) => {
         if (file.size > maxLimit) {
           // Delete all remaining temp files
           for (const f of files) {
-            try { fs.unlinkSync(f.path); } catch (e) {}
+            try { fs.unlinkSync(f.path); } catch (e) { }
           }
           res.statusCode = 400;
           res.setHeader('Content-Type', 'application/json');
-          res.end(JSON.stringify({ error: `File ${file.originalname} exceeds size limit of ${Math.round(maxLimit/1024/1024)}MB.` }));
+          res.end(JSON.stringify({ error: `File ${file.originalname} exceeds size limit of ${Math.round(maxLimit / 1024 / 1024)}MB.` }));
           return;
         }
 
@@ -2721,7 +2819,7 @@ const server = http.createServer(async (req, res) => {
         if (!hasCategory) {
           // Delete all temp files
           for (const f of files) {
-            try { fs.unlinkSync(f.path); } catch (e) {}
+            try { fs.unlinkSync(f.path); } catch (e) { }
           }
           res.statusCode = 400;
           res.setHeader('Content-Type', 'application/json');
@@ -2884,7 +2982,7 @@ const server = http.createServer(async (req, res) => {
           const filename = path.basename(asset.cloudinaryUrl);
           const filePath = path.join(UPLOADS_DIR, filename);
           if (fs.existsSync(filePath)) {
-            try { fs.unlinkSync(filePath); } catch (e) {}
+            try { fs.unlinkSync(filePath); } catch (e) { }
           }
         } else if (asset.cloudinaryPublicId && isCloudinaryConfigured) {
           try {
@@ -2993,7 +3091,7 @@ const server = http.createServer(async (req, res) => {
           const filename = path.basename(deleted.cloudinaryUrl);
           const filePath = path.join(UPLOADS_DIR, filename);
           if (fs.existsSync(filePath)) {
-            try { fs.unlinkSync(filePath); } catch (e) {}
+            try { fs.unlinkSync(filePath); } catch (e) { }
           }
         } else if (deleted.cloudinaryPublicId && isCloudinaryConfigured) {
           try {

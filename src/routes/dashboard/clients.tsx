@@ -18,7 +18,9 @@ import {
   ArrowRight,
   TrendingUp,
   Award,
-  Filter
+  Filter,
+  Grid,
+  List
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -138,6 +140,7 @@ function ClientsPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedMonth, setSelectedMonth] = useState("All");
   const [selectedClientId, setSelectedClientId] = useState<string | null>(null);
+  const [viewMode, setViewMode] = useState<"grid" | "list">("list");
 
   // Load projects database & group into client entities
   const loadProjects = async () => {
@@ -357,31 +360,62 @@ function ClientsPage() {
             />
           </div>
 
-          {/* Month selector timeline tabs */}
-          <div className="flex flex-wrap items-center gap-2 overflow-x-auto w-full md:w-auto pb-1 md:pb-0 custom-scrollbar">
-            <button
-              onClick={() => setSelectedMonth("All")}
-              className={`px-4.5 py-2 rounded-xl text-xs font-bold transition shrink-0 ${
-                selectedMonth === "All"
-                  ? "bg-gradient-to-r from-[#a855f7] to-[#ff8a5b] text-white shadow-md shadow-[#a855f7]/10"
-                  : isDark ? "bg-white/5 border border-white/5 text-white/60 hover:text-white" : "bg-slate-100 border border-slate-200 text-slate-600 hover:text-slate-800"
-              }`}
-            >
-              All Months
-            </button>
-            {onboardingMonths.map((month) => (
+          {/* Month selector timeline tabs & View mode toggle */}
+          <div className="flex flex-wrap items-center gap-4 w-full md:w-auto justify-between md:justify-end">
+            <div className="flex flex-wrap items-center gap-2 overflow-x-auto pb-1 md:pb-0 custom-scrollbar">
               <button
-                key={month}
-                onClick={() => setSelectedMonth(month)}
+                onClick={() => setSelectedMonth("All")}
                 className={`px-4.5 py-2 rounded-xl text-xs font-bold transition shrink-0 ${
-                  selectedMonth === month
+                  selectedMonth === "All"
                     ? "bg-gradient-to-r from-[#a855f7] to-[#ff8a5b] text-white shadow-md shadow-[#a855f7]/10"
                     : isDark ? "bg-white/5 border border-white/5 text-white/60 hover:text-white" : "bg-slate-100 border border-slate-200 text-slate-600 hover:text-slate-800"
                 }`}
               >
-                {month}
+                All Months
               </button>
-            ))}
+              {onboardingMonths.map((month) => (
+                <button
+                  key={month}
+                  onClick={() => setSelectedMonth(month)}
+                  className={`px-4.5 py-2 rounded-xl text-xs font-bold transition shrink-0 ${
+                    selectedMonth === month
+                      ? "bg-gradient-to-r from-[#a855f7] to-[#ff8a5b] text-white shadow-md shadow-[#a855f7]/10"
+                      : isDark ? "bg-white/5 border border-white/5 text-white/60 hover:text-white" : "bg-slate-100 border border-slate-200 text-slate-600 hover:text-slate-800"
+                  }`}
+                >
+                  {month}
+                </button>
+              ))}
+            </div>
+
+            <div className={`flex items-center gap-1 p-1 rounded-xl border shrink-0 ${
+              isDark ? "bg-white/5 border-white/5" : "bg-slate-100 border-slate-200"
+            }`}>
+              <button
+                type="button"
+                onClick={() => setViewMode("grid")}
+                className={`p-2 rounded-lg transition-all duration-200 ${
+                  viewMode === "grid"
+                    ? "bg-gradient-to-r from-[#a855f7] to-[#ff8a5b] text-white shadow-sm"
+                    : isDark ? "text-white/60 hover:text-white" : "text-slate-600 hover:text-slate-800"
+                }`}
+                title="Grid View"
+              >
+                <Grid className="h-4 w-4" />
+              </button>
+              <button
+                type="button"
+                onClick={() => setViewMode("list")}
+                className={`p-2 rounded-lg transition-all duration-200 ${
+                  viewMode === "list"
+                    ? "bg-gradient-to-r from-[#a855f7] to-[#ff8a5b] text-white shadow-sm"
+                    : isDark ? "text-white/60 hover:text-white" : "text-slate-650 hover:text-slate-800"
+                }`}
+                title="List View"
+              >
+                <List className="h-4 w-4" />
+              </button>
+            </div>
           </div>
 
         </div>
@@ -412,37 +446,158 @@ function ClientsPage() {
                   </span>
                 </div>
 
-                {/* Clients Card grid (3 columns) */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {list.map((client, i) => (
-                    <motion.div
-                      key={client.id}
-                      initial={{ opacity: 0, y: 15 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.4, delay: i * 0.05 }}
-                      whileHover={{ y: -6, transition: { duration: 0.2 } }}
-                      onClick={() => setSelectedClientId(client.id)}
-                      className={`rounded-2xl border p-6 transition-all duration-300 group hover:shadow-2xl cursor-pointer flex flex-col justify-between min-h-[280px] relative overflow-hidden ${
-                        isDark
-                          ? "bg-gradient-to-br from-[#1c0d3a]/65 to-[#0b031b]/80 border-white/5 text-white hover:border-[#a855f7]/30 hover:shadow-[#a855f7]/10"
-                          : "bg-white border-slate-200/60 hover:border-slate-350 shadow-sm text-slate-800 hover:shadow-slate-400/20"
-                      } ${selectedClientId === client.id ? "border-[#a855f7]/40 ring-1 ring-[#a855f7]/40" : ""}`}
-                    >
-                      {/* Ambient background glow inside card on hover */}
-                      <div className="absolute top-0 right-0 h-28 w-28 bg-[#a855f7]/5 blur-2xl rounded-full transition-opacity opacity-0 group-hover:opacity-100 pointer-events-none" />
+                {viewMode === "grid" ? (
+                  /* Clients Card grid (3 columns) */
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {list.map((client, i) => (
+                      <motion.div
+                        key={client.id}
+                        initial={{ opacity: 0, y: 15 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.4, delay: i * 0.05 }}
+                        whileHover={{ y: -6, transition: { duration: 0.2 } }}
+                        onClick={() => setSelectedClientId(client.id)}
+                        className={`rounded-2xl border p-6 transition-all duration-300 group hover:shadow-2xl cursor-pointer flex flex-col justify-between min-h-[280px] relative overflow-hidden ${
+                          isDark
+                            ? "bg-gradient-to-br from-[#1c0d3a]/65 to-[#0b031b]/80 border-white/5 text-white hover:border-[#a855f7]/30 hover:shadow-[#a855f7]/10"
+                            : "bg-white border-slate-200/60 hover:border-slate-350 shadow-sm text-slate-800 hover:shadow-slate-400/20"
+                        } ${selectedClientId === client.id ? "border-[#a855f7]/40 ring-1 ring-[#a855f7]/40" : ""}`}
+                      >
+                        {/* Ambient background glow inside card on hover */}
+                        <div className="absolute top-0 right-0 h-28 w-28 bg-[#a855f7]/5 blur-2xl rounded-full transition-opacity opacity-0 group-hover:opacity-100 pointer-events-none" />
 
-                      <div className="space-y-5">
-                        {/* Avatar, name and sector header */}
-                        <div className="flex items-start gap-4">
-                          <div className="h-11 w-11 rounded-full shrink-0 flex items-center justify-center font-bold text-xs bg-gradient-to-tr from-[#a855f7] to-[#ff8a5b] text-white shadow-inner select-none">
-                            {client.company.split(" ").slice(0, 2).map((w) => w[0]).join("").toUpperCase() || "C"}
+                        <div className="space-y-5">
+                          {/* Avatar, name and sector header */}
+                          <div className="flex items-start gap-4">
+                            <div className="h-11 w-11 rounded-full shrink-0 flex items-center justify-center font-bold text-xs bg-gradient-to-tr from-[#a855f7] to-[#ff8a5b] text-white shadow-inner select-none">
+                              {client.company.split(" ").slice(0, 2).map((w) => w[0]).join("").toUpperCase() || "C"}
+                            </div>
+                            <div className="space-y-1 flex-1 min-w-0">
+                              <div className="flex items-center justify-between gap-2">
+                                <span className="text-[10px] text-[#a855f7] font-semibold uppercase tracking-wider block truncate">
+                                  {client.sector}
+                                </span>
+                                <span className={`px-2 py-0.5 rounded-full border text-[8px] font-extrabold uppercase tracking-wider shrink-0 ${
+                                  client.status === "Active"
+                                    ? "bg-emerald-500/15 border-emerald-500/20 text-emerald-400"
+                                    : isDark
+                                    ? "bg-white/5 border-white/10 text-white/40"
+                                    : "bg-slate-100 border-slate-200 text-slate-500"
+                                }`}>
+                                  {client.status}
+                                </span>
+                              </div>
+                              <h3 className="text-sm md:text-base font-extrabold tracking-tight truncate leading-snug group-hover:text-[#ff8a5b] transition duration-300">
+                                {client.company}
+                              </h3>
+                            </div>
                           </div>
-                          <div className="space-y-1 flex-1 min-w-0">
-                            <div className="flex items-center justify-between gap-2">
-                              <span className="text-[10px] text-[#a855f7] font-semibold uppercase tracking-wider block truncate">
+
+                          {/* Details with side indicator bar */}
+                          <div className={`pl-3 border-l-2 space-y-2.5 text-xs md:text-[13px] ${
+                            isDark ? "border-white/5 text-white/70" : "border-slate-100 text-slate-600"
+                          }`}>
+                            <div className="flex items-center gap-2">
+                              <Users2 className={`h-3.5 w-3.5 shrink-0 ${isDark ? "text-white/30" : "text-slate-400"}`} />
+                              <span className="truncate font-medium">Contact: {client.contactName}</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <Phone className={`h-3.5 w-3.5 shrink-0 ${isDark ? "text-white/30" : "text-slate-400"}`} />
+                              <span className="font-mono text-[11px] font-medium">{client.phoneNumber}</span>
+                            </div>
+                          </div>
+
+                          {/* Projects representation pills */}
+                          <div className="space-y-1.5 pt-1">
+                            <span className="text-[9px] font-bold uppercase tracking-wider opacity-40">Active Project Scope</span>
+                            <div className="flex flex-wrap gap-1.5">
+                              {client.projects.slice(0, 3).map((proj) => (
+                                <div
+                                  key={proj.id}
+                                  className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg border text-[10px] font-semibold transition ${
+                                    isDark ? "bg-white/5 border-white/5 text-white/70" : "bg-slate-50 border-slate-150 text-slate-700"
+                                  }`}
+                                  title={proj.projectName}
+                                >
+                                  <span className={`h-1.5 w-1.5 rounded-full ${
+                                    proj.isCompleted 
+                                      ? "bg-emerald-400" 
+                                      : "bg-amber-400 animate-pulse"
+                                  }`} />
+                                  <span className="truncate max-w-[100px]">{proj.projectName}</span>
+                                </div>
+                              ))}
+                              {client.projects.length > 3 && (
+                                <div className={`inline-flex items-center px-2 py-1 rounded-lg text-[9px] font-bold ${
+                                  isDark ? "bg-white/5 text-white/40" : "bg-slate-100 text-slate-500"
+                                }`}>
+                                  +{client.projects.length - 3} more
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Footer: valuation capsule */}
+                        <div className="flex items-center justify-between border-t border-[#a855f7]/10 pt-4 mt-5">
+                          <span className="text-[10px] opacity-40 uppercase font-bold tracking-wider">Contract Volume</span>
+                          <div className="px-3 py-1 rounded-lg bg-gradient-to-r from-[#a855f7]/10 to-[#ff8a5b]/10 border border-[#a855f7]/10">
+                            <span className="text-xs md:text-sm font-bold font-mono text-[#ff8a5b]">${client.totalValue.toLocaleString()}</span>
+                          </div>
+                        </div>
+
+                      </motion.div>
+                    ))}
+                  </div>
+                ) : (
+                  /* Clients Table list view */
+                  <div className={`overflow-x-auto rounded-2xl border transition duration-300 ${
+                    isDark ? "bg-[#12052c]/30 border-white/5 shadow-2xl" : "bg-white border-slate-200/60 shadow-sm"
+                  }`}>
+                    <table className="w-full text-left text-xs border-collapse">
+                      <thead>
+                        <tr className={`border-b uppercase font-semibold tracking-wider text-[10px] ${
+                          isDark ? "border-white/5 text-white/30" : "border-slate-100 text-slate-400"
+                        }`}>
+                          <th className="p-4 pr-2">Company / Contact</th>
+                          <th className="p-4 px-2">Sector</th>
+                          <th className="p-4 px-2">Status</th>
+                          <th className="p-4 px-2">Phone</th>
+                          <th className="p-4 px-2">Active Projects</th>
+                          <th className="p-4 pl-2 text-right">Contract Value</th>
+                        </tr>
+                      </thead>
+                      <tbody className={`divide-y ${isDark ? "divide-white/[0.04]" : "divide-slate-100"}`}>
+                        {list.map((client) => (
+                          <tr
+                            key={client.id}
+                            onClick={() => setSelectedClientId(client.id)}
+                            className={`group cursor-pointer transition ${
+                              isDark ? "hover:bg-white/[0.02]" : "hover:bg-slate-50"
+                            }`}
+                          >
+                            <td className="p-4 pr-2">
+                              <div className="flex items-center gap-3">
+                                <div className="h-8 w-8 rounded-full flex items-center justify-center font-bold text-[10px] bg-gradient-to-tr from-[#a855f7] to-[#ff8a5b] text-white shadow-inner select-none shrink-0">
+                                  {client.company.split(" ").slice(0, 2).map((w) => w[0]).join("").toUpperCase() || "C"}
+                                </div>
+                                <div className="min-w-0">
+                                  <div className="font-extrabold text-xs md:text-sm truncate leading-snug group-hover:text-[#ff8a5b] transition duration-300">
+                                    {client.company}
+                                  </div>
+                                  <div className={`text-[10px] md:text-[11px] truncate ${isDark ? "text-white/40" : "text-slate-400"}`}>
+                                    {client.contactName}
+                                  </div>
+                                </div>
+                              </div>
+                            </td>
+                            <td className="p-4 px-2">
+                              <span className="text-[11px] font-semibold text-[#a855f7]">
                                 {client.sector}
                               </span>
-                              <span className={`px-2 py-0.5 rounded-full border text-[8px] font-extrabold uppercase tracking-wider shrink-0 ${
+                            </td>
+                            <td className="p-4 px-2">
+                              <span className={`px-2 py-0.5 rounded-full border text-[8px] font-extrabold uppercase tracking-wider ${
                                 client.status === "Active"
                                   ? "bg-emerald-500/15 border-emerald-500/20 text-emerald-400"
                                   : isDark
@@ -451,69 +606,39 @@ function ClientsPage() {
                               }`}>
                                 {client.status}
                               </span>
-                            </div>
-                            <h3 className="text-sm md:text-base font-extrabold tracking-tight truncate leading-snug group-hover:text-[#ff8a5b] transition duration-300">
-                              {client.company}
-                            </h3>
-                          </div>
-                        </div>
-
-                        {/* Details with side indicator bar */}
-                        <div className={`pl-3 border-l-2 space-y-2.5 text-xs md:text-[13px] ${
-                          isDark ? "border-white/5 text-white/70" : "border-slate-100 text-slate-600"
-                        }`}>
-                          <div className="flex items-center gap-2">
-                            <Users2 className={`h-3.5 w-3.5 shrink-0 ${isDark ? "text-white/30" : "text-slate-400"}`} />
-                            <span className="truncate font-medium">Contact: {client.contactName}</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <Phone className={`h-3.5 w-3.5 shrink-0 ${isDark ? "text-white/30" : "text-slate-400"}`} />
-                            <span className="font-mono text-[11px] font-medium">{client.phoneNumber}</span>
-                          </div>
-                        </div>
-
-                        {/* Projects representation pills */}
-                        <div className="space-y-1.5 pt-1">
-                          <span className="text-[9px] font-bold uppercase tracking-wider opacity-40">Active Project Scope</span>
-                          <div className="flex flex-wrap gap-1.5">
-                            {client.projects.slice(0, 3).map((proj) => (
-                              <div
-                                key={proj.id}
-                                className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg border text-[10px] font-semibold transition ${
-                                  isDark ? "bg-white/5 border-white/5 text-white/70" : "bg-slate-50 border-slate-150 text-slate-700"
-                                }`}
-                                title={proj.projectName}
-                              >
-                                <span className={`h-1.5 w-1.5 rounded-full ${
-                                  proj.isCompleted 
-                                    ? "bg-emerald-400" 
-                                    : "bg-amber-400 animate-pulse"
-                                }`} />
-                                <span className="truncate max-w-[100px]">{proj.projectName}</span>
+                            </td>
+                            <td className="p-4 px-2 font-mono text-[11px]">
+                              {client.phoneNumber}
+                            </td>
+                            <td className="p-4 px-2">
+                              <div className="flex flex-wrap gap-1">
+                                {client.projects.map((proj) => (
+                                  <span
+                                    key={proj.id}
+                                    className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-lg border text-[9px] font-medium ${
+                                      isDark ? "bg-white/5 border-white/5 text-white/70" : "bg-slate-50 border-slate-150 text-slate-700"
+                                    }`}
+                                    title={proj.projectName}
+                                  >
+                                    <span className={`h-1 w-1 rounded-full ${
+                                      proj.isCompleted ? "bg-emerald-400" : "bg-amber-400 animate-pulse"
+                                    }`} />
+                                    <span className="truncate max-w-[80px]">{proj.projectName}</span>
+                                  </span>
+                                ))}
                               </div>
-                            ))}
-                            {client.projects.length > 3 && (
-                              <div className={`inline-flex items-center px-2 py-1 rounded-lg text-[9px] font-bold ${
-                                isDark ? "bg-white/5 text-white/40" : "bg-slate-100 text-slate-500"
-                              }`}>
-                                +{client.projects.length - 3} more
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Footer: valuation capsule */}
-                      <div className="flex items-center justify-between border-t border-[#a855f7]/10 pt-4 mt-5">
-                        <span className="text-[10px] opacity-40 uppercase font-bold tracking-wider">Contract Volume</span>
-                        <div className="px-3 py-1 rounded-lg bg-gradient-to-r from-[#a855f7]/10 to-[#ff8a5b]/10 border border-[#a855f7]/10">
-                          <span className="text-xs md:text-sm font-bold font-mono text-[#ff8a5b]">${client.totalValue.toLocaleString()}</span>
-                        </div>
-                      </div>
-
-                    </motion.div>
-                  ))}
-                </div>
+                            </td>
+                            <td className="p-4 pl-2 text-right">
+                              <span className="font-extrabold font-mono text-xs md:text-sm text-[#ff8a5b]">
+                                ${client.totalValue.toLocaleString()}
+                              </span>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
 
               </div>
             );

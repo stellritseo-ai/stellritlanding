@@ -38,7 +38,7 @@ interface User {
   id: string;
   name: string;
   email: string;
-  role: "Super Admin" | "Developer" | "Analyst";
+  role: "Super Admin" | "Supervisor" | "Manager" | "Developer" | "Viewer";
   status: "Active" | "Inactive";
   joinedDate: string;
 }
@@ -145,7 +145,25 @@ function DashboardAdmin() {
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
   const [newUserName, setNewUserName] = useState("");
   const [newUserEmail, setNewUserEmail] = useState("");
-  const [newUserRole, setNewUserRole] = useState<"Super Admin" | "Developer" | "Analyst">("Developer");
+  const [newUserUsername, setNewUserUsername] = useState("");
+  const [newUserPassword, setNewUserPassword] = useState("");
+  const [newUserRole, setNewUserRole] = useState<User["role"]>("Developer");
+
+  // User Role State of logged-in user
+  const [currentUserRole, setCurrentUserRole] = useState<string>("Viewer");
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const savedUser = localStorage.getItem("stellr_admin_user");
+      if (savedUser) {
+        try {
+          const parsed = JSON.parse(savedUser);
+          if (parsed && parsed.role) {
+            setCurrentUserRole(parsed.role);
+          }
+        } catch {}
+      }
+    }
+  }, []);
 
   // Search/Filter State
   const [searchQuery, setSearchQuery] = useState("");
@@ -163,6 +181,9 @@ function DashboardAdmin() {
     databaseStatus: string;
     totalAssets: number;
     totalSize: number;
+    totalVisitors?: number;
+    totalConversions?: number;
+    conversionRate?: number;
   }>({
     cpuUsage: 14.8,
     heapUsed: 428 * 1024 * 1024,
@@ -170,7 +191,10 @@ function DashboardAdmin() {
     uptime: 120,
     databaseStatus: "Connecting...",
     totalAssets: 0,
-    totalSize: 0
+    totalSize: 0,
+    totalVisitors: 0,
+    totalConversions: 0,
+    conversionRate: 0
   });
 
   // Feature Flags State
@@ -326,13 +350,18 @@ function DashboardAdmin() {
 
   const handleAddUser = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newUserName || !newUserEmail) return;
+    if (!newUserName.trim() || !newUserEmail.trim() || !newUserUsername.trim() || !newUserPassword.trim()) {
+      alert("Please fill out all fields.");
+      return;
+    }
 
     try {
       const response = await createOperatorFn({
         data: {
-          name: newUserName,
-          email: newUserEmail,
+          name: newUserName.trim(),
+          email: newUserEmail.trim(),
+          username: newUserUsername.toLowerCase().trim(),
+          password: newUserPassword.trim(),
           role: newUserRole,
           status: "Active",
           joinedDate: new Date().toISOString().split("T")[0],
@@ -342,6 +371,8 @@ function DashboardAdmin() {
       setUsers((prev) => [...prev, response as any]);
       setNewUserName("");
       setNewUserEmail("");
+      setNewUserUsername("");
+      setNewUserPassword("");
       setNewUserRole("Developer");
       setAddModalOpen(false);
     } catch (err) {
@@ -386,17 +417,19 @@ function DashboardAdmin() {
           </p>
         </div>
 
-        <button
-          onClick={() => setAddModalOpen(true)}
-          className="inline-flex items-center gap-2.5 px-6 py-3 rounded-full bg-gradient-to-r from-[#a855f7] to-[#ff8a5b] text-white hover:shadow-lg transition duration-300 text-xs font-bold tracking-wide active:scale-[0.98]"
-        >
-          <Plus className="h-4 w-4" />
-          Provision Access
-        </button>
+        {currentUserRole === "Super Admin" && (
+          <button
+            onClick={() => setAddModalOpen(true)}
+            className="inline-flex items-center gap-2.5 px-6 py-3 rounded-full bg-gradient-to-r from-[#a855f7] to-[#ff8a5b] text-white hover:shadow-lg transition duration-300 text-xs font-bold tracking-wide active:scale-[0.98]"
+          >
+            <Plus className="h-4 w-4" />
+            Provision Access
+          </button>
+        )}
       </div>
 
       {/* High-Fidelity Diagnostics Section */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {/* Card 1: CPU Load */}
         <CpuDiagnosticsCard isDark={isDark} cpuUsage={diagnostics.cpuUsage} />
 
@@ -507,6 +540,56 @@ function DashboardAdmin() {
             <span>Uptime: {Math.floor(diagnostics.uptime / 3600)}h {Math.floor((diagnostics.uptime % 3600) / 60)}m</span>
           </div>
         </div>
+
+        {/* Card 4: Website Visitors */}
+        <div className={`relative overflow-hidden rounded-2xl border p-6 shadow-2xl transition duration-300 group ${
+          isDark ? "bg-gradient-to-b from-[#12052c]/90 to-[#0e0220]/95 border-white/5 shadow-[0_20px_50px_rgba(0,0,0,0.5)]" : "bg-white border-slate-200/60 shadow-sm"
+        }`}>
+          {isDark && <div className="absolute inset-0 bg-[#a855f7]/5 opacity-0 group-hover:opacity-100 transition duration-500 pointer-events-none" />}
+          <div className="flex items-center justify-between mb-6">
+            <div className="space-y-1">
+              <span className={`text-[10px] uppercase tracking-widest font-bold ${isDark ? "text-white/40" : "text-slate-400"}`}>
+                Visitor Traffic
+              </span>
+              <h4 className={`text-sm font-semibold ${isDark ? "text-white/80" : "text-slate-700"}`}>Website Visitors</h4>
+            </div>
+            <div className="h-9 w-9 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center">
+              <Users className="h-4.5 w-4.5 text-[#a855f7]" />
+            </div>
+          </div>
+
+          <div className="flex items-baseline gap-2">
+            <span className={`text-4xl font-bold font-mono tracking-tight ${isDark ? "text-white" : "text-slate-800"}`}>
+              {diagnostics.totalVisitors || 0}
+            </span>
+            <span className="text-[10px] font-semibold text-[#ff8a5b]">
+              {diagnostics.totalConversions || 0} Converted
+            </span>
+          </div>
+
+          {/* Visual Progress Bar for conversions */}
+          <div className="space-y-2 mt-6">
+            <div className="w-full bg-white/5 h-2 rounded-full overflow-hidden border border-white/5 relative">
+              <motion.div
+                className="bg-gradient-to-r from-[#a855f7] to-[#ff8a5b] h-full"
+                initial={{ width: 0 }}
+                animate={{ width: `${diagnostics.conversionRate || 0}%` }}
+                transition={{ duration: 0.8 }}
+              />
+            </div>
+            <div className="flex justify-between text-[9px] opacity-40 font-mono">
+              <span>Conversion Rate</span>
+              <span>{diagnostics.conversionRate || 0}%</span>
+            </div>
+          </div>
+
+          <div className={`mt-5 flex items-center justify-between text-[10px] border-t pt-4 ${
+            isDark ? "text-white/40 border-white/5" : "text-slate-400 border-slate-100"
+          }`}>
+            <span>Target Score: 10%</span>
+            <span className="text-emerald-400 font-semibold">Active Tracking</span>
+          </div>
+        </div>
       </div>
 
       {/* Main Grid: Control Toggles & Operators List */}
@@ -548,9 +631,11 @@ function DashboardAdmin() {
                 }`}
               >
                 <option value="All">All Roles</option>
-                <option value="Super Admin">Super Admins</option>
-                <option value="Developer">Developers</option>
-                <option value="Analyst">Analysts</option>
+                <option value="Super Admin">Super Admin</option>
+                <option value="Supervisor">Supervisor</option>
+                <option value="Manager">Manager</option>
+                <option value="Developer">Developer</option>
+                <option value="Viewer">Viewer</option>
               </select>
             </div>
           </div>
@@ -610,7 +695,10 @@ function DashboardAdmin() {
                         <td className="py-4 px-4">
                           <button
                             onClick={() => toggleUserStatus(user.id)}
+                            disabled={currentUserRole !== "Super Admin"}
                             className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold border transition duration-300 ${
+                              currentUserRole !== "Super Admin" ? "cursor-not-allowed" : ""
+                            } ${
                               user.status === "Active"
                                 ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400 hover:bg-emerald-500/20 shadow-[0_0_15px_rgba(52,211,153,0.1)]"
                                 : "bg-white/5 border-white/10 text-white/40 hover:bg-white/10"
@@ -630,13 +718,15 @@ function DashboardAdmin() {
                         {/* Actions */}
                         <td className="py-4 pl-4 text-right">
                           <div className="flex items-center justify-end gap-1.5">
-                            <button
-                              onClick={() => deleteUser(user.id)}
-                              className="h-8 w-8 inline-flex items-center justify-center rounded-lg hover:bg-red-500/15 text-white/40 hover:text-red-400 transition"
-                              title="Revoke Permissions"
-                            >
-                              <X className="h-4 w-4" />
-                            </button>
+                            {currentUserRole === "Super Admin" && (
+                              <button
+                                onClick={() => deleteUser(user.id)}
+                                className="h-8 w-8 inline-flex items-center justify-center rounded-lg hover:bg-red-500/15 text-white/40 hover:text-red-400 transition"
+                                title="Revoke Permissions"
+                              >
+                                <X className="h-4 w-4" />
+                              </button>
+                            )}
                             <button className={`h-8 w-8 inline-flex items-center justify-center rounded-lg transition ${
                               isDark ? "hover:bg-white/10 text-white/40 hover:text-white" : "hover:bg-slate-100 text-slate-400 hover:text-slate-700"
                             }`}>
@@ -799,22 +889,60 @@ function DashboardAdmin() {
 
                   <div className="space-y-2">
                     <label className={`block text-xs font-semibold ${isDark ? "text-white/70" : "text-slate-500"}`}>
+                      Username
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="e.g. david_hassel"
+                      value={newUserUsername}
+                      onChange={(e) => setNewUserUsername(e.target.value)}
+                      className={`w-full h-10 px-3.5 rounded-xl border text-sm transition duration-300 ${
+                        isDark
+                          ? "bg-white/5 border-white/10 text-white placeholder-white/30 focus:border-[#a855f7]/50"
+                          : "bg-slate-50 border-slate-200 text-slate-800 placeholder-slate-400 focus:border-[#a855f7]/50"
+                      }`}
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className={`block text-xs font-semibold ${isDark ? "text-white/70" : "text-slate-500"}`}>
+                      Password
+                    </label>
+                    <input
+                      type="password"
+                      required
+                      placeholder="••••••••"
+                      value={newUserPassword}
+                      onChange={(e) => setNewUserPassword(e.target.value)}
+                      className={`w-full h-10 px-3.5 rounded-xl border text-sm transition duration-300 ${
+                        isDark
+                          ? "bg-white/5 border-white/10 text-white placeholder-white/30 focus:border-[#a855f7]/50"
+                          : "bg-slate-50 border-slate-200 text-slate-800 placeholder-slate-400 focus:border-[#a855f7]/50"
+                      }`}
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className={`block text-xs font-semibold ${isDark ? "text-white/70" : "text-slate-500"}`}>
                       Access Scope Role
                     </label>
                     <select
                       value={newUserRole}
                       onChange={(e) =>
                         setNewUserRole(
-                          e.target.value as "Super Admin" | "Developer" | "Analyst"
+                          e.target.value as User["role"]
                         )
                       }
                       className={`w-full h-10 px-3 rounded-xl border text-sm transition duration-300 ${
                         isDark ? "bg-[#12052c] border-white/10 text-white" : "bg-white border-slate-200 text-slate-655"
                       }`}
                     >
-                      <option value="Developer">Developer (Write & Deploy)</option>
-                      <option value="Super Admin">Super Admin (All Modules)</option>
-                      <option value="Analyst">Analyst (Read Only)</option>
+                      <option value="Super Admin">Super Admin</option>
+                      <option value="Supervisor">Supervisor</option>
+                      <option value="Manager">Manager</option>
+                      <option value="Developer">Developer</option>
+                      <option value="Viewer">Viewer</option>
                     </select>
                   </div>
 

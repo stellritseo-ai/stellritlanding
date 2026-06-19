@@ -9,8 +9,9 @@ import { adminAuth } from '../middleware/auth.js';
 export const chatRouter = Router();
 
 // ─── Sanitization helper ──────────────────────────────────────────────────────
-function sanitize(text: string): string {
-  return text
+function sanitize(text: any): string {
+  const str = typeof text === 'string' ? text : String(text ?? '');
+  return str
     .replace(/<[^>]*>/g, '') // strip HTML
     .replace(/javascript:/gi, '') // strip js: URIs
     .trim()

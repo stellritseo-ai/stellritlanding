@@ -1,8 +1,16 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useDashboardTheme } from "../../hooks/useDashboardTheme";
-import { useState, useMemo } from "react";
-import { UserPlus, Shield, Mail, Check, X, Search, MoreVertical, Eye, EyeOff, Key } from "lucide-react";
+import { useState, useMemo, useEffect, useCallback } from "react";
+import { UserPlus, Shield, Mail, Check, X, Search, MoreVertical, Eye, EyeOff, Key, Loader2, AlertCircle } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import {
+  getOperatorsFn,
+  createOperatorFn,
+  updateOperatorStatusFn,
+  deleteOperatorFn
+} from "@/lib/dashboard.functions.server";
+import { ConfirmModal } from "@/components/ConfirmModal";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/dashboard/members")({
   component: MembersPage,
@@ -12,7 +20,7 @@ interface Member {
   id: string;
   name: string;
   email: string;
-  role: "Super Admin" | "Supervisor" | "Manager" | "Editor" | "Viewer";
+  role: "Super Admin" | "Supervisor" | "Manager" | "Developer" | "Viewer";
   status: "Active" | "Inactive";
   joinedDate: string;
   username?: string;
@@ -23,59 +31,26 @@ function MembersPage() {
   const { theme } = useDashboardTheme();
   const isDark = theme === "dark";
 
-  // Mock Members State
-  const [members, setMembers] = useState<Member[]>([
-    {
-      id: "m1",
-      name: "Jiten Sony",
-      email: "jiten@stellrit.com",
-      role: "Super Admin",
-      status: "Active",
-      joinedDate: "2026-01-15",
-      username: "jiten_sony",
-      password: "StellRMaster2026!",
-    },
-    {
-      id: "m2",
-      name: "Sarah Jenkins",
-      email: "sarah.j@nexus.io",
-      role: "Supervisor",
-      status: "Active",
-      joinedDate: "2026-02-18",
-      username: "sarah_jenkins",
-      password: "SupervisorNexusSecure",
-    },
-    {
-      id: "m3",
-      name: "David Chen",
-      email: "david.c@technova.com",
-      role: "Manager",
-      status: "Active",
-      joinedDate: "2026-03-10",
-      username: "david_chen",
-      password: "TechNovaManager456",
-    },
-    {
-      id: "m4",
-      name: "Alex Rivera",
-      email: "alex@riveradesign.co",
-      role: "Editor",
-      status: "Active",
-      joinedDate: "2026-04-05",
-      username: "alex_rivera",
-      password: "EditorRiveraLayouts",
-    },
-    {
-      id: "m5",
-      name: "Emily Watson",
-      email: "emily.w@harmonycare.org",
-      role: "Viewer",
-      status: "Inactive",
-      joinedDate: "2026-05-12",
-      username: "emily_watson",
-      password: "ViewerHarmonyRead",
-    },
-  ]);
+  // Operator Data State
+  const [members, setMembers] = useState<Member[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // User Role State of logged-in user
+  const [currentUserRole, setCurrentUserRole] = useState<string>("Viewer");
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const savedUser = localStorage.getItem("stellr_admin_user");
+      if (savedUser) {
+        try {
+          const parsed = JSON.parse(savedUser);
+          if (parsed && parsed.role) {
+            setCurrentUserRole(parsed.role);
+          }
+        } catch { }
+      }
+    }
+  }, []);
 
   // Form State
   const [addFormOpen, setAddFormOpen] = useState(false);
@@ -83,49 +58,116 @@ function MembersPage() {
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState<Member["role"]>("Viewer");
+  const [role, setRole] = useState<Member["role"]>("Developer");
   const [formPasswordVisible, setFormPasswordVisible] = useState(false);
   const [showPasswordMap, setShowPasswordMap] = useState<Record<string, boolean>>({});
+
+  // Deletion confirm modal state
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   // Search/Filter State
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedRoleFilter, setSelectedRoleFilter] = useState<string>("All");
 
-  const handleAddMember = (e: React.FormEvent) => {
+  const fetchMembers = useCallback(async (showLoader = true) => {
+    if (showLoader) setLoading(true);
+    setError(null);
+    try {
+      const data = await getOperatorsFn();
+      setMembers(data as Member[]);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to load directory");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchMembers();
+  }, [fetchMembers]);
+
+  const handleAddMember = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name || !email || !username || !password) return;
+    if (currentUserRole !== "Super Admin") {
+      toast.error("Access Denied: Only Super Admins can register new members.");
+      return;
+    }
+    if (!name.trim() || !email.trim() || !username.trim() || !password.trim()) {
+      toast.error("Please fill out all fields.");
+      return;
+    }
 
-    const newMember: Member = {
-      id: `m-${Date.now()}`,
-      name,
-      email,
-      username,
-      password,
-      role,
-      status: "Active",
-      joinedDate: new Date().toISOString().split("T")[0],
-    };
+    try {
+      const response = await createOperatorFn({
+        data: {
+          name: name.trim(),
+          email: email.trim(),
+          username: username.toLowerCase().trim(),
+          password: password.trim(),
+          role,
+          status: "Active",
+          joinedDate: new Date().toISOString().split("T")[0],
+        }
+      });
 
-    setMembers((prev) => [newMember, ...prev]);
-    setName("");
-    setEmail("");
-    setUsername("");
-    setPassword("");
-    setRole("Viewer");
-    setAddFormOpen(false);
-    setFormPasswordVisible(false);
+      setMembers((prev) => [response as Member, ...prev]);
+      setName("");
+      setEmail("");
+      setUsername("");
+      setPassword("");
+      setRole("Developer");
+      setAddFormOpen(false);
+      setFormPasswordVisible(false);
+      toast.success("Member registered successfully!");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to add member");
+    }
   };
 
-  const toggleMemberStatus = (id: string) => {
+  const toggleMemberStatus = async (id: string) => {
+    if (currentUserRole !== "Super Admin") {
+      toast.error("Access Denied: Only Super Admins can toggle status.");
+      return;
+    }
+    const member = members.find((m) => m.id === id);
+    if (!member) return;
+    const nextStatus = member.status === "Active" ? "Inactive" : "Active";
+
+    // Optimistic UI update
     setMembers((prev) =>
-      prev.map((m) =>
-        m.id === id ? { ...m, status: m.status === "Active" ? "Inactive" : "Active" } : m
-      )
+      prev.map((m) => (m.id === id ? { ...m, status: nextStatus } : m))
     );
+
+    try {
+      await updateOperatorStatusFn({ data: { id, status: nextStatus } });
+      toast.success(`Member status updated to ${nextStatus}`);
+    } catch (err) {
+      // Revert
+      setMembers((prev) =>
+        prev.map((m) => (m.id === id ? { ...m, status: member.status } : m))
+      );
+      toast.error("Failed to update status");
+    }
   };
 
-  const deleteMember = (id: string) => {
-    setMembers((prev) => prev.filter((m) => m.id !== id));
+  const deleteMember = async () => {
+    if (currentUserRole !== "Super Admin") {
+      toast.error("Access Denied: Only Super Admins can revoke credentials.");
+      return;
+    }
+    if (!confirmDeleteId) return;
+    setDeleting(true);
+    try {
+      await deleteOperatorFn({ data: { id: confirmDeleteId } });
+      setMembers((prev) => prev.filter((m) => m.id !== confirmDeleteId));
+      toast.success("Membership revoked successfully!");
+    } catch (err) {
+      toast.error("Failed to revoke membership");
+    } finally {
+      setConfirmDeleteId(null);
+      setDeleting(false);
+    }
   };
 
   // Filtered members list
@@ -140,12 +182,31 @@ function MembersPage() {
     });
   }, [members, searchQuery, selectedRoleFilter]);
 
+  if (loading) {
+    return (
+      <div className="flex h-64 items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-[#a855f7]" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center py-20 text-center gap-3">
+        <AlertCircle className="h-10 w-10 text-red-500" />
+        <p className="text-sm text-red-400">{error}</p>
+        <button onClick={() => fetchMembers(true)} className="text-xs text-[#a855f7] underline">
+          Retry
+        </button>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-8 select-none">
       {/* Header */}
-      <div className={`flex flex-col sm:flex-row sm:items-center justify-between gap-6 border-b pb-6 ${
-        isDark ? "border-white/5" : "border-slate-200/60"
-      }`}>
+      <div className={`flex flex-col sm:flex-row sm:items-center justify-between gap-6 border-b pb-6 ${isDark ? "border-white/5" : "border-slate-200/60"
+        }`}>
         <div>
           <h1 className={`font-serif text-3xl font-bold tracking-tight md:text-4xl ${isDark ? "text-white" : "text-slate-800"}`}>
             Add Member & Directory
@@ -155,18 +216,20 @@ function MembersPage() {
           </p>
         </div>
 
-        <button
-          onClick={() => setAddFormOpen(!addFormOpen)}
-          className="inline-flex items-center gap-2.5 px-6 py-3 rounded-full bg-gradient-to-r from-[#a855f7] to-[#ff8a5b] text-white hover:shadow-lg transition duration-300 text-xs font-bold tracking-wide active:scale-[0.98]"
-        >
-          <UserPlus className="h-4 w-4" />
-          Add Member
-        </button>
+        {currentUserRole === "Super Admin" && (
+          <button
+            onClick={() => setAddFormOpen(!addFormOpen)}
+            className="inline-flex items-center gap-2.5 px-6 py-3 rounded-full bg-gradient-to-r from-[#a855f7] to-[#ff8a5b] text-white hover:shadow-lg transition duration-300 text-xs font-bold tracking-wide active:scale-[0.98]"
+          >
+            <UserPlus className="h-4 w-4" />
+            Add Member
+          </button>
+        )}
       </div>
 
       {/* Add Member Form Expandable Panel */}
       <AnimatePresence>
-        {addFormOpen && (
+        {addFormOpen && currentUserRole === "Super Admin" && (
           <motion.div
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
@@ -174,12 +237,10 @@ function MembersPage() {
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
             className="overflow-hidden"
           >
-            <div className={`rounded-2xl border p-6 mb-8 transition duration-300 ${
-              isDark ? "bg-[#12052c]/65 border-white/5 shadow-2xl text-white" : "bg-white border-slate-200/60 shadow-sm text-slate-800"
-            }`}>
-              <h3 className={`text-base font-semibold flex items-center gap-2 border-b pb-3 mb-5 ${
-                isDark ? "border-white/5" : "border-slate-100"
+            <div className={`rounded-2xl border p-6 mb-8 transition duration-300 ${isDark ? "bg-[#12052c]/65 border-white/5 shadow-2xl text-white" : "bg-white border-slate-200/60 shadow-sm text-slate-800"
               }`}>
+              <h3 className={`text-base font-semibold flex items-center gap-2 border-b pb-3 mb-5 ${isDark ? "border-white/5" : "border-slate-100"
+                }`}>
                 <UserPlus className="h-4.5 w-4.5 text-[#a855f7]" />
                 New Member Registration
               </h3>
@@ -195,9 +256,8 @@ function MembersPage() {
                       placeholder="e.g. Liam Neeson"
                       value={name}
                       onChange={(e) => setName(e.target.value)}
-                      className={`w-full h-10 px-3.5 rounded-xl border text-sm transition duration-300 focus:outline-none focus:border-[#a855f7]/50 focus:ring-1 focus:ring-[#a855f7]/50 ${
-                        isDark ? "bg-white/5 border-white/10 text-white placeholder-white/20" : "bg-slate-50 border-slate-200 text-slate-800 placeholder-slate-400"
-                      }`}
+                      className={`w-full h-10 px-3.5 rounded-xl border text-sm transition duration-300 focus:outline-none focus:border-[#a855f7]/50 focus:ring-1 focus:ring-[#a855f7]/50 ${isDark ? "bg-white/5 border-white/10 text-white placeholder-white/20" : "bg-slate-50 border-slate-200 text-slate-800 placeholder-slate-400"
+                        }`}
                     />
                   </div>
 
@@ -209,9 +269,8 @@ function MembersPage() {
                       placeholder="e.g. member@stellrit.com"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className={`w-full h-10 px-3.5 rounded-xl border text-sm transition duration-300 focus:outline-none focus:border-[#a855f7]/50 focus:ring-1 focus:ring-[#a855f7]/50 ${
-                        isDark ? "bg-white/5 border-white/10 text-white placeholder-white/20" : "bg-slate-50 border-slate-200 text-slate-800 placeholder-slate-400"
-                      }`}
+                      className={`w-full h-10 px-3.5 rounded-xl border text-sm transition duration-300 focus:outline-none focus:border-[#a855f7]/50 focus:ring-1 focus:ring-[#a855f7]/50 ${isDark ? "bg-white/5 border-white/10 text-white placeholder-white/20" : "bg-slate-50 border-slate-200 text-slate-800 placeholder-slate-400"
+                        }`}
                     />
                   </div>
 
@@ -223,9 +282,8 @@ function MembersPage() {
                       placeholder="e.g. liam_neeson"
                       value={username}
                       onChange={(e) => setUsername(e.target.value)}
-                      className={`w-full h-10 px-3.5 rounded-xl border text-sm transition duration-300 focus:outline-none focus:border-[#a855f7]/50 focus:ring-1 focus:ring-[#a855f7]/50 ${
-                        isDark ? "bg-white/5 border-white/10 text-white placeholder-white/20" : "bg-slate-50 border-slate-200 text-slate-800 placeholder-slate-400"
-                      }`}
+                      className={`w-full h-10 px-3.5 rounded-xl border text-sm transition duration-300 focus:outline-none focus:border-[#a855f7]/50 focus:ring-1 focus:ring-[#a855f7]/50 ${isDark ? "bg-white/5 border-white/10 text-white placeholder-white/20" : "bg-slate-50 border-slate-200 text-slate-800 placeholder-slate-400"
+                        }`}
                     />
                   </div>
                 </div>
@@ -241,16 +299,14 @@ function MembersPage() {
                         placeholder="••••••••"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
-                        className={`w-full h-10 pl-3.5 pr-10 rounded-xl border text-sm transition duration-300 focus:outline-none focus:border-[#a855f7]/50 focus:ring-1 focus:ring-[#a855f7]/50 ${
-                          isDark ? "bg-white/5 border-white/10 text-white placeholder-white/20" : "bg-slate-50 border-slate-200 text-slate-800 placeholder-slate-400"
-                        }`}
+                        className={`w-full h-10 pl-3.5 pr-10 rounded-xl border text-sm transition duration-300 focus:outline-none focus:border-[#a855f7]/50 focus:ring-1 focus:ring-[#a855f7]/50 ${isDark ? "bg-white/5 border-white/10 text-white placeholder-white/20" : "bg-slate-50 border-slate-200 text-slate-800 placeholder-slate-400"
+                          }`}
                       />
                       <button
                         type="button"
                         onClick={() => setFormPasswordVisible(!formPasswordVisible)}
-                        className={`absolute right-3 top-1/2 -translate-y-1/2 transition ${
-                          isDark ? "text-white/40 hover:text-white" : "text-slate-400 hover:text-slate-600"
-                        }`}
+                        className={`absolute right-3 top-1/2 -translate-y-1/2 transition ${isDark ? "text-white/40 hover:text-white" : "text-slate-400 hover:text-slate-600"
+                          }`}
                       >
                         {formPasswordVisible ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                       </button>
@@ -262,14 +318,13 @@ function MembersPage() {
                     <select
                       value={role}
                       onChange={(e) => setRole(e.target.value as Member["role"])}
-                      className={`w-full h-10 px-3 rounded-xl border text-sm transition duration-300 focus:outline-none focus:border-[#a855f7]/50 ${
-                        isDark ? "bg-[#12052c] border-white/10 text-white" : "bg-white border-slate-200 text-slate-700"
-                      }`}
+                      className={`w-full h-10 px-3 rounded-xl border text-sm transition duration-300 focus:outline-none focus:border-[#a855f7]/50 ${isDark ? "bg-[#12052c] border-white/10 text-white" : "bg-white border-slate-200 text-slate-700"
+                        }`}
                     >
                       <option value="Super Admin">Super Admin</option>
                       <option value="Supervisor">Supervisor</option>
                       <option value="Manager">Manager</option>
-                      <option value="Editor">Editor</option>
+                      <option value="Developer">Developer</option>
                       <option value="Viewer">Viewer</option>
                     </select>
                   </div>
@@ -289,9 +344,8 @@ function MembersPage() {
       </AnimatePresence>
 
       {/* Directory Table Grid */}
-      <div className={`rounded-2xl border p-6 shadow-2xl flex flex-col transition duration-300 ${
-        isDark ? "bg-[#12052c]/65 border-white/5 shadow-[0_20px_50px_rgba(0,0,0,0.5)]" : "bg-white border-slate-200/60 shadow-sm"
-      }`}>
+      <div className={`rounded-2xl border p-6 shadow-2xl flex flex-col transition duration-300 ${isDark ? "bg-[#12052c]/65 border-white/5 shadow-[0_20px_50px_rgba(0,0,0,0.5)]" : "bg-white border-slate-200/60 shadow-sm"
+        }`}>
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
           <div>
             <h3 className={`text-base font-semibold ${isDark ? "text-white" : "text-slate-800"}`}>Active Members</h3>
@@ -309,26 +363,24 @@ function MembersPage() {
                 placeholder="Filter members..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className={`h-8 pl-8 pr-3.5 w-44 rounded-lg border text-[11px] transition duration-300 ${
-                  isDark
+                className={`h-8 pl-8 pr-3.5 w-44 rounded-lg border text-[11px] transition duration-300 ${isDark
                     ? "bg-white/5 border-white/10 text-white placeholder-white/30 focus:border-[#a855f7]/40"
                     : "bg-slate-50 border-slate-200 text-slate-800 placeholder-slate-400 focus:border-[#a855f7]/40"
-                }`}
+                  }`}
               />
             </div>
 
             <select
               value={selectedRoleFilter}
               onChange={(e) => setSelectedRoleFilter(e.target.value)}
-              className={`h-8 px-2 rounded-lg border text-[11px] transition duration-300 ${
-                isDark ? "bg-[#12052c] border-white/10 text-white/70" : "bg-white border-slate-200 text-slate-655"
-              }`}
+              className={`h-8 px-2 rounded-lg border text-[11px] transition duration-300 ${isDark ? "bg-[#12052c] border-white/10 text-white/70" : "bg-white border-slate-200 text-slate-655"
+                }`}
             >
               <option value="All">All Roles</option>
               <option value="Super Admin">Super Admin</option>
               <option value="Supervisor">Supervisor</option>
               <option value="Manager">Manager</option>
-              <option value="Editor">Editor</option>
+              <option value="Developer">Developer</option>
               <option value="Viewer">Viewer</option>
             </select>
           </div>
@@ -338,9 +390,8 @@ function MembersPage() {
           <div className="inline-block min-w-full align-middle px-6">
             <table className="w-full text-left text-xs border-collapse">
               <thead>
-                <tr className={`border-b uppercase font-semibold tracking-widest text-[10px] ${
-                  isDark ? "border-white/5 text-white/30" : "border-slate-100 text-slate-400"
-                }`}>
+                <tr className={`border-b uppercase font-semibold tracking-widest text-[10px] ${isDark ? "border-white/5 text-white/30" : "border-slate-100 text-slate-400"
+                  }`}>
                   <th className="pb-3 pr-4">Identity Details</th>
                   <th className="pb-3 px-4">Access Role</th>
                   <th className="pb-3 px-4">Joined Date</th>
@@ -395,18 +446,18 @@ function MembersPage() {
                       <td className="py-4 px-4">
                         <button
                           onClick={() => toggleMemberStatus(member.id)}
-                          className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold border transition duration-300 ${
-                            member.status === "Active"
+                          disabled={currentUserRole !== "Super Admin"}
+                          className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold border transition duration-300 ${currentUserRole !== "Super Admin" ? "cursor-not-allowed" : ""
+                            } ${member.status === "Active"
                               ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400 hover:bg-emerald-500/20 shadow-[0_0_15px_rgba(52,211,153,0.1)]"
                               : "bg-white/5 border-white/10 text-white/40 hover:bg-white/10"
-                          }`}
+                            }`}
                         >
                           <span
-                            className={`h-1.5 w-1.5 rounded-full ${
-                              member.status === "Active"
+                            className={`h-1.5 w-1.5 rounded-full ${member.status === "Active"
                                 ? "bg-emerald-400 animate-pulse"
                                 : "bg-white/30"
-                            }`}
+                              }`}
                           />
                           {member.status}
                         </button>
@@ -415,7 +466,7 @@ function MembersPage() {
                       {/* Actions & Credentials Reveal */}
                       <td className="py-4 pl-4 text-right">
                         <div className="flex items-center justify-end gap-1.5">
-                          {member.password && (
+                          {member.password && currentUserRole === "Super Admin" && (
                             <div className="relative">
                               <button
                                 onClick={() => {
@@ -424,27 +475,25 @@ function MembersPage() {
                                     [member.id]: !prev[member.id],
                                   }));
                                 }}
-                                className={`h-8 w-8 inline-flex items-center justify-center rounded-lg border transition ${
-                                  showPasswordMap[member.id]
+                                className={`h-8 w-8 inline-flex items-center justify-center rounded-lg border transition ${showPasswordMap[member.id]
                                     ? "bg-[#a855f7]/15 border-[#a855f7]/30 text-[#a855f7]"
                                     : isDark
-                                    ? "bg-white/5 border-white/5 text-white/40 hover:text-white"
-                                    : "bg-slate-50 border-slate-100 text-slate-400 hover:text-slate-700"
-                                }`}
+                                      ? "bg-white/5 border-white/5 text-white/40 hover:text-white"
+                                      : "bg-slate-50 border-slate-100 text-slate-400 hover:text-slate-700"
+                                  }`}
                                 title="View Credentials"
                               >
                                 <Key className="h-4 w-4" />
                               </button>
-                              
+
                               <AnimatePresence>
                                 {showPasswordMap[member.id] && (
                                   <motion.div
                                     initial={{ opacity: 0, scale: 0.95, y: -5 }}
                                     animate={{ opacity: 1, scale: 1, y: 0 }}
                                     exit={{ opacity: 0, scale: 0.95, y: -5 }}
-                                    className={`absolute right-0 bottom-10 z-10 w-52 p-3.5 rounded-xl border shadow-2xl text-left space-y-1.5 ${
-                                      isDark ? "bg-[#12052c] border-white/10 text-white shadow-[0_4px_30px_rgba(0,0,0,0.5)]" : "bg-white border-slate-200 text-slate-800"
-                                    }`}
+                                    className={`absolute right-0 bottom-10 z-10 w-52 p-3.5 rounded-xl border shadow-2xl text-left space-y-1.5 ${isDark ? "bg-[#12052c] border-white/10 text-white shadow-[0_4px_30px_rgba(0,0,0,0.5)]" : "bg-white border-slate-200 text-slate-800"
+                                      }`}
                                   >
                                     <div className="text-[9px] uppercase tracking-widest text-[#a855f7] font-bold">
                                       Member Credentials
@@ -452,9 +501,8 @@ function MembersPage() {
                                     <div className={`text-[10px] font-semibold truncate ${isDark ? "text-white/90" : "text-slate-800"}`}>
                                       User: @{member.username}
                                     </div>
-                                    <div className={`text-[10px] font-mono p-1 rounded select-text truncate ${
-                                      isDark ? "bg-white/5 text-slate-300" : "bg-slate-50 text-slate-700 border border-slate-150"
-                                    }`}>
+                                    <div className={`text-[10px] font-mono p-1 rounded select-text truncate ${isDark ? "bg-white/5 text-slate-300" : "bg-slate-50 text-slate-700 border border-slate-150"
+                                      }`}>
                                       Pass: {member.password}
                                     </div>
                                   </motion.div>
@@ -463,16 +511,18 @@ function MembersPage() {
                             </div>
                           )}
 
-                          <button
-                            onClick={() => deleteMember(member.id)}
-                            className="h-8 w-8 inline-flex items-center justify-center rounded-lg hover:bg-red-500/15 text-white/40 hover:text-red-400 transition"
-                            title="Revoke Membership"
-                          >
-                            <X className="h-4 w-4" />
-                          </button>
-                          <button className={`h-8 w-8 inline-flex items-center justify-center rounded-lg transition ${
-                            isDark ? "hover:bg-white/10 text-white/40 hover:text-white" : "hover:bg-slate-100 text-slate-400 hover:text-slate-700"
-                          }`}>
+                          {currentUserRole === "Super Admin" && (
+                            <button
+                              onClick={() => setConfirmDeleteId(member.id)}
+                              className="h-8 w-8 inline-flex items-center justify-center rounded-lg hover:bg-red-500/15 text-white/40 hover:text-red-400 transition"
+                              title="Revoke Membership"
+                            >
+                              <X className="h-4 w-4" />
+                            </button>
+                          )}
+
+                          <button className={`h-8 w-8 inline-flex items-center justify-center rounded-lg transition ${isDark ? "hover:bg-white/10 text-white/40 hover:text-white" : "hover:bg-slate-100 text-slate-400 hover:text-slate-700"
+                            }`}>
                             <MoreVertical className="h-4 w-4" />
                           </button>
                         </div>
@@ -491,6 +541,18 @@ function MembersPage() {
           </div>
         </div>
       </div>
+
+      {/* Delete Confirmation Modal */}
+      <ConfirmModal
+        isOpen={confirmDeleteId !== null}
+        title="Revoke Membership"
+        message="Are you sure you want to revoke membership and credentials for this operator? They will immediately lose access to the administration dashboard."
+        confirmText={deleting ? "Revoking..." : "Revoke Access"}
+        cancelText="Cancel"
+        type="danger"
+        onConfirm={deleteMember}
+        onCancel={() => setConfirmDeleteId(null)}
+      />
     </div>
   );
 }

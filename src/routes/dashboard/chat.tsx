@@ -131,7 +131,7 @@ function ChatPage() {
       });
 
       // New visitor message arrives — refresh the active session + sessions list
-      socket.on("visitor-message", ({ sessionId }: { sessionId: string; message: ChatMessage }) => {
+      socket.on("visitor-message", ({ sessionId, message }: { sessionId: string; message: ChatMessage }) => {
         // If this session is open, refresh it
         if (sessionId === activeSessionId) {
           getChatSessionFn({ data: { sessionId } }).then((sess) => {
