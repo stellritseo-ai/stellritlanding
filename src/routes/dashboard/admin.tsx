@@ -19,6 +19,15 @@ import {
   HardDrive
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import {
+  getOperatorsFn,
+  createOperatorFn,
+  updateOperatorStatusFn,
+  deleteOperatorFn,
+  getSiteConfigFn,
+  updateSiteConfigFn,
+  getDiagnosticsFn,
+} from "@/lib/dashboard.functions.server";
 
 export const Route = createFileRoute("/dashboard/admin")({
   component: DashboardAdmin,
@@ -41,20 +50,7 @@ interface Flag {
   category: "Security" | "Performance" | "Beta Features";
 }
 
-const API_URL = import.meta.env.VITE_CHAT_API_URL ?? "http://localhost:3001";
-const ADMIN_TOKEN = import.meta.env.VITE_ADMIN_TOKEN ?? "stellr-admin-dev-2024";
 
-async function adminFetch<T>(path: string, opts?: RequestInit): Promise<T> {
-  const res = await fetch(`${API_URL}${path}`, {
-    headers: {
-      "Content-Type": "application/json",
-      "x-admin-token": ADMIN_TOKEN,
-    },
-    ...opts,
-  });
-  if (!res.ok) throw new Error(`API ${res.status}: ${await res.text()}`);
-  return res.json() as Promise<T>;
-}
 
 function formatSize(bytes: number) {
   if (bytes === 0) return "0 B";
@@ -209,8 +205,8 @@ function DashboardAdmin() {
 
   const fetchOperators = async () => {
     try {
-      const data = await adminFetch<User[]>("/api/admin/operators");
-      setUsers(data);
+      const data = await getOperatorsFn();
+      setUsers(data as any);
     } catch (err) {
       console.error("Failed to fetch operators:", err);
     }
@@ -218,15 +214,7 @@ function DashboardAdmin() {
 
   const fetchDiagnostics = async () => {
     try {
-      const data = await adminFetch<{
-        cpuUsage: number;
-        heapUsed: number;
-        heapTotal: number;
-        uptime: number;
-        databaseStatus: string;
-        totalAssets: number;
-        totalSize: number;
-      }>("/api/admin/diagnostics");
+      const data = await getDiagnosticsFn();
       setDiagnostics(data);
     } catch (err) {
       console.error("Failed to fetch diagnostics:", err);
@@ -235,43 +223,39 @@ function DashboardAdmin() {
 
   const loadConfig = async () => {
     try {
-      const configData = await adminFetch<{
-        maintenanceMode: boolean;
-        aiHelpdeskAutoplay: boolean;
-        edgeCacheCompression: boolean;
-        dynamicCaseStudies: boolean;
-      }>("/api/admin/site-config");
-      
-      setFlags([
-        {
-          id: "f1",
-          name: "Global Maintenance Mode",
-          desc: "Redirects all incoming visitor traffic to an optimized placeholder screen.",
-          enabled: configData.maintenanceMode,
-          category: "Security",
-        },
-        {
-          id: "f2",
-          name: "AI Helpdesk Autoplay",
-          desc: "Triggers helpdesk widget initialization 5s post-interaction.",
-          enabled: configData.aiHelpdeskAutoplay,
-          category: "Beta Features",
-        },
-        {
-          id: "f3",
-          name: "Edge Cache Compression",
-          desc: "Compresses static asset trees at CDN edges using Brotli encoding.",
-          enabled: configData.edgeCacheCompression,
-          category: "Performance",
-        },
-        {
-          id: "f4",
-          name: "Dynamic Case Studies",
-          desc: "Exposes work-in-progress case logs directly inside website routes.",
-          enabled: configData.dynamicCaseStudies,
-          category: "Beta Features",
-        },
-      ]);
+      const configData = await getSiteConfigFn();
+      if (configData) {
+        setFlags([
+          {
+            id: "f1",
+            name: "Global Maintenance Mode",
+            desc: "Redirects all incoming visitor traffic to an optimized placeholder screen.",
+            enabled: configData.maintenanceMode,
+            category: "Security",
+          },
+          {
+            id: "f2",
+            name: "AI Helpdesk Autoplay",
+            desc: "Triggers helpdesk widget initialization 5s post-interaction.",
+            enabled: configData.aiHelpdeskAutoplay,
+            category: "Beta Features",
+          },
+          {
+            id: "f3",
+            name: "Edge Cache Compression",
+            desc: "Compresses static asset trees at CDN edges using Brotli encoding.",
+            enabled: configData.edgeCacheCompression,
+            category: "Performance",
+          },
+          {
+            id: "f4",
+            name: "Dynamic Case Studies",
+            desc: "Exposes work-in-progress case logs directly inside website routes.",
+            enabled: configData.dynamicCaseStudies,
+            category: "Beta Features",
+          },
+        ]);
+      }
     } catch (err) {
       console.error("Failed to load global configurations:", err);
     }
@@ -303,10 +287,7 @@ function DashboardAdmin() {
       if (id === "f3") payload.edgeCacheCompression = nextVal;
       if (id === "f4") payload.dynamicCaseStudies = nextVal;
 
-      await adminFetch("/api/admin/site-config", {
-        method: "PUT",
-        body: JSON.stringify(payload),
-      });
+      await updateSiteConfigFn({ data: payload });
     } catch (err) {
       console.error("Failed to toggle feature flag:", err);
       // Revert optimistic update
@@ -327,10 +308,7 @@ function DashboardAdmin() {
     );
 
     try {
-      await adminFetch(`/api/admin/operators/${id}`, {
-        method: "PATCH",
-        body: JSON.stringify({ status: nextStatus }),
-      });
+      await updateOperatorStatusFn({ data: { id, status: nextStatus } });
     } catch (err) {
       console.error("Failed to toggle operator status:", err);
       // Revert optimistic update
@@ -347,9 +325,7 @@ function DashboardAdmin() {
     setUsers((prev) => prev.filter((u) => u.id !== id));
 
     try {
-      await adminFetch(`/api/admin/operators/${id}`, {
-        method: "DELETE",
-      });
+      await deleteOperatorFn({ data: { id } });
     } catch (err) {
       console.error("Failed to revoke operator permissions:", err);
       fetchOperators();
@@ -361,18 +337,17 @@ function DashboardAdmin() {
     if (!newUserName || !newUserEmail) return;
 
     try {
-      const response = await adminFetch<User>("/api/admin/operators", {
-        method: "POST",
-        body: JSON.stringify({
+      const response = await createOperatorFn({
+        data: {
           name: newUserName,
           email: newUserEmail,
           role: newUserRole,
           status: "Active",
           joinedDate: new Date().toISOString().split("T")[0],
-        }),
+        }
       });
 
-      setUsers((prev) => [...prev, response]);
+      setUsers((prev) => [...prev, response as any]);
       setNewUserName("");
       setNewUserEmail("");
       setNewUserRole("Developer");

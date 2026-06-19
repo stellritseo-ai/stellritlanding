@@ -65,20 +65,7 @@ interface Client {
   }[];
 }
 
-const API_URL = import.meta.env.VITE_CHAT_API_URL ?? "http://localhost:3001";
-const ADMIN_TOKEN = import.meta.env.VITE_ADMIN_TOKEN ?? "stellr-admin-dev-2024";
-
-async function adminFetch<T>(path: string, opts?: RequestInit): Promise<T> {
-  const res = await fetch(`${API_URL}${path}`, {
-    headers: {
-      "Content-Type": "application/json",
-      "x-admin-token": ADMIN_TOKEN,
-    },
-    ...opts,
-  });
-  if (!res.ok) throw new Error(`API ${res.status}: ${await res.text()}`);
-  return res.json() as Promise<T>;
-}
+import { getProjectsFn } from "@/lib/dashboard.functions.server";
 
 // Fallback seed projects if DB has none
 const SEED_PROJECTS: Project[] = [
@@ -156,9 +143,9 @@ function ClientsPage() {
   const loadProjects = async () => {
     setLoading(true);
     try {
-      const data = await adminFetch<Project[]>("/api/admin/projects");
+      const data = await getProjectsFn();
       if (data && data.length > 0) {
-        setProjects(data);
+        setProjects(data as any);
       } else {
         setProjects(SEED_PROJECTS);
       }

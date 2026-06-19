@@ -62,20 +62,12 @@ const COLOR_PRESETS = [
   { name: "Blue / Cyan", value: "from-blue-500 to-cyan-500" },
 ];
 
-const API_URL = import.meta.env.VITE_CHAT_API_URL ?? "http://localhost:3001";
-const ADMIN_TOKEN = import.meta.env.VITE_ADMIN_TOKEN ?? "stellr-admin-dev-2024";
-
-async function adminFetch<T>(path: string, opts?: RequestInit): Promise<T> {
-  const res = await fetch(`${API_URL}${path}`, {
-    headers: {
-      "Content-Type": "application/json",
-      "x-admin-token": ADMIN_TOKEN,
-    },
-    ...opts,
-  });
-  if (!res.ok) throw new Error(`API ${res.status}: ${await res.text()}`);
-  return res.json() as Promise<T>;
-}
+import {
+  getProjectsFn,
+  createProjectFn,
+  updateProjectFn,
+  deleteProjectFn,
+} from "@/lib/dashboard.functions.server";
 
 function ProjectsPage() {
   const { theme } = useDashboardTheme();
@@ -136,8 +128,8 @@ function ProjectsPage() {
     setLoading(true);
     setError(null);
     try {
-      const data = await adminFetch<Project[]>("/api/admin/projects");
-      setProjects(data);
+      const data = await getProjectsFn();
+      setProjects(data as any);
     } catch (e: any) {
       setError(e.message || "Failed to load project billing details from database.");
     } finally {
@@ -275,18 +267,16 @@ function ProjectsPage() {
       };
 
       if (editingProject) {
-        const updatedProj = await adminFetch<Project>(`/api/admin/projects/${editingProject.id}`, {
-          method: "PUT",
-          body: JSON.stringify(payload),
+        const updatedProj = await updateProjectFn({
+          data: { id: editingProject.id, update: payload }
         });
-        setProjects((prev) => prev.map((p) => (p.id === updatedProj.id ? updatedProj : p)));
+        setProjects((prev) => prev.map((p) => (p.id === updatedProj.id ? (updatedProj as any) : p)));
         showToast("Project details updated successfully!", "success");
       } else {
-        const newProj = await adminFetch<Project>("/api/admin/projects", {
-          method: "POST",
-          body: JSON.stringify(payload),
+        const newProj = await createProjectFn({
+          data: payload
         });
-        setProjects((prev) => [newProj, ...prev]);
+        setProjects((prev) => [newProj as any, ...prev]);
         showToast("New project registered successfully!", "success");
       }
       setIsFormOpen(false);
@@ -303,11 +293,10 @@ function ProjectsPage() {
     if (!proj) return;
 
     try {
-      const updatedProj = await adminFetch<Project>(`/api/admin/projects/${projectId}`, {
-        method: "PUT",
-        body: JSON.stringify({ isCompleted: !proj.isCompleted }),
+      const updatedProj = await updateProjectFn({
+        data: { id: projectId, update: { isCompleted: !proj.isCompleted } }
       });
-      setProjects((prev) => prev.map((p) => (p.id === projectId ? updatedProj : p)));
+      setProjects((prev) => prev.map((p) => (p.id === projectId ? (updatedProj as any) : p)));
       showToast(updatedProj.isCompleted ? "Project marked as Completed! (100% Progress)" : "Project marked as Active.", "success");
     } catch (err: any) {
       showToast("Failed to toggle project completion: " + err.message, "error");
@@ -318,8 +307,8 @@ function ProjectsPage() {
   const handleDeleteProject = async (projectId: string) => {
     setLoading(true);
     try {
-      await adminFetch(`/api/admin/projects/${projectId}`, {
-        method: "DELETE",
+      await deleteProjectFn({
+        data: { id: projectId }
       });
       setProjects((prev) => prev.filter((p) => p.id !== projectId));
       if (activeProjectId === projectId) {

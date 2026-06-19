@@ -22,7 +22,11 @@ export const Route = createFileRoute("/upload/$token")({
   component: ClientUploadPortal,
 });
 
-const API_URL = import.meta.env.VITE_CHAT_API_URL ?? "http://localhost:3001";
+import {
+  getAssetRequestByTokenFn,
+  generateCloudinarySignatureFn,
+  registerUploadedAssetFn
+} from "@/lib/dashboard.functions.server";
 
 interface RequestMetadata {
   businessName: string;
@@ -86,10 +90,9 @@ function ClientUploadPortal() {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // CAPTCHA State
-  const [captchaToken, setCaptchaToken] = useState("");
   const [captchaQuestion, setCaptchaQuestion] = useState("");
+  const [expectedCaptchaAnswer, setExpectedCaptchaAnswer] = useState(0);
   const [captchaAnswer, setCaptchaAnswer] = useState("");
-  const [loadingCaptcha, setLoadingCaptcha] = useState(false);
   const [captchaError, setCaptchaError] = useState(false);
 
   // Upload Progress & Statistics
@@ -112,18 +115,14 @@ function ClientUploadPortal() {
     setLoadingMetadata(true);
     setPortalError(null);
     try {
-      const res = await fetch(`${API_URL}/api/public/assets/requests/${token}`);
-      if (!res.ok) {
-        if (res.status === 404) {
-          throw new Error("Invalid or expired upload request token link.");
-        }
-        throw new Error("Unable to load upload request details.");
+      const data = await getAssetRequestByTokenFn({ data: { token } });
+      if (!data) {
+        throw new Error("Invalid or expired upload request token link.");
       }
-      const data = (await res.json()) as RequestMetadata;
-      if (data.expired) {
-        throw new Error("This secure upload portal has expired.");
+      if (data.status === "Completed") {
+        throw new Error("This secure upload portal has already been completed.");
       }
-      setMetadata(data);
+      setMetadata(data as any);
       if (data.businessName) setBusinessName(data.businessName);
     } catch (err: any) {
       setPortalError(err.message || "Failed to parse metadata.");
@@ -132,22 +131,13 @@ function ClientUploadPortal() {
     }
   };
 
-  const fetchCaptcha = async () => {
-    setLoadingCaptcha(true);
-    try {
-      const res = await fetch(`${API_URL}/api/public/captcha`);
-      if (res.ok) {
-        const data = await res.json();
-        setCaptchaToken(data.captchaToken);
-        setCaptchaQuestion(data.question);
-        setCaptchaAnswer("");
-        setCaptchaError(false);
-      }
-    } catch (e) {
-      console.error("Failed to load robot verification CAPTCHA:", e);
-    } finally {
-      setLoadingCaptcha(false);
-    }
+  const fetchCaptcha = () => {
+    const num1 = Math.floor(Math.random() * 10) + 1;
+    const num2 = Math.floor(Math.random() * 10) + 1;
+    setCaptchaQuestion(`What is ${num1} + ${num2}?`);
+    setExpectedCaptchaAnswer(num1 + num2);
+    setCaptchaAnswer("");
+    setCaptchaError(false);
   };
 
   useEffect(() => {
@@ -248,7 +238,7 @@ function ClientUploadPortal() {
   // Submit and Upload
   const handleUploadSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (selectedFiles.length === 0 || !captchaAnswer || !captchaToken) return;
+    if (selectedFiles.length === 0 || !captchaAnswer) return;
 
     setUploading(true);
     setUploadProgress(0);
@@ -256,76 +246,106 @@ function ClientUploadPortal() {
     setTimeRemaining(0);
     setUploadError(null);
 
-    const formData = new FormData();
-    formData.append("clientName", businessName);
-    formData.append("notes", notes);
-    formData.append("captchaToken", captchaToken);
-    formData.append("captchaAnswer", captchaAnswer);
+    // Verify Captcha local answer
+    if (parseInt(captchaAnswer.trim(), 10) !== expectedCaptchaAnswer) {
+      setCaptchaError(true);
+      setUploadError("Incorrect CAPTCHA puzzle answer. Please try again.");
+      setUploading(false);
+      fetchCaptcha();
+      return;
+    }
 
-    selectedFiles.forEach((sf) => {
-      formData.append("files", sf.file);
-    });
-
-    const xhr = new XMLHttpRequest();
     const startTime = Date.now();
+    try {
+      const timestamp = Math.round(new Date().getTime() / 1000);
+      const sigData = await generateCloudinarySignatureFn({ data: { timestamp } });
 
-    xhr.open("POST", `${API_URL}/api/public/assets/upload/${token}`);
-    
-    // Track upload progress
-    xhr.upload.onprogress = (event) => {
-      if (event.lengthComputable) {
-        const percent = Math.round((event.loaded / event.total) * 100);
-        setUploadProgress(percent);
+      let totalBytesUploaded = 0;
+      const totalSize = selectedFiles.reduce((sum, f) => sum + f.size, 0);
 
-        // Telemetry stats
-        const timePassed = (Date.now() - startTime) / 1000; // seconds
-        const speed = event.loaded / timePassed; // bytes per second
-        setUploadSpeed(speed);
+      for (let idx = 0; idx < selectedFiles.length; idx++) {
+        const sf = selectedFiles[idx];
+        
+        await new Promise<void>((resolve, reject) => {
+          const xhr = new XMLHttpRequest();
+          xhr.open("POST", `https://api.cloudinary.com/v1_1/${sigData.cloudName}/auto/upload`);
+          
+          xhr.upload.onprogress = (event) => {
+            if (event.lengthComputable) {
+              const fileUploaded = event.loaded;
+              const totalUploaded = totalBytesUploaded + fileUploaded;
+              const percent = Math.round((totalUploaded / totalSize) * 100);
+              setUploadProgress(percent);
 
-        const remainingBytes = event.total - event.loaded;
-        setTimeRemaining(speed > 0 ? remainingBytes / speed : 0);
+              const timePassed = (Date.now() - startTime) / 1000;
+              const speed = totalUploaded / timePassed;
+              setUploadSpeed(speed);
+
+              const remainingBytes = totalSize - totalUploaded;
+              setTimeRemaining(speed > 0 ? remainingBytes / speed : 0);
+            }
+          };
+
+          xhr.onload = async () => {
+            if (xhr.status >= 200 && xhr.status < 300) {
+              try {
+                const result = JSON.parse(xhr.responseText);
+                totalBytesUploaded += sf.size;
+
+                // Register in DB
+                await registerUploadedAssetFn({
+                  data: {
+                    requestId: (metadata as any).id,
+                    businessName: businessName,
+                    clientName: metadata?.clientName || businessName,
+                    email: metadata?.email || "",
+                    phone: metadata?.phone || "",
+                    originalFilename: sf.name,
+                    fileType: sf.type,
+                    mimeType: sf.file.type,
+                    fileSize: sf.size,
+                    cloudinaryUrl: result.secure_url,
+                    notes: notes
+                  }
+                });
+                resolve();
+              } catch (e: any) {
+                reject(new Error("Failed to register asset metadata in database."));
+              }
+            } else {
+              reject(new Error(`Upload failed: ${xhr.statusText || xhr.status}`));
+            }
+          };
+
+          xhr.onerror = () => reject(new Error("Network error during file upload."));
+
+          const clFormData = new FormData();
+          clFormData.append("file", sf.file);
+          clFormData.append("api_key", sigData.apiKey);
+          clFormData.append("timestamp", timestamp.toString());
+          clFormData.append("signature", sigData.signature);
+          clFormData.append("folder", sigData.folder);
+          xhr.send(clFormData);
+        });
       }
-    };
 
-    xhr.onload = () => {
+      setUploadReceipt({
+        receiptId: `RCPT-${Math.random().toString(36).substring(2, 10).toUpperCase()}`,
+        timestamp: new Date().toISOString(),
+        filesCount: selectedFiles.length,
+        totalSize
+      });
+      // Clean previews
+      selectedFiles.forEach(f => {
+        if (f.previewUrl) URL.revokeObjectURL(f.previewUrl);
+      });
+      setSelectedFiles([]);
+    } catch (err: any) {
+      setUploadError(err.message || "Failed to upload one or more files directly to Cloudinary.");
+      fetchCaptcha();
+    } finally {
       setUploading(false);
-      if (xhr.status === 200) {
-        try {
-          const res = JSON.parse(xhr.responseText);
-          setUploadReceipt({
-            receiptId: res.receiptId,
-            timestamp: new Date().toISOString(),
-            filesCount: selectedFiles.length,
-            totalSize: selectedFiles.reduce((sum, f) => sum + f.size, 0)
-          });
-          // Clean previews
-          selectedFiles.forEach(f => {
-            if (f.previewUrl) URL.revokeObjectURL(f.previewUrl);
-          });
-          setSelectedFiles([]);
-        } catch (e) {
-          setUploadError("Uploaded but failed to parse confirmation receipt.");
-        }
-      } else {
-        try {
-          const res = JSON.parse(xhr.responseText);
-          setUploadError(res.error || "Upload failed. Try again.");
-          if (res.error?.includes("CAPTCHA")) {
-            setCaptchaError(true);
-            fetchCaptcha();
-          }
-        } catch (e) {
-          setUploadError(`Failed with status code: ${xhr.status}`);
-        }
-      }
-    };
-
-    xhr.onerror = () => {
-      setUploading(false);
-      setUploadError("Network connection error during upload stream.");
-    };
-
-    xhr.send(formData);
+    }
   };
 
   const resetPortal = () => {
@@ -565,7 +585,7 @@ function ClientUploadPortal() {
                     onClick={fetchCaptcha}
                     className="h-8 w-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-white/60 hover:text-white transition active:rotate-45"
                   >
-                    {loadingCaptcha ? <Loader2 className="h-4 w-4 animate-spin text-[#a855f7]" /> : <RefreshCw className="h-3.5 w-3.5" />}
+                    <RefreshCw className="h-3.5 w-3.5" />
                   </button>
                 </div>
               </div>

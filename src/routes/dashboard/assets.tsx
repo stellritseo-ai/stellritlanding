@@ -31,8 +31,15 @@ export const Route = createFileRoute("/dashboard/assets")({
   component: AssetsPage,
 });
 
-const API_URL = import.meta.env.VITE_CHAT_API_URL ?? "http://localhost:3001";
-const ADMIN_TOKEN = import.meta.env.VITE_ADMIN_TOKEN ?? "stellr-admin-dev-2024";
+import {
+  getAssetRequestsFn,
+  createAssetRequestFn,
+  deleteAssetRequestFn,
+  getUploadedAssetsFn,
+  deleteUploadedAssetFn,
+  deleteFolderFn,
+  getProjectsFn,
+} from "@/lib/dashboard.functions.server";
 
 interface UploadedAsset {
   _id: string;
@@ -72,17 +79,18 @@ interface Project {
   businessName: string;
 }
 
-async function adminFetch<T>(path: string, opts?: RequestInit): Promise<T> {
-  const res = await fetch(`${API_URL}${path}`, {
-    headers: {
-      "Content-Type": "application/json",
-      "x-admin-token": ADMIN_TOKEN,
-    },
-    ...opts,
+const handleDownloadAll = (assets: UploadedAsset[]) => {
+  assets.forEach((asset) => {
+    const a = document.createElement("a");
+    a.href = asset.cloudinaryUrl;
+    a.download = asset.originalFilename;
+    a.target = "_blank";
+    a.rel = "noopener noreferrer";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
   });
-  if (!res.ok) throw new Error(`API ${res.status}: ${await res.text()}`);
-  return res.json() as Promise<T>;
-}
+};
 
 function formatSize(bytes: number) {
   if (bytes === 0) return "0 B";
@@ -133,13 +141,13 @@ function AssetsPage() {
     setLoading(true);
     try {
       const [assetsData, requestsData, projectsData] = await Promise.all([
-        adminFetch<UploadedAsset[]>("/api/admin/assets"),
-        adminFetch<AssetRequest[]>("/api/admin/assets/requests"),
-        adminFetch<Project[]>("/api/admin/projects").catch(() => []),
+        getUploadedAssetsFn(),
+        getAssetRequestsFn(),
+        getProjectsFn().catch(() => []),
       ]);
-      setAssets(assetsData);
-      setRequests(requestsData);
-      setProjects(projectsData);
+      setAssets(assetsData as any);
+      setRequests(requestsData as any);
+      setProjects(projectsData as any);
     } catch (err) {
       console.error("Error fetching assets metadata:", err);
     } finally {
@@ -149,23 +157,6 @@ function AssetsPage() {
 
   useEffect(() => {
     fetchData();
-
-    // Listen for SSE updates if present
-    const eventSource = new EventSource(`${API_URL}/api/stream?role=admin&token=${ADMIN_TOKEN}`);
-    eventSource.onmessage = (event) => {
-      try {
-        const payload = JSON.parse(event.data);
-        if (payload.type === "asset-uploaded") {
-          // Re-fetch list dynamically
-          fetchData();
-        }
-      } catch (err) {
-        console.error("SSE parse error:", err);
-      }
-    };
-    return () => {
-      eventSource.close();
-    };
   }, []);
 
   const handleCopyLink = (token: string) => {
@@ -182,14 +173,13 @@ function AssetsPage() {
 
     setIsCreatingLink(true);
     try {
-      await adminFetch("/api/admin/assets/requests", {
-        method: "POST",
-        body: JSON.stringify({
+      await createAssetRequestFn({
+        data: {
           businessName: newReqClient,
           clientName: newReqClient,
           maxUploadSize: Number(newReqMaxSize) * 1024 * 1024,
           allowedFileTypes: newReqAllowed,
-        }),
+        }
       });
 
       // Clear fields & refresh
@@ -217,16 +207,16 @@ function AssetsPage() {
 
     try {
       if (deleteConfirmTarget.type === "folder") {
-        await adminFetch(`/api/admin/assets/group/${encodeURIComponent(deleteConfirmTarget.idOrName)}`, {
-          method: "DELETE",
+        await deleteFolderFn({
+          data: { folderName: deleteConfirmTarget.idOrName }
         });
       } else if (deleteConfirmTarget.type === "request") {
-        await adminFetch(`/api/admin/assets/requests/${deleteConfirmTarget.idOrName}`, {
-          method: "DELETE",
+        await deleteAssetRequestFn({
+          data: { id: deleteConfirmTarget.idOrName }
         });
       } else {
-        await adminFetch(`/api/admin/assets/${deleteConfirmTarget.idOrName}`, {
-          method: "DELETE",
+        await deleteUploadedAssetFn({
+          data: { id: deleteConfirmTarget.idOrName }
         });
       }
       fetchData();
@@ -452,13 +442,13 @@ function AssetsPage() {
 
                     {/* Header Actions */}
                     <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
-                      <a 
-                        href={`${API_URL}/api/admin/assets/download-all/${encodeURIComponent(businessKey)}?token=${ADMIN_TOKEN}`}
+                      <button 
+                        onClick={() => handleDownloadAll(folder.assets)}
                         className="h-8 px-3.5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/5 flex items-center gap-1.5 text-[10px] font-bold text-white transition active:scale-95"
                       >
                         <Download className="h-3.5 w-3.5" />
-                        Download All (ZIP)
-                      </a>
+                        Download All files
+                      </button>
                       <button 
                         onClick={() => setDeleteConfirmTarget({ type: "folder", idOrName: businessKey })}
                         className="h-8 w-8 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/20 flex items-center justify-center text-rose-400 transition"

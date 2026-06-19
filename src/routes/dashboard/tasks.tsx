@@ -114,20 +114,13 @@ const TEAM_MEMBERS = [
 
 const COLUMNS: Task["status"][] = ["To Do", "Ongoing", "Done", "Work Failed", "Domain Book"];
 
-const API_URL = import.meta.env.VITE_CHAT_API_URL ?? "http://localhost:3001";
-const ADMIN_TOKEN = import.meta.env.VITE_ADMIN_TOKEN ?? "stellr-admin-dev-2024";
-
-async function adminFetch<T>(path: string, opts?: RequestInit): Promise<T> {
-  const res = await fetch(`${API_URL}${path}`, {
-    headers: {
-      "Content-Type": "application/json",
-      "x-admin-token": ADMIN_TOKEN,
-    },
-    ...opts,
-  });
-  if (!res.ok) throw new Error(`API ${res.status}: ${await res.text()}`);
-  return res.json() as Promise<T>;
-}
+import {
+  getTasksFn,
+  createTaskFn,
+  updateTaskFn,
+  deleteTaskFn,
+  getProjectsFn,
+} from "@/lib/dashboard.functions.server";
 
 function TasksPage() {
   const { theme } = useDashboardTheme();
@@ -199,10 +192,10 @@ function TasksPage() {
     setLoading(true);
     setError(null);
     try {
-      const fetchedTasks = await adminFetch<Task[]>("/api/admin/tasks");
-      const fetchedProjects = await adminFetch<ProjectBrief[]>("/api/admin/projects");
-      setTasks(fetchedTasks);
-      setProjects(fetchedProjects);
+      const fetchedTasks = await getTasksFn();
+      const fetchedProjects = await getProjectsFn();
+      setTasks(fetchedTasks as any);
+      setProjects(fetchedProjects as any);
     } catch (e: any) {
       setError(e.message || "Failed to sync board details with the MongoDB server.");
     } finally {
@@ -333,9 +326,8 @@ function TasksPage() {
         orderIndex: tasks.filter((t) => t.status === "To Do").length + 1
       };
 
-      const created = await adminFetch<Task>("/api/admin/tasks", {
-        method: "POST",
-        body: JSON.stringify(payload),
+      const created = await createTaskFn({
+        data: payload
       });
 
       setTasks((prev) => [created, ...prev]);
@@ -417,13 +409,15 @@ function TasksPage() {
     );
 
     try {
-      await adminFetch<Task>(`/api/admin/tasks/${taskId}`, {
-        method: "PUT",
-        body: JSON.stringify({
-          status: targetCol,
-          orderIndex: newOrder,
-          activityHistory: [...task.activityHistory, newLog]
-        }),
+      await updateTaskFn({
+        data: {
+          id: taskId,
+          update: {
+            status: targetCol,
+            orderIndex: newOrder,
+            activityHistory: [...task.activityHistory, newLog]
+          }
+        }
       });
       showToast(`Task moved to ${targetCol}`, "success");
     } catch (err: any) {
@@ -466,12 +460,14 @@ function TasksPage() {
     setNewCommentText("");
 
     try {
-      await adminFetch<Task>(`/api/admin/tasks/${selectedTask.id}`, {
-        method: "PUT",
-        body: JSON.stringify({
-          comments: updatedComments,
-          activityHistory: updatedHistory
-        }),
+      await updateTaskFn({
+        data: {
+          id: selectedTask.id,
+          update: {
+            comments: updatedComments,
+            activityHistory: updatedHistory
+          }
+        }
       });
       showToast("Comment posted", "success");
     } catch (err: any) {
@@ -507,12 +503,14 @@ function TasksPage() {
     );
 
     try {
-      await adminFetch<Task>(`/api/admin/tasks/${selectedTask.id}`, {
-        method: "PUT",
-        body: JSON.stringify({
-          checklist: updatedChecklist,
-          activityHistory: updatedHistory
-        }),
+      await updateTaskFn({
+        data: {
+          id: selectedTask.id,
+          update: {
+            checklist: updatedChecklist,
+            activityHistory: updatedHistory
+          }
+        }
       });
     } catch (err: any) {
       showToast("Failed to save checklist state to database.", "error");
@@ -550,12 +548,14 @@ function TasksPage() {
     setNewSubtaskText("");
 
     try {
-      await adminFetch<Task>(`/api/admin/tasks/${selectedTask.id}`, {
-        method: "PUT",
-        body: JSON.stringify({
-          checklist: updatedChecklist,
-          activityHistory: updatedHistory
-        }),
+      await updateTaskFn({
+        data: {
+          id: selectedTask.id,
+          update: {
+            checklist: updatedChecklist,
+            activityHistory: updatedHistory
+          }
+        }
       });
       showToast("Subtask added", "success");
     } catch (err: any) {
@@ -589,12 +589,14 @@ function TasksPage() {
     );
 
     try {
-      await adminFetch<Task>(`/api/admin/tasks/${selectedTask.id}`, {
-        method: "PUT",
-        body: JSON.stringify({
-          checklist: updatedChecklist,
-          activityHistory: updatedHistory
-        }),
+      await updateTaskFn({
+        data: {
+          id: selectedTask.id,
+          update: {
+            checklist: updatedChecklist,
+            activityHistory: updatedHistory
+          }
+        }
       });
       showToast("Subtask deleted", "info");
     } catch (err: any) {
@@ -607,8 +609,8 @@ function TasksPage() {
   const handleDeleteTask = async (taskId: string) => {
     setLoading(true);
     try {
-      await adminFetch(`/api/admin/tasks/${taskId}`, {
-        method: "DELETE",
+      await deleteTaskFn({
+        data: { id: taskId }
       });
       setTasks((prev) => prev.filter((t) => t.id !== taskId));
       if (activeTaskId === taskId) {
@@ -653,12 +655,14 @@ function TasksPage() {
     setNewAttachmentUrl("");
 
     try {
-      await adminFetch<Task>(`/api/admin/tasks/${selectedTask.id}`, {
-        method: "PUT",
-        body: JSON.stringify({
-          attachments: updatedAttach,
-          activityHistory: updatedHistory
-        }),
+      await updateTaskFn({
+        data: {
+          id: selectedTask.id,
+          update: {
+            attachments: updatedAttach,
+            activityHistory: updatedHistory
+          }
+        }
       });
       showToast("File attached successfully", "success");
     } catch (err: any) {

@@ -42,20 +42,14 @@ interface SiteConfig {
   maintenanceMode: boolean;
 }
 
-const API_URL = import.meta.env.VITE_CHAT_API_URL ?? "http://localhost:3001";
-const ADMIN_TOKEN = import.meta.env.VITE_ADMIN_TOKEN ?? "stellr-admin-dev-2024";
-
-async function adminFetch<T>(path: string, opts?: RequestInit): Promise<T> {
-  const res = await fetch(`${API_URL}${path}`, {
-    headers: {
-      "Content-Type": "application/json",
-      "x-admin-token": ADMIN_TOKEN,
-    },
-    ...opts,
-  });
-  if (!res.ok) throw new Error(`API ${res.status}: ${await res.text()}`);
-  return res.json() as Promise<T>;
-}
+import {
+  getSiteConfigFn,
+  updateSiteConfigFn,
+  getSitePagesFn,
+  createSitePageFn,
+  updateSitePageFn,
+  deleteSitePageFn,
+} from "@/lib/dashboard.functions.server";
 
 function WebsiteManagementPage() {
   const { theme } = useDashboardTheme();
@@ -105,11 +99,11 @@ function WebsiteManagementPage() {
   const loadData = async () => {
     setLoading(true);
     try {
-      const pagesData = await adminFetch<SitePage[]>("/api/admin/site-pages");
-      setPages(pagesData);
+      const pagesData = await getSitePagesFn();
+      setPages(pagesData as any);
       
-      const configData = await adminFetch<SiteConfig>("/api/admin/site-config");
-      setConfig(configData);
+      const configData = await getSiteConfigFn();
+      setConfig(configData as any);
       
       // Sync config editor fields
       if (configData) {
@@ -135,17 +129,16 @@ function WebsiteManagementPage() {
     e.preventDefault();
     setLoading(true);
     try {
-      const updated = await adminFetch<SiteConfig>("/api/admin/site-config", {
-        method: "PUT",
-        body: JSON.stringify({
+      const updated = await updateSiteConfigFn({
+        data: {
           productionUrl: configUrl,
           avgSeoRank: configSeo,
           keywordsTracked: Number(configKeywords),
           coreWebVitals: Number(configVitals),
           maintenanceMode: maintenanceMode
-        })
+        }
       });
-      setConfig(updated);
+      setConfig(updated as any);
       setMaintenanceMode(updated.maintenanceMode ?? false);
       setIsConfigEditing(false);
       showToast("Global website configuration updated!", "success");
@@ -160,13 +153,12 @@ function WebsiteManagementPage() {
     const nextVal = !maintenanceMode;
     setMaintenanceMode(nextVal);
     try {
-      const updated = await adminFetch<SiteConfig>("/api/admin/site-config", {
-        method: "PUT",
-        body: JSON.stringify({
+      const updated = await updateSiteConfigFn({
+        data: {
           maintenanceMode: nextVal
-        })
+        }
       });
-      setConfig(updated);
+      setConfig(updated as any);
       setMaintenanceMode(updated.maintenanceMode ?? false);
       showToast(
         nextVal 
@@ -214,18 +206,19 @@ function WebsiteManagementPage() {
       };
 
       if (editingPage) {
-        const updated = await adminFetch<SitePage>(`/api/admin/site-pages/${editingPage.id}`, {
-          method: "PUT",
-          body: JSON.stringify(payload)
+        const updated = await updateSitePageFn({
+          data: {
+            id: editingPage.id,
+            update: payload
+          }
         });
-        setPages((prev) => prev.map((p) => (p.id === updated.id ? updated : p)));
+        setPages((prev) => prev.map((p) => (p.id === updated.id ? (updated as any) : p)));
         showToast("Page route details updated successfully!", "success");
       } else {
-        const created = await adminFetch<SitePage>("/api/admin/site-pages", {
-          method: "POST",
-          body: JSON.stringify(payload)
+        const created = await createSitePageFn({
+          data: payload
         });
-        setPages((prev) => [...prev, created]);
+        setPages((prev) => [...prev, created as any]);
         showToast("New page route added successfully!", "success");
       }
       setIsFormOpen(false);
@@ -240,8 +233,8 @@ function WebsiteManagementPage() {
   const handleDeletePage = async (pageId: string) => {
     setLoading(true);
     try {
-      await adminFetch(`/api/admin/site-pages/${pageId}`, {
-        method: "DELETE"
+      await deleteSitePageFn({
+        data: { id: pageId }
       });
       setPages((prev) => prev.filter((p) => p.id !== pageId));
       showToast("Page route removed successfully.", "success");
