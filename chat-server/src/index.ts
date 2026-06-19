@@ -1083,6 +1083,18 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
+  // ── Health check for Render.com / uptime monitoring ──────────────────────
+  if (pathname === '/api/status' && req.method === 'GET') {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({
+      status: 'ok',
+      mode: isMongoOffline ? 'offline-fallback' : 'mongo',
+      uptime: process.uptime(),
+      timestamp: new Date().toISOString(),
+    }));
+    return;
+  }
+
   // Static file serving for uploads fallback
   if (pathname.startsWith('/public/uploads/')) {
     let filename = pathname.replace('/public/uploads/', '');

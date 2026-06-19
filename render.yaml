@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: stellrit-chat-server
+    runtime: docker
+    dockerfilePath: ./chat-server/Dockerfile
+    dockerContext: ./chat-server
+    plan: free
+    healthCheckPath: /api/status
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        sync: false          # Set this manually in Render dashboard
+      - key: ADMIN_SECRET_TOKEN
+        sync: false          # Set this manually in Render dashboard
+      - key: CLOUDINARY_CLOUD_NAME
+        sync: false
+      - key: CLOUDINARY_API_KEY
+        sync: false
+      - key: CLOUDINARY_API_SECRET
+        sync: false
