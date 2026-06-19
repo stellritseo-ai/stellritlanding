@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useDashboardTheme } from "../../hooks/useDashboardTheme";
+import { ConfirmModal } from "@/components/ConfirmModal";
 import { useState, useEffect, useMemo } from "react";
 import {
   Users,
@@ -141,6 +142,7 @@ function DashboardAdmin() {
 
   // Modal State
   const [addModalOpen, setAddModalOpen] = useState(false);
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
   const [newUserName, setNewUserName] = useState("");
   const [newUserEmail, setNewUserEmail] = useState("");
   const [newUserRole, setNewUserRole] = useState<"Super Admin" | "Developer" | "Analyst">("Developer");
@@ -318,18 +320,8 @@ function DashboardAdmin() {
     }
   };
 
-  const deleteUser = async (id: string) => {
-    if (!confirm(`Are you sure you want to revoke permissions for this operator?`)) return;
-    
-    // Optimistic UI update
-    setUsers((prev) => prev.filter((u) => u.id !== id));
-
-    try {
-      await deleteOperatorFn({ data: { id } });
-    } catch (err) {
-      console.error("Failed to revoke operator permissions:", err);
-      fetchOperators();
-    }
+  const deleteUser = (id: string) => {
+    setConfirmDeleteId(id);
   };
 
   const handleAddUser = async (e: React.FormEvent) => {
@@ -849,6 +841,32 @@ function DashboardAdmin() {
           </>
         )}
       </AnimatePresence>
+
+      <ConfirmModal
+        isOpen={confirmDeleteId !== null}
+        title="Revoke Operator Access"
+        message="Are you sure you want to revoke permissions for this operator? This will permanently disable their access to the StellR IT administration panel."
+        confirmText="Revoke Access"
+        cancelText="Cancel"
+        type="danger"
+        onConfirm={async () => {
+          if (confirmDeleteId) {
+            const id = confirmDeleteId;
+            setConfirmDeleteId(null);
+            
+            // Optimistic UI update
+            setUsers((prev) => prev.filter((u) => u.id !== id));
+
+            try {
+              await deleteOperatorFn({ data: { id } });
+            } catch (err) {
+              console.error("Failed to revoke operator permissions:", err);
+              fetchOperators();
+            }
+          }
+        }}
+        onCancel={() => setConfirmDeleteId(null)}
+      />
     </div>
   );
 }

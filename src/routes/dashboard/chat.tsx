@@ -73,6 +73,32 @@ function ChatPage() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const socketRef = useRef<any>(null);
 
+  // Keep a ref of sessions to avoid stale closures in socket callback
+  const sessionsRef = useRef<ChatSession[]>([]);
+  useEffect(() => {
+    sessionsRef.current = sessions;
+  }, [sessions]);
+
+  // Request browser notification permissions on mount
+  useEffect(() => {
+    if (typeof window !== "undefined" && "Notification" in window) {
+      if (Notification.permission === "default") {
+        Notification.requestPermission();
+      }
+    }
+  }, []);
+
+  // Helper to trigger native browser notification
+  const showNotification = useCallback((title: string, options?: NotificationOptions) => {
+    if (typeof window !== "undefined" && "Notification" in window && Notification.permission === "granted") {
+      try {
+        new Notification(title, options);
+      } catch (err) {
+        console.error("Error showing browser notification:", err);
+      }
+    }
+  }, []);
+
   // ── Fetch all sessions ──────────────────────────────────────────────────
   const fetchSessions = useCallback(async () => {
     setSessionsLoading(true);
@@ -112,11 +138,28 @@ function ChatPage() {
             if (sess) setActiveSession(sess);
           });
         }
+
+        // Notify if it is a new chat visitor or message in a background session
+        const currentSessions = sessionsRef.current;
+        const existingSession = currentSessions.find((s) => s.id === sessionId);
+
+        if (!existingSession) {
+          showNotification("New Chat Visitor", {
+            body: message.text || "A new visitor has initiated a live chat.",
+            icon: "/favicon.ico",
+          });
+          fetchSessions();
+        } else if (sessionId !== activeSessionId) {
+          showNotification(`New message from ${existingSession.visitorName}`, {
+            body: message.text,
+            icon: "/favicon.ico",
+          });
+        }
+
         // Bump the session to top of list with unread badge, or fetch all if it is a new chat
         setSessions((prev) => {
           const exists = prev.some((s) => s.id === sessionId);
           if (!exists) {
-            fetchSessions();
             return prev;
           }
           return prev.map((s) =>
@@ -134,7 +177,7 @@ function ChatPage() {
 
       return () => { socket.disconnect(); };
     });
-  }, [activeSessionId, fetchSessions]);
+  }, [activeSessionId, fetchSessions, showNotification]);
 
   // Poll database every 5 seconds to sync new chats automatically
   useEffect(() => {

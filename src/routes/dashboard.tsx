@@ -1,5 +1,6 @@
 import { createFileRoute, Link, Outlet, redirect, useNavigate } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
+import { ConfirmModal } from "@/components/ConfirmModal";
 import {
   LayoutDashboard,
   ShieldAlert,
@@ -44,12 +45,9 @@ export const Route = createFileRoute("/dashboard")({
 
 function DashboardLayout() {
   const navigate = useNavigate();
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const handleLogout = () => {
-    if (confirm("Are you sure you want to log out?")) {
-      localStorage.removeItem("stellr_admin_token");
-      localStorage.removeItem("stellr_admin_user");
-      navigate({ to: "/login" });
-    }
+    setShowLogoutConfirm(true);
   };
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -651,6 +649,22 @@ function DashboardLayout() {
           </>
         )}
       </AnimatePresence>
+
+      <ConfirmModal
+        isOpen={showLogoutConfirm}
+        title="Confirm Log Out"
+        message="Are you sure you want to log out of your session? You will need to enter your admin token to log back in."
+        confirmText="Log Out"
+        cancelText="Cancel"
+        type="warning"
+        onConfirm={() => {
+          setShowLogoutConfirm(false);
+          localStorage.removeItem("stellr_admin_token");
+          localStorage.removeItem("stellr_admin_user");
+          navigate({ to: "/login" });
+        }}
+        onCancel={() => setShowLogoutConfirm(false)}
+      />
     </div>
   );
 }
