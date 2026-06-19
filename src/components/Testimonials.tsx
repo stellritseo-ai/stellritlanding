@@ -284,7 +284,9 @@ function Word({
   const opacity = useTransform(progress, range, [0.2, 1]);
   return (
     <span className="relative mr-[0.25em] inline-block">
-      <span className="text-white/15">{children}</span>
+      <span className={`inline-block text-white/15 ${isHighlight ? "italic font-serif font-normal" : ""}`}>
+        {children}
+      </span>
       <motion.span
         className={`absolute left-0 top-0 inline-block ${isHighlight ? "italic font-serif font-normal" : "text-white"}`}
         style={{

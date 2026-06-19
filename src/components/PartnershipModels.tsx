@@ -9,9 +9,9 @@ const MODELS = [
     name: "Dedicated Sprint",
     tagline: "High-velocity product squads",
     icon: Zap,
-    budget: "$12,500",
-    budgetPeriod: "/ week",
-    timeline: "2 - 6 weeks",
+    budget: "$5000",
+    budgetPeriod: "/ Month",
+    timeline: "1 - 3 Month",
     timelineDetail: "average duration",
     team: "1 Lead Designer, 2 Senior Engineers, 1 PM",
     description: "Get an elite product squad focused exclusively on your highest-priority goals. Zero overhead, rapid prototyping, and daily shipping.",
@@ -32,11 +32,11 @@ const MODELS = [
     name: "Project Build",
     tagline: "End-to-end craft from scratch",
     icon: Award,
-    budget: "$45,000",
-    budgetPeriod: "starting from",
-    timeline: "8 - 12 weeks",
+    budget: "$700",
+    budgetPeriod: "Starting from",
+    timeline: "1 - 2 weeks",
     timelineDetail: "average duration",
-    team: "Full-stack squad tailored to target scope",
+    team: "1 Designer & 1 Engineer",
     description: "Best for brand-new platforms, product launches, or complete design transformations. We discover, map the strategy, design, and engineer.",
     features: [
       "In-depth market research & competitive audit",
@@ -55,11 +55,11 @@ const MODELS = [
     name: "Monthly Retainer",
     tagline: "Continuous growth & optimization",
     icon: Layers,
-    budget: "$8,000",
+    budget: "$3,000",
     budgetPeriod: "/ month minimum",
-    timeline: "3 Months",
+    timeline: "1 Months",
     timelineDetail: "minimum term",
-    team: "Dedicated hours across design & engineering",
+    team: "1 Designer & 1 Engineer",
     description: "For scaling brands requiring ongoing campaign assets, marketing pages, conversion rate optimization (CRO), and continuous feature additions.",
     features: [
       "Guaranteed monthly creative & technical capacity",
@@ -108,8 +108,8 @@ export default function PartnershipModels() {
         </div>
 
         {/* Apple-style Dock Tab Selector */}
-          <div className="mt-3 flex justify-start overflow-x-auto pb-2">
-            <div className="p-1.5 bg-[#171127]/60 border border-white/[0.04] backdrop-blur-xl rounded-full flex gap-1 flex-shrink-0">
+        <div className="mt-3 flex justify-start overflow-x-auto pb-2">
+          <div className="p-1.5 bg-[#171127]/60 border border-white/[0.04] backdrop-blur-xl rounded-full flex gap-1 flex-shrink-0">
             {MODELS.map((model) => {
               const Icon = model.icon;
               const isActive = model.id === activeTab;
