@@ -273,7 +273,7 @@ function ChatPage() {
             ? "border-white/5 bg-[#12052c]/65 shadow-2xl"
             : "border-slate-200/60 bg-white shadow-sm"
         }`}
-        style={{ height: "calc(100vh - 220px)", minHeight: "520px" }}
+        style={{ height: "calc(100vh - 275px)", minHeight: "400px" }}
       >
         {/* ── Left: Sessions list ─────────────────────────────────────── */}
         <div
