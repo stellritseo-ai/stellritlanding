@@ -73,6 +73,22 @@ function ChatPage() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const socketRef = useRef<any>(null);
 
+  // ── Fetch all sessions ──────────────────────────────────────────────────
+  const fetchSessions = useCallback(async () => {
+    setSessionsLoading(true);
+    setSessionsError(null);
+    try {
+      const data = await getAllChatSessionsFn();
+      setSessions(data);
+    } catch (err) {
+      setSessionsError(err instanceof Error ? err.message : "Failed to load chats");
+    } finally {
+      setSessionsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => { fetchSessions(); }, [fetchSessions]);
+
   // ── Auto-scroll ─────────────────────────────────────────────────────────
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
@@ -131,21 +147,7 @@ function ChatPage() {
     return () => clearInterval(interval);
   }, []);
 
-  // ── Fetch all sessions ──────────────────────────────────────────────────
-  const fetchSessions = useCallback(async () => {
-    setSessionsLoading(true);
-    setSessionsError(null);
-    try {
-      const data = await getAllChatSessionsFn();
-      setSessions(data);
-    } catch (err) {
-      setSessionsError(err instanceof Error ? err.message : "Failed to load chats");
-    } finally {
-      setSessionsLoading(false);
-    }
-  }, []);
 
-  useEffect(() => { fetchSessions(); }, [fetchSessions]);
 
   // ── 3-second polling (same as JRM) ─────────────────────────────────────
   useEffect(() => {
