@@ -262,6 +262,25 @@ if (mongoose.models.Operator) {
 }
 export const OperatorModel = mongoose.model("Operator", OperatorSchema);
 
+// ── Team Chat Message schema ───────────────────────────────────────────────────
+const TeamChatMessageSchema = new mongoose.Schema(
+  {
+    senderId: { type: String, required: true, index: true },
+    recipientId: { type: String, required: true, index: true },
+    text: { type: String, default: "" },
+    fileUrl: { type: String, default: "" },
+    fileType: { type: String, enum: ["image", "video", "document", ""], default: "" },
+    fileName: { type: String, default: "" },
+    readAt: { type: Date, default: null },
+  },
+  { timestamps: true }
+);
+
+export const TeamChatMessageModel =
+  mongoose.models.TeamChatMessage ||
+  mongoose.model("TeamChatMessage", TeamChatMessageSchema);
+
+
 // ── Website Email schema ───────────────────────────────────────────────────
 const WebsiteEmailSchema = new mongoose.Schema(
   {

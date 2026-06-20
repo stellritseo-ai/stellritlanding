@@ -17,6 +17,7 @@ import {
   Users2,
   Settings,
   MessageSquare,
+  MessageCircle,
   Globe,
   Sun,
   Moon,
@@ -27,6 +28,7 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import logoImg from "@/assets/logo.png";
 import { DashboardThemeContext } from "../hooks/useDashboardTheme";
+import { getCurrentOperatorFn } from "@/lib/chat.functions.server";
 
 export const Route = createFileRoute("/dashboard")({
   beforeLoad: ({ location }) => {
@@ -102,6 +104,117 @@ function DashboardLayout() {
       document.documentElement.classList.remove("dark");
     }
   }, [theme]);
+
+  // Establish background socket connection for operator presence & notifications
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    // Request notification permission
+    if ("Notification" in window && Notification.permission === "default") {
+      Notification.requestPermission();
+    }
+
+    let activeSocket: any = null;
+
+    const initSocket = async () => {
+      try {
+        const token = localStorage.getItem("stellr_admin_token") || "";
+        if (!token) return;
+
+        const me = await (getCurrentOperatorFn as any)({ data: { token } });
+        if (!me || !me.id) return;
+
+        const { io } = await import("socket.io-client");
+        const RELAY_URL = import.meta.env.VITE_RELAY_URL ?? "http://localhost:3001";
+        const socket = io(RELAY_URL);
+        activeSocket = socket;
+
+        socket.on("connect", () => {
+          // Keep user online
+          socket.emit("user-online", me.id);
+          // Join user personal room
+          socket.emit("join-user", me.id);
+          // Join admin room for visitor live chat & email notifications
+          socket.emit("join-admin");
+        });
+
+        // Listen for new team chat messages
+        socket.on("receive-team-message", (msg: any) => {
+          if (msg && msg.senderId !== me.id) {
+            // Check if operator is on the team-chat screen and looking at it
+            const isTeamChatVisible = window.location.pathname === "/dashboard/team-chat" && document.visibilityState === "visible";
+            if (!isTeamChatVisible) {
+              if ("Notification" in window && Notification.permission === "granted") {
+                try {
+                  new Notification("New team message", {
+                    body: msg.text || "Shared a file in team chat",
+                    icon: "/favicon.ico",
+                  });
+                } catch (err) {
+                  console.error("Error displaying team chat browser notification:", err);
+                }
+              }
+            }
+          }
+        });
+
+        const handleVisitorMsg = (msg: any) => {
+          const isLiveChatVisible = window.location.pathname === "/dashboard/chat" && document.visibilityState === "visible";
+          if (!isLiveChatVisible && msg) {
+            if (msg.senderType === 'admin' || msg.sender === 'admin') return;
+            const text = msg.message || msg.text || "A website visitor sent a live chat message.";
+
+            if ("Notification" in window && Notification.permission === "granted") {
+              try {
+                new Notification("New Live Chat Message", {
+                  body: text,
+                  icon: "/favicon.ico",
+                });
+              } catch (err) {
+                console.error("Error displaying visitor live chat notification:", err);
+              }
+            }
+          }
+        };
+
+        // Listen for visitor live chat messages (relay fallback / chat-server)
+        socket.on("visitor-message", (data: any) => {
+          handleVisitorMsg(data?.message || data);
+        });
+
+        socket.on("new-message", (msg: any) => {
+          handleVisitorMsg(msg);
+        });
+
+        // Listen for new website lead/email submissions
+        socket.on("receive-new-email", (data: any) => {
+          const isEmailsVisible = window.location.pathname === "/dashboard/emails" && document.visibilityState === "visible";
+          if (!isEmailsVisible && data && data.email) {
+            if ("Notification" in window && Notification.permission === "granted") {
+              try {
+                new Notification(`New Website Lead (${data.email.type})`, {
+                  body: `From: ${data.email.name || data.email.email}\nInquiry: ${data.email.message || "Newsletter Signup"}`,
+                  icon: "/favicon.ico",
+                });
+              } catch (err) {
+                console.error("Error displaying email lead notification:", err);
+              }
+            }
+          }
+        });
+      } catch (err) {
+        console.error("Failed to initialize background socket connection:", err);
+      }
+    };
+
+    initSocket();
+
+    return () => {
+      if (activeSocket) {
+        activeSocket.disconnect();
+      }
+    };
+  }, []);
 
   const toggleTheme = () => setTheme((t) => (t === "dark" ? "light" : "dark"));
 
@@ -192,6 +305,11 @@ function DashboardLayout() {
       icon: MessageSquare,
     },
     {
+      to: "/dashboard/team-chat",
+      label: "Team Chat",
+      icon: MessageCircle,
+    },
+    {
       to: "/dashboard/emails",
       label: "Website Email",
       icon: Mail,
@@ -221,11 +339,13 @@ function DashboardLayout() {
           "/dashboard/clients",
           "/dashboard/chat",
           "/dashboard/emails",
+          "/dashboard/team-chat",
         ].includes(item.to);
       }
       if (userRole === "Developer") {
         return [
           "/dashboard/tasks",
+          "/dashboard/team-chat",
         ].includes(item.to);
       }
       return false;
@@ -244,6 +364,7 @@ function DashboardLayout() {
         "/dashboard/clients",
         "/dashboard/chat",
         "/dashboard/emails",
+        "/dashboard/team-chat",
       ];
       if (currentPath === "/dashboard" || currentPath === "/dashboard/") return true;
       return managerAllowedPaths.includes(currentPath);
@@ -251,6 +372,7 @@ function DashboardLayout() {
     if (userRole === "Developer") {
       const developerAllowedPaths = [
         "/dashboard/tasks",
+        "/dashboard/team-chat",
       ];
       if (currentPath === "/dashboard" || currentPath === "/dashboard/") return true;
       return developerAllowedPaths.includes(currentPath);

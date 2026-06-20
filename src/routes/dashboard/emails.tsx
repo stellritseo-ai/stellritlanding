@@ -77,6 +77,38 @@ function WebsiteEmailsPage() {
     fetchEmails();
   }, [fetchEmails]);
 
+  // Real-time listener for inbound website emails/leads
+  useEffect(() => {
+    let activeSocket: any = null;
+
+    import("socket.io-client").then(({ io }) => {
+      const RELAY_URL = import.meta.env.VITE_RELAY_URL ?? "http://localhost:3001";
+      const socket = io(RELAY_URL);
+      activeSocket = socket;
+
+      socket.on("connect", () => {
+        // Join admin notification room
+        socket.emit("join-admin");
+      });
+
+      socket.on("receive-new-email", (data: { email: WebsiteEmail }) => {
+        if (data && data.email) {
+          setEmails((prev) => {
+            // Avoid duplicates
+            if (prev.some((e) => e.id === data.email.id)) return prev;
+            return [data.email, ...prev];
+          });
+        }
+      });
+    });
+
+    return () => {
+      if (activeSocket) {
+        activeSocket.disconnect();
+      }
+    };
+  }, []);
+
   // Handle Delete
   const handleDelete = async () => {
     if (!deleteId) return;

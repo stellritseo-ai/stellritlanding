@@ -74,8 +74,43 @@ export function setupSocketHandlers(io: Server): void {
       }
     );
 
+    socket.on('join-user', (userId: string) => {
+      socket.join(`user:${userId}`);
+      console.log(`[Socket] User ${socket.id} joined user:${userId}`);
+    });
+
+    socket.on('send-team-message', (data: { senderId: string; recipientId: string; message: any }) => {
+      io.to(`user:${data.recipientId}`).emit('receive-team-message', data.message);
+      io.to(`user:${data.senderId}`).emit('receive-team-message', data.message);
+      console.log(`[Socket] Team message relayed from ${data.senderId} to ${data.recipientId}`);
+    });
+
+    socket.on('new-email', (data: any) => {
+      io.to('admin').emit('receive-new-email', data);
+      console.log(`[Socket] New email lead received: ${data?.email?.email}`);
+    });
+
+    socket.on('user-online', (userId: string) => {
+      (socket as any).userId = userId;
+      const onlineUsers = new Set<string>();
+      for (const [_, s] of io.sockets.sockets) {
+        if ((s as any).userId) {
+          onlineUsers.add((s as any).userId);
+        }
+      }
+      io.emit('presence-update', Array.from(onlineUsers));
+      console.log(`👤 Operator online: ${userId}`);
+    });
+
     socket.on('disconnect', () => {
       console.log(`❌ Socket disconnected: ${socket.id}`);
+      const onlineUsers = new Set<string>();
+      for (const [_, s] of io.sockets.sockets) {
+        if ((s as any).userId && s.id !== socket.id) {
+          onlineUsers.add((s as any).userId);
+        }
+      }
+      io.emit('presence-update', Array.from(onlineUsers));
     });
   });
 }

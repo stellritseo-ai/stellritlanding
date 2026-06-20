@@ -241,3 +241,90 @@ export const verifyAdminTokenFn = createServerFn({ method: "POST" }).handler(
     return { valid: true, id: user._id.toString(), username: user.username, role: user.role };
   }
 );
+
+// ── Team Chat: get current operator profile ───────────────────────────────────
+export const getCurrentOperatorFn = createServerFn({ method: "POST" }).handler(
+  async ({ data }: { data: { token: string } }) => {
+    const { connectDB, OperatorModel } = await import("./db.server");
+    await connectDB();
+    if (!data.token) return null;
+    const user = await OperatorModel.findOne({ sessionToken: data.token, status: "Active" }).lean();
+    if (!user) return null;
+    return {
+      id: user._id.toString(),
+      name: user.name,
+      username: user.username,
+      email: user.email,
+      role: user.role,
+    };
+  }
+);
+
+// ── Team Chat: get message history ────────────────────────────────────────────
+export const getTeamChatMessagesFn = createServerFn({ method: "POST" }).handler(
+  async ({ data }: { data: { senderId: string; recipientId: string } }) => {
+    const { connectDB, TeamChatMessageModel } = await import("./db.server");
+    await connectDB();
+    const messages = await TeamChatMessageModel.find({
+      $or: [
+        { senderId: data.senderId, recipientId: data.recipientId },
+        { senderId: data.recipientId, recipientId: data.senderId },
+      ]
+    }).sort({ createdAt: 1 }).lean();
+    
+    return messages.map((m: any) => ({
+      id: m._id.toString(),
+      senderId: m.senderId,
+      recipientId: m.recipientId,
+      text: m.text || "",
+      fileUrl: m.fileUrl || "",
+      fileType: m.fileType || "",
+      fileName: m.fileName || "",
+      createdAt: m.createdAt.toISOString(),
+      readAt: m.readAt ? m.readAt.toISOString() : null,
+    }));
+  }
+);
+
+// ── Team Chat: send message ───────────────────────────────────────────────────
+export const sendTeamChatMessageFn = createServerFn({ method: "POST" }).handler(
+  async ({ data }: { data: { senderId: string; recipientId: string; text?: string; fileUrl?: string; fileType?: string; fileName?: string } }) => {
+    const { connectDB, TeamChatMessageModel } = await import("./db.server");
+    await connectDB();
+    const msg = new TeamChatMessageModel({
+      senderId: data.senderId,
+      recipientId: data.recipientId,
+      text: data.text || "",
+      fileUrl: data.fileUrl || "",
+      fileType: data.fileType || "",
+      fileName: data.fileName || "",
+      readAt: null,
+    });
+    await msg.save();
+    return {
+      id: msg._id.toString(),
+      senderId: msg.senderId,
+      recipientId: msg.recipientId,
+      text: msg.text || "",
+      fileUrl: msg.fileUrl || "",
+      fileType: msg.fileType || "",
+      fileName: msg.fileName || "",
+      createdAt: msg.createdAt.toISOString(),
+      readAt: null,
+    };
+  }
+);
+
+// ── Team Chat: mark messages as read ──────────────────────────────────────────
+export const markTeamChatReadFn = createServerFn({ method: "POST" }).handler(
+  async ({ data }: { data: { senderId: string; recipientId: string } }) => {
+    const { connectDB, TeamChatMessageModel } = await import("./db.server");
+    await connectDB();
+    await TeamChatMessageModel.updateMany(
+      { senderId: data.recipientId, recipientId: data.senderId, readAt: null },
+      { readAt: new Date() }
+    );
+    return { success: true };
+  }
+);
+

@@ -610,6 +610,29 @@ export const submitWebsiteEmailFn = createServerFn({ method: "POST" }).handler(
       "Website Visitor"
     );
 
+    // Emit socket event to notify admins
+    try {
+      const { io } = await import("socket.io-client");
+      const RELAY_URL = process.env.VITE_RELAY_URL || "http://localhost:3001";
+      const socket = io(RELAY_URL);
+      socket.on("connect", () => {
+        socket.emit("new-email", {
+          email: {
+            id: emailDoc._id.toString(),
+            name: emailDoc.name || "",
+            email: emailDoc.email,
+            type: emailDoc.type,
+            submittedAt: emailDoc.submittedAt,
+            service: emailDoc.service || "",
+            message: emailDoc.message || "",
+          }
+        });
+        setTimeout(() => socket.disconnect(), 500);
+      });
+    } catch (err) {
+      console.error("Failed to emit new-email socket event:", err);
+    }
+
     return mapDoc(emailDoc);
   }
 );

@@ -24,6 +24,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard/index'
 import { Route as CaseStudiesIndexRouteImport } from './routes/case-studies.index'
 import { Route as UploadTokenRouteImport } from './routes/upload.$token'
+import { Route as DashboardTeamChatRouteImport } from './routes/dashboard/team-chat'
 import { Route as DashboardTasksRouteImport } from './routes/dashboard/tasks'
 import { Route as DashboardSettingsRouteImport } from './routes/dashboard/settings'
 import { Route as DashboardProjectsRouteImport } from './routes/dashboard/projects'
@@ -111,6 +112,11 @@ const UploadTokenRoute = UploadTokenRouteImport.update({
   path: '/upload/$token',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DashboardTeamChatRoute = DashboardTeamChatRouteImport.update({
+  id: '/team-chat',
+  path: '/team-chat',
+  getParentRoute: () => DashboardRoute,
+} as any)
 const DashboardTasksRoute = DashboardTasksRouteImport.update({
   id: '/tasks',
   path: '/tasks',
@@ -191,6 +197,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/projects': typeof DashboardProjectsRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
   '/dashboard/tasks': typeof DashboardTasksRoute
+  '/dashboard/team-chat': typeof DashboardTeamChatRoute
   '/upload/$token': typeof UploadTokenRoute
   '/case-studies/': typeof CaseStudiesIndexRoute
   '/dashboard/': typeof DashboardIndexRoute
@@ -217,6 +224,7 @@ export interface FileRoutesByTo {
   '/dashboard/projects': typeof DashboardProjectsRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
   '/dashboard/tasks': typeof DashboardTasksRoute
+  '/dashboard/team-chat': typeof DashboardTeamChatRoute
   '/upload/$token': typeof UploadTokenRoute
   '/case-studies': typeof CaseStudiesIndexRoute
   '/dashboard': typeof DashboardIndexRoute
@@ -246,6 +254,7 @@ export interface FileRoutesById {
   '/dashboard/projects': typeof DashboardProjectsRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
   '/dashboard/tasks': typeof DashboardTasksRoute
+  '/dashboard/team-chat': typeof DashboardTeamChatRoute
   '/upload/$token': typeof UploadTokenRoute
   '/case-studies/': typeof CaseStudiesIndexRoute
   '/dashboard/': typeof DashboardIndexRoute
@@ -276,6 +285,7 @@ export interface FileRouteTypes {
     | '/dashboard/projects'
     | '/dashboard/settings'
     | '/dashboard/tasks'
+    | '/dashboard/team-chat'
     | '/upload/$token'
     | '/case-studies/'
     | '/dashboard/'
@@ -302,6 +312,7 @@ export interface FileRouteTypes {
     | '/dashboard/projects'
     | '/dashboard/settings'
     | '/dashboard/tasks'
+    | '/dashboard/team-chat'
     | '/upload/$token'
     | '/case-studies'
     | '/dashboard'
@@ -330,6 +341,7 @@ export interface FileRouteTypes {
     | '/dashboard/projects'
     | '/dashboard/settings'
     | '/dashboard/tasks'
+    | '/dashboard/team-chat'
     | '/upload/$token'
     | '/case-studies/'
     | '/dashboard/'
@@ -458,6 +470,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof UploadTokenRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/dashboard/team-chat': {
+      id: '/dashboard/team-chat'
+      path: '/team-chat'
+      fullPath: '/dashboard/team-chat'
+      preLoaderRoute: typeof DashboardTeamChatRouteImport
+      parentRoute: typeof DashboardRoute
+    }
     '/dashboard/tasks': {
       id: '/dashboard/tasks'
       path: '/tasks'
@@ -563,6 +582,7 @@ interface DashboardRouteChildren {
   DashboardProjectsRoute: typeof DashboardProjectsRoute
   DashboardSettingsRoute: typeof DashboardSettingsRoute
   DashboardTasksRoute: typeof DashboardTasksRoute
+  DashboardTeamChatRoute: typeof DashboardTeamChatRoute
   DashboardIndexRoute: typeof DashboardIndexRoute
 }
 
@@ -577,6 +597,7 @@ const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardProjectsRoute: DashboardProjectsRoute,
   DashboardSettingsRoute: DashboardSettingsRoute,
   DashboardTasksRoute: DashboardTasksRoute,
+  DashboardTeamChatRoute: DashboardTeamChatRoute,
   DashboardIndexRoute: DashboardIndexRoute,
 }
 

@@ -34,8 +34,43 @@ io.on("connection", (socket) => {
     }
   });
 
+  socket.on("join-user", (userId) => {
+    socket.join(`user:${userId}`);
+    console.log(`[Socket] User ${socket.id} joined user:${userId}`);
+  });
+
+  socket.on("send-team-message", ({ senderId, recipientId, message }) => {
+    io.to(`user:${recipientId}`).emit("receive-team-message", message);
+    io.to(`user:${senderId}`).emit("receive-team-message", message);
+    console.log(`[Socket] Team message relayed from ${senderId} to ${recipientId}`);
+  });
+
+  socket.on("new-email", (data) => {
+    io.to("admin-room").emit("receive-new-email", data);
+    console.log(`[Socket] New email lead received: ${data?.email?.email}`);
+  });
+
+  socket.on("user-online", (userId) => {
+    socket.userId = userId;
+    const onlineUsers = new Set();
+    for (const [_, s] of io.sockets.sockets) {
+      if (s.userId) {
+        onlineUsers.add(s.userId);
+      }
+    }
+    io.emit("presence-update", Array.from(onlineUsers));
+    console.log(`[Presence] User online: ${userId}`);
+  });
+
   socket.on("disconnect", () => {
     console.log(`[Socket] Disconnected: ${socket.id}`);
+    const onlineUsers = new Set();
+    for (const [_, s] of io.sockets.sockets) {
+      if (s.userId && s.id !== socket.id) {
+        onlineUsers.add(s.userId);
+      }
+    }
+    io.emit("presence-update", Array.from(onlineUsers));
   });
 });
 
