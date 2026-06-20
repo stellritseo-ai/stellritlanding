@@ -14,7 +14,7 @@ const MENU_IMAGES: Record<string, string> = {
   "Contact": "https://images.unsplash.com/photo-1423666639041-f56000c27a9a?w=600&q=80&auto=format&fit=crop",
 };
 const DEFAULT_IMAGE = "https://images.unsplash.com/photo-1542744094-3a31f103e35f?w=600&q=80&auto=format&fit=crop";
-const DEFAULT_VIDEO = "https://res.cloudinary.com/dmanafb84/video/upload/f_auto:video,q_auto/ISA_FLOR_04__444_enp2ps";
+const DEFAULT_VIDEO = "https://isadoradigitalagency.com/wp-content/uploads/2025/04/ISA_FLOR_04__444.webm";
 
 
 const NAV: { label: string; to: string; children?: { label: string; to: string }[] }[] = [
