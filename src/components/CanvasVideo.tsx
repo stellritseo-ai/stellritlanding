@@ -56,10 +56,10 @@ export function CanvasVideo({ src, className }: CanvasVideoProps) {
 
       // Check if video is loaded and ready
       if (video.readyState >= 2 && video.videoWidth > 0 && video.videoHeight > 0) {
-        // Downscale video frames on canvas to optimize luma key performance
+        // Render at a higher resolution (max 960px width) for Retina screens
         let targetWidth = video.videoWidth;
         let targetHeight = video.videoHeight;
-        const maxDim = 480;
+        const maxDim = 960;
         if (targetWidth > maxDim) {
           const ratio = maxDim / targetWidth;
           targetWidth = maxDim;
@@ -77,17 +77,23 @@ export function CanvasVideo({ src, className }: CanvasVideoProps) {
           // Apply luma key to key out black background to true transparent pixels
           const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
           const data = imgData.data;
-          for (let i = 0; i < data.length; i += 4) {
+          const len = data.length;
+          
+          for (let i = 0; i < len; i += 4) {
             const r = data[i];
             const g = data[i + 1];
             const b = data[i + 2];
             
-            // Calculate brightness (luminance)
-            const luma = 0.299 * r + 0.587 * g + 0.114 * b;
+            // Fast-path: skip calculations for background pixels (which make up ~70% of frames)
+            if (r < 10 && g < 10 && b < 10) {
+              data[i + 3] = 0; // Fully transparent
+              continue;
+            }
             
-            if (luma < 10) {
-              data[i + 3] = 0; // Pure black = transparent
-            } else if (luma < 30) {
+            // Fast integer math approximation of luminance: (r * 0.299 + g * 0.587 + b * 0.114)
+            const luma = (r * 77 + g * 150 + b * 29) >> 8;
+            
+            if (luma < 30) {
               data[i + 3] = ((luma - 10) / 20) * 255; // Smooth edge blending
             }
           }
