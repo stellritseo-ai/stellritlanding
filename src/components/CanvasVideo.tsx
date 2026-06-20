@@ -51,16 +51,42 @@ export function CanvasVideo({ src, className }: CanvasVideoProps) {
     const render = () => {
       if (video.paused || video.ended) return;
 
-      // Match canvas size to video size if different
-      if (canvas.width !== video.videoWidth || canvas.height !== video.videoHeight) {
-        if (video.videoWidth && video.videoHeight) {
-          canvas.width = video.videoWidth;
-          canvas.height = video.videoHeight;
-        }
+      // Downscale video frames on canvas to optimize luma key performance
+      let targetWidth = video.videoWidth || 480;
+      let targetHeight = video.videoHeight || 300;
+      const maxDim = 480;
+      if (targetWidth > maxDim) {
+        const ratio = maxDim / targetWidth;
+        targetWidth = maxDim;
+        targetHeight = Math.round(targetHeight * ratio);
+      }
+
+      if (canvas.width !== targetWidth || canvas.height !== targetHeight) {
+        canvas.width = targetWidth;
+        canvas.height = targetHeight;
       }
 
       if (canvas.width > 0 && canvas.height > 0) {
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+        // Apply luma key to key out black background to true transparent pixels
+        const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const data = imgData.data;
+        for (let i = 0; i < data.length; i += 4) {
+          const r = data[i];
+          const g = data[i + 1];
+          const b = data[i + 2];
+          
+          // Calculate brightness (luminance)
+          const luma = 0.299 * r + 0.587 * g + 0.114 * b;
+          
+          if (luma < 10) {
+            data[i + 3] = 0; // Pure black = transparent
+          } else if (luma < 30) {
+            data[i + 3] = ((luma - 10) / 20) * 255; // Smooth edge blending
+          }
+        }
+        ctx.putImageData(imgData, 0, 0);
       }
 
       animationFrameId = requestAnimationFrame(render);
