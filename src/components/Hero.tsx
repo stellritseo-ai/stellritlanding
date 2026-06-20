@@ -229,8 +229,11 @@ export default function Hero() {
           Digital Evolution for <br /> Business
         </h1>
 
-        {/* Center 3D Flower Video with SVG Glow */}
-        <div className="pointer-events-none relative w-full aspect-[16/10] z-10 overflow-visible bg-transparent my-2">
+        {/* Center 3D Flower Video with SVG Glow — edge-to-edge, no black box */}
+        <div
+          className="pointer-events-none relative w-[calc(100%+96px)] -mx-12 aspect-[16/10] z-10 overflow-visible my-2"
+          style={{ mixBlendMode: "screen" }}
+        >
           {/* SVG Glow Background */}
           <svg
             className="absolute top-1/2 left-1/2 w-[140%] h-[140%] -translate-x-1/2 -translate-y-1/2 pointer-events-none z-0 opacity-75"
@@ -293,6 +296,7 @@ export default function Hero() {
           <CanvasVideo
             src={CENTER_VIDEO}
             className="relative z-10 h-full w-full object-cover"
+            style={{ mixBlendMode: "screen" }}
           />
         </div>
 
@@ -303,11 +307,31 @@ export default function Hero() {
           </p>
         </div>
 
-        {/* Client Logos Row */}
-        <div className="z-10 w-full flex items-center justify-center gap-12 py-4 px-4 opacity-80">
-          <img src={logo2} alt="Honest" className="h-6 w-auto object-contain brightness-0 invert opacity-80" />
-          <img src={logo6} alt="Logitech" className="h-6 w-auto object-contain brightness-0 invert opacity-80" />
-          <img src={logo11} alt="Popcornopolis" className="h-8 w-auto object-contain brightness-0 invert opacity-80" />
+        {/* Client Logos — auto-scrolling ticker */}
+        <div className="z-10 w-[calc(100%+48px)] -mx-6 overflow-hidden py-3 opacity-75"
+          style={{
+            maskImage: "linear-gradient(to right, transparent, black 12%, black 88%, transparent)",
+            WebkitMaskImage: "linear-gradient(to right, transparent, black 12%, black 88%, transparent)",
+          }}
+        >
+          <div
+            className="flex w-max flex-nowrap items-center animate-scroll-left hover:[animation-play-state:paused]"
+            style={{ animationDuration: "22s" }}
+          >
+            {[1, 2].map((set) => (
+              <div key={set} className="flex flex-nowrap items-center gap-10 px-5">
+                {CLIENT_LOGOS.map((logo, i) => (
+                  <img
+                    key={i}
+                    src={logo}
+                    alt={`Client ${i}`}
+                    className="h-7 w-auto max-w-[100px] object-contain shrink-0"
+                    style={{ filter: "brightness(0) invert(1)" }}
+                  />
+                ))}
+              </div>
+            ))}
+          </div>
         </div>
 
         {/* Splay Video Card (Reel) with Play/Pause button */}
