@@ -267,7 +267,7 @@ export default function MenuOverlay({ open, onClose }: { open: boolean; onClose:
                 <motion.aside variants={fadeUp} className="hidden md:flex flex-col gap-6 md:pt-2">
                   {/* Hover Image Block with Clocks */}
                   <div className="flex flex-col gap-3">
-                    <div className="relative aspect-[16/10] w-full overflow-hidden rounded-lg bg-transparent">
+                    <div className="relative aspect-[16/10] w-full overflow-hidden rounded-lg bg-transparent isolate transform-gpu">
                       <AnimatePresence mode="wait">
                         {!hoveredItem ? (
                           <motion.video
@@ -281,7 +281,8 @@ export default function MenuOverlay({ open, onClose }: { open: boolean; onClose:
                             animate={{ opacity: 1, scale: 1 }}
                             exit={{ opacity: 0, scale: 0.98 }}
                             transition={{ duration: 0.35, ease: EASE }}
-                            className="h-full w-full object-cover mix-blend-screen"
+                            className="h-full w-full object-cover mix-blend-screen transform-gpu"
+                            style={{ transform: "translate3d(0,0,0)", WebkitTransform: "translate3d(0,0,0)" }}
                           />
                         ) : (
                           <motion.img
