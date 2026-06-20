@@ -199,10 +199,10 @@ export default function Hero() {
     return (
       <div className="relative h-screen w-full overflow-hidden noise-overlay">
         <div className="relative flex flex-col items-center justify-center px-6 pt-24 text-center">
-          <div className="pointer-events-none relative mt-[80px] w-full sm:w-[480px] md:w-[640px] lg:w-[800px] aspect-[16/10] z-[99] overflow-hidden rounded-2xl bg-transparent isolate transform-gpu">
+          <div className="pointer-events-none relative mt-[80px] w-full sm:w-[480px] md:w-[640px] lg:w-[800px] aspect-[16/10] z-[99] overflow-hidden rounded-2xl bg-transparent isolate">
             <CanvasVideo
               src={CENTER_VIDEO}
-              className="h-full w-full object-cover mix-blend-screen transform-gpu"
+              className="h-full w-full object-cover"
             />
           </div>
           <h1 className="text-glow relative z-20 max-w-5xl font-serif text-[32px] font-bold leading-[1.05] tracking-tight text-white sm:text-[42px] md:text-[60px] lg:text-[76px] mt-6">
@@ -237,11 +237,11 @@ export default function Hero() {
         {/* Center hero video — sits below gradient mask and headline */}
         <motion.div
           style={{ y: centerY, opacity: centerOpacity }}
-          className="pointer-events-none absolute left-1/2 top-[12%] mt-[100px] sm:mt-[130px] md:mt-[150px] z-[10] w-full sm:w-[480px] md:w-[640px] lg:w-[800px] aspect-[16/10] -translate-x-1/2 overflow-hidden rounded-2xl bg-transparent isolate transform-gpu"
+          className="pointer-events-none absolute left-1/2 top-[12%] mt-[100px] sm:mt-[130px] md:mt-[150px] z-[10] w-full sm:w-[480px] md:w-[640px] lg:w-[800px] aspect-[16/10] -translate-x-1/2 overflow-hidden rounded-2xl bg-transparent isolate"
         >
           <CanvasVideo
             src={CENTER_VIDEO}
-            className="h-full w-full object-cover mix-blend-screen transform-gpu"
+            className="h-full w-full object-cover"
           />
         </motion.div>
 
