@@ -296,7 +296,6 @@ export default function MenuOverlay({ open, onClose }: { open: boolean; onClose:
                           />
                         )}
                       </AnimatePresence>
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
                     </div>
 
                     {/* 3 US Timezones Clocks */}

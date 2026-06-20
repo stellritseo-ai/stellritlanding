@@ -198,7 +198,7 @@ export default function Hero() {
     return (
       <div className="relative h-screen w-full overflow-hidden noise-overlay">
         <div className="relative flex flex-col items-center justify-center px-6 pt-24 text-center">
-          <div className="pointer-events-none relative mt-[80px] w-[280px] sm:w-[380px] md:w-[480px] lg:w-[580px] aspect-[16/10] z-[99] overflow-hidden rounded-2xl bg-transparent">
+          <div className="pointer-events-none relative mt-[80px] w-[calc(100%-32px)] sm:w-[480px] md:w-[640px] lg:w-[800px] aspect-[16/10] z-[99] overflow-hidden rounded-2xl bg-transparent">
             <video
               src={CENTER_VIDEO}
               autoPlay
@@ -207,7 +207,6 @@ export default function Hero() {
               playsInline
               className="h-full w-full object-cover mix-blend-screen"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent pointer-events-none" />
           </div>
           <h1 className="text-glow relative z-20 max-w-5xl font-serif text-[32px] font-bold leading-[1.05] tracking-tight text-white sm:text-[42px] md:text-[60px] lg:text-[76px] mt-6">
             Digital <span className="italic bg-gradient-to-r from-[#d9b8ff] via-[#cc7aff] to-[#ff9f7a] bg-clip-text text-transparent drop-shadow-sm">Evolution</span> <span className="font-semibold text-white/95">for Business</span>
@@ -241,7 +240,7 @@ export default function Hero() {
         {/* Center hero video — sits below gradient mask and headline */}
         <motion.div
           style={{ y: centerY, opacity: centerOpacity }}
-          className="pointer-events-none absolute left-1/2 top-[12%] mt-[100px] sm:mt-[130px] md:mt-[150px] z-[10] w-[280px] sm:w-[380px] md:w-[480px] lg:w-[580px] aspect-[16/10] -translate-x-1/2 overflow-hidden rounded-2xl bg-transparent"
+          className="pointer-events-none absolute left-1/2 top-[12%] mt-[100px] sm:mt-[130px] md:mt-[150px] z-[10] w-[calc(100%-32px)] sm:w-[480px] md:w-[640px] lg:w-[800px] aspect-[16/10] -translate-x-1/2 overflow-hidden rounded-2xl bg-transparent"
         >
           <video
             src={CENTER_VIDEO}
@@ -251,7 +250,6 @@ export default function Hero() {
             playsInline
             className="h-full w-full object-cover mix-blend-screen"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent pointer-events-none" />
         </motion.div>
 
         {/* Headline — sits on top of video, below gradient mask */}
