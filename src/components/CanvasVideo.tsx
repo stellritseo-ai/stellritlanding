@@ -84,8 +84,8 @@ export function CanvasVideo({ src, className }: CanvasVideoProps) {
             const g = data[i + 1];
             const b = data[i + 2];
             
-            // Fast-path: skip calculations for background pixels (which make up ~70% of frames)
-            if (r < 10 && g < 10 && b < 10) {
+            // Fast-path: key out dark pixels and compression noise immediately (covers ~75% of frames)
+            if (r < 25 && g < 25 && b < 25) {
               data[i + 3] = 0; // Fully transparent
               continue;
             }
@@ -93,8 +93,8 @@ export function CanvasVideo({ src, className }: CanvasVideoProps) {
             // Fast integer math approximation of luminance: (r * 0.299 + g * 0.587 + b * 0.114)
             const luma = (r * 77 + g * 150 + b * 29) >> 8;
             
-            if (luma < 30) {
-              data[i + 3] = ((luma - 10) / 20) * 255; // Smooth edge blending
+            if (luma < 50) {
+              data[i + 3] = ((luma - 25) / 25) * 255; // Smooth edge blending
             }
           }
           ctx.putImageData(imgData, 0, 0);
