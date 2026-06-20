@@ -3,6 +3,7 @@ import { ArrowUpRight } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import logoImg from "@/assets/logo.png";
+import { CanvasVideo } from "./CanvasVideo";
 
 const MENU_IMAGES: Record<string, string> = {
   "Case Studies": "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600&q=80&auto=format&fit=crop",
@@ -270,20 +271,19 @@ export default function MenuOverlay({ open, onClose }: { open: boolean; onClose:
                     <div className="relative aspect-[16/10] w-full overflow-hidden rounded-lg bg-transparent isolate transform-gpu">
                       <AnimatePresence mode="wait">
                         {!hoveredItem ? (
-                          <motion.video
+                          <motion.div
                             key="default-video"
-                            src={DEFAULT_VIDEO}
-                            autoPlay
-                            loop
-                            muted
-                            playsInline
                             initial={{ opacity: 0, scale: 1.05 }}
                             animate={{ opacity: 1, scale: 1 }}
                             exit={{ opacity: 0, scale: 0.98 }}
                             transition={{ duration: 0.35, ease: EASE }}
-                            className="h-full w-full object-cover mix-blend-screen transform-gpu"
-                            style={{ transform: "translate3d(0,0,0)", WebkitTransform: "translate3d(0,0,0)" }}
-                          />
+                            className="h-full w-full"
+                          >
+                            <CanvasVideo
+                              src={DEFAULT_VIDEO}
+                              className="h-full w-full object-cover mix-blend-screen transform-gpu"
+                            />
+                          </motion.div>
                         ) : (
                           <motion.img
                             key={activeImage}
