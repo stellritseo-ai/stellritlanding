@@ -94,7 +94,7 @@ const CLIENT_LOGOS = [
 ];
 
 const CENTER_VIDEO =
-  "https://res.cloudinary.com/dmanafb84/video/upload/f_auto:video,q_auto:best/ISA_FLOR_04__444_enp2ps";
+  "https://res.cloudinary.com/dmanafb84/video/upload/f_auto:video,q_auto/ISA_FLOR_04__444_enp2ps";
 const LEFT_VIDEO =
   "https://res.cloudinary.com/dmanafb84/video/upload/f_auto:video,q_auto/IA-Website-Homepage-Sizzle-Reel-Animation_V5_1_2-2_c6hfyj";
 
@@ -198,11 +198,16 @@ export default function Hero() {
     return (
       <div className="relative h-screen w-full overflow-hidden noise-overlay">
         <div className="relative flex flex-col items-center justify-center px-6 pt-24 text-center">
-          <div className="pointer-events-none relative mt-[80px] h-[440px] w-[440px] md:h-[440px] md:w-[440px] z-[99]">
-            <TransparentVideo
+          <div className="pointer-events-none relative mt-[80px] w-[280px] sm:w-[380px] md:w-[480px] lg:w-[580px] aspect-[16/10] z-[99] overflow-hidden rounded-2xl bg-transparent border border-white/10 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)]">
+            <video
               src={CENTER_VIDEO}
-              className="h-full w-full object-cover"
+              autoPlay
+              loop
+              muted
+              playsInline
+              className="h-full w-full object-cover mix-blend-screen"
             />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent pointer-events-none" />
           </div>
           <h1 className="text-glow relative z-20 max-w-5xl font-serif text-[32px] font-bold leading-[1.05] tracking-tight text-white sm:text-[42px] md:text-[60px] lg:text-[76px] mt-6">
             Digital <span className="italic bg-gradient-to-r from-[#d9b8ff] via-[#cc7aff] to-[#ff9f7a] bg-clip-text text-transparent drop-shadow-sm">Evolution</span> <span className="font-semibold text-white/95">for Business</span>
@@ -236,12 +241,17 @@ export default function Hero() {
         {/* Center hero video — sits below gradient mask and headline */}
         <motion.div
           style={{ y: centerY, opacity: centerOpacity }}
-          className="pointer-events-none absolute left-1/2 top-[8%] mt-[100px] sm:mt-[130px] md:mt-[150px] z-[10] h-[440px] w-[440px] sm:h-[460px] sm:w-[460px] md:h-[480px] md:w-[480px] lg:h-[540px] lg:w-[540px] -translate-x-1/2"
+          className="pointer-events-none absolute left-1/2 top-[12%] mt-[100px] sm:mt-[130px] md:mt-[150px] z-[10] w-[280px] sm:w-[380px] md:w-[480px] lg:w-[580px] aspect-[16/10] -translate-x-1/2 overflow-hidden rounded-2xl bg-transparent border border-white/10 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)]"
         >
-          <TransparentVideo
+          <video
             src={CENTER_VIDEO}
-            className="h-full w-full object-cover"
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="h-full w-full object-cover mix-blend-screen"
           />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent pointer-events-none" />
         </motion.div>
 
         {/* Headline — sits on top of video, below gradient mask */}
