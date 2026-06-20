@@ -188,11 +188,11 @@ export default function MenuOverlay({ open, onClose }: { open: boolean; onClose:
                   <Link
                     to="/contact"
                     onClick={onClose}
-                    className="group relative flex items-center gap-3 rounded-full bg-white/5 border border-white/10 px-5 py-2.5 text-sm font-medium text-white transition-all duration-500 overflow-hidden hover:border-[#ff8a5b]/40 hover:bg-white/10 hover:shadow-[0_0_30px_rgba(190,80,255,0.25)]"
+                    className="group relative flex items-center gap-3 rounded-full bg-white/5 border border-white/10 px-5 py-2.5 text-sm font-medium text-white transition-all duration-500 overflow-hidden hover:border-[#ff8a5b]/40 hover:bg-white/10"
                   >
                     <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/5 to-transparent transition-transform duration-1000 group-hover:translate-x-full" />
                     <span className="relative z-10">Let's Talk</span>
-                    <span className="relative z-10 grid h-8 w-8 place-items-center rounded-full bg-gradient-to-br from-[#7a2adc] to-[#ff8a5b] text-white shadow-md transition-all duration-300 group-hover:scale-110 group-hover:rotate-45">
+                    <span className="relative z-10 grid h-8 w-8 place-items-center rounded-full bg-gradient-to-br from-[#7a2adc] to-[#ff8a5b] text-white transition-all duration-300 group-hover:scale-110 group-hover:rotate-45">
                       <ArrowUpRight className="h-4 w-4" />
                     </span>
                   </Link>
@@ -267,7 +267,7 @@ export default function MenuOverlay({ open, onClose }: { open: boolean; onClose:
                 <motion.aside variants={fadeUp} className="hidden md:flex flex-col gap-6 md:pt-2">
                   {/* Hover Image Block with Clocks */}
                   <div className="flex flex-col gap-3">
-                    <div className="relative aspect-[16/10] w-full overflow-hidden rounded-lg bg-transparent border border-white/10 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)]">
+                    <div className="relative aspect-[16/10] w-full overflow-hidden rounded-lg bg-transparent">
                       <AnimatePresence mode="wait">
                         {!hoveredItem ? (
                           <motion.video

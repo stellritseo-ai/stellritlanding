@@ -46,13 +46,13 @@ export default function SiteHeader({ transparent = false, homepage = false, hide
       <div className="flex items-center gap-3">
         <Link
           to="/contact"
-          className={`group relative hidden items-center gap-3 rounded-full bg-white/5 border border-white/10 px-5 transition-all duration-500 overflow-hidden hover:border-[#ff8a5b]/40 hover:bg-white/10 hover:shadow-[0_0_30px_rgba(190,80,255,0.25)] sm:inline-flex ${
+          className={`group relative hidden items-center gap-3 rounded-full bg-white/5 border border-white/10 px-5 transition-all duration-500 overflow-hidden hover:border-[#ff8a5b]/40 hover:bg-white/10 sm:inline-flex ${
             scrolled ? "py-2 text-xs" : "py-2.5 text-sm"
           }`}
         >
           <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/5 to-transparent transition-transform duration-1000 group-hover:translate-x-full" />
           <span className="relative z-10">Let's Talk</span>
-          <span className={`relative z-10 grid place-items-center rounded-full bg-gradient-to-br from-[#7a2adc] to-[#ff8a5b] text-white shadow-md transition-all duration-300 group-hover:scale-110 group-hover:rotate-45 ${
+          <span className={`relative z-10 grid place-items-center rounded-full bg-gradient-to-br from-[#7a2adc] to-[#ff8a5b] text-white transition-all duration-300 group-hover:scale-110 group-hover:rotate-45 ${
             scrolled ? "h-7 w-7" : "h-8 w-8"
           }`}>
             <ArrowUpRight className={scrolled ? "h-3.5 w-3.5" : "h-4 w-4"} />

@@ -198,7 +198,7 @@ export default function Hero() {
     return (
       <div className="relative h-screen w-full overflow-hidden noise-overlay">
         <div className="relative flex flex-col items-center justify-center px-6 pt-24 text-center">
-          <div className="pointer-events-none relative mt-[80px] w-[280px] sm:w-[380px] md:w-[480px] lg:w-[580px] aspect-[16/10] z-[99] overflow-hidden rounded-2xl bg-transparent border border-white/10 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)]">
+          <div className="pointer-events-none relative mt-[80px] w-[280px] sm:w-[380px] md:w-[480px] lg:w-[580px] aspect-[16/10] z-[99] overflow-hidden rounded-2xl bg-transparent">
             <video
               src={CENTER_VIDEO}
               autoPlay
@@ -241,7 +241,7 @@ export default function Hero() {
         {/* Center hero video — sits below gradient mask and headline */}
         <motion.div
           style={{ y: centerY, opacity: centerOpacity }}
-          className="pointer-events-none absolute left-1/2 top-[12%] mt-[100px] sm:mt-[130px] md:mt-[150px] z-[10] w-[280px] sm:w-[380px] md:w-[480px] lg:w-[580px] aspect-[16/10] -translate-x-1/2 overflow-hidden rounded-2xl bg-transparent border border-white/10 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)]"
+          className="pointer-events-none absolute left-1/2 top-[12%] mt-[100px] sm:mt-[130px] md:mt-[150px] z-[10] w-[280px] sm:w-[380px] md:w-[480px] lg:w-[580px] aspect-[16/10] -translate-x-1/2 overflow-hidden rounded-2xl bg-transparent"
         >
           <video
             src={CENTER_VIDEO}
