@@ -22,19 +22,46 @@ import imgHarmony from "@/assets/portfolio_collect/websites/first/a1.jpg";
 export const Route = createFileRoute("/portfolio")({
   head: () => ({
     meta: [
-      { title: "Portfolio — Selected Craftsmanship | StellR IT LLC" },
+      {
+        title:
+          "Portfolio — Custom Software & SaaS Development Projects | StellR IT LLC",
+      },
       {
         name: "description",
         content:
-          "Explore the portfolio of StellR IT LLC. Discover how we scale digital growth, design world-class UX/UI, and deploy enterprise-level Zero Trust cybersecurity systems.",
+          "Browse StellR IT LLC's portfolio of custom software development, SaaS products, AI automation, brand identity, mobile apps, and digital marketing campaigns delivering measurable ROI for enterprise clients.",
       },
-      { property: "og:title", content: "Portfolio — StellR IT LLC" },
+      {
+        name: "keywords",
+        content:
+          "software development portfolio, saas development case studies, ux ui design portfolio, brand identity portfolio, ai automation projects, mobile app development portfolio, web design projects, digital marketing results, enterprise software examples",
+      },
+      { name: "robots", content: "index, follow" },
+      {
+        property: "og:title",
+        content: "Portfolio — Software Development & Design Projects | StellR IT LLC",
+      },
       {
         property: "og:description",
-        content: "High-impact case studies across digital marketing, product design, and cybersecurity.",
+        content:
+          "Custom software, SaaS, AI automation, brand identity, mobile apps & digital marketing. Explore proven case studies with measurable ROI.",
       },
+      { property: "og:url", content: "https://stellrit.com/portfolio" },
+      { property: "og:type", content: "website" },
+      { property: "og:image", content: "https://stellrit.com/og-image.png" },
+      { name: "twitter:card", content: "summary_large_image" },
+      {
+        name: "twitter:title",
+        content: "Portfolio — Software & SaaS Development Projects | StellR IT",
+      },
+      {
+        name: "twitter:description",
+        content:
+          "Software, SaaS, AI, brand, apps & digital marketing portfolio. Real results.",
+      },
+      { name: "twitter:image", content: "https://stellrit.com/og-image.png" },
     ],
-    links: [{ rel: "canonical", href: "/portfolio" }],
+    links: [{ rel: "canonical", href: "https://stellrit.com/portfolio" }],
   }),
   component: PortfolioPage,
 });

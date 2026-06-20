@@ -1,0 +1,14 @@
+User-agent: *
+Allow: /
+
+# Disallow dashboard & admin areas
+Disallow: /dashboard/
+Disallow: /login
+Disallow: /upload/
+
+# Allow Googlebot full access to public pages
+User-agent: Googlebot
+Allow: /
+
+# Sitemap
+Sitemap: https://stellrit.com/sitemap.xml

@@ -20,7 +20,7 @@ export const Route = createFileRoute("/case-studies/$slug")({
     if (!s) return { meta: [{ title: "Case Study — StellR IT LLC" }] };
     const title = `${s.title} — ${s.subtitle} | StellR IT LLC`;
     const description = `${s.subtitle}. ${s.overview.slice(0, 155)}`.replace(/\s+/g, " ").trim();
-    const url = `/case-studies/${params.slug}`;
+    const url = `https://stellrit.com/case-studies/${params.slug}`;
     return {
       meta: [
         { title },

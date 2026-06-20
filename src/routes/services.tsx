@@ -15,13 +15,47 @@ import marketingVideo from "@/assets/video/Website-Management.mp4";
 export const Route = createFileRoute("/services")({
   head: () => ({
     meta: [
-      { title: "Services — Our Perspective | StellR IT LLC" },
+      {
+        title:
+          "Services — Custom Software Development, SaaS & Web Design | StellR IT LLC",
+      },
       {
         name: "description",
         content:
-          "UX Research, Brand Identity, Web Design, Web Development and Digital Marketing for enterprise leaders.",
+          "StellR IT LLC offers custom software development, SaaS development, UX/UI design, brand identity, web development, API development, devops consulting, and digital marketing services for enterprise businesses.",
       },
+      {
+        name: "keywords",
+        content:
+          "custom software development services, saas development agency, ux research agency, brand identity design, web design company, web development services, api development, devops consulting, digital marketing agency, mvp development company, cloud migration services",
+      },
+      { name: "robots", content: "index, follow" },
+      {
+        property: "og:title",
+        content:
+          "Services — Custom Software Development & SaaS | StellR IT LLC",
+      },
+      {
+        property: "og:description",
+        content:
+          "From UX research and brand identity to custom web apps, SaaS platforms, and digital marketing — one senior team for your entire digital stack.",
+      },
+      { property: "og:url", content: "https://stellrit.com/services" },
+      { property: "og:type", content: "website" },
+      { property: "og:image", content: "https://stellrit.com/og-image.png" },
+      { name: "twitter:card", content: "summary_large_image" },
+      {
+        name: "twitter:title",
+        content: "Services \u2014 Custom Software Development & SaaS | StellR IT",
+      },
+      {
+        name: "twitter:description",
+        content:
+          "UX, Brand, Web Dev, SaaS, API, DevOps & Digital Marketing. One senior team.",
+      },
+      { name: "twitter:image", content: "https://stellrit.com/og-image.png" },
     ],
+    links: [{ rel: "canonical", href: "https://stellrit.com/services" }],
   }),
   component: ServicesPage,
 });

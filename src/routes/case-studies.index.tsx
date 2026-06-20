@@ -10,18 +10,47 @@ import CaseStudies from "@/components/CaseStudies";
 export const Route = createFileRoute("/case-studies/")({
   head: () => ({
     meta: [
-      { title: "Case Studies — Selected Work | StellR IT LLC" },
+      {
+        title:
+          "Case Studies \u2014 Enterprise Software Development & Digital Marketing Results | StellR IT LLC",
+      },
       {
         name: "description",
         content:
-          "Selected case studies from StellR IT — work for LiveNation, News Corp, Upli, Tilton School and more.",
+          "Explore real-world case studies from StellR IT LLC: enterprise software development, SaaS product design, AI automation, digital marketing campaigns, and UX redesigns delivering measurable ROI for companies like LiveNation, Upli, and Tilton School.",
       },
-      { property: "og:title", content: "Case Studies — StellR IT LLC" },
+      {
+        name: "keywords",
+        content:
+          "enterprise software case studies, saas development results, ux redesign case study, digital marketing roi examples, ai automation case study, software development results, web design case studies, custom software development examples",
+      },
+      { name: "robots", content: "index, follow" },
+      {
+        property: "og:title",
+        content:
+          "Case Studies \u2014 Software Development & Marketing Results | StellR IT LLC",
+      },
       {
         property: "og:description",
-        content: "Selected work for enterprise brands and category leaders.",
+        content:
+          "Real results: SaaS design, AI automation, digital marketing & enterprise software. See the ROI we deliver.",
       },
+      { property: "og:url", content: "https://stellrit.com/case-studies" },
+      { property: "og:type", content: "website" },
+      { property: "og:image", content: "https://stellrit.com/og-image.png" },
+      { name: "twitter:card", content: "summary_large_image" },
+      {
+        name: "twitter:title",
+        content: "Case Studies \u2014 Software Dev & Marketing ROI | StellR IT",
+      },
+      {
+        name: "twitter:description",
+        content:
+          "Real ROI: SaaS, AI, digital marketing & software development results.",
+      },
+      { name: "twitter:image", content: "https://stellrit.com/og-image.png" },
     ],
+    links: [{ rel: "canonical", href: "https://stellrit.com/case-studies" }],
   }),
   component: WorkPage,
 });

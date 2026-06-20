@@ -18,13 +18,46 @@ import appImg from "@/assets/app.jpg";
 export const Route = createFileRoute("/insights")({
   head: () => ({
     meta: [
-      { title: "Insights — Essays on Brand, Product & Growth | StellR IT" },
+      {
+        title:
+          "Insights — Software Development, UX Design & AI Blog | StellR IT LLC",
+      },
       {
         name: "description",
         content:
-          "Essays, case notes and field reports on brand, product design, engineering and growth from the StellR IT studio.",
+          "Expert insights, case notes, and field reports on custom software development, UX/UI design, AI automation, SaaS development, and digital marketing strategy from the StellR IT LLC team.",
       },
+      {
+        name: "keywords",
+        content:
+          "software development blog, ux design best practices, ai for business, enterprise web design tips, saas product design, digital marketing strategy, rag implementation guide, mvp development tips, api development guide, custom software insights",
+      },
+      { name: "robots", content: "index, follow" },
+      {
+        property: "og:title",
+        content: "Insights — Software Development & UX Design Blog | StellR IT LLC",
+      },
+      {
+        property: "og:description",
+        content:
+          "Expert essays on custom software development, UX design, AI automation, SaaS, and digital marketing from the StellR IT studio.",
+      },
+      { property: "og:url", content: "https://stellrit.com/insights" },
+      { property: "og:type", content: "website" },
+      { property: "og:image", content: "https://stellrit.com/og-image.png" },
+      { name: "twitter:card", content: "summary_large_image" },
+      {
+        name: "twitter:title",
+        content: "Insights — Software Dev & UX Blog | StellR IT",
+      },
+      {
+        name: "twitter:description",
+        content:
+          "Software development, UX, AI & digital marketing insights from StellR IT LLC.",
+      },
+      { name: "twitter:image", content: "https://stellrit.com/og-image.png" },
     ],
+    links: [{ rel: "canonical", href: "https://stellrit.com/insights" }],
   }),
   component: InsightsPage,
 });

@@ -27,18 +27,47 @@ import logo12 from "@/assets/logos/logo-white-DNQTDUZa.png";
 export const Route = createFileRoute("/contact")({
   head: () => ({
     meta: [
-      { title: "Contact — Start a Project | StellR IT LLC" },
+      {
+        title:
+          "Contact StellR IT LLC \u2014 Hire a Software Development Company | Garland, TX",
+      },
       {
         name: "description",
         content:
-          "Tell us about your project. StellR IT replies within one business day. Based in Garland, TX.",
+          "Start your project with StellR IT LLC — a custom software development company in Garland, TX. We respond within one business day. Get a free consultation for web apps, SaaS, AI automation, or digital marketing.",
       },
-      { property: "og:title", content: "Contact — StellR IT LLC" },
+      {
+        name: "keywords",
+        content:
+          "hire software development company, software engineer consulting, custom web application development quote, digital agency contact, garland texas software company, saas development agency contact, free software development consultation",
+      },
+      { name: "robots", content: "index, follow" },
+      {
+        property: "og:title",
+        content:
+          "Contact StellR IT LLC \u2014 Start Your Software Project Today",
+      },
       {
         property: "og:description",
-        content: "Start a project with our senior team. We reply within one business day.",
+        content:
+          "Tell us about your project. We build custom software, SaaS platforms, AI automation & digital experiences. Based in Garland, TX. Reply within 1 business day.",
       },
+      { property: "og:url", content: "https://stellrit.com/contact" },
+      { property: "og:type", content: "website" },
+      { property: "og:image", content: "https://stellrit.com/og-image.png" },
+      { name: "twitter:card", content: "summary_large_image" },
+      {
+        name: "twitter:title",
+        content: "Contact StellR IT LLC \u2014 Custom Software Development",
+      },
+      {
+        name: "twitter:description",
+        content:
+          "Start your project. Custom software, SaaS, AI & digital marketing. Garland, TX.",
+      },
+      { name: "twitter:image", content: "https://stellrit.com/og-image.png" },
     ],
+    links: [{ rel: "canonical", href: "https://stellrit.com/contact" }],
   }),
   component: ContactPage,
 });

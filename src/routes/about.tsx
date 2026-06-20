@@ -20,19 +20,46 @@ import p10 from "@/assets/logos/cropped-logo.png";
 export const Route = createFileRoute("/about")({
   head: () => ({
     meta: [
-      { title: "About — StellR IT LLC | Premium Digital Agency" },
+      {
+        title:
+          "About StellR IT LLC — Software Development Company & Digital Agency | Garland, TX",
+      },
       {
         name: "description",
         content:
-          "We're a global digital studio crafting brands, products and campaigns for enterprise leaders. Meet the team behind StellR IT.",
+          "StellR IT LLC is a senior-led custom software development company and digital agency in Garland, TX. Over a decade of building enterprise web apps, SaaS products, brand identities, and digital campaigns for global brands.",
       },
-      { property: "og:title", content: "About — StellR IT LLC" },
+      {
+        name: "keywords",
+        content:
+          "digital agency garland texas, software development company texas, enterprise digital agency, digital transformation company, software outsourcing company, custom web application development, ux design agency, brand identity design agency",
+      },
+      { name: "robots", content: "index, follow" },
+      {
+        property: "og:title",
+        content: "About StellR IT LLC — Software Development Company & Digital Agency",
+      },
       {
         property: "og:description",
         content:
-          "A senior team of strategists, designers and engineers building unforgettable digital experiences.",
+          "A senior team of strategists, designers and engineers building enterprise software and unforgettable digital experiences. Based in Garland, TX.",
       },
+      { property: "og:url", content: "https://stellrit.com/about" },
+      { property: "og:type", content: "website" },
+      { property: "og:image", content: "https://stellrit.com/og-image.png" },
+      { name: "twitter:card", content: "summary_large_image" },
+      {
+        name: "twitter:title",
+        content: "About StellR IT LLC — Digital Agency & Software Development",
+      },
+      {
+        name: "twitter:description",
+        content:
+          "Senior-led digital agency. Enterprise software, SaaS, brand, UX & marketing. Garland, TX.",
+      },
+      { name: "twitter:image", content: "https://stellrit.com/og-image.png" },
     ],
+    links: [{ rel: "canonical", href: "https://stellrit.com/about" }],
   }),
   component: AboutPage,
 });
