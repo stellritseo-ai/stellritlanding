@@ -59,6 +59,26 @@ function WebsiteEmailsPage() {
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
 
+  // Request browser notification permissions on mount
+  useEffect(() => {
+    if (typeof window !== "undefined" && "Notification" in window) {
+      if (Notification.permission === "default") {
+        Notification.requestPermission();
+      }
+    }
+  }, []);
+
+  // Helper to trigger native browser notification
+  const showNotification = useCallback((title: string, options?: NotificationOptions) => {
+    if (typeof window !== "undefined" && "Notification" in window && Notification.permission === "granted") {
+      try {
+        new Notification(title, options);
+      } catch (err) {
+        console.error("Error showing browser notification:", err);
+      }
+    }
+  }, []);
+
   // Fetch emails
   const fetchEmails = useCallback(async (showLoader = true) => {
     if (showLoader) setLoading(true);
@@ -93,6 +113,13 @@ function WebsiteEmailsPage() {
 
       socket.on("receive-new-email", (data: { email: WebsiteEmail }) => {
         if (data && data.email) {
+          // Trigger browser notification
+          const leadType = data.email.type === "contact" ? "Contact Inquiry" : "Newsletter signup";
+          showNotification(`New Website Lead: ${leadType}`, {
+            body: `From: ${data.email.name || data.email.email}\nMessage: ${data.email.message || "Subscribed to newsletter"}`,
+            icon: "/favicon.ico",
+          });
+
           setEmails((prev) => {
             // Avoid duplicates
             if (prev.some((e) => e.id === data.email.id)) return prev;
@@ -107,7 +134,7 @@ function WebsiteEmailsPage() {
         activeSocket.disconnect();
       }
     };
-  }, []);
+  }, [showNotification]);
 
   // Handle Delete
   const handleDelete = async () => {
@@ -542,6 +569,141 @@ function WebsiteEmailsPage() {
           </div>
         </div>
       )}
+
+      {/* Mobile/Tablet Lead details drawer */}
+      <AnimatePresence>
+        {selectedEmail && (
+          <div className="fixed inset-0 z-50 overflow-hidden lg:hidden">
+            {/* Backdrop overlay */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 0.5 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setSelectedEmail(null)}
+              className="absolute inset-0 bg-black backdrop-blur-sm"
+            />
+
+            <div className="absolute inset-y-0 right-0 max-w-full flex">
+              <motion.div
+                initial={{ x: "100%" }}
+                animate={{ x: 0 }}
+                exit={{ x: "100%" }}
+                transition={{ type: "spring", damping: 25, stiffness: 200 }}
+                className={`w-screen max-w-lg border-l flex flex-col h-screen overflow-y-auto p-6 ${
+                  isDark ? "bg-[#0c0420] border-white/5 text-white" : "bg-white border-slate-200 text-slate-800"
+                }`}
+              >
+                {/* Details view content */}
+                <div className="flex items-center justify-between border-b pb-4.5 mb-6">
+                  <div className="flex items-center gap-2">
+                    <div className="rounded-xl bg-purple-500/10 p-2 text-purple-400">
+                      <MessageSquare className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <h4 className="text-xs font-bold uppercase tracking-wider text-white">Inquiry Details</h4>
+                      <span className={`text-[10px] ${isDark ? "text-white/40" : "text-slate-450"}`}>
+                        Received {formatDate(selectedEmail.submittedAt)}
+                      </span>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => setSelectedEmail(null)}
+                    className={`rounded-lg p-1.5 border transition ${
+                      isDark ? "border-white/5 bg-white/5 text-white/50 hover:bg-white/10" : "border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-400"
+                    }`}
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                </div>
+
+                <div className="space-y-6 text-xs select-text">
+                  <div>
+                    <span className={`block font-semibold mb-1 uppercase tracking-wider text-[10px] ${isDark ? "text-white/40" : "text-slate-400"}`}>
+                      Name
+                    </span>
+                    <div className="flex items-center gap-2 font-medium">
+                      <User className="h-3.5 w-3.5 text-white/40" />
+                      <span>{selectedEmail.name}</span>
+                    </div>
+                  </div>
+
+                  <div>
+                    <span className={`block font-semibold mb-1 uppercase tracking-wider text-[10px] ${isDark ? "text-white/40" : "text-slate-400"}`}>
+                      Email
+                    </span>
+                    <div className="flex items-center gap-2 font-medium">
+                      <Mail className="h-3.5 w-3.5 text-white/40" />
+                      <a href={`mailto:${selectedEmail.email}`} className="text-[#a855f7] hover:underline font-mono">
+                        {selectedEmail.email}
+                      </a>
+                    </div>
+                  </div>
+
+                  {selectedEmail.phone && (
+                    <div>
+                      <span className={`block font-semibold mb-1 uppercase tracking-wider text-[10px] ${isDark ? "text-white/40" : "text-slate-400"}`}>
+                        Phone
+                      </span>
+                      <div className="flex items-center gap-2 font-medium">
+                        <Phone className="h-3.5 w-3.5 text-white/40" />
+                        <a href={`tel:${selectedEmail.phone}`} className="text-[#a855f7] hover:underline font-mono">
+                          {selectedEmail.phone}
+                        </a>
+                      </div>
+                    </div>
+                  )}
+
+                  {selectedEmail.company && (
+                    <div>
+                      <span className={`block font-semibold mb-1 uppercase tracking-wider text-[10px] ${isDark ? "text-white/40" : "text-slate-400"}`}>
+                        Company
+                      </span>
+                      <div className="flex items-center gap-2 font-medium">
+                        <Building2 className="h-3.5 w-3.5 text-white/40" />
+                        <span>{selectedEmail.company}</span>
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="grid grid-cols-2 gap-4 border-t border-b border-dashed border-white/5 py-4">
+                    <div>
+                      <span className={`block font-semibold mb-1.5 uppercase tracking-wider text-[10px] ${isDark ? "text-white/40" : "text-slate-400"}`}>
+                        Service
+                      </span>
+                      <span className={`inline-block rounded-full px-2.5 py-1 text-[10px] font-semibold ${
+                        isDark ? "bg-[#12052c] border border-white/10" : "bg-slate-50 border border-slate-200 text-slate-600"
+                      }`}>
+                        {selectedEmail.service || "N/A"}
+                      </span>
+                    </div>
+                    <div>
+                      <span className={`block font-semibold mb-1.5 uppercase tracking-wider text-[10px] ${isDark ? "text-white/40" : "text-slate-400"}`}>
+                        Budget Range
+                      </span>
+                      <span className={`inline-block rounded-full px-2.5 py-1 text-[10px] font-bold ${
+                        isDark ? "bg-emerald-500/10 text-emerald-400" : "bg-emerald-50 text-emerald-600"
+                      }`}>
+                        {selectedEmail.budget || "N/A"}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div>
+                    <span className={`block font-semibold mb-2 uppercase tracking-wider text-[10px] ${isDark ? "text-white/40" : "text-slate-400"}`}>
+                      Project Message
+                    </span>
+                    <div className={`p-4 rounded-xl leading-relaxed text-xs border ${
+                      isDark ? "bg-white/[0.02] border-white/5 text-white/90" : "bg-slate-50 border-slate-100 text-slate-700"
+                    }`}>
+                      {selectedEmail.message}
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            </div>
+          </div>
+        )}
+      </AnimatePresence>
 
       {/* Confirmation Modal */}
       <ConfirmModal

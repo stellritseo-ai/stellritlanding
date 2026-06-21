@@ -762,7 +762,7 @@ function DashboardLayout() {
           </header>
 
           {/* Main Outlet (renders subpages, passes down theme context value) */}
-          <main className="flex-1 overflow-y-auto px-6 py-8 md:px-10 md:py-10">
+          <main className="flex-1 overflow-y-auto px-4 py-6 md:px-10 md:py-10">
             <DashboardThemeContext.Provider value={{ theme, setTheme, toggleTheme }}>
               {isPathAllowed ? <Outlet /> : <AccessDeniedView />}
             </DashboardThemeContext.Provider>

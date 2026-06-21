@@ -19,6 +19,7 @@ import {
   Activity,
   Check,
   CheckCheck,
+  ChevronLeft,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { getOperatorsFn } from "@/lib/dashboard.functions.server";
@@ -515,7 +516,9 @@ function TeamChatPage() {
       >
         {/* Left Side: Members List */}
         <div
-          className={`flex h-full flex-col border-r min-h-0 ${
+          className={`h-full flex-col border-r min-h-0 ${
+            activePartnerId ? "hidden lg:flex" : "flex"
+          } ${
             isDark ? "border-white/5 bg-[#12052c]/40" : "border-slate-100 bg-slate-50/50"
           }`}
         >
@@ -619,7 +622,9 @@ function TeamChatPage() {
         </div>
 
         {/* Right Side: Conversation Box */}
-        <div className="flex h-full flex-col lg:col-span-2 min-h-0">
+        <div className={`h-full flex-col lg:col-span-2 min-h-0 ${
+          activePartnerId ? "flex" : "hidden lg:flex"
+        }`}>
           {!activePartner ? (
             <div className="flex flex-1 flex-col items-center justify-center gap-4 text-center p-8 bg-[#12052c]/20">
               <div className="h-16 w-16 rounded-3xl bg-gradient-to-tr from-[#a855f7]/10 to-[#ff8a5b]/10 border border-[#a855f7]/15 flex items-center justify-center text-[#a855f7]/80">
@@ -641,6 +646,16 @@ function TeamChatPage() {
                 }`}
               >
                 <div className="flex items-center gap-3">
+                  <button
+                    onClick={() => setActivePartnerId(null)}
+                    className={`lg:hidden h-8 w-8 flex items-center justify-center rounded-lg border transition ${
+                      isDark
+                        ? "border-white/10 bg-white/5 text-white/70 hover:text-white"
+                        : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50 shadow-sm"
+                    }`}
+                  >
+                    <ChevronLeft className="h-4.5 w-4.5" />
+                  </button>
                   <div className="relative">
                     <div className="grid h-10 w-10 place-items-center rounded-xl bg-gradient-to-tr from-purple-500/20 to-indigo-500/25 border border-purple-500/20 font-bold text-xs text-white">
                       {initials(activePartner.name)}

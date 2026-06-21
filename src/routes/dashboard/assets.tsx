@@ -585,7 +585,7 @@ function AssetsPage() {
                                 <FileText className="h-4 w-4" />
                                 Documents ({docAssets.length})
                               </h4>
-                              <div className="border border-white/5 rounded-xl overflow-hidden bg-black/10">
+                              <div className="border border-white/5 rounded-xl overflow-x-auto bg-black/10">
                                 <table className="w-full text-left text-xs border-collapse">
                                   <thead>
                                     <tr className="border-b border-white/5 bg-white/5 text-white/40 uppercase text-[9px] tracking-widest">
@@ -640,7 +640,7 @@ function AssetsPage() {
         </div>
       ) : (
         /* ACTIVE REQUEST LINKS VIEW */
-        <div className="border border-white/5 rounded-2xl overflow-hidden bg-[#12052c]/10">
+        <div className="border border-white/5 rounded-2xl overflow-x-auto bg-[#12052c]/10">
           <table className="w-full text-left text-xs border-collapse">
             <thead>
               <tr className="border-b border-white/5 bg-[#12052c]/50 text-white/40 uppercase text-[9px] tracking-widest">

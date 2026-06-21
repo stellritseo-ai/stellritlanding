@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useDashboardTheme } from "../../hooks/useDashboardTheme";
+import { toast } from "sonner";
 import { useState, useEffect, useRef, useCallback } from "react";
 import {
   MessageSquare,
@@ -10,6 +11,8 @@ import {
   AlertCircle,
   CheckCircle2,
   RefreshCw,
+  ChevronLeft,
+  Trash2,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -18,6 +21,7 @@ import {
   sendChatMessageFn,
   markChatReadFn,
   updateChatStatusFn,
+  deleteChatSessionFn,
   type ChatSession,
   type ChatMessage,
 } from "@/lib/chat.functions.server";
@@ -69,6 +73,7 @@ function ChatPage() {
 
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
 
   const scrollRef = useRef<HTMLDivElement>(null);
   const socketRef = useRef<any>(null);
@@ -149,7 +154,7 @@ function ChatPage() {
             icon: "/favicon.ico",
           });
           fetchSessions();
-        } else if (sessionId !== activeSessionId) {
+        } else if (sessionId !== activeSessionId || document.hidden) {
           showNotification(`New message from ${existingSession.visitorName}`, {
             body: message.text,
             icon: "/favicon.ico",
@@ -284,6 +289,28 @@ function ChatPage() {
     } catch { /* ignore */ }
   };
 
+  // ── Delete session ──────────────────────────────────────────────────────
+  const handleDeleteSession = (sessionId: string) => {
+    setDeleteConfirmId(sessionId);
+  };
+
+  const confirmDeleteSession = async () => {
+    if (!deleteConfirmId) return;
+    const sessionId = deleteConfirmId;
+    setDeleteConfirmId(null);
+    try {
+      await deleteChatSessionFn({ data: { sessionId } });
+      setSessions((prev) => prev.filter((s) => s.id !== sessionId));
+      if (activeSessionId === sessionId) {
+        setActiveSessionId(null);
+        setActiveSession(null);
+      }
+      toast.success("Conversation deleted successfully");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to delete conversation");
+    }
+  };
+
   // ── Filtered sessions ───────────────────────────────────────────────────
   const filtered = sessions.filter((s) => {
     if (statusFilter !== "all" && s.status !== statusFilter) return false;
@@ -343,7 +370,9 @@ function ChatPage() {
       >
         {/* ── Left: Sessions list ─────────────────────────────────────── */}
         <div
-          className={`flex h-full flex-col border-r min-h-0 ${
+          className={`h-full flex-col border-r min-h-0 ${
+            activeSessionId ? "hidden lg:flex" : "flex"
+          } ${
             isDark ? "border-white/5 bg-[#12052c]/40" : "border-slate-100 bg-slate-50/50"
           }`}
         >
@@ -408,7 +437,7 @@ function ChatPage() {
                   key={s.id}
                   id={`chat-session-${s.id}`}
                   onClick={() => selectSession(s.id)}
-                  className={`w-full rounded-xl border px-3 py-3 text-left transition ${
+                  className={`w-full rounded-xl border px-3 py-3 text-left transition group ${
                     s.id === activeSessionId
                       ? isDark
                         ? "border-[#a855f7]/20 bg-[#a855f7]/10 text-white"
@@ -437,7 +466,7 @@ function ChatPage() {
                         {s.lastMessage || "No messages yet"}
                       </p>
                     </div>
-                    <div className="flex shrink-0 flex-col items-end gap-1">
+                    <div className="flex shrink-0 flex-col items-end gap-1.5">
                       {s.unread && (
                         <span className="h-2 w-2 rounded-full bg-amber-400" />
                       )}
@@ -446,6 +475,18 @@ function ChatPage() {
                           closed
                         </span>
                       )}
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeleteSession(s.id);
+                        }}
+                        title="Delete conversation"
+                        className={`opacity-0 group-hover:opacity-100 transition p-0.5 rounded hover:bg-red-500/10 hover:text-red-400 ${
+                          isDark ? "text-white/30" : "text-slate-400"
+                        }`}
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </button>
                     </div>
                   </div>
                 </button>
@@ -455,7 +496,9 @@ function ChatPage() {
         </div>
 
         {/* ── Right: Conversation area ──────────────────────────────── */}
-        <div className="flex h-full flex-col lg:col-span-2 min-h-0">
+        <div className={`h-full flex-col lg:col-span-2 min-h-0 ${
+          activeSessionId ? "flex" : "hidden lg:flex"
+        }`}>
           {!activeSession ? (
             <div className="flex flex-1 flex-col items-center justify-center gap-3 text-center">
               <MessageSquare className={`h-10 w-10 ${isDark ? "text-white/15" : "text-slate-200"}`} />
@@ -472,6 +515,16 @@ function ChatPage() {
                 }`}
               >
                 <div className="flex items-center gap-3">
+                  <button
+                    onClick={() => setActiveSessionId(null)}
+                    className={`lg:hidden h-8 w-8 flex items-center justify-center rounded-lg border transition ${
+                      isDark
+                        ? "border-white/10 bg-white/5 text-white/70 hover:text-white"
+                        : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50 shadow-sm"
+                    }`}
+                  >
+                    <ChevronLeft className="h-4.5 w-4.5" />
+                  </button>
                   <div
                     className={`grid h-8 w-8 place-items-center rounded-full text-xs font-bold text-white ${
                       activeSession.status === "closed"
@@ -524,6 +577,20 @@ function ChatPage() {
                       Close chat
                     </button>
                   )}
+
+                  <button
+                    id="chat-delete-session"
+                    onClick={() => handleDeleteSession(activeSession.id)}
+                    title="Delete conversation"
+                    className={`flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-[10px] font-semibold transition ${
+                      isDark
+                        ? "border-white/10 bg-white/5 text-red-400 hover:border-red-500/40 hover:bg-red-500/20"
+                        : "border-slate-200 bg-white text-red-500 hover:border-red-300 hover:bg-red-50 hover:text-red-600"
+                    }`}
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                    Delete chat
+                  </button>
                 </div>
               </div>
 
@@ -621,6 +688,66 @@ function ChatPage() {
           )}
         </div>
       </div>
+
+      {/* Premium Delete Confirmation Dialog */}
+      <AnimatePresence>
+        {deleteConfirmId && (
+          <div className="fixed inset-0 z-55 flex items-center justify-center p-4">
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setDeleteConfirmId(null)}
+              className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            />
+
+            {/* Modal Card */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 10 }}
+              transition={{ duration: 0.2, ease: "easeOut" }}
+              className={`relative z-10 w-full max-w-md overflow-hidden rounded-2xl border p-6 shadow-2xl ${
+                isDark
+                  ? "border-white/10 bg-[#160a2c] text-white shadow-purple-950/20"
+                  : "border-slate-200 bg-white text-slate-800 shadow-slate-200"
+              }`}
+            >
+              <div className="flex items-start gap-4">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-red-500/10 text-red-500">
+                  <AlertCircle className="h-5 w-5" />
+                </div>
+                <div className="space-y-2">
+                  <h3 className="text-sm font-semibold leading-none">Delete Conversation</h3>
+                  <p className={`text-xs leading-relaxed ${isDark ? "text-white/60" : "text-slate-500"}`}>
+                    Are you sure you want to permanently delete this conversation and all its messages? This action cannot be undone.
+                  </p>
+                </div>
+              </div>
+
+              <div className="mt-6 flex justify-end gap-3">
+                <button
+                  onClick={() => setDeleteConfirmId(null)}
+                  className={`rounded-lg border px-4 py-2 text-xs font-semibold transition ${
+                    isDark
+                      ? "border-[#a855f7]/20 bg-white/5 text-white/80 hover:bg-white/10 hover:text-white"
+                      : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
+                  }`}
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={confirmDeleteSession}
+                  className="rounded-lg bg-gradient-to-r from-red-600 to-rose-500 px-4 py-2 text-xs font-semibold text-white transition hover:opacity-90 hover:shadow-lg hover:shadow-red-500/25"
+                >
+                  Delete
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

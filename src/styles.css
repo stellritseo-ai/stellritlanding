@@ -139,3 +139,11 @@
 .animate-float-soft {
   animation: float-soft 6s ease-in-out infinite;
 }
+
+@media (pointer: fine) {
+  .has-custom-cursor,
+  .has-custom-cursor * {
+    cursor: none !important;
+  }
+}
+

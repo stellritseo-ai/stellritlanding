@@ -328,3 +328,20 @@ export const markTeamChatReadFn = createServerFn({ method: "POST" }).handler(
   }
 );
 
+// ── Admin: delete session ─────────────────────────────────────────────────────
+export const deleteChatSessionFn = createServerFn({ method: "POST" }).handler(
+  async ({ data }: { data: { sessionId: string } }) => {
+    const { connectDB, ChatSessionModel } = await import("./db.server");
+    await connectDB();
+    const session = await ChatSessionModel.findById(data.sessionId).lean();
+    if (session) {
+      await ChatSessionModel.findByIdAndDelete(data.sessionId);
+      await logActivity(
+        "Chat Session Deleted",
+        `Chat session with "${session.visitorName}" was deleted by an admin.`,
+        "Agent"
+      );
+    }
+    return { success: true };
+  }
+);

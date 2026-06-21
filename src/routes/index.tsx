@@ -13,6 +13,7 @@ import MarqueeStrip from "@/components/MarqueeStrip";
 import ParallaxText from "@/components/ParallaxText";
 import PartnershipModels from "@/components/PartnershipModels";
 import Portfolio from "@/components/Portfolio";
+import CustomCursor from "@/components/CustomCursor";
 import { useEffect } from "react";
 import { logVisitorFn } from "@/lib/dashboard.functions.server";
 
@@ -118,6 +119,7 @@ function Index() {
 
   return (
     <main className="relative min-h-screen">
+      <CustomCursor />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}

@@ -239,7 +239,7 @@ function DashboardIndex() {
       {/* Main Charts & Activity Logs */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Charts Container */}
-        <div className={`lg:col-span-2 rounded-2xl border p-6 flex flex-col justify-between transition duration-300 ${
+        <div className={`lg:col-span-2 min-w-0 overflow-hidden rounded-2xl border p-6 flex flex-col justify-between transition duration-300 ${
           isDark ? "bg-[#12052c]/65 border-white/5 shadow-2xl" : "bg-white border-slate-200/60 shadow-sm"
         }`}>
           <div>
@@ -261,9 +261,9 @@ function DashboardIndex() {
                 </span>
               </div>
             </div>
-
+ 
             {/* Recharts chart with SSR Guard */}
-            <div className="h-80 w-full min-h-[320px]">
+            <div className="h-80 w-full min-w-0 overflow-hidden min-h-[320px]">
               {mounted ? (
                 <ResponsiveContainer width="100%" height="100%">
                   <AreaChart

@@ -233,7 +233,7 @@ export default function Footer() {
         {/* Copyright */}
         <div
           ref={bottomRef}
-          className="mt-16 flex flex-col items-center gap-5 border-t border-white/10 pt-8 pb-20 md:pb-4 md:flex-row md:items-center md:justify-between"
+          className="relative z-20 mt-16 hidden md:flex flex-col md:flex-row items-center gap-5 border-t border-white/10 pt-8 pb-6 md:pb-4 md:items-center md:justify-between"
         >
           <span className="text-[14px] text-white/60 text-center md:text-left">
             © StellR IT . All rights reserved {new Date().getFullYear()}
@@ -246,10 +246,10 @@ export default function Footer() {
       </div>
 
       {/* Giant wordmark */}
-      <div className="overflow-hidden px-2 sm:px-4 pb-4">
+      <div className="relative z-10 pointer-events-none overflow-hidden px-2 sm:px-4 pt-6 md:pt-0 pb-8 md:pb-4 mt-0 md:mt-0">
         <div
-          className="shimmer-text select-none whitespace-nowrap text-center font-sans font-black uppercase leading-[0.8] tracking-[0.1em] md:tracking-[0.25em] mr-[-0.1em] md:mr-[-0.25em] mt-[-5px] md:mt-[-10px] mb-[-15px] md:mb-[-33px]"
-          style={{ fontSize: "clamp(40px, 12vw, 220px)" }}
+          className="shimmer-text select-none whitespace-nowrap text-center font-sans font-black uppercase leading-[0.8] tracking-[0.1em] md:tracking-[0.25em] mr-[-0.1em] md:mr-[-0.25em] mt-0 md:mt-[-10px] mb-0 md:mb-[-33px]"
+          style={{ fontSize: "clamp(60px, 12vw, 220px)" }}
         >
           StellR IT
         </div>
@@ -269,8 +269,8 @@ export default function Footer() {
             linear-gradient(
               to bottom,
               rgba(255,255,255,1) 0%,
-              rgba(255,255,255,0.35) 55%,
-              rgba(26,5,51,1) 100%
+              rgba(255,255,255,0.3) 50%,
+              rgba(255,255,255,0) 100%
             );
           background-size: 250% 100%, 100% 100%;
           -webkit-background-clip: text;
