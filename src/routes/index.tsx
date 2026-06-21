@@ -114,6 +114,43 @@ function Index() {
           "query-input": "required name=search_term_string",
         },
       },
+      {
+        "@type": "ItemList",
+        "@id": "https://stellrit.com/#sitelinks",
+        "name": "StellR IT Navigation Links",
+        "itemListElement": [
+          {
+            "@type": "SiteNavigationElement",
+            "position": 1,
+            "name": "Services",
+            "url": "https://stellrit.com/services"
+          },
+          {
+            "@type": "SiteNavigationElement",
+            "position": 2,
+            "name": "About Us",
+            "url": "https://stellrit.com/about"
+          },
+          {
+            "@type": "SiteNavigationElement",
+            "position": 3,
+            "name": "Portfolio",
+            "url": "https://stellrit.com/portfolio"
+          },
+          {
+            "@type": "SiteNavigationElement",
+            "position": 4,
+            "name": "Case Studies",
+            "url": "https://stellrit.com/case-studies"
+          },
+          {
+            "@type": "SiteNavigationElement",
+            "position": 5,
+            "name": "Let's Talk",
+            "url": "https://stellrit.com/contact"
+          }
+        ]
+      },
     ],
   };
 
