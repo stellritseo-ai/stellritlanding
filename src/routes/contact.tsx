@@ -23,7 +23,6 @@ import logo9 from "@/assets/logos/logo (1).png";
 import logo10 from "@/assets/logos/logo-I6fgEckf.png";
 import logo11 from "@/assets/logos/logo-nayshands.png";
 import logo12 from "@/assets/logos/logo-white-DNQTDUZa.png";
-
 export const Route = createFileRoute("/contact")({
   head: () => ({
     meta: [
@@ -155,7 +154,7 @@ function ContactPage() {
       setLoading(false);
     }
   };
-
+  // test
   return (
     <main className="relative min-h-screen selection:bg-[#a855f7]/30">
       <ScrollBackground />
@@ -175,7 +174,7 @@ function ContactPage() {
       <section className="bg-gradient-to-b from-[#180028] via-[#180028]/85 to-transparent text-white pt-24 pb-32 relative z-10 overflow-clip">
         {/* Subtle grid lines background overlay */}
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff03_1px,transparent_1px),linear-gradient(to_bottom,#ffffff03_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] pointer-events-none z-0" />
-        
+
         {/* Scroll-Reactive Glowing Blobs (Parallax) */}
         <motion.div
           style={{ y: blobY1, scale: blobScale1, opacity: blobOpacity1 }}
@@ -198,10 +197,10 @@ function ContactPage() {
                 From pixel-perfect platform engineering to scaling digital growth, StellR IT acts as your dedicated product and marketing arm. Let's discuss your vision.
               </p>
             </div>
-            
+
             <div className="space-y-8 p-8 md:p-10 glass rounded-[24px] shadow-[0_20px_50px_rgba(0,0,0,0.3)] border border-white/10 relative overflow-hidden backdrop-blur-xl bg-white/5">
               <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-bl from-[#a855f7]/10 to-transparent blur-[50px] rounded-full pointer-events-none" />
-              
+
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 relative z-10">
                 <ContactBlock icon={<Mail className="h-4 w-4" />} title="Email">
                   <a href="mailto:info@stellrit.com" className="font-medium hover:text-[#ff8a5b] transition-colors duration-300">info@stellrit.com</a>
@@ -299,8 +298,8 @@ function ContactPage() {
                     type="button"
                     onClick={() => setForm({ ...form, budget: b })}
                     className={`rounded-full border px-5 py-2.5 text-[13px] font-bold tracking-wide transition-all duration-300 ${form.budget === b
-                        ? "border-[#a855f7] bg-[#a855f7] text-white shadow-[0_0_20px_rgba(168,85,247,0.4)] cursor-pointer"
-                        : "border-white/10 bg-white/5 text-white/60 hover:border-[#a855f7]/50 hover:bg-white/10 hover:text-white cursor-pointer"
+                      ? "border-[#a855f7] bg-[#a855f7] text-white shadow-[0_0_20px_rgba(168,85,247,0.4)] cursor-pointer"
+                      : "border-white/10 bg-white/5 text-white/60 hover:border-[#a855f7]/50 hover:bg-white/10 hover:text-white cursor-pointer"
                       }`}
                   >
                     {b}
@@ -363,13 +362,13 @@ function ContactPage() {
                   <div className="h-14 flex-1 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center relative overflow-hidden select-none font-mono text-lg tracking-wider font-extrabold text-[#c9a4ff] shadow-inner">
                     {/* Background noise patterns */}
                     <div className="absolute inset-0 opacity-10 pointer-events-none bg-[repeating-linear-gradient(45deg,transparent,transparent_10px,#a855f7_10px,#a855f7_11px)]" />
-                    
+
                     {/* Math question */}
                     <span className="relative z-10 select-none text-glow drop-shadow-[0_0_8px_rgba(168,85,247,0.5)]">
                       {numA} + {numB} = ?
                     </span>
                   </div>
-                  
+
                   {/* Refresh button */}
                   <button
                     type="button"
