@@ -109,7 +109,6 @@ function ProjectsPage() {
   const [projectName, setProjectName] = useState("");
   const [businessName, setBusinessName] = useState("");
   const [salesDate, setSalesDate] = useState("");
-  const [ownerName, setOwnerName] = useState("");
   const [domainName, setDomainName] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [projectCost, setProjectCost] = useState<number>(0);
@@ -200,7 +199,6 @@ function ProjectsPage() {
     setProjectName("");
     setBusinessName("");
     setSalesDate(new Date().toISOString().split("T")[0]);
-    setOwnerName("");
     setDomainName("");
     setPhoneNumber("");
     setProjectCost(0);
@@ -223,7 +221,6 @@ function ProjectsPage() {
     setProjectName(proj.projectName);
     setBusinessName(proj.businessName || "");
     setSalesDate(proj.salesDate);
-    setOwnerName(proj.ownerName);
     setDomainName(proj.domainName);
     setPhoneNumber(proj.phoneNumber);
     setProjectCost(proj.projectCost);
@@ -251,7 +248,6 @@ function ProjectsPage() {
         projectName,
         businessName,
         salesDate,
-        ownerName,
         domainName,
         phoneNumber,
         projectCost: Number(projectCost || 0),
@@ -335,7 +331,7 @@ function ProjectsPage() {
         const matchesSearch =
           proj.clientName.toLowerCase().includes(query) ||
           proj.projectName.toLowerCase().includes(query) ||
-          proj.ownerName.toLowerCase().includes(query) ||
+          proj.businessName?.toLowerCase().includes(query) ||
           proj.domainName.toLowerCase().includes(query);
 
         const status = getPaymentStatus(proj);
@@ -492,7 +488,7 @@ function ProjectsPage() {
                   isDark ? "border-white/5 text-white/40 bg-white/[0.01]" : "border-slate-100 text-slate-400 bg-slate-50/50"
                 }`}>
                   <th className="px-6 py-4">Client & Project</th>
-                  <th className="px-6 py-4">Account Owner</th>
+                  <th className="px-6 py-4">Sales Date</th>
                   <th className="px-6 py-4">Domain Info</th>
                   <th className="px-6 py-4">Financial Overview</th>
                   <th className="px-6 py-4">Progress</th>
@@ -526,10 +522,7 @@ function ProjectsPage() {
                         </div>
                       </td>
                       <td className="px-6 py-4 font-medium">
-                        <div>
-                          <span>{proj.ownerName || "Unassigned"}</span>
-                          <span className="block text-[10px] opacity-40">Sales: {proj.salesDate}</span>
-                        </div>
+                        <span className="font-semibold block">{proj.salesDate || "N/A"}</span>
                       </td>
                       <td className="px-6 py-4 font-mono font-medium opacity-80">
                         {proj.domainName ? (
@@ -643,8 +636,8 @@ function ProjectsPage() {
                       <span className="font-mono font-semibold">${proj.projectCost.toLocaleString()} / ${collected.toLocaleString()}</span>
                     </div>
                     <div>
-                      <span className="opacity-40 block">Owner / Date</span>
-                      <span className="font-semibold truncate block">{proj.ownerName || "Unassigned"}</span>
+                      <span className="opacity-40 block">Sales Date</span>
+                      <span className="font-semibold truncate block">{proj.salesDate || "N/A"}</span>
                     </div>
                   </div>
 
@@ -828,13 +821,6 @@ function ProjectsPage() {
                         </span>
                       </div>
                       <div>
-                        <span className="block opacity-40 font-medium">Account Owner</span>
-                        <span className="font-semibold flex items-center gap-1.5 mt-0.5">
-                          <User className="h-3.5 w-3.5 opacity-60" />
-                          {selectedProject.ownerName || "Unassigned"}
-                        </span>
-                      </div>
-                      <div>
                         <span className="block opacity-40 font-medium">Phone Number</span>
                         <span className="font-semibold flex items-center gap-1.5 mt-0.5">
                           <Phone className="h-3.5 w-3.5 opacity-60" />
@@ -926,11 +912,15 @@ function ProjectsPage() {
                       </div>
 
                       {/* Card Details */}
-                      <div className="pt-3 border-t border-white/5 text-xs flex items-center justify-between">
-                        <span className="opacity-40 flex items-center gap-1.5">
-                          <CreditCard className="h-4 w-4" /> Card Billing File
+                      <div className="pt-3 border-t border-white/5 text-xs flex flex-col gap-2">
+                        <span className="opacity-40 flex items-center gap-1.5 font-semibold">
+                          <CreditCard className="h-4 w-4" /> Card Billing Details (Encrypted)
                         </span>
-                        <span className="font-semibold font-mono">{selectedProject.cardDetails || "None"}</span>
+                        <div className={`p-3.5 rounded-xl border font-mono whitespace-pre-wrap ${
+                          isDark ? "bg-[#180d32] border-white/5 text-white/95" : "bg-white border-slate-200 text-slate-800 shadow-sm"
+                        }`}>
+                          {selectedProject.cardDetails || "None"}
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -1072,21 +1062,6 @@ function ProjectsPage() {
                     </div>
 
                     <div className="space-y-1">
-                      <label className="text-[10px] font-bold uppercase tracking-wider block opacity-70">
-                        Account Owner
-                      </label>
-                      <input
-                        type="text"
-                        placeholder="e.g. Jiten Sony"
-                        value={ownerName}
-                        onChange={(e) => setOwnerName(e.target.value)}
-                        className={`w-full h-10 px-3.5 border rounded-xl text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-[#a855f7]/30 transition ${
-                          isDark ? "bg-white/5 border-white/10 text-white focus:border-[#a855f7]/50" : "bg-slate-50 border-slate-200 text-slate-800"
-                        }`}
-                      />
-                    </div>
-
-                    <div className="space-y-1">
                       <label className="text-[10px] font-bold uppercase tracking-wider block opacity-70 font-mono">
                         Domain Name
                       </label>
@@ -1116,16 +1091,16 @@ function ProjectsPage() {
                       />
                     </div>
 
-                    <div className="space-y-1">
+                    <div className="space-y-1 md:col-span-2">
                       <label className="text-[10px] font-bold uppercase tracking-wider block opacity-70">
                         Card Details File
                       </label>
-                      <input
-                        type="text"
-                        placeholder="e.g. Visa ending in 4242"
+                      <textarea
+                        rows={3}
+                        placeholder="Enter card details, expiration, CVV, billing address..."
                         value={cardDetails}
                         onChange={(e) => setCardDetails(e.target.value)}
-                        className={`w-full h-10 px-3.5 border rounded-xl text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-[#a855f7]/30 transition ${
+                        className={`w-full p-3 border rounded-xl text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-[#a855f7]/30 transition resize-none ${
                           isDark ? "bg-white/5 border-white/10 text-white focus:border-[#a855f7]/50" : "bg-slate-50 border-slate-200 text-slate-800"
                         }`}
                       />

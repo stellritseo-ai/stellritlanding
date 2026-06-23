@@ -121,28 +121,4 @@
     <priority>0.9</priority>
   </url>
 
-  <!-- Careers -->
-  <url>
-    <loc>https://stellrit.com/careers</loc>
-    <lastmod>2025-06-20</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-  </url>
-
-  <!-- Privacy Policy -->
-  <url>
-    <loc>https://stellrit.com/privacy</loc>
-    <lastmod>2025-06-20</lastmod>
-    <changefreq>yearly</changefreq>
-    <priority>0.3</priority>
-  </url>
-
-  <!-- Terms of Service -->
-  <url>
-    <loc>https://stellrit.com/terms</loc>
-    <lastmod>2025-06-20</lastmod>
-    <changefreq>yearly</changefreq>
-    <priority>0.3</priority>
-  </url>
-
 </urlset>

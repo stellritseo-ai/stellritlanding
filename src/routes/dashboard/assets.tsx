@@ -79,17 +79,42 @@ interface Project {
   businessName: string;
 }
 
-const handleDownloadAll = (assets: UploadedAsset[]) => {
-  assets.forEach((asset) => {
+const triggerDownload = async (url: string, filename: string) => {
+  try {
+    const response = await fetch(url);
+    if (!response.ok) throw new Error("Response not ok");
+    const blob = await response.blob();
+    const objectUrl = window.URL.createObjectURL(blob);
     const a = document.createElement("a");
-    a.href = asset.cloudinaryUrl;
-    a.download = asset.originalFilename;
+    a.href = objectUrl;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(objectUrl);
+  } catch (err) {
+    console.warn("Direct blob download failed, falling back to fl_attachment flag:", err);
+    let downloadUrl = url;
+    if (downloadUrl.includes("res.cloudinary.com") && downloadUrl.includes("/upload/")) {
+      downloadUrl = downloadUrl.replace("/upload/", "/upload/fl_attachment/");
+    }
+    const a = document.createElement("a");
+    a.href = downloadUrl;
+    a.download = filename;
     a.target = "_blank";
     a.rel = "noopener noreferrer";
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
-  });
+  }
+};
+
+const handleDownloadAll = async (assets: UploadedAsset[]) => {
+  for (const asset of assets) {
+    await triggerDownload(asset.cloudinaryUrl, asset.originalFilename);
+    // 200ms delay to prevent browser throttling consecutive downloads
+    await new Promise((resolve) => setTimeout(resolve, 200));
+  }
 };
 
 function formatSize(bytes: number) {
@@ -502,15 +527,12 @@ function AssetsPage() {
                                       >
                                         <Eye className="h-4 w-4" />
                                       </button>
-                                      <a 
-                                        href={asset.cloudinaryUrl} 
-                                        download={asset.originalFilename}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
+                                      <button 
+                                        onClick={() => triggerDownload(asset.cloudinaryUrl, asset.originalFilename)}
                                         className="h-8 w-8 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition active:scale-90"
                                       >
                                         <Download className="h-4 w-4" />
-                                      </a>
+                                      </button>
                                       <button 
                                         onClick={() => setDeleteConfirmTarget({ type: "asset", idOrName: asset.id, extraLabel: asset.originalFilename })}
                                         className="h-8 w-8 rounded-lg bg-rose-500/20 hover:bg-rose-500/30 flex items-center justify-center text-rose-400 transition active:scale-90"
@@ -555,15 +577,12 @@ function AssetsPage() {
                                         <span className="text-[9px] text-white/35 font-mono">{formatSize(asset.fileSize)}</span>
                                       </div>
                                       <div className="flex gap-1">
-                                        <a 
-                                          href={asset.cloudinaryUrl} 
-                                          download={asset.originalFilename}
-                                          target="_blank"
-                                          rel="noopener noreferrer"
+                                        <button 
+                                          onClick={() => triggerDownload(asset.cloudinaryUrl, asset.originalFilename)}
                                           className="h-7 w-7 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-white/80 transition"
                                         >
                                           <Download className="h-3.5 w-3.5" />
-                                        </a>
+                                        </button>
                                         <button 
                                           onClick={() => setDeleteConfirmTarget({ type: "asset", idOrName: asset.id, extraLabel: asset.originalFilename })}
                                           className="h-7 w-7 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 flex items-center justify-center text-rose-400 transition"
@@ -605,15 +624,12 @@ function AssetsPage() {
                                         <td className="p-3.5 font-mono text-white/50">{formatSize(asset.fileSize)}</td>
                                         <td className="p-3.5 text-white/40">{new Date(asset.createdAt).toLocaleDateString()}</td>
                                         <td className="p-3.5 text-right flex justify-end gap-1.5">
-                                          <a 
-                                            href={asset.cloudinaryUrl} 
-                                            download={asset.originalFilename}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
+                                          <button 
+                                            onClick={() => triggerDownload(asset.cloudinaryUrl, asset.originalFilename)}
                                             className="h-7 w-7 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-white/80 transition"
                                           >
                                             <Download className="h-3.5 w-3.5" />
-                                          </a>
+                                          </button>
                                           <button 
                                             onClick={() => setDeleteConfirmTarget({ type: "asset", idOrName: asset.id, extraLabel: asset.originalFilename })}
                                             className="h-7 w-7 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 flex items-center justify-center text-rose-400 transition"

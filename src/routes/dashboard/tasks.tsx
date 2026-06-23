@@ -15,7 +15,6 @@ import {
   Edit,
   ChevronRight,
   Calendar,
-  Paperclip,
   MessageSquare,
   History,
   UserPlus,
@@ -166,28 +165,19 @@ function TasksPage() {
 
   // Form Fields States for Create Task
   const [formTitle, setFormTitle] = useState("");
-  const [formProjectId, setFormProjectId] = useState("");
-  const [formAssignedUsers, setFormAssignedUsers] = useState<string[]>([]);
+  const [formAssignedUser, setFormAssignedUser] = useState("");
   const [formPriority, setFormPriority] = useState<Task["priority"]>("Medium");
   const [formTags, setFormTags] = useState("");
-  const [formDescription, setFormDescription] = useState("");
   
   // Business Info states
   const [formBusName, setFormBusName] = useState("");
-  const [formBusContact, setFormBusContact] = useState("");
-  const [formBusPhone, setFormBusPhone] = useState("");
-  const [formBusEmail, setFormBusEmail] = useState("");
-  const [formBusWebsite, setFormBusWebsite] = useState("");
   const [formBusRequirements, setFormBusRequirements] = useState("");
 
   // Domain Info states
   const [formDomName, setFormDomName] = useState("");
 
-  // Comments & checklist state inside Drawer
+  // Comments state inside Drawer
   const [newCommentText, setNewCommentText] = useState("");
-  const [newSubtaskText, setNewSubtaskText] = useState("");
-  const [newAttachmentName, setNewAttachmentName] = useState("");
-  const [newAttachmentUrl, setNewAttachmentUrl] = useState("");
 
   // Fetch all tasks and projects from DB
   const loadData = async () => {
@@ -238,16 +228,7 @@ function TasksPage() {
     return tasks.find((t) => t.id === activeTaskId) || null;
   }, [tasks, activeTaskId]);
 
-  // Handle Project Selection in Create Form to auto-populate Business/Client fields
-  useEffect(() => {
-    if (formProjectId) {
-      const selectedProj = projects.find((p) => p.id === formProjectId);
-      if (selectedProj) {
-        setFormBusName(selectedProj.businessName || selectedProj.clientName || "");
-        setFormDomName(selectedProj.projectName.toLowerCase().replace(/\s+/g, "") + ".com");
-      }
-    }
-  }, [formProjectId, projects]);
+  // Cleaned up form project selections auto-populate to keep page lean
 
   // Summary Widgets calculations
   const widgets = useMemo(() => {
@@ -310,28 +291,25 @@ function TasksPage() {
 
     setLoading(true);
     try {
-      const selectedProj = projects.find((p) => p.id === formProjectId);
-      const projName = selectedProj ? selectedProj.projectName : "";
-
       const requirementsArray = formBusRequirements
         ? formBusRequirements.split("\n").map((r) => r.trim()).filter(Boolean)
         : [];
 
       const payload = {
         title: formTitle,
-        projectName: projName,
+        projectName: "",
         businessName: formBusName,
-        assignedUsers: formAssignedUsers,
+        assignedUsers: formAssignedUser ? [formAssignedUser] : [],
         priority: formPriority,
         status: "To Do",
         tags: formTags ? formTags.split(",").map((t) => t.trim()).filter(Boolean) : [],
-        description: formDescription,
+        description: "",
         businessInfo: {
           businessName: formBusName,
-          contactPerson: formBusContact,
-          phoneNumber: formBusPhone,
-          email: formBusEmail,
-          website: formBusWebsite,
+          contactPerson: "",
+          phoneNumber: "",
+          email: "",
+          website: "",
           requirements: requirementsArray
         },
         domainInfo: {
@@ -347,7 +325,7 @@ function TasksPage() {
             timestamp: new Date().toISOString()
           }
         ],
-        relatedProjectId: formProjectId,
+        relatedProjectId: "",
         createdBy: "Jiten Sony",
         orderIndex: tasks.filter((t) => t.status === "To Do").length + 1
       };
@@ -361,16 +339,10 @@ function TasksPage() {
       
       // Reset fields
       setFormTitle("");
-      setFormProjectId("");
-      setFormAssignedUsers([]);
+      setFormAssignedUser("");
       setFormPriority("Medium");
       setFormTags("");
-      setFormDescription("");
       setFormBusName("");
-      setFormBusContact("");
-      setFormBusPhone("");
-      setFormBusEmail("");
-      setFormBusWebsite("");
       setFormBusRequirements("");
       setFormDomName("");
       
@@ -502,135 +474,6 @@ function TasksPage() {
     }
   };
 
-  // Toggle checklist subtask completed
-  const handleToggleSubtask = async (subtaskId: string) => {
-    if (!selectedTask) return;
-
-    const updatedChecklist = selectedTask.checklist.map((item) =>
-      item.id === subtaskId ? { ...item, completed: !item.completed } : item
-    );
-
-    const targetItem = selectedTask.checklist.find((i) => i.id === subtaskId);
-    const newLog = {
-      action: `${targetItem?.completed ? "Unchecked" : "Checked"} subtask: "${targetItem?.text}"`,
-      performedBy: "Jiten Sony",
-      timestamp: new Date().toISOString()
-    };
-
-    const updatedHistory = [...(selectedTask.activityHistory || []), newLog];
-
-    // Local update
-    setTasks((prev) =>
-      prev.map((t) =>
-        t.id === selectedTask.id
-          ? { ...t, checklist: updatedChecklist, activityHistory: updatedHistory }
-          : t
-      )
-    );
-
-    try {
-      await updateTaskFn({
-        data: {
-          id: selectedTask.id,
-          update: {
-            checklist: updatedChecklist,
-            activityHistory: updatedHistory
-          }
-        }
-      });
-    } catch (err: any) {
-      showToast("Failed to save checklist state to database.", "error");
-      loadData();
-    }
-  };
-
-  // Add checklist item
-  const handleAddSubtask = async () => {
-    if (!selectedTask || !newSubtaskText.trim()) return;
-
-    const newItem: TaskChecklistItem = {
-      id: Math.random().toString(36).substring(2, 9),
-      text: newSubtaskText,
-      completed: false
-    };
-
-    const newLog = {
-      action: `Added checklist item: "${newSubtaskText}"`,
-      performedBy: "Jiten Sony",
-      timestamp: new Date().toISOString()
-    };
-
-    const updatedChecklist = [...(selectedTask.checklist || []), newItem];
-    const updatedHistory = [...(selectedTask.activityHistory || []), newLog];
-
-    // Local update
-    setTasks((prev) =>
-      prev.map((t) =>
-        t.id === selectedTask.id
-          ? { ...t, checklist: updatedChecklist, activityHistory: updatedHistory }
-          : t
-      )
-    );
-    setNewSubtaskText("");
-
-    try {
-      await updateTaskFn({
-        data: {
-          id: selectedTask.id,
-          update: {
-            checklist: updatedChecklist,
-            activityHistory: updatedHistory
-          }
-        }
-      });
-      showToast("Subtask added", "success");
-    } catch (err: any) {
-      showToast("Failed to save checklist to database.", "error");
-      loadData();
-    }
-  };
-
-  // Delete checklist item
-  const handleDeleteSubtask = async (subtaskId: string) => {
-    if (!selectedTask) return;
-
-    const targetItem = selectedTask.checklist.find((i) => i.id === subtaskId);
-    const updatedChecklist = selectedTask.checklist.filter((item) => item.id !== subtaskId);
-
-    const newLog = {
-      action: `Deleted checklist item: "${targetItem?.text}"`,
-      performedBy: "Jiten Sony",
-      timestamp: new Date().toISOString()
-    };
-
-    const updatedHistory = [...(selectedTask.activityHistory || []), newLog];
-
-    // Local update
-    setTasks((prev) =>
-      prev.map((t) =>
-        t.id === selectedTask.id
-          ? { ...t, checklist: updatedChecklist, activityHistory: updatedHistory }
-          : t
-      )
-    );
-
-    try {
-      await updateTaskFn({
-        data: {
-          id: selectedTask.id,
-          update: {
-            checklist: updatedChecklist,
-            activityHistory: updatedHistory
-          }
-        }
-      });
-      showToast("Subtask deleted", "info");
-    } catch (err: any) {
-      showToast("Failed to save checklist deletion.", "error");
-      loadData();
-    }
-  };
-
   // Delete Task Card
   const handleDeleteTask = async (taskId: string) => {
     setLoading(true);
@@ -647,53 +490,6 @@ function TasksPage() {
       showToast("Failed to delete task: " + err.message, "error");
     } finally {
       setLoading(false);
-    }
-  };
-
-  // Attach a mock file representation
-  const handleAddAttachment = async () => {
-    if (!selectedTask || !newAttachmentName.trim() || !newAttachmentUrl.trim()) return;
-
-    const newAttach: TaskAttachment = {
-      name: newAttachmentName,
-      url: newAttachmentUrl.startsWith("http") ? newAttachmentUrl : `https://${newAttachmentUrl}`,
-      type: newAttachmentName.split(".").pop() || "doc"
-    };
-
-    const newLog = {
-      action: `Attached file: "${newAttachmentName}"`,
-      performedBy: "Jiten Sony",
-      timestamp: new Date().toISOString()
-    };
-
-    const updatedAttach = [...(selectedTask.attachments || []), newAttach];
-    const updatedHistory = [...(selectedTask.activityHistory || []), newLog];
-
-    // Local update
-    setTasks((prev) =>
-      prev.map((t) =>
-        t.id === selectedTask.id
-          ? { ...t, attachments: updatedAttach, activityHistory: updatedHistory }
-          : t
-      )
-    );
-    setNewAttachmentName("");
-    setNewAttachmentUrl("");
-
-    try {
-      await updateTaskFn({
-        data: {
-          id: selectedTask.id,
-          update: {
-            attachments: updatedAttach,
-            activityHistory: updatedHistory
-          }
-        }
-      });
-      showToast("File attached successfully", "success");
-    } catch (err: any) {
-      showToast("Failed to upload attachment representation.", "error");
-      loadData();
     }
   };
 
@@ -1128,61 +924,22 @@ function TasksPage() {
                   </div>
                 </div>
 
-                {/* 2. Description */}
-                <div className="space-y-1.5">
-                  <h4 className="text-[10px] font-bold uppercase tracking-widest opacity-40 flex items-center gap-1.5">
-                    <Layers className="h-3.5 w-3.5" /> Task Description
-                  </h4>
-                  <p className={`p-4 rounded-xl border text-xs leading-relaxed ${
-                    isDark ? "bg-white/[0.02] border-white/5" : "bg-slate-50 border-slate-100"
-                  }`}>
-                    {selectedTask.description || "No description provided for this card."}
-                  </p>
-                </div>
-
-                {/* 3. Business Information */}
+                {/* 2. Business Information */}
                 <div className="space-y-3">
                   <h4 className="text-[10px] font-bold uppercase tracking-widest opacity-40 flex items-center gap-1.5">
                     <Briefcase className="h-3.5 w-3.5" /> Business & Contact details
                   </h4>
-                  <div className={`p-4.5 rounded-2xl border text-xs grid grid-cols-1 sm:grid-cols-2 gap-4 ${
+                  <div className={`p-4.5 rounded-2xl border text-xs grid grid-cols-1 gap-4 ${
                     isDark ? "bg-white/[0.01] border-white/5" : "bg-slate-50 border-slate-150"
                   }`}>
                     <div>
                       <span className="block opacity-40 font-medium">Business Name</span>
                       <span className="font-semibold block mt-0.5">{selectedTask.businessInfo?.businessName || selectedTask.businessName || "N/A"}</span>
                     </div>
-                    <div>
-                      <span className="block opacity-40 font-medium">Contact Person</span>
-                      <span className="font-semibold block mt-0.5">{selectedTask.businessInfo?.contactPerson || "N/A"}</span>
-                    </div>
-                    <div>
-                      <span className="block opacity-40 font-medium">Phone Number</span>
-                      <span className="font-semibold block mt-0.5">{selectedTask.businessInfo?.phoneNumber || "N/A"}</span>
-                    </div>
-                    <div>
-                      <span className="block opacity-40 font-medium">Email Address</span>
-                      <span className="font-semibold block mt-0.5">{selectedTask.businessInfo?.email || "N/A"}</span>
-                    </div>
-                    <div className="sm:col-span-2">
-                      <span className="block opacity-40 font-medium">Website/Domain</span>
-                      {selectedTask.businessInfo?.website ? (
-                        <a
-                          href={`https://${selectedTask.businessInfo.website}`}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="font-semibold text-[#a855f7] hover:underline block mt-0.5"
-                        >
-                          {selectedTask.businessInfo.website}
-                        </a>
-                      ) : (
-                        <span className="font-semibold block mt-0.5">N/A</span>
-                      )}
-                    </div>
                     
                     {/* Requirements */}
                     {selectedTask.businessInfo?.requirements && selectedTask.businessInfo.requirements.length > 0 && (
-                      <div className="sm:col-span-2 border-t border-white/5 pt-3 mt-1 space-y-1.5">
+                      <div className="border-t border-white/5 pt-3 mt-1 space-y-1.5">
                         <span className="block opacity-40 font-medium">Slicing & Integration Requirements</span>
                         <ul className="list-disc pl-4 space-y-1 font-medium leading-relaxed">
                           {selectedTask.businessInfo.requirements.map((req, rIdx) => (
@@ -1194,7 +951,7 @@ function TasksPage() {
                   </div>
                 </div>
 
-                {/* 4. Domain Information */}
+                {/* 3. Domain Information */}
                 <div className="space-y-3">
                   <h4 className="text-[10px] font-bold uppercase tracking-widest opacity-40 flex items-center gap-1.5">
                     <Globe className="h-3.5 w-3.5" /> Domain Booking details
@@ -1209,131 +966,7 @@ function TasksPage() {
                   </div>
                 </div>
 
-                {/* 5. Subtasks Checklist progress */}
-                <div className="space-y-3">
-                  <h4 className="text-[10px] font-bold uppercase tracking-widest opacity-40 flex items-center gap-1.5">
-                    <CheckSquare className="h-3.5 w-3.5" /> Checklist Subtasks
-                  </h4>
-                  <div className={`p-4.5 rounded-2xl border space-y-4 ${
-                    isDark ? "bg-white/[0.01] border-white/5" : "bg-slate-50 border-slate-150"
-                  }`}>
-                    {/* Checklist items list */}
-                    <div className="space-y-2">
-                      {selectedTask.checklist?.length > 0 ? (
-                        selectedTask.checklist.map((item) => (
-                          <div key={item.id} className="flex items-center justify-between gap-3 text-xs">
-                            <label className="flex items-center gap-3 cursor-pointer select-none flex-1">
-                              <input
-                                type="checkbox"
-                                checked={item.completed}
-                                onChange={() => handleToggleSubtask(item.id)}
-                                className="rounded text-[#a855f7] focus:ring-[#a855f7]/30 h-4 w-4 bg-white/5 border-white/10"
-                              />
-                              <span className={item.completed ? "line-through opacity-55" : "font-medium"}>
-                                {item.text}
-                              </span>
-                            </label>
-                            <button
-                              onClick={() => handleDeleteSubtask(item.id)}
-                              className="text-white/30 hover:text-red-400 transition"
-                            >
-                              <X className="h-3.5 w-3.5" />
-                            </button>
-                          </div>
-                        ))
-                      ) : (
-                        <div className="text-xs opacity-40 italic">No checklist subtasks listed.</div>
-                      )}
-                    </div>
-
-                    {/* Add Checklist Input */}
-                    <div className="flex gap-2">
-                      <input
-                        type="text"
-                        placeholder="Add subtask text..."
-                        value={newSubtaskText}
-                        onChange={(e) => setNewSubtaskText(e.target.value)}
-                        onKeyDown={(e) => e.key === "Enter" && handleAddSubtask()}
-                        className={`flex-1 h-9 px-3 rounded-lg border text-xs focus:outline-none focus:ring-1 focus:ring-[#a855f7]/30 transition ${
-                          isDark ? "bg-white/5 border-white/5 text-white" : "bg-white border-slate-200 text-slate-800"
-                        }`}
-                      />
-                      <button
-                        onClick={handleAddSubtask}
-                        className="px-3.5 rounded-lg bg-gradient-to-r from-[#a855f7] to-[#ff8a5b] text-white text-xs font-bold active:scale-95 transition"
-                      >
-                        Add
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-                {/* 6. Attachments Configuration */}
-                <div className="space-y-3">
-                  <h4 className="text-[10px] font-bold uppercase tracking-widest opacity-40 flex items-center gap-1.5">
-                    <Paperclip className="h-3.5 w-3.5" /> File Attachments
-                  </h4>
-                  <div className={`p-4.5 rounded-2xl border space-y-4 ${
-                    isDark ? "bg-white/[0.01] border-white/5" : "bg-slate-50 border-slate-150"
-                  }`}>
-                    {/* Attachment List */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-                      {selectedTask.attachments?.length > 0 ? (
-                        selectedTask.attachments.map((attach, aIdx) => (
-                          <a
-                            key={aIdx}
-                            href={attach.url}
-                            target="_blank"
-                            rel="noreferrer"
-                            className={`p-3 rounded-xl border flex items-center gap-2.5 text-xs hover:border-[#a855f7]/40 transition ${
-                              isDark ? "bg-[#160c2d] border-white/5" : "bg-white border-slate-200"
-                            }`}
-                          >
-                            <Paperclip className="h-4 w-4 text-[#ff8a5b] shrink-0" />
-                            <div className="truncate flex-1">
-                              <span className="font-semibold block truncate leading-tight">{attach.name}</span>
-                              <span className="text-[9px] opacity-40 block mt-0.5 uppercase">{attach.type || "file"}</span>
-                            </div>
-                          </a>
-                        ))
-                      ) : (
-                        <div className="col-span-2 text-xs opacity-40 italic">No files attached to this card.</div>
-                      )}
-                    </div>
-
-                    {/* Simulate Attachment Upload */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      <input
-                        type="text"
-                        placeholder="File Name (e.g. wireframe.pdf)"
-                        value={newAttachmentName}
-                        onChange={(e) => setNewAttachmentName(e.target.value)}
-                        className={`h-9 px-3 rounded-lg border text-xs focus:outline-none focus:ring-1 focus:ring-[#a855f7]/30 transition ${
-                          isDark ? "bg-white/5 border-white/5 text-white" : "bg-white border-slate-200 text-slate-800"
-                        }`}
-                      />
-                      <div className="flex gap-2">
-                        <input
-                          type="text"
-                          placeholder="File URL (e.g. google.drive/link)"
-                          value={newAttachmentUrl}
-                          onChange={(e) => setNewAttachmentUrl(e.target.value)}
-                          className={`flex-1 h-9 px-3 rounded-lg border text-xs focus:outline-none focus:ring-1 focus:ring-[#a855f7]/30 transition ${
-                            isDark ? "bg-white/5 border-white/5 text-white" : "bg-white border-slate-200 text-slate-800"
-                          }`}
-                        />
-                        <button
-                          onClick={handleAddAttachment}
-                          className="px-3.5 rounded-lg bg-gradient-to-r from-[#a855f7] to-[#ff8a5b] text-white text-xs font-bold active:scale-95 transition"
-                        >
-                          Attach
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* 7. Comments Section */}
+                {/* 4. Comments Section */}
                 <div className="space-y-3">
                   <h4 className="text-[10px] font-bold uppercase tracking-widest opacity-40 flex items-center gap-1.5">
                     <MessageSquare className="h-3.5 w-3.5" /> Comments Thread
@@ -1393,7 +1026,7 @@ function TasksPage() {
                   </div>
                 </div>
 
-                {/* 8. Activity Timeline history */}
+                {/* 5. Activity Timeline history */}
                 <div className="space-y-3">
                   <h4 className="text-[10px] font-bold uppercase tracking-widest opacity-40 flex items-center gap-1.5">
                     <History className="h-3.5 w-3.5" /> Task Activity Timeline
@@ -1486,28 +1119,12 @@ function TasksPage() {
                       />
                     </div>
 
-                    {/* Related Project Selection */}
-                    <div className="space-y-1">
-                      <label className="text-[10px] font-bold uppercase tracking-wider block opacity-70">Related Project Selection</label>
-                      <select
-                        value={formProjectId}
-                        onChange={(e) => setFormProjectId(e.target.value)}
-                        className={`w-full h-10 px-3.5 border rounded-xl text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-[#a855f7]/30 transition ${
-                          isDark ? "bg-[#12052c] border-white/10 text-white focus:border-[#a855f7]/50" : "bg-slate-50 border-slate-200 text-slate-800"
-                        }`}
-                      >
-                        <option value="">Unassigned / No Project</option>
-                        {projects.map((p) => (
-                          <option key={p.id} value={p.id}>{p.projectName}</option>
-                        ))}
-                      </select>
-                    </div>
-
                     {/* Client / Business Name */}
-                    <div className="space-y-1">
+                    <div className="space-y-1 md:col-span-2">
                       <label className="text-[10px] font-bold uppercase tracking-wider block opacity-70">Client / Business Name</label>
                       <input
                         type="text"
+                        list="projects-list"
                         placeholder="e.g. ABCD Construction"
                         value={formBusName}
                         onChange={(e) => setFormBusName(e.target.value)}
@@ -1515,76 +1132,56 @@ function TasksPage() {
                           isDark ? "bg-white/5 border-white/10 text-white focus:border-[#a855f7]/50" : "bg-slate-50 border-slate-200 text-slate-800"
                         }`}
                       />
+                      <datalist id="projects-list">
+                        {projects.map((p) => (
+                          <option key={p.id} value={p.businessName || p.clientName || p.projectName} />
+                        ))}
+                      </datalist>
                     </div>
 
-                    {/* Assigned Users */}
+                    {/* Assigned Team Member */}
                     <div className="space-y-1">
-                      <label className="text-[10px] font-bold uppercase tracking-wider block opacity-70">Assigned Team Members</label>
+                      <label className="text-[10px] font-bold uppercase tracking-wider block opacity-70">Assigned Team Member</label>
                       <select
-                        multiple
-                        value={formAssignedUsers}
-                        onChange={(e) => {
-                          const options = e.target.options;
-                          const values: string[] = [];
-                          for (let i = 0; i < options.length; i++) {
-                            if (options[i].selected) {
-                              values.push(options[i].value);
-                            }
-                          }
-                          setFormAssignedUsers(values);
-                        }}
-                        className={`w-full h-24 p-2 border rounded-xl text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-[#a855f7]/30 transition ${
+                        value={formAssignedUser}
+                        onChange={(e) => setFormAssignedUser(e.target.value)}
+                        className={`w-full h-10 px-3.5 border rounded-xl text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-[#a855f7]/30 transition ${
                           isDark ? "bg-[#12052c] border-white/10 text-white focus:border-[#a855f7]/50" : "bg-slate-50 border-slate-200 text-slate-800"
                         }`}
                       >
+                        <option value="">Unassigned / Select Member</option>
                         {teamMembers.map((m) => (
                           <option key={m.name} value={m.name}>{m.name}</option>
                         ))}
                       </select>
-                      <span className="text-[8px] opacity-40 block mt-1">Hold Cmd/Ctrl to assign multiple members.</span>
                     </div>
 
-                    {/* Priority & Tags */}
-                    <div className="space-y-3.5">
-                      <div className="space-y-1">
-                        <label className="text-[10px] font-bold uppercase tracking-wider block opacity-70">Priority Level</label>
-                        <select
-                          value={formPriority}
-                          onChange={(e) => setFormPriority(e.target.value as any)}
-                          className={`w-full h-10 px-3.5 border rounded-xl text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-[#a855f7]/30 transition ${
-                            isDark ? "bg-[#12052c] border-white/10 text-white focus:border-[#a855f7]/50" : "bg-slate-50 border-slate-200 text-slate-800"
-                          }`}
-                        >
-                          <option value="Low">Low</option>
-                          <option value="Medium">Medium</option>
-                          <option value="High">High</option>
-                          <option value="Urgent">Urgent</option>
-                        </select>
-                      </div>
-
-                      <div className="space-y-1">
-                        <label className="text-[10px] font-bold uppercase tracking-wider block opacity-70">Tags / Labels (comma separated)</label>
-                        <input
-                          type="text"
-                          placeholder="e.g. Slicing, Responsive, SEO"
-                          value={formTags}
-                          onChange={(e) => setFormTags(e.target.value)}
-                          className={`w-full h-10 px-3.5 border rounded-xl text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-[#a855f7]/30 transition ${
-                            isDark ? "bg-white/5 border-white/10 text-white focus:border-[#a855f7]/50" : "bg-slate-50 border-slate-200 text-slate-800"
-                          }`}
-                        />
-                      </div>
+                    {/* Priority Level */}
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-bold uppercase tracking-wider block opacity-70">Priority Level</label>
+                      <select
+                        value={formPriority}
+                        onChange={(e) => setFormPriority(e.target.value as any)}
+                        className={`w-full h-10 px-3.5 border rounded-xl text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-[#a855f7]/30 transition ${
+                          isDark ? "bg-[#12052c] border-white/10 text-white focus:border-[#a855f7]/50" : "bg-slate-50 border-slate-200 text-slate-800"
+                        }`}
+                      >
+                        <option value="Low">Low</option>
+                        <option value="Medium">Medium</option>
+                        <option value="High">High</option>
+                        <option value="Urgent">Urgent</option>
+                      </select>
                     </div>
 
-                    {/* Description */}
+                    {/* Tags / Labels (comma separated) */}
                     <div className="space-y-1 md:col-span-2">
-                      <label className="text-[10px] font-bold uppercase tracking-wider block opacity-70">Task Description</label>
-                      <textarea
-                        rows={2}
-                        placeholder="Enter general task descriptions..."
-                        value={formDescription}
-                        onChange={(e) => setFormDescription(e.target.value)}
-                        className={`w-full p-3.5 border rounded-xl text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-[#a855f7]/30 transition resize-none ${
+                      <label className="text-[10px] font-bold uppercase tracking-wider block opacity-70">Tags / Labels (comma separated)</label>
+                      <input
+                        type="text"
+                        placeholder="e.g. Slicing, Responsive, SEO"
+                        value={formTags}
+                        onChange={(e) => setFormTags(e.target.value)}
+                        className={`w-full h-10 px-3.5 border rounded-xl text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-[#a855f7]/30 transition ${
                           isDark ? "bg-white/5 border-white/10 text-white focus:border-[#a855f7]/50" : "bg-slate-50 border-slate-200 text-slate-800"
                         }`}
                       />
@@ -1600,58 +1197,6 @@ function TasksPage() {
                   <h4 className="text-[9px] font-bold uppercase tracking-widest opacity-40">Business Information</h4>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4.5">
                     
-                    <div className="space-y-1">
-                      <label className="text-[10px] font-bold uppercase tracking-wider block opacity-70">Contact Person</label>
-                      <input
-                        type="text"
-                        placeholder="e.g. John Doe"
-                        value={formBusContact}
-                        onChange={(e) => setFormBusContact(e.target.value)}
-                        className={`w-full h-10 px-3.5 border rounded-xl text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-[#a855f7]/30 transition ${
-                          isDark ? "bg-white/5 border-white/10 text-white focus:border-[#a855f7]/50" : "bg-slate-50 border-slate-200 text-slate-800"
-                        }`}
-                      />
-                    </div>
-
-                    <div className="space-y-1">
-                      <label className="text-[10px] font-bold uppercase tracking-wider block opacity-70">Phone Number</label>
-                      <input
-                        type="text"
-                        placeholder="e.g. (000) 000-0000"
-                        value={formBusPhone}
-                        onChange={(e) => setFormBusPhone(e.target.value)}
-                        className={`w-full h-10 px-3.5 border rounded-xl text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-[#a855f7]/30 transition ${
-                          isDark ? "bg-white/5 border-white/10 text-white focus:border-[#a855f7]/50" : "bg-slate-50 border-slate-200 text-slate-800"
-                        }`}
-                      />
-                    </div>
-
-                    <div className="space-y-1">
-                      <label className="text-[10px] font-bold uppercase tracking-wider block opacity-70">Email Address</label>
-                      <input
-                        type="email"
-                        placeholder="e.g. example@email.com"
-                        value={formBusEmail}
-                        onChange={(e) => setFormBusEmail(e.target.value)}
-                        className={`w-full h-10 px-3.5 border rounded-xl text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-[#a855f7]/30 transition ${
-                          isDark ? "bg-white/5 border-white/10 text-white focus:border-[#a855f7]/50" : "bg-slate-50 border-slate-200 text-slate-800"
-                        }`}
-                      />
-                    </div>
-
-                    <div className="space-y-1">
-                      <label className="text-[10px] font-bold uppercase tracking-wider block opacity-70">Website URL</label>
-                      <input
-                        type="text"
-                        placeholder="e.g. abcdconstruction.com"
-                        value={formBusWebsite}
-                        onChange={(e) => setFormBusWebsite(e.target.value)}
-                        className={`w-full h-10 px-3.5 border rounded-xl text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-[#a855f7]/30 transition ${
-                          isDark ? "bg-white/5 border-white/10 text-white focus:border-[#a855f7]/50" : "bg-slate-50 border-slate-200 text-slate-800"
-                        }`}
-                      />
-                    </div>
-
                     <div className="space-y-1 md:col-span-2">
                       <label className="text-[10px] font-bold uppercase tracking-wider block opacity-70">Project Requirements (Line-by-line)</label>
                       <textarea

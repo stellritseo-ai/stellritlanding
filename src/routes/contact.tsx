@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { submitWebsiteEmailFn } from "@/lib/dashboard.functions.server";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { toast } from "sonner";
@@ -85,6 +85,22 @@ function ContactPage() {
   const [form, setForm] = useState({ name: "", email: "", phone: "", company: "", budget: BUDGETS[1], service: SERVICES[0], message: "" });
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
+  const [numA, setNumA] = useState(0);
+  const [numB, setNumB] = useState(0);
+  const [userCaptchaInput, setUserCaptchaInput] = useState("");
+  const [honeypot, setHoneypot] = useState("");
+
+  const generateCaptcha = () => {
+    const a = Math.floor(Math.random() * 9) + 1;
+    const b = Math.floor(Math.random() * 9) + 1;
+    setNumA(a);
+    setNumB(b);
+    setUserCaptchaInput("");
+  };
+
+  useEffect(() => {
+    generateCaptcha();
+  }, []);
 
   const { scrollY } = useScroll();
   // Parallax background blobs that shift/glow on scroll
@@ -98,12 +114,21 @@ function ContactPage() {
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (honeypot) {
+      // Ignore bot submission silently
+      return;
+    }
     if (!form.name.trim() || !form.email.trim() || !form.message.trim()) {
       toast.error("Please fill in name, email and a short message.");
       return;
     }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
       toast.error("Please enter a valid email address.");
+      return;
+    }
+    if (Number(userCaptchaInput.trim()) !== (numA + numB)) {
+      toast.error("Incorrect security verification answer. Please try again.");
+      generateCaptcha();
       return;
     }
     setLoading(true);
@@ -122,6 +147,7 @@ function ContactPage() {
       });
       setForm({ name: "", email: "", phone: "", company: "", budget: BUDGETS[1], service: SERVICES[0], message: "" });
       setFile(null);
+      generateCaptcha();
       toast.success("Thanks — we'll be in touch within one business day.");
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Failed to send message. Please try again.");
@@ -316,6 +342,60 @@ function ContactPage() {
                 )}
               </div>
             </Field>
+
+            {/* Honeypot field (hidden from human users) */}
+            <div className="hidden" aria-hidden="true">
+              <input
+                type="text"
+                name="website_url_field"
+                value={honeypot}
+                onChange={(e) => setHoneypot(e.target.value)}
+                tabIndex={-1}
+                autoComplete="off"
+              />
+            </div>
+
+            {/* CAPTCHA Validation Widget */}
+            <div className="mt-8 relative z-10 grid grid-cols-1 sm:grid-cols-2 gap-4 items-end">
+              <Field label="Security Verification *">
+                <div className="flex items-center gap-3">
+                  {/* Styled Captcha Display */}
+                  <div className="h-14 flex-1 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center relative overflow-hidden select-none font-mono text-lg tracking-wider font-extrabold text-[#c9a4ff] shadow-inner">
+                    {/* Background noise patterns */}
+                    <div className="absolute inset-0 opacity-10 pointer-events-none bg-[repeating-linear-gradient(45deg,transparent,transparent_10px,#a855f7_10px,#a855f7_11px)]" />
+                    
+                    {/* Math question */}
+                    <span className="relative z-10 select-none text-glow drop-shadow-[0_0_8px_rgba(168,85,247,0.5)]">
+                      {numA} + {numB} = ?
+                    </span>
+                  </div>
+                  
+                  {/* Refresh button */}
+                  <button
+                    type="button"
+                    onClick={generateCaptcha}
+                    className="h-14 w-14 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 flex items-center justify-center text-white/60 hover:text-white transition active:scale-95 shadow-md cursor-pointer"
+                    title="Generate new math question"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 8.89M9 17H5v-4" />
+                    </svg>
+                  </button>
+                </div>
+              </Field>
+
+              <Field label="Answer *">
+                <input
+                  type="number"
+                  required
+                  value={userCaptchaInput}
+                  onChange={(e) => setUserCaptchaInput(e.target.value)}
+                  className={inputCls}
+                  placeholder="What is the sum?"
+                  autoComplete="off"
+                />
+              </Field>
+            </div>
 
             <button
               type="submit"

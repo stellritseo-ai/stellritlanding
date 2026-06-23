@@ -4,10 +4,11 @@ import crypto from "node:crypto";
 // Helper to map mongoose documents to simple JS objects with string IDs
 function mapDoc(d: any) {
   if (!d) return null;
-  const obj = d.toObject ? d.toObject() : d;
+  const obj = d.toObject ? d.toObject({ virtuals: true, getters: true }) : d;
+  const json = JSON.parse(JSON.stringify(obj));
   return {
-    ...obj,
-    id: obj._id ? obj._id.toString() : obj.id,
+    ...json,
+    id: obj._id ? obj._id.toString() : (obj.id || json.id || json._id),
     _id: undefined,
     __v: undefined,
   };
@@ -106,10 +107,26 @@ export const getOperatorsFn = createServerFn({ method: "GET" }).handler(async ()
       { name: "Jiten Sony", email: "jiten@stellrit.com", role: "Super Admin", status: "Active", joinedDate: "2026-01-15", username: "stellr", password: "stellr123" },
       { name: "Sarah Jenkins", email: "sarah.j@nexus.io", role: "Supervisor", status: "Active", joinedDate: "2026-02-18", username: "sarah", password: "sarah123" },
       { name: "David Chen", email: "david.c@technova.com", role: "Developer", status: "Active", joinedDate: "2026-03-10", username: "david", password: "david123" },
-      { name: "Alex Rivera", email: "alex@riveradesign.co", role: "Manager", status: "Active", joinedDate: "2026-04-05", username: "alex", password: "alex123" }
+      { name: "Alex Rivera", email: "alex@riveradesign.co", role: "Manager", status: "Active", joinedDate: "2026-04-05", username: "alex", password: "alex123" },
+      { name: "Emily Watson", email: "emily.w@harmonycare.org", role: "Developer", status: "Active", joinedDate: "2026-04-10", username: "emily", password: "emily123" }
     ];
     await OperatorModel.insertMany(defaults);
     ops = await OperatorModel.find().sort({ createdAt: 1 });
+  } else {
+    // If database exists but Emily Watson is missing, dynamically add her
+    const emilyExists = await OperatorModel.findOne({ name: "Emily Watson" });
+    if (!emilyExists) {
+      await OperatorModel.create({
+        name: "Emily Watson",
+        email: "emily.w@harmonycare.org",
+        role: "Developer",
+        status: "Active",
+        joinedDate: "2026-04-10",
+        username: "emily",
+        password: "emily123"
+      });
+      ops = await OperatorModel.find().sort({ createdAt: 1 });
+    }
   }
   return ops.map(mapDoc);
 });
@@ -255,6 +272,7 @@ export const getProjectsFn = createServerFn({ method: "GET" }).handler(async () 
   await connectDB();
   let list = await ProjectModel.find().sort({ createdAt: -1 });
   if (list.length === 0) {
+    const { encryptPassword } = await import("./crypto.server");
     const seedProjects = [
       {
         clientName: "Acme Corp",
@@ -271,7 +289,7 @@ export const getProjectsFn = createServerFn({ method: "GET" }).handler(async () 
         thirdInstallment: 4000,
         hostingFee: 150,
         closeBy: "2026-07-15",
-        cardDetails: "Visa **** 4242",
+        cardDetails: encryptPassword("Visa **** 4242"),
         projectDetails: "Complete migration to Next.js and Tailwind CSS.",
         isCompleted: false,
         color: "from-purple-500 to-indigo-500",
@@ -292,7 +310,7 @@ export const getProjectsFn = createServerFn({ method: "GET" }).handler(async () 
         thirdInstallment: 7000,
         hostingFee: 250,
         closeBy: "2026-08-30",
-        cardDetails: "MasterCard **** 8888",
+        cardDetails: encryptPassword("MasterCard **** 8888"),
         projectDetails: "AI workflow orchestrator dashboard development.",
         isCompleted: true,
         color: "from-emerald-500 to-teal-500",
@@ -313,7 +331,7 @@ export const getProjectsFn = createServerFn({ method: "GET" }).handler(async () 
         thirdInstallment: 3000,
         hostingFee: 99,
         closeBy: "2026-06-25",
-        cardDetails: "Amex **** 1007",
+        cardDetails: encryptPassword("Amex **** 1007"),
         projectDetails: "Shopify headless storefront setup with search engine tuning.",
         isCompleted: true,
         color: "from-amber-500 to-orange-500",
@@ -334,7 +352,7 @@ export const getProjectsFn = createServerFn({ method: "GET" }).handler(async () 
         thirdInstallment: 5000,
         hostingFee: 199,
         closeBy: "2026-07-20",
-        cardDetails: "Visa **** 9911",
+        cardDetails: encryptPassword("Visa **** 9911"),
         projectDetails: "Cross-platform mobile application design and deployment.",
         isCompleted: false,
         color: "from-pink-500 to-rose-500",
@@ -344,13 +362,24 @@ export const getProjectsFn = createServerFn({ method: "GET" }).handler(async () 
     await ProjectModel.insertMany(seedProjects);
     list = await ProjectModel.find().sort({ createdAt: -1 });
   }
-  return list.map(mapDoc);
+  const { decryptPassword } = await import("./crypto.server");
+  return list.map((doc) => {
+    const plain = mapDoc(doc);
+    if (plain && plain.cardDetails) {
+      plain.cardDetails = decryptPassword(plain.cardDetails);
+    }
+    return plain;
+  });
 });
 
 export const createProjectFn = createServerFn({ method: "POST" }).handler(
   async ({ data }: { data: any }) => {
     const { connectDB, ProjectModel } = await import("./db.server");
+    const { encryptPassword, decryptPassword } = await import("./crypto.server");
     await connectDB();
+    if (data && data.cardDetails) {
+      data.cardDetails = encryptPassword(data.cardDetails);
+    }
     const proj = new ProjectModel(data);
     await proj.save();
 
@@ -360,14 +389,22 @@ export const createProjectFn = createServerFn({ method: "POST" }).handler(
       "System Admin"
     );
 
-    return mapDoc(proj);
+    const plain = mapDoc(proj);
+    if (plain && plain.cardDetails) {
+      plain.cardDetails = decryptPassword(plain.cardDetails);
+    }
+    return plain;
   }
 );
 
 export const updateProjectFn = createServerFn({ method: "POST" }).handler(
   async ({ data }: { data: { id: string; update: any } }) => {
     const { connectDB, ProjectModel } = await import("./db.server");
+    const { encryptPassword, decryptPassword } = await import("./crypto.server");
     await connectDB();
+    if (data && data.update && data.update.cardDetails) {
+      data.update.cardDetails = encryptPassword(data.update.cardDetails);
+    }
     const updated = await ProjectModel.findByIdAndUpdate(data.id, data.update, { new: true });
 
     if (updated) {
@@ -378,7 +415,11 @@ export const updateProjectFn = createServerFn({ method: "POST" }).handler(
       );
     }
 
-    return mapDoc(updated);
+    const plain = mapDoc(updated);
+    if (plain && plain.cardDetails) {
+      plain.cardDetails = decryptPassword(plain.cardDetails);
+    }
+    return plain;
   }
 );
 
@@ -402,62 +443,82 @@ export const deleteProjectFn = createServerFn({ method: "POST" }).handler(
 
 // ── Tasks CRUD ───────────────────────────────────────────────────────────────
 export const getTasksFn = createServerFn({ method: "GET" }).handler(async () => {
-  const { connectDB, TaskModel } = await import("./db.server");
-  await connectDB();
-  const list = await TaskModel.find().sort({ orderIndex: 1, createdAt: -1 });
-  return list.map(mapDoc);
+  try {
+    const { connectDB, TaskModel } = await import("./db.server");
+    await connectDB();
+    const list = await TaskModel.find().sort({ orderIndex: 1, createdAt: -1 });
+    return list.map(mapDoc);
+  } catch (err: any) {
+    console.error("Error in getTasksFn:", err);
+    throw new Error(err.message || "Failed to fetch task list.");
+  }
 });
 
 export const createTaskFn = createServerFn({ method: "POST" }).handler(
   async ({ data }: { data: any }) => {
-    const { connectDB, TaskModel } = await import("./db.server");
-    await connectDB();
-    const task = new TaskModel(data);
-    await task.save();
+    try {
+      const { connectDB, TaskModel } = await import("./db.server");
+      await connectDB();
+      const task = new TaskModel(data);
+      await task.save();
 
-    await logActivity(
-      "Task Created",
-      `Task "${task.title}" was provisioned.`,
-      "System Admin"
-    );
+      await logActivity(
+        "Task Created",
+        `Task "${task.title}" was provisioned.`,
+        "System Admin"
+      );
 
-    return mapDoc(task);
+      return mapDoc(task);
+    } catch (err: any) {
+      console.error("Error in createTaskFn:", err);
+      throw new Error(err.message || "Failed to create task card.");
+    }
   }
 );
 
 export const updateTaskFn = createServerFn({ method: "POST" }).handler(
   async ({ data }: { data: { id: string; update: any } }) => {
-    const { connectDB, TaskModel } = await import("./db.server");
-    await connectDB();
-    const updated = await TaskModel.findByIdAndUpdate(data.id, data.update, { new: true });
+    try {
+      const { connectDB, TaskModel } = await import("./db.server");
+      await connectDB();
+      const updated = await TaskModel.findByIdAndUpdate(data.id, data.update, { new: true });
 
-    if (updated) {
-      await logActivity(
-        "Task Updated",
-        `Task "${updated.title}" status shifted to "${updated.status}".`,
-        "System Admin"
-      );
+      if (updated) {
+        await logActivity(
+          "Task Updated",
+          `Task "${updated.title}" status shifted to "${updated.status}".`,
+          "System Admin"
+        );
+      }
+
+      return mapDoc(updated);
+    } catch (err: any) {
+      console.error("Error in updateTaskFn:", err);
+      throw new Error(err.message || "Failed to update task.");
     }
-
-    return mapDoc(updated);
   }
 );
 
 export const deleteTaskFn = createServerFn({ method: "POST" }).handler(
   async ({ data }: { data: { id: string } }) => {
-    const { connectDB, TaskModel } = await import("./db.server");
-    await connectDB();
-    const task = await TaskModel.findByIdAndDelete(data.id);
+    try {
+      const { connectDB, TaskModel } = await import("./db.server");
+      await connectDB();
+      const task = await TaskModel.findByIdAndDelete(data.id);
 
-    if (task) {
-      await logActivity(
-        "Task Deleted",
-        `Task "${task.title}" was permanently removed.`,
-        "System Admin"
-      );
+      if (task) {
+        await logActivity(
+          "Task Deleted",
+          `Task "${task.title}" was permanently removed.`,
+          "System Admin"
+        );
+      }
+
+      return { success: true };
+    } catch (err: any) {
+      console.error("Error in deleteTaskFn:", err);
+      throw new Error(err.message || "Failed to delete task.");
     }
-
-    return { success: true };
   }
 );
 
