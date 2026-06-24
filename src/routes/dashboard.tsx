@@ -29,6 +29,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import logoImg from "@/assets/logo.png";
 import { DashboardThemeContext } from "../hooks/useDashboardTheme";
 import { getCurrentOperatorFn } from "@/lib/chat.functions.server";
+import { getActivityLogsFn } from "@/lib/dashboard.functions.server";
 
 export const Route = createFileRoute("/dashboard")({
   beforeLoad: ({ location }) => {
@@ -105,6 +106,31 @@ function DashboardLayout() {
     }
   }, [theme]);
 
+  const triggerBrowserNotification = (title: string, body: string) => {
+    if (typeof window === "undefined" || !("Notification" in window)) return;
+    
+    if (Notification.permission === "default") {
+      Notification.requestPermission().then((permission) => {
+        if (permission === "granted") {
+          showNotif();
+        }
+      });
+    } else if (Notification.permission === "granted") {
+      showNotif();
+    }
+
+    function showNotif() {
+      try {
+        new Notification(title, {
+          body,
+          icon: "/favicon.ico",
+        });
+      } catch (err) {
+        console.error("Error triggering browser notification:", err);
+      }
+    }
+  };
+
   // Establish background socket connection for operator presence & notifications
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -141,38 +167,47 @@ function DashboardLayout() {
         // Listen for new team chat messages
         socket.on("receive-team-message", (msg: any) => {
           if (msg && msg.senderId !== me.id) {
-            // Check if operator is on the team-chat screen and looking at it
+            const newNotif = {
+              id: msg.id || msg._id || Math.random().toString(),
+              title: "New Team Message",
+              message: msg.text || "Shared a file in team chat",
+              time: "Just now",
+              read: false,
+              type: "chat" as const,
+            };
+            setNotifications((prev) => {
+              if (prev.some((n) => n.id === newNotif.id)) return prev;
+              return [newNotif, ...prev];
+            });
+
             const isTeamChatVisible = window.location.pathname === "/dashboard/team-chat" && document.visibilityState === "visible";
             if (!isTeamChatVisible) {
-              if ("Notification" in window && Notification.permission === "granted") {
-                try {
-                  new Notification("New team message", {
-                    body: msg.text || "Shared a file in team chat",
-                    icon: "/favicon.ico",
-                  });
-                } catch (err) {
-                  console.error("Error displaying team chat browser notification:", err);
-                }
-              }
+              triggerBrowserNotification("New Team Message", msg.text || "Shared a file in team chat");
             }
           }
         });
 
         const handleVisitorMsg = (msg: any) => {
-          const isLiveChatVisible = window.location.pathname === "/dashboard/chat" && document.visibilityState === "visible";
-          if (!isLiveChatVisible && msg) {
+          if (msg) {
             if (msg.senderType === 'admin' || msg.sender === 'admin') return;
             const text = msg.message || msg.text || "A website visitor sent a live chat message.";
 
-            if ("Notification" in window && Notification.permission === "granted") {
-              try {
-                new Notification("New Live Chat Message", {
-                  body: text,
-                  icon: "/favicon.ico",
-                });
-              } catch (err) {
-                console.error("Error displaying visitor live chat notification:", err);
-              }
+            const newNotif = {
+              id: msg.id || msg._id || Math.random().toString(),
+              title: "New Live Chat Message",
+              message: text,
+              time: "Just now",
+              read: false,
+              type: "chat" as const,
+            };
+            setNotifications((prev) => {
+              if (prev.some((n) => n.id === newNotif.id)) return prev;
+              return [newNotif, ...prev];
+            });
+
+            const isLiveChatVisible = window.location.pathname === "/dashboard/chat" && document.visibilityState === "visible";
+            if (!isLiveChatVisible) {
+              triggerBrowserNotification("New Live Chat Message", text);
             }
           }
         };
@@ -188,17 +223,26 @@ function DashboardLayout() {
 
         // Listen for new website lead/email submissions
         socket.on("receive-new-email", (data: any) => {
-          const isEmailsVisible = window.location.pathname === "/dashboard/emails" && document.visibilityState === "visible";
-          if (!isEmailsVisible && data && data.email) {
-            if ("Notification" in window && Notification.permission === "granted") {
-              try {
-                new Notification(`New Website Lead (${data.email.type})`, {
-                  body: `From: ${data.email.name || data.email.email}\nInquiry: ${data.email.message || "Newsletter Signup"}`,
-                  icon: "/favicon.ico",
-                });
-              } catch (err) {
-                console.error("Error displaying email lead notification:", err);
-              }
+          if (data && data.email) {
+            const newNotif = {
+              id: data.email.id || data.email._id || Math.random().toString(),
+              title: `New Website Lead (${data.email.type})`,
+              message: `From: ${data.email.name || data.email.email}`,
+              time: "Just now",
+              read: false,
+              type: "email" as const,
+            };
+            setNotifications((prev) => {
+              if (prev.some((n) => n.id === newNotif.id)) return prev;
+              return [newNotif, ...prev];
+            });
+
+            const isEmailsVisible = window.location.pathname === "/dashboard/emails" && document.visibilityState === "visible";
+            if (!isEmailsVisible) {
+              triggerBrowserNotification(
+                `New Website Lead (${data.email.type})`,
+                `From: ${data.email.name || data.email.email}\nInquiry: ${data.email.message || "Newsletter Signup"}`
+              );
             }
           }
         });
@@ -219,32 +263,74 @@ function DashboardLayout() {
   const toggleTheme = () => setTheme((t) => (t === "dark" ? "light" : "dark"));
 
   const [notificationsOpen, setNotificationsOpen] = useState(false);
-  const [notifications, setNotifications] = useState([
-    {
-      id: "n1",
-      title: "New Member Added",
-      message: "Liam Neeson was registered as a Viewer role.",
-      time: "10m ago",
-      read: false,
-      type: "member",
-    },
-    {
-      id: "n2",
-      title: "Security Gate Audited",
-      message: "CPU Compute stable. 4 Edge gateway ports active.",
-      time: "24m ago",
-      read: false,
-      type: "security",
-    },
-    {
-      id: "n3",
-      title: "Brotli Compressions Live",
-      message: "Dynamic assets caching Brotli compressed at edges.",
-      time: "2h ago",
-      read: true,
-      type: "system",
-    },
-  ]);
+  const [notifications, setNotifications] = useState<Array<{
+    id: string;
+    title: string;
+    message: string;
+    time: string;
+    read: boolean;
+    type: "member" | "security" | "system" | "project" | "task" | "email" | "chat";
+  }>>([]);
+
+  const fetchRecentLogs = async () => {
+    try {
+      const logs = await getActivityLogsFn();
+      const mapped = logs.slice(0, 15).map((log: any) => {
+        const actionLower = log.action.toLowerCase();
+        let type: "member" | "security" | "system" | "project" | "task" | "email" | "chat" = "system";
+        if (actionLower.includes("member") || actionLower.includes("operator")) type = "member";
+        else if (actionLower.includes("security") || actionLower.includes("credentials")) type = "security";
+        else if (actionLower.includes("project")) type = "project";
+        else if (actionLower.includes("task")) type = "task";
+        else if (actionLower.includes("email") || actionLower.includes("lead") || actionLower.includes("form")) type = "email";
+        else if (actionLower.includes("chat") || actionLower.includes("message")) type = "chat";
+
+        const logTime = new Date(log.createdAt || log.timestamp || Date.now());
+        const diffMs = Date.now() - logTime.getTime();
+        const diffMins = Math.floor(diffMs / 60000);
+        const diffHours = Math.floor(diffMins / 60);
+        const diffDays = Math.floor(diffHours / 24);
+
+        let timeStr = "Just now";
+        if (diffDays > 0) timeStr = `${diffDays}d ago`;
+        else if (diffHours > 0) timeStr = `${diffHours}h ago`;
+        else if (diffMins > 0) timeStr = `${diffMins}m ago`;
+
+        return {
+          id: log.id || log._id || Math.random().toString(),
+          title: log.action,
+          message: log.details || "",
+          time: timeStr,
+          read: true,
+          type,
+        };
+      });
+
+      setNotifications((prev) => {
+        const unread = prev.filter((n) => !n.read);
+        const merged = [...unread];
+        mapped.forEach((m) => {
+          if (!merged.some((n) => n.id === m.id)) {
+            merged.push(m);
+          }
+        });
+        return merged;
+      });
+    } catch (err) {
+      console.error("Failed to fetch notifications activity logs:", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchRecentLogs();
+  }, []);
+
+  const handleOpenDropdown = () => {
+    setNotificationsOpen(!notificationsOpen);
+    if (!notificationsOpen) {
+      fetchRecentLogs();
+    }
+  };
 
   const unreadCount = notifications.filter((n) => !n.read).length;
 
@@ -630,7 +716,7 @@ function DashboardLayout() {
               {/* Notifications */}
               <div className="relative">
                 <button
-                  onClick={() => setNotificationsOpen(!notificationsOpen)}
+                  onClick={handleOpenDropdown}
                   className={`h-10 w-10 flex items-center justify-center rounded-full border transition duration-300 relative ${
                     isDark
                       ? "bg-white/5 border-white/10 hover:bg-white/10 text-white/80"
@@ -707,16 +793,24 @@ function DashboardLayout() {
                                     n.type === "member"
                                       ? "bg-[#a855f7]/10 border-[#a855f7]/20 text-[#a855f7]"
                                       : n.type === "security"
-                                      ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400"
-                                      : "bg-[#ff8a5b]/10 border-[#ff8a5b]/20 text-[#ff8a5b]"
+                                      ? "bg-rose-500/10 border-rose-500/20 text-rose-400"
+                                      : n.type === "project"
+                                      ? "bg-blue-500/10 border-blue-500/20 text-blue-400"
+                                      : n.type === "task"
+                                      ? "bg-[#ff8a5b]/10 border-[#ff8a5b]/20 text-[#ff8a5b]"
+                                      : n.type === "email"
+                                      ? "bg-amber-500/10 border-amber-500/20 text-amber-400"
+                                      : n.type === "chat"
+                                      ? "bg-pink-500/10 border-pink-500/20 text-pink-400"
+                                      : "bg-emerald-500/10 border-emerald-500/20 text-emerald-400"
                                   }`}>
-                                    {n.type === "member" ? (
-                                      <UserPlus className="h-4 w-4" />
-                                    ) : n.type === "security" ? (
-                                      <ShieldAlert className="h-4 w-4" />
-                                    ) : (
-                                      <Activity className="h-4 w-4" />
-                                    )}
+                                    {n.type === "member" && <UserPlus className="h-4 w-4" />}
+                                    {n.type === "security" && <ShieldAlert className="h-4 w-4" />}
+                                    {n.type === "project" && <Briefcase className="h-4 w-4" />}
+                                    {n.type === "task" && <ListTodo className="h-4 w-4" />}
+                                    {n.type === "email" && <Mail className="h-4 w-4" />}
+                                    {n.type === "chat" && <MessageSquare className="h-4 w-4" />}
+                                    {n.type === "system" && <Activity className="h-4 w-4" />}
                                   </div>
 
                                   {/* Content */}

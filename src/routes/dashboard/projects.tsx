@@ -35,7 +35,8 @@ export const Route = createFileRoute("/dashboard/projects")({
 interface Project {
   id: string;
   clientName: string;
-  projectName: string;
+  projectName?: string;
+  email?: string;
   businessName: string;
   salesDate: string;
   ownerName: string;
@@ -106,7 +107,7 @@ function ProjectsPage() {
 
   // Form Field States
   const [clientName, setClientName] = useState("");
-  const [projectName, setProjectName] = useState("");
+  const [email, setEmail] = useState("");
   const [businessName, setBusinessName] = useState("");
   const [salesDate, setSalesDate] = useState("");
   const [domainName, setDomainName] = useState("");
@@ -196,7 +197,7 @@ function ProjectsPage() {
   const openCreateForm = () => {
     setEditingProject(null);
     setClientName("");
-    setProjectName("");
+    setEmail("");
     setBusinessName("");
     setSalesDate(new Date().toISOString().split("T")[0]);
     setDomainName("");
@@ -218,7 +219,7 @@ function ProjectsPage() {
   const openEditForm = (proj: Project) => {
     setEditingProject(proj);
     setClientName(proj.clientName);
-    setProjectName(proj.projectName);
+    setEmail(proj.email || "");
     setBusinessName(proj.businessName || "");
     setSalesDate(proj.salesDate);
     setDomainName(proj.domainName);
@@ -239,13 +240,13 @@ function ProjectsPage() {
   // Submit Handler (Create or Update)
   const handleSubmitForm = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!clientName.trim() || !projectName.trim()) return;
+    if (!clientName.trim() || !email.trim()) return;
 
     setLoading(true);
     try {
       const payload = {
         clientName,
-        projectName,
+        email,
         businessName,
         salesDate,
         domainName,
@@ -330,7 +331,8 @@ function ProjectsPage() {
         const query = searchQuery.toLowerCase();
         const matchesSearch =
           proj.clientName.toLowerCase().includes(query) ||
-          proj.projectName.toLowerCase().includes(query) ||
+          (proj.projectName || "").toLowerCase().includes(query) ||
+          (proj.email || "").toLowerCase().includes(query) ||
           proj.businessName?.toLowerCase().includes(query) ||
           proj.domainName.toLowerCase().includes(query);
 
@@ -516,8 +518,8 @@ function ProjectsPage() {
                           <span className="font-semibold block text-sm group-hover:text-[#a855f7] transition">
                             {proj.clientName}
                           </span>
-                          <span className="text-[10px] block opacity-50 font-medium">
-                            {proj.projectName}
+                          <span className="text-[10px] block opacity-50 font-medium font-mono">
+                            {proj.email || proj.projectName || "No Email"}
                           </span>
                         </div>
                       </td>
@@ -623,7 +625,7 @@ function ProjectsPage() {
                   <div className="flex justify-between items-start">
                     <div>
                       <span className="font-mono text-[9px] uppercase tracking-wider block opacity-50">{proj.clientName}</span>
-                      <h4 className="font-bold text-sm mt-0.5">{proj.projectName}</h4>
+                      <h4 className="font-bold text-sm mt-0.5 font-mono">{proj.email || proj.projectName || "No Email"}</h4>
                     </div>
                     <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[9px] font-extrabold uppercase tracking-wider border ${getBadgeStyles(status)}`}>
                       {status}
@@ -723,8 +725,8 @@ function ProjectsPage() {
                     <span className="text-[10px] font-mono uppercase tracking-widest block opacity-50">
                       {selectedProject.clientName}
                     </span>
-                    <h3 className="font-serif text-lg font-bold truncate max-w-[280px] mt-0.5">
-                      {selectedProject.projectName}
+                    <h3 className="font-serif text-lg font-bold truncate max-w-[280px] mt-0.5 font-mono">
+                      {selectedProject.email || selectedProject.projectName || "No Email"}
                     </h3>
                   </div>
                   <button
@@ -814,6 +816,12 @@ function ProjectsPage() {
                         </span>
                       </div>
                       <div>
+                        <span className="block opacity-40 font-medium">Email Address</span>
+                        <span className="font-semibold font-mono block mt-0.5 text-xs text-[#a855f7] truncate" title={selectedProject.email}>
+                          {selectedProject.email || "N/A"}
+                        </span>
+                      </div>
+                      <div>
                         <span className="block opacity-40 font-medium">Close By</span>
                         <span className="font-semibold flex items-center gap-1.5 mt-0.5">
                           <User className="h-3.5 w-3.5 text-[#ff8a5b]" />
@@ -888,26 +896,26 @@ function ProjectsPage() {
                       </div>
 
                       {/* Payment items */}
-                      <div className="grid grid-cols-2 gap-4 text-xs font-mono">
-                        <div className={`p-3 rounded-xl border flex flex-col ${isDark ? "bg-white/5 border-white/5" : "bg-white border-slate-100"}`}>
-                          <span className="opacity-50 text-[10px]">Account Setup Fee</span>
-                          <span className="font-semibold text-sm mt-1">${selectedProject.accountSetup.toLocaleString()}</span>
+                      <div className="space-y-2.5 text-xs font-mono px-1">
+                        <div className="flex justify-between items-center py-2 border-b border-white/5">
+                          <span className="opacity-50">Account Setup Fee</span>
+                          <span className="font-bold text-sm text-slate-200">${selectedProject.accountSetup.toLocaleString()}</span>
                         </div>
-                        <div className={`p-3 rounded-xl border flex flex-col ${isDark ? "bg-white/5 border-white/5" : "bg-white border-slate-100"}`}>
-                          <span className="opacity-50 text-[10px]">1st Installment</span>
-                          <span className="font-semibold text-sm mt-1">${selectedProject.firstInstallment.toLocaleString()}</span>
+                        <div className="flex justify-between items-center py-2 border-b border-white/5">
+                          <span className="opacity-50">1st Installment</span>
+                          <span className="font-bold text-sm text-slate-200">${selectedProject.firstInstallment.toLocaleString()}</span>
                         </div>
-                        <div className={`p-3 rounded-xl border flex flex-col ${isDark ? "bg-white/5 border-white/5" : "bg-white border-slate-100"}`}>
-                          <span className="opacity-50 text-[10px]">2nd Installment</span>
-                          <span className="font-semibold text-sm mt-1">${selectedProject.secondInstallment.toLocaleString()}</span>
+                        <div className="flex justify-between items-center py-2 border-b border-white/5">
+                          <span className="opacity-50">2nd Installment</span>
+                          <span className="font-bold text-sm text-slate-200">${selectedProject.secondInstallment.toLocaleString()}</span>
                         </div>
-                        <div className={`p-3 rounded-xl border flex flex-col ${isDark ? "bg-white/5 border-white/5" : "bg-white border-slate-100"}`}>
-                          <span className="opacity-50 text-[10px]">3rd Installment</span>
-                          <span className="font-semibold text-sm mt-1">${selectedProject.thirdInstallment.toLocaleString()}</span>
+                        <div className="flex justify-between items-center py-2 border-b border-white/5">
+                          <span className="opacity-50">3rd Installment</span>
+                          <span className="font-bold text-sm text-slate-200">${selectedProject.thirdInstallment.toLocaleString()}</span>
                         </div>
-                        <div className={`p-3 col-span-2 rounded-xl border flex flex-col ${isDark ? "bg-white/5 border-white/5" : "bg-white border-slate-100"}`}>
-                          <span className="opacity-50 text-[10px]">Hosting & License Fee</span>
-                          <span className="font-semibold text-sm mt-1">${selectedProject.hostingFee.toLocaleString()}</span>
+                        <div className="flex justify-between items-center py-2">
+                          <span className="opacity-50">Hosting & License Fee</span>
+                          <span className="font-bold text-sm text-slate-200">${selectedProject.hostingFee.toLocaleString()}</span>
                         </div>
                       </div>
 
@@ -1047,14 +1055,14 @@ function ProjectsPage() {
 
                     <div className="space-y-1">
                       <label className="text-[10px] font-bold uppercase tracking-wider block opacity-70">
-                        Project Name *
+                        Email Address *
                       </label>
                       <input
                         required
-                        type="text"
-                        placeholder="e.g. Harmony Care Portal"
-                        value={projectName}
-                        onChange={(e) => setProjectName(e.target.value)}
+                        type="email"
+                        placeholder="e.g. client@company.com"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
                         className={`w-full h-10 px-3.5 border rounded-xl text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-[#a855f7]/30 transition ${
                           isDark ? "bg-white/5 border-white/10 text-white focus:border-[#a855f7]/50" : "bg-slate-50 border-slate-200 text-slate-800"
                         }`}
@@ -1344,7 +1352,7 @@ function ProjectsPage() {
                 
                 <h3 className="font-serif text-base font-bold">Delete Project Record</h3>
                 <p className={`text-xs mt-2 leading-relaxed ${isDark ? "text-white/60" : "text-slate-500"}`}>
-                  Are you sure you want to delete <span className="font-semibold text-red-400">"{projectToDelete.projectName}"</span> and its payment history permanently? This action is irreversible.
+                  Are you sure you want to delete <span className="font-semibold text-red-400">"{projectToDelete.email || projectToDelete.projectName || "No Email"}"</span> and its payment history permanently? This action is irreversible.
                 </p>
 
                 <div className="flex items-center gap-3 w-full mt-6">

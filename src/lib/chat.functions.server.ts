@@ -104,6 +104,9 @@ export const sendChatMessageFn = createServerFn({ method: "POST" }).handler(
       throw new Error("This conversation has been closed.");
     }
 
+    const visitorMessagesCount = (session.messages || []).filter((m: any) => m.sender === "visitor").length;
+    const isFirstVisitorMessage = data.sender === "visitor" && visitorMessagesCount === 0;
+
     const now = new Date().toISOString();
     const updated = await ChatSessionModel.findByIdAndUpdate(
       data.sessionId,
@@ -122,6 +125,35 @@ export const sendChatMessageFn = createServerFn({ method: "POST" }).handler(
         `Message in conversation with "${updated.visitorName}": "${data.text.slice(0, 45)}${data.text.length > 45 ? "..." : ""}"`,
         data.sender === "admin" ? "Agent" : `Visitor: ${updated.visitorName}`
       );
+
+      if (isFirstVisitorMessage) {
+        try {
+          const { sendEmail, getChatNotificationHtml } = await import("./mail.server");
+          const siteUrl = process.env.VITE_SITE_URL || "http://localhost:8083";
+          const adminUrl = `${siteUrl}/dashboard/chat`;
+          const startedAt = new Date().toLocaleString("en-US", {
+            dateStyle: "short",
+            timeStyle: "short",
+          });
+
+          const htmlContent = getChatNotificationHtml({
+            visitorName: session.visitorName,
+            visitorContact: session.visitorContact || "Not provided",
+            firstMessage: data.text,
+            startedAt,
+            adminUrl,
+          });
+
+          await sendEmail({
+            to: "jitenksony@gmail.com",
+            subject: `StellR IT: New Chat Conversation with ${session.visitorName}`,
+            text: `You have received a new chat conversation on StellR IT from ${session.visitorName}. Message: "${data.text}"`,
+            html: htmlContent,
+          });
+        } catch (mailErr) {
+          console.error("[Mail] Failed to send chat notification email:", mailErr);
+        }
+      }
     }
 
     return updated ? mapSession(updated) : null;

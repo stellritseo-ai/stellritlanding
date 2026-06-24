@@ -98,35 +98,31 @@ export const logVisitorFn = createServerFn({ method: "POST" }).handler(async () 
 
 // ── Operators ────────────────────────────────────────────────────────────────
 export const getOperatorsFn = createServerFn({ method: "GET" }).handler(async () => {
-  const { connectDB, OperatorModel } = await import("./db.server");
+  const { connectDB, OperatorModel, SiteConfigModel } = await import("./db.server");
   await connectDB();
 
+  let config = await SiteConfigModel.findOne();
+  if (!config) {
+    config = new SiteConfigModel();
+    await config.save();
+  }
+
   let ops = await OperatorModel.find().sort({ createdAt: 1 });
-  if (ops.length === 0) {
-    const defaults = [
-      { name: "Jiten Sony", email: "jiten@stellrit.com", role: "Super Admin", status: "Active", joinedDate: "2026-01-15", username: "stellr", password: "stellr123" },
-      { name: "Sarah Jenkins", email: "sarah.j@nexus.io", role: "Supervisor", status: "Active", joinedDate: "2026-02-18", username: "sarah", password: "sarah123" },
-      { name: "David Chen", email: "david.c@technova.com", role: "Developer", status: "Active", joinedDate: "2026-03-10", username: "david", password: "david123" },
-      { name: "Alex Rivera", email: "alex@riveradesign.co", role: "Manager", status: "Active", joinedDate: "2026-04-05", username: "alex", password: "alex123" },
-      { name: "Emily Watson", email: "emily.w@harmonycare.org", role: "Developer", status: "Active", joinedDate: "2026-04-10", username: "emily", password: "emily123" }
-    ];
-    await OperatorModel.insertMany(defaults);
-    ops = await OperatorModel.find().sort({ createdAt: 1 });
-  } else {
-    // If database exists but Emily Watson is missing, dynamically add her
-    const emilyExists = await OperatorModel.findOne({ name: "Emily Watson" });
-    if (!emilyExists) {
-      await OperatorModel.create({
-        name: "Emily Watson",
-        email: "emily.w@harmonycare.org",
-        role: "Developer",
-        status: "Active",
-        joinedDate: "2026-04-10",
-        username: "emily",
-        password: "emily123"
-      });
+
+  if (!config.membersSeeded) {
+    if (ops.length === 0) {
+      const defaults = [
+        { name: "Jiten Sony", email: "jiten@stellrit.com", role: "Super Admin", status: "Active", joinedDate: "2026-01-15", username: "stellr", password: "stellr123" },
+        { name: "Sarah Jenkins", email: "sarah.j@nexus.io", role: "Supervisor", status: "Active", joinedDate: "2026-02-18", username: "sarah", password: "sarah123" },
+        { name: "David Chen", email: "david.c@technova.com", role: "Developer", status: "Active", joinedDate: "2026-03-10", username: "david", password: "david123" },
+        { name: "Alex Rivera", email: "alex@riveradesign.co", role: "Manager", status: "Active", joinedDate: "2026-04-05", username: "alex", password: "alex123" },
+        { name: "Emily Watson", email: "emily.w@harmonycare.org", role: "Developer", status: "Active", joinedDate: "2026-04-10", username: "emily", password: "emily123" }
+      ];
+      await OperatorModel.insertMany(defaults);
       ops = await OperatorModel.find().sort({ createdAt: 1 });
     }
+    config.membersSeeded = true;
+    await config.save();
   }
   return ops.map(mapDoc);
 });
@@ -203,7 +199,8 @@ export const getSiteConfigFn = createServerFn({ method: "GET" }).handler(async (
       maintenanceMode: false,
       aiHelpdeskAutoplay: true,
       edgeCacheCompression: true,
-      dynamicCaseStudies: false
+      dynamicCaseStudies: false,
+      projectsSeeded: false
     });
   }
   return mapDoc(config);
@@ -268,15 +265,32 @@ export const deleteSitePageFn = createServerFn({ method: "POST" }).handler(
 
 // ── Projects CRUD ────────────────────────────────────────────────────────────
 export const getProjectsFn = createServerFn({ method: "GET" }).handler(async () => {
-  const { connectDB, ProjectModel } = await import("./db.server");
+  const { connectDB, ProjectModel, SiteConfigModel } = await import("./db.server");
   await connectDB();
   let list = await ProjectModel.find().sort({ createdAt: -1 });
-  if (list.length === 0) {
+
+  let config = await SiteConfigModel.findOne({});
+  if (!config) {
+    config = await SiteConfigModel.create({
+      productionUrl: "stellrit.com",
+      avgSeoRank: "#4 Sector Avg",
+      keywordsTracked: 42,
+      coreWebVitals: 96,
+      maintenanceMode: false,
+      aiHelpdeskAutoplay: true,
+      edgeCacheCompression: true,
+      dynamicCaseStudies: false,
+      projectsSeeded: false
+    });
+  }
+
+  if (list.length === 0 && !config.projectsSeeded) {
     const { encryptPassword } = await import("./crypto.server");
     const seedProjects = [
       {
         clientName: "Acme Corp",
         projectName: "Enterprise Site Redesign",
+        email: "billing@acme.com",
         businessName: "Acme Industries",
         salesDate: "2026-06-10",
         ownerName: "Jiten Sony",
@@ -298,6 +312,7 @@ export const getProjectsFn = createServerFn({ method: "GET" }).handler(async () 
       {
         clientName: "Nova Spark",
         projectName: "SaaS Application Platform",
+        email: "admin@novaspark.io",
         businessName: "Nova Spark LLC",
         salesDate: "2026-06-05",
         ownerName: "David Chen",
@@ -319,6 +334,7 @@ export const getProjectsFn = createServerFn({ method: "GET" }).handler(async () 
       {
         clientName: "Green Life",
         projectName: "E-Commerce Market Showcase",
+        email: "orders@greenlife.market",
         businessName: "Green Life Organic",
         salesDate: "2026-05-20",
         ownerName: "Alex Rivera",
@@ -340,6 +356,7 @@ export const getProjectsFn = createServerFn({ method: "GET" }).handler(async () 
       {
         clientName: "Apex Fit",
         projectName: "Fitness Tracking Mobile Hub",
+        email: "accounts@apexfit.app",
         businessName: "Apex Fitness Inc",
         salesDate: "2026-05-12",
         ownerName: "Sarah Jenkins",
@@ -360,6 +377,8 @@ export const getProjectsFn = createServerFn({ method: "GET" }).handler(async () 
       }
     ];
     await ProjectModel.insertMany(seedProjects);
+    config.projectsSeeded = true;
+    await config.save();
     list = await ProjectModel.find().sort({ createdAt: -1 });
   }
   const { decryptPassword } = await import("./crypto.server");
@@ -385,7 +404,7 @@ export const createProjectFn = createServerFn({ method: "POST" }).handler(
 
     await logActivity(
       "Project Provisioned",
-      `Project "${proj.projectName}" was created for ${proj.clientName}.`,
+      `Project "${proj.email || proj.projectName || "Unnamed"}" was created for ${proj.clientName}.`,
       "System Admin"
     );
 
@@ -410,7 +429,7 @@ export const updateProjectFn = createServerFn({ method: "POST" }).handler(
     if (updated) {
       await logActivity(
         "Project Updated",
-        `Project "${updated.projectName}" details were modified.`,
+        `Project "${updated.email || updated.projectName || "Unnamed"}" details were modified.`,
         "System Admin"
       );
     }
@@ -432,7 +451,7 @@ export const deleteProjectFn = createServerFn({ method: "POST" }).handler(
     if (proj) {
       await logActivity(
         "Project Revoked",
-        `Project "${proj.projectName}" was permanently removed.`,
+        `Project "${proj.email || proj.projectName || "Unnamed"}" was permanently removed.`,
         "System Admin"
       );
     }
@@ -671,6 +690,39 @@ export const submitWebsiteEmailFn = createServerFn({ method: "POST" }).handler(
       "Website Visitor"
     );
 
+    if (emailDoc.type === "contact") {
+      try {
+        const { sendEmail, getContactFormNotificationHtml } = await import("./mail.server");
+        const siteUrl = process.env.VITE_SITE_URL || "http://localhost:8083";
+        const adminUrl = `${siteUrl}/dashboard/emails`;
+        const submittedAt = new Date(emailDoc.submittedAt || Date.now()).toLocaleString("en-US", {
+          dateStyle: "short",
+          timeStyle: "short",
+        });
+
+        const htmlContent = getContactFormNotificationHtml({
+          name: emailDoc.name || "N/A",
+          email: emailDoc.email,
+          phone: emailDoc.phone || "N/A",
+          company: emailDoc.company || "N/A",
+          service: emailDoc.service || "N/A",
+          budget: emailDoc.budget || "N/A",
+          message: emailDoc.message || "No message provided.",
+          submittedAt,
+          adminUrl,
+        });
+
+        await sendEmail({
+          to: "jitenksony@gmail.com",
+          subject: `StellR IT: New Contact Inquiry from ${emailDoc.name || emailDoc.email}`,
+          text: `You have received a new contact inquiry on StellR IT from ${emailDoc.name || emailDoc.email}. Details: ${emailDoc.message || ""}`,
+          html: htmlContent,
+        });
+      } catch (mailErr) {
+        console.error("[Mail] Failed to send contact form inquiry email notification:", mailErr);
+      }
+    }
+
     // Emit socket event to notify admins
     try {
       const { io } = await import("socket.io-client");
@@ -813,6 +865,7 @@ export const getDashboardStatsFn = createServerFn({ method: "GET" }).handler(asy
     connectDB,
     ProjectModel,
     WebsiteEmailModel,
+    ChatSessionModel,
     ActivityLogModel
   } = await import("./db.server");
   await connectDB();
@@ -907,6 +960,8 @@ export const getDashboardStatsFn = createServerFn({ method: "GET" }).handler(asy
   let prevProjectsCount = 0;
   let curEmailsCount = 0;
   let prevEmailsCount = 0;
+  let curChatsCount = 0;
+  let prevChatsCount = 0;
 
   projects.forEach((proj: any) => {
     let projDate = proj.createdAt;
@@ -930,8 +985,31 @@ export const getDashboardStatsFn = createServerFn({ method: "GET" }).handler(asy
     }
   });
 
-  const curConversion = curEmailsCount > 0 ? (curProjectsCount / curEmailsCount) * 100 : (curProjectsCount > 0 ? 100 : 0);
-  const prevConversion = prevEmailsCount > 0 ? (prevProjectsCount / prevEmailsCount) * 100 : (prevProjectsCount > 0 ? 100 : 0);
+  const chatSessions = await ChatSessionModel.find().lean();
+  chatSessions.forEach((chat: any) => {
+    const chatDate = chat.createdAt;
+    if (isInMonth(chatDate, currentMonth, currentYear)) {
+      curChatsCount++;
+    } else if (isInMonth(chatDate, prevMonth, prevYear)) {
+      prevChatsCount++;
+    }
+  });
+
+  // Calculate cumulative all-time metrics dynamically to avoid erratic month-to-month swings when data is low
+  const totalProjects = projects.length;
+  const totalEmails = websiteEmails.length;
+  const totalChats = chatSessions.length;
+  
+  // Total leads = total signed projects + other unconverted inbound inquiries (emails, chats)
+  const totalLeads = totalProjects + totalEmails + totalChats;
+  const overallConversion = totalLeads > 0 ? (totalProjects / totalLeads) * 100 : 0;
+
+  // Previous month's cumulative metrics for growth calculation
+  const prevProjects = totalProjects - curProjectsCount;
+  const prevEmails = totalEmails - curEmailsCount;
+  const prevChats = totalChats - curChatsCount;
+  const prevTotalLeads = prevProjects + prevEmails + prevChats;
+  const prevConversion = prevTotalLeads > 0 ? (prevProjects / prevTotalLeads) * 100 : 0;
 
   const getGrowth = (current: number, previous: number) => {
     if (previous === 0) return current > 0 ? "+100%" : "0%";
@@ -943,7 +1021,7 @@ export const getDashboardStatsFn = createServerFn({ method: "GET" }).handler(asy
   const collectionGrowth = getGrowth(curCollection, prevCollection);
   const salesGrowth = getGrowth(curSales, prevSales);
   const websitesGrowth = getGrowth(curWebsites, prevWebsites);
-  const conversionGrowthDiff = curConversion - prevConversion;
+  const conversionGrowthDiff = overallConversion - prevConversion;
   const conversionGrowth = `${conversionGrowthDiff >= 0 ? "+" : ""}${conversionGrowthDiff.toFixed(1)}%`;
 
   // Historical 6 month collection & sales aggregation for the AreaChart
@@ -1020,7 +1098,7 @@ export const getDashboardStatsFn = createServerFn({ method: "GET" }).handler(asy
         growth: websitesGrowth
       },
       conversion: {
-        value: `${curConversion.toFixed(1)}%`,
+        value: `${overallConversion.toFixed(1)}%`,
         growth: conversionGrowth
       }
     },

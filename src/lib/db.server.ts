@@ -73,7 +73,8 @@ export const AdminUserModel =
 const ProjectSchema = new mongoose.Schema(
   {
     clientName: { type: String, required: true },
-    projectName: { type: String, required: true },
+    projectName: { type: String, default: "" },
+    email: { type: String, default: "" },
     businessName: { type: String, default: "" },
     salesDate: { type: String, default: "" },
     ownerName: { type: String, default: "" },
@@ -94,9 +95,10 @@ const ProjectSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-export const ProjectModel =
-  mongoose.models.Project ||
-  mongoose.model("Project", ProjectSchema);
+if (mongoose.models.Project) {
+  delete (mongoose.models as any).Project;
+}
+export const ProjectModel = mongoose.model("Project", ProjectSchema);
 
 // ── Task schema ─────────────────────────────────────────────────────────────
 const TaskSchema = new mongoose.Schema(
@@ -186,14 +188,17 @@ const SiteConfigSchema = new mongoose.Schema(
     maintenanceMode: { type: Boolean, default: false },
     aiHelpdeskAutoplay: { type: Boolean, default: true },
     edgeCacheCompression: { type: Boolean, default: true },
-    dynamicCaseStudies: { type: Boolean, default: false }
+    dynamicCaseStudies: { type: Boolean, default: false },
+    projectsSeeded: { type: Boolean, default: false },
+    membersSeeded: { type: Boolean, default: false }
   },
   { timestamps: true }
 );
 
-export const SiteConfigModel =
-  mongoose.models.SiteConfig ||
-  mongoose.model("SiteConfig", SiteConfigSchema);
+if (mongoose.models.SiteConfig) {
+  delete (mongoose.models as any).SiteConfig;
+}
+export const SiteConfigModel = mongoose.model("SiteConfig", SiteConfigSchema);
 
 // ── Asset Request schema ────────────────────────────────────────────────────
 const AssetRequestSchema = new mongoose.Schema(

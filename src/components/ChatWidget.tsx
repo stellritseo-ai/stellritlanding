@@ -7,6 +7,7 @@ import {
   type ChatSession,
   type ChatMessage,
 } from "@/lib/chat.functions.server";
+import favImg from "@/assets/fav.png";
 
 // ── Config ────────────────────────────────────────────────────────────────────
 const RELAY_URL = import.meta.env.VITE_RELAY_URL ?? "http://localhost:3001";
@@ -238,7 +239,7 @@ export default function ChatWidget() {
         className="fixed bottom-6 right-6 z-[60] grid h-14 w-14 place-items-center rounded-full bg-gradient-to-br from-[#a855f7] to-[#6a18c8] text-white shadow-[0_10px_40px_-10px_rgba(168,85,247,0.8)] ring-1 ring-white/20 transition hover:scale-105"
       >
         <span className="absolute inset-0 -z-10 rounded-full bg-[#a855f7] opacity-60 blur-xl animate-pulse" />
-        {open ? <X className="h-6 w-6" /> : <MessageCircle className="h-6 w-6" />}
+        {open ? <X className="h-6 w-6" /> : <img src={favImg} alt="Chat logo" className="h-8 w-8 object-contain" />}
       </button>
 
       {/* ── Panel ────────────────────────────────────────────────────────── */}
@@ -251,8 +252,8 @@ export default function ChatWidget() {
       >
         {/* Header */}
         <div className="relative flex items-center gap-3 bg-gradient-to-br from-[#3A0A7A] via-[#4a1290] to-[#1a0533] px-4 py-4">
-          <div className="grid h-10 w-10 place-items-center rounded-full bg-white/15 ring-1 ring-white/25">
-            <MessageCircle className="h-5 w-5" />
+          <div className="h-10 w-10 shrink-0 overflow-hidden rounded-full ring-1 ring-white/25">
+            <img src={favImg} alt="StellR IT Logo" className="h-full w-full object-cover" />
           </div>
           <div className="flex-1">
             <div className="text-[15px] font-semibold leading-tight">StellR IT</div>
@@ -284,8 +285,8 @@ export default function ChatWidget() {
         {/* Intro */}
         {!sessionLoading && step === "intro" && (
           <div className="flex min-h-[260px] flex-col items-center justify-center gap-4 px-5 py-8 text-center">
-            <div className="grid h-14 w-14 place-items-center rounded-2xl bg-gradient-to-br from-[#a855f7]/30 to-[#6a18c8]/30 ring-1 ring-[#a855f7]/40">
-              <MessageCircle className="h-7 w-7 text-[#c084fc]" />
+            <div className="h-14 w-14 overflow-hidden rounded-2xl ring-1 ring-[#a855f7]/40">
+              <img src={favImg} alt="StellR IT Logo" className="h-full w-full object-cover" />
             </div>
             <div>
               <p className="text-[15px] font-semibold text-white">Hi there! 👋</p>

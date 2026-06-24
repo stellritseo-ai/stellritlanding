@@ -29,7 +29,8 @@ import {
   Globe,
   MoreVertical,
   Activity,
-  AlertTriangle
+  AlertTriangle,
+  FileText
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -170,7 +171,6 @@ function TasksPage() {
   const [formTags, setFormTags] = useState("");
   
   // Business Info states
-  const [formBusName, setFormBusName] = useState("");
   const [formBusRequirements, setFormBusRequirements] = useState("");
 
   // Domain Info states
@@ -298,14 +298,14 @@ function TasksPage() {
       const payload = {
         title: formTitle,
         projectName: "",
-        businessName: formBusName,
+        businessName: "",
         assignedUsers: formAssignedUser ? [formAssignedUser] : [],
         priority: formPriority,
         status: "To Do",
         tags: formTags ? formTags.split(",").map((t) => t.trim()).filter(Boolean) : [],
         description: "",
         businessInfo: {
-          businessName: formBusName,
+          businessName: "",
           contactPerson: "",
           phoneNumber: "",
           email: "",
@@ -342,7 +342,6 @@ function TasksPage() {
       setFormAssignedUser("");
       setFormPriority("Medium");
       setFormTags("");
-      setFormBusName("");
       setFormBusRequirements("");
       setFormDomName("");
       
@@ -773,12 +772,14 @@ function TasksPage() {
                           </h4>
 
                           {/* Client / Project info */}
-                          <div className="flex items-center gap-1.5 opacity-55 text-[10px] mb-4">
-                            <Briefcase className="h-3.5 w-3.5 shrink-0" />
-                            <span className="truncate max-w-[140px] font-medium">{task.businessName || "No Client"}</span>
-                            <span>•</span>
-                            <span className="truncate max-w-[120px] font-medium">{task.projectName || "No Project"}</span>
-                          </div>
+                          {(task.businessName || task.projectName) && (
+                            <div className="flex items-center gap-1.5 opacity-55 text-[10px] mb-4">
+                              <Briefcase className="h-3.5 w-3.5 shrink-0" />
+                              {task.businessName && <span className="truncate max-w-[140px] font-medium">{task.businessName}</span>}
+                              {task.businessName && task.projectName && <span>•</span>}
+                              {task.projectName && <span className="truncate max-w-[120px] font-medium">{task.projectName}</span>}
+                            </div>
+                          )}
 
                           {/* Footer details (Checklist, attachments, users) */}
                           <div className="flex items-center justify-between border-t border-white/5 pt-3.5 mt-3.5 text-[11px]">
@@ -872,6 +873,18 @@ function TasksPage() {
                     }`}>
                       {selectedTask.status}
                     </span>
+                    {selectedTask.tags?.map((t) => (
+                      <span
+                        key={t}
+                        className={`px-2.5 py-0.5 rounded text-[9px] font-semibold border ${
+                          isDark 
+                            ? "bg-purple-500/10 border-purple-500/20 text-purple-300" 
+                            : "bg-purple-50 border-purple-100 text-purple-700"
+                        }`}
+                      >
+                        {t}
+                      </span>
+                    ))}
                   </div>
                   <h2 className="font-serif text-xl font-bold leading-snug mt-1.5">
                     {selectedTask.title}
@@ -924,47 +937,40 @@ function TasksPage() {
                   </div>
                 </div>
 
-                {/* 2. Business Information */}
-                <div className="space-y-3">
-                  <h4 className="text-[10px] font-bold uppercase tracking-widest opacity-40 flex items-center gap-1.5">
-                    <Briefcase className="h-3.5 w-3.5" /> Business & Contact details
-                  </h4>
-                  <div className={`p-4.5 rounded-2xl border text-xs grid grid-cols-1 gap-4 ${
-                    isDark ? "bg-white/[0.01] border-white/5" : "bg-slate-50 border-slate-150"
-                  }`}>
-                    <div>
-                      <span className="block opacity-40 font-medium">Business Name</span>
-                      <span className="font-semibold block mt-0.5">{selectedTask.businessInfo?.businessName || selectedTask.businessName || "N/A"}</span>
+                {/* 2. Project Requirements */}
+                {selectedTask.businessInfo?.requirements && selectedTask.businessInfo.requirements.length > 0 && (
+                  <div className="space-y-3">
+                    <h4 className="text-[10px] font-bold uppercase tracking-widest opacity-40 flex items-center gap-1.5">
+                      <FileText className="h-3.5 w-3.5" /> Project Requirements
+                    </h4>
+                    <div className={`p-4.5 rounded-2xl border text-xs ${
+                      isDark ? "bg-white/[0.01] border-white/5" : "bg-slate-50 border-slate-150"
+                    }`}>
+                      <ul className="list-disc pl-4 space-y-1.5 font-medium leading-relaxed">
+                        {selectedTask.businessInfo.requirements.map((req, rIdx) => (
+                          <li key={rIdx}>{req}</li>
+                        ))}
+                      </ul>
                     </div>
-                    
-                    {/* Requirements */}
-                    {selectedTask.businessInfo?.requirements && selectedTask.businessInfo.requirements.length > 0 && (
-                      <div className="border-t border-white/5 pt-3 mt-1 space-y-1.5">
-                        <span className="block opacity-40 font-medium">Slicing & Integration Requirements</span>
-                        <ul className="list-disc pl-4 space-y-1 font-medium leading-relaxed">
-                          {selectedTask.businessInfo.requirements.map((req, rIdx) => (
-                            <li key={rIdx}>{req}</li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
                   </div>
-                </div>
+                )}
 
                 {/* 3. Domain Information */}
-                <div className="space-y-3">
-                  <h4 className="text-[10px] font-bold uppercase tracking-widest opacity-40 flex items-center gap-1.5">
-                    <Globe className="h-3.5 w-3.5" /> Domain Booking details
-                  </h4>
-                  <div className={`p-4.5 rounded-2xl border text-xs ${
-                    isDark ? "bg-white/[0.01] border-white/5" : "bg-slate-50 border-slate-150"
-                  }`}>
-                    <div>
-                      <span className="block opacity-40 font-medium">Domain Name</span>
-                      <span className="font-semibold font-mono block mt-0.5">{selectedTask.domainInfo?.domainName || "N/A"}</span>
+                {selectedTask.domainInfo?.domainName && (
+                  <div className="space-y-3">
+                    <h4 className="text-[10px] font-bold uppercase tracking-widest opacity-40 flex items-center gap-1.5">
+                      <Globe className="h-3.5 w-3.5" /> Domain Booking details
+                    </h4>
+                    <div className={`p-4.5 rounded-2xl border text-xs ${
+                      isDark ? "bg-white/[0.01] border-white/5" : "bg-slate-50 border-slate-150"
+                    }`}>
+                      <div>
+                        <span className="block opacity-40 font-medium">Domain Name</span>
+                        <span className="font-semibold font-mono block mt-0.5 text-xs text-[#a855f7]">{selectedTask.domainInfo.domainName}</span>
+                      </div>
                     </div>
                   </div>
-                </div>
+                )}
 
                 {/* 4. Comments Section */}
                 <div className="space-y-3">
@@ -1119,25 +1125,6 @@ function TasksPage() {
                       />
                     </div>
 
-                    {/* Client / Business Name */}
-                    <div className="space-y-1 md:col-span-2">
-                      <label className="text-[10px] font-bold uppercase tracking-wider block opacity-70">Client / Business Name</label>
-                      <input
-                        type="text"
-                        list="projects-list"
-                        placeholder="e.g. ABCD Construction"
-                        value={formBusName}
-                        onChange={(e) => setFormBusName(e.target.value)}
-                        className={`w-full h-10 px-3.5 border rounded-xl text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-[#a855f7]/30 transition ${
-                          isDark ? "bg-white/5 border-white/10 text-white focus:border-[#a855f7]/50" : "bg-slate-50 border-slate-200 text-slate-800"
-                        }`}
-                      />
-                      <datalist id="projects-list">
-                        {projects.map((p) => (
-                          <option key={p.id} value={p.businessName || p.clientName || p.projectName} />
-                        ))}
-                      </datalist>
-                    </div>
 
                     {/* Assigned Team Member */}
                     <div className="space-y-1">
