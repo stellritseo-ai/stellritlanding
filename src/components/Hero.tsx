@@ -65,6 +65,7 @@ import { Link } from "@tanstack/react-router";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import { TransparentVideo } from "./TransparentVideo";
 import { CanvasVideo } from "./CanvasVideo";
+import heroWebm from "@/assets/hero.webm";
 import logoImg from "@/assets/logo.png";
 import logo1 from "@/assets/logos/logo (1).png";
 import logo2 from "@/assets/logos/Logo.png";
@@ -94,8 +95,7 @@ const CLIENT_LOGOS = [
   logo12,
 ];
 
-const CENTER_VIDEO =
-  "https://isadoradigitalagency.com/wp-content/uploads/2025/04/ISA_FLOR_04__444.webm";
+const CENTER_VIDEO = heroWebm;
 const LEFT_VIDEO =
   "https://res.cloudinary.com/dmanafb84/video/upload/f_auto:video,q_auto/IA-Website-Homepage-Sizzle-Reel-Animation_V5_1_2-2_c6hfyj";
 
