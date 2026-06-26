@@ -4,7 +4,7 @@ import { ArrowUpRight, Menu, RefreshCw } from "lucide-react";
 
 const LEFT_VIDEO_SRC = "https://res.cloudinary.com/dmanafb84/video/upload/f_auto:video,q_auto/IA-Website-Homepage-Sizzle-Reel-Animation_V5_1_2-2_c6hfyj.mp4";
 
-function HeroVideoFrame() {
+function HeroVideoFrame({ isPlaying = true }: { isPlaying?: boolean }) {
   const [loaded, setLoaded] = useState(false);
   const [errored, setErrored] = useState(false);
   const [key, setKey] = useState(0);
@@ -25,6 +25,16 @@ function HeroVideoFrame() {
     setKey((k) => k + 1);
   };
 
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    if (isPlaying && !errored) {
+      video.play().catch(() => {});
+    } else {
+      video.pause();
+    }
+  }, [isPlaying, errored, key]);
+
   return (
     <>
       {!errored && (
@@ -32,7 +42,7 @@ function HeroVideoFrame() {
           key={key}
           ref={videoRef}
           src={LEFT_VIDEO_SRC}
-          autoPlay
+          autoPlay={isPlaying}
           muted
           loop
           playsInline
@@ -196,7 +206,7 @@ export default function Hero() {
   const phase4Y = useTransform(p, [0.7, 0.9], [60, 0]);
 
   const mobileSizzleRef = useRef<HTMLVideoElement>(null);
-  const [isMobileSizzlePlaying, setIsMobileSizzlePlaying] = useState(true);
+  const [isMobileSizzlePlaying, setIsMobileSizzlePlaying] = useState(false);
 
   const toggleMobileSizzle = () => {
     const video = mobileSizzleRef.current;
@@ -210,13 +220,17 @@ export default function Hero() {
     }
   };
 
+  const [isCenterVideoPlaying, setIsCenterVideoPlaying] = useState(true);
+  const [isCardVideoPlaying, setIsCardVideoPlaying] = useState(true);
+
   useEffect(() => {
-    if (isMobile && mobileSizzleRef.current) {
-      mobileSizzleRef.current.play().catch((err) => {
-        console.warn("Mobile sizzle play prevented:", err);
-      });
-    }
-  }, [isMobile]);
+    if (isMobile) return;
+    const unsubscribe = p.on("change", (latest) => {
+      setIsCenterVideoPlaying(latest < 0.6);
+      setIsCardVideoPlaying(latest < 1.0);
+    });
+    return () => unsubscribe();
+  }, [p, isMobile]);
 
   if (isMobile) {
     return (
@@ -295,6 +309,7 @@ export default function Hero() {
           </svg>
           <CanvasVideo
             src={CENTER_VIDEO}
+            isPlaying={true}
             className="relative z-10 h-full w-full object-cover"
             style={{ mixBlendMode: "screen" }}
           />
@@ -339,7 +354,6 @@ export default function Hero() {
           <video
             ref={mobileSizzleRef}
             src={LEFT_VIDEO_SRC}
-            autoPlay
             muted
             loop
             playsInline
@@ -417,6 +431,7 @@ export default function Hero() {
         >
           <CanvasVideo
             src={CENTER_VIDEO}
+            isPlaying={isCenterVideoPlaying}
             className="h-full w-full object-cover"
           />
         </motion.div>
@@ -449,7 +464,7 @@ export default function Hero() {
           }}
           className="absolute left-4 bottom-8 z-[99] h-[140px] w-[240px] origin-center overflow-hidden shadow-[0_30px_80px_-20px_rgba(0,0,0,0.7)] sm:left-6 sm:h-[160px] sm:w-[280px] md:left-12 md:h-[200px] md:w-[360px] bg-[#0e0228] will-change-transform transform-gpu"
         >
-          <HeroVideoFrame />
+          <HeroVideoFrame isPlaying={isCardVideoPlaying} />
           <div className="pointer-events-none absolute inset-0 z-10 ring-1 ring-inset ring-white/15" style={{ borderRadius: "inherit" }} />
         </motion.div>
 

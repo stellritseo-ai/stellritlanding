@@ -1,5 +1,6 @@
 import { motion, useScroll, useSpring, useTransform, type MotionValue } from "framer-motion";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
+import { useEffect, useState } from "react";
 
 /**
  * Calm, scroll-reactive atmosphere — GPU-friendly version.
@@ -39,7 +40,18 @@ function layerOpacity(p: MotionValue<number>, i: number, n: number) {
 
 export default function ScrollBackground() {
   const reduced = useReducedMotion();
-  if (reduced) {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
+  if (reduced || isMobile) {
     return (
       <div aria-hidden className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
         <div className="absolute inset-0" style={{ background: BASES[0] }} />
@@ -82,11 +94,11 @@ function FullScrollBackground() {
             <motion.div
               key={i}
               style={{
-                background: `radial-gradient(circle at center, ${c} 0%, transparent 65%)`,
+                background: `radial-gradient(circle at center, ${c} 0%, transparent 75%)`,
                 opacity: layerOpacity(p, i, BLOBS_A.length),
                 willChange: "opacity",
               }}
-              className="absolute inset-0 rounded-full blur-3xl mix-blend-screen"
+              className="absolute inset-0 rounded-full mix-blend-screen"
             />
           ))}
         </motion.div>
@@ -102,11 +114,11 @@ function FullScrollBackground() {
             <motion.div
               key={i}
               style={{
-                background: `radial-gradient(circle at center, ${c} 0%, transparent 65%)`,
+                background: `radial-gradient(circle at center, ${c} 0%, transparent 75%)`,
                 opacity: layerOpacity(p, i, BLOBS_B.length),
                 willChange: "opacity",
               }}
-              className="absolute inset-0 rounded-full blur-3xl mix-blend-screen"
+              className="absolute inset-0 rounded-full mix-blend-screen"
             />
           ))}
         </motion.div>

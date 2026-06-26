@@ -4,9 +4,10 @@ interface CanvasVideoProps {
   src: string;
   className?: string;
   style?: React.CSSProperties;
+  isPlaying?: boolean;
 }
 
-export function CanvasVideo({ src, className, style }: CanvasVideoProps) {
+export function CanvasVideo({ src, className, style, isPlaying = true }: CanvasVideoProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
@@ -14,11 +15,15 @@ export function CanvasVideo({ src, className, style }: CanvasVideoProps) {
     if (video) {
       video.muted = true;
       video.defaultMuted = true;
-      video.play().catch((err) => {
-        console.warn("Video play was prevented:", err);
-      });
+      if (isPlaying) {
+        video.play().catch((err) => {
+          console.warn("Video play was prevented:", err);
+        });
+      } else {
+        video.pause();
+      }
     }
-  }, [src]);
+  }, [src, isPlaying]);
 
   const isWebm = src.endsWith(".webm") || src.includes("webm");
   const type = isWebm ? "video/webm" : "video/mp4";
@@ -26,7 +31,7 @@ export function CanvasVideo({ src, className, style }: CanvasVideoProps) {
   return (
     <video
       ref={videoRef}
-      autoPlay
+      autoPlay={isPlaying}
       muted
       loop
       playsInline
