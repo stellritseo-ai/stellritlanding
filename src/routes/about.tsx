@@ -119,8 +119,53 @@ const TESTIMONIALS = [
 ];
 
 function AboutPage() {
+  const organizationSchema = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "@id": "https://stellrit.com/#organization",
+    name: "StellR IT LLC",
+    url: "https://stellrit.com",
+    logo: "https://stellrit.com/fav.png",
+    image: "https://stellrit.com/og-image.png",
+    description:
+      "Senior-led custom software development company and digital agency in Garland, TX. Over a decade building enterprise web apps, SaaS products, brand identities, and digital campaigns.",
+    telephone: "+12148380543",
+    email: "info@stellrit.com",
+    address: {
+      "@type": "PostalAddress",
+      streetAddress: "5305 Creek CT",
+      addressLocality: "Garland",
+      addressRegion: "TX",
+      postalCode: "75043",
+      addressCountry: "US",
+    },
+    foundingDate: "2012",
+    numberOfEmployees: { "@type": "QuantitativeValue", value: 25 },
+    areaServed: [
+      { "@type": "State", name: "Texas" },
+      { "@type": "Country", name: "United States" },
+    ],
+    sameAs: [
+      "https://twitter.com/StellRIT",
+      "https://www.linkedin.com/company/stellrit",
+      "https://clutch.co/profile/stellr-it",
+      "https://www.goodfirms.co/company/stellr-it",
+    ],
+  };
+
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://stellrit.com" },
+      { "@type": "ListItem", position: 2, name: "About", item: "https://stellrit.com/about" },
+    ],
+  };
+
   return (
     <main className="relative min-h-screen bg-[#180028] overflow-hidden">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
       <ScrollBackground />
       <SiteHeader transparent />
       <PageHero

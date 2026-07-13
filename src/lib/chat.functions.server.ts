@@ -303,7 +303,7 @@ export const getTeamChatMessagesFn = createServerFn({ method: "POST" }).handler(
         { senderId: data.recipientId, recipientId: data.senderId },
       ]
     }).sort({ createdAt: 1 }).lean();
-    
+
     return messages.map((m: any) => ({
       id: m._id.toString(),
       senderId: m.senderId,

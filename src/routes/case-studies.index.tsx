@@ -56,8 +56,18 @@ export const Route = createFileRoute("/case-studies/")({
 });
 
 function WorkPage() {
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://stellrit.com" },
+      { "@type": "ListItem", position: 2, name: "Case Studies", item: "https://stellrit.com/case-studies" },
+    ],
+  };
+
   return (
     <main className="relative min-h-screen">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
       <ScrollBackground />
       <SiteHeader transparent />
       <PageHero

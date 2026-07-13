@@ -6,9 +6,31 @@ Disallow: /dashboard/
 Disallow: /login
 Disallow: /upload/
 
-# Allow Googlebot full access to public pages
+# Googlebot — full access, gentle crawl
 User-agent: Googlebot
 Allow: /
+Crawl-delay: 1
+
+# Bingbot
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 2
+
+# Block AI training scrapers
+User-agent: GPTBot
+Disallow: /
+
+User-agent: Claude-Web
+Disallow: /
+
+User-agent: CCBot
+Disallow: /
+
+User-agent: Diffbot
+Disallow: /
+
+User-agent: PerplexityBot
+Disallow: /
 
 # Sitemap
 Sitemap: https://stellrit.com/sitemap.xml

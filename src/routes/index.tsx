@@ -79,27 +79,61 @@ function Index() {
         "@id": "https://stellrit.com/#organization",
         name: "StellR IT LLC",
         url: "https://stellrit.com",
-        logo: "https://stellrit.com/fav.png",
+        logo: {
+          "@type": "ImageObject",
+          url: "https://stellrit.com/fav.png",
+          width: 512,
+          height: 512,
+        },
+        image: "https://stellrit.com/og-image.png",
         description:
           "Custom software development company and digital agency in Garland, TX specializing in enterprise web apps, SaaS development, AI automation, and digital marketing.",
+        telephone: "+12148380543",
+        email: "info@stellrit.com",
         address: {
           "@type": "PostalAddress",
+          streetAddress: "5305 Creek CT",
           addressLocality: "Garland",
           addressRegion: "TX",
+          postalCode: "75043",
           addressCountry: "US",
         },
-        areaServed: "US",
+        geo: {
+          "@type": "GeoCoordinates",
+          latitude: 32.9126,
+          longitude: -96.6389,
+        },
+        openingHoursSpecification: [
+          {
+            "@type": "OpeningHoursSpecification",
+            dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+            opens: "09:00",
+            closes: "18:00",
+          },
+        ],
+        areaServed: [
+          { "@type": "State", name: "Texas" },
+          { "@type": "Country", name: "United States" },
+        ],
         priceRange: "$$",
-        sameAs: ["https://twitter.com/StellRIT"],
+        sameAs: [
+          "https://twitter.com/StellRIT",
+          "https://www.linkedin.com/company/stellrit",
+          "https://clutch.co/profile/stellr-it",
+          "https://www.goodfirms.co/company/stellr-it",
+        ],
         hasOfferCatalog: {
           "@type": "OfferCatalog",
           name: "Digital Services",
           itemListElement: [
-            { "@type": "Offer", itemOffered: { "@type": "Service", name: "Custom Software Development" } },
-            { "@type": "Offer", itemOffered: { "@type": "Service", name: "SaaS Development" } },
-            { "@type": "Offer", itemOffered: { "@type": "Service", name: "AI Automation" } },
-            { "@type": "Offer", itemOffered: { "@type": "Service", name: "UX Design" } },
-            { "@type": "Offer", itemOffered: { "@type": "Service", name: "Digital Marketing" } },
+            { "@type": "Offer", itemOffered: { "@type": "Service", name: "Custom Software Development", url: "https://stellrit.com/services" } },
+            { "@type": "Offer", itemOffered: { "@type": "Service", name: "SaaS Development", url: "https://stellrit.com/services" } },
+            { "@type": "Offer", itemOffered: { "@type": "Service", name: "AI Automation", url: "https://stellrit.com/services" } },
+            { "@type": "Offer", itemOffered: { "@type": "Service", name: "UX/UI Design", url: "https://stellrit.com/services" } },
+            { "@type": "Offer", itemOffered: { "@type": "Service", name: "Brand Identity Design", url: "https://stellrit.com/services" } },
+            { "@type": "Offer", itemOffered: { "@type": "Service", name: "Digital Marketing", url: "https://stellrit.com/services" } },
+            { "@type": "Offer", itemOffered: { "@type": "Service", name: "API Development", url: "https://stellrit.com/services" } },
+            { "@type": "Offer", itemOffered: { "@type": "Service", name: "MVP Development", url: "https://stellrit.com/services" } },
           ],
         },
       },
@@ -108,48 +142,29 @@ function Index() {
         "@id": "https://stellrit.com/#website",
         url: "https://stellrit.com",
         name: "StellR IT LLC",
+        description: "Custom software development company and digital agency in Garland, TX.",
+        publisher: { "@id": "https://stellrit.com/#organization" },
         potentialAction: {
           "@type": "SearchAction",
-          target: "https://stellrit.com/?q={search_term_string}",
+          target: {
+            "@type": "EntryPoint",
+            urlTemplate: "https://stellrit.com/?q={search_term_string}",
+          },
           "query-input": "required name=search_term_string",
         },
       },
       {
         "@type": "ItemList",
         "@id": "https://stellrit.com/#sitelinks",
-        "name": "StellR IT Navigation Links",
-        "itemListElement": [
-          {
-            "@type": "SiteNavigationElement",
-            "position": 1,
-            "name": "Services",
-            "url": "https://stellrit.com/services"
-          },
-          {
-            "@type": "SiteNavigationElement",
-            "position": 2,
-            "name": "About Us",
-            "url": "https://stellrit.com/about"
-          },
-          {
-            "@type": "SiteNavigationElement",
-            "position": 3,
-            "name": "Portfolio",
-            "url": "https://stellrit.com/portfolio"
-          },
-          {
-            "@type": "SiteNavigationElement",
-            "position": 4,
-            "name": "Case Studies",
-            "url": "https://stellrit.com/case-studies"
-          },
-          {
-            "@type": "SiteNavigationElement",
-            "position": 5,
-            "name": "Let's Talk",
-            "url": "https://stellrit.com/contact"
-          }
-        ]
+        name: "StellR IT Navigation Links",
+        itemListElement: [
+          { "@type": "SiteNavigationElement", position: 1, name: "Services", url: "https://stellrit.com/services" },
+          { "@type": "SiteNavigationElement", position: 2, name: "About Us", url: "https://stellrit.com/about" },
+          { "@type": "SiteNavigationElement", position: 3, name: "Portfolio", url: "https://stellrit.com/portfolio" },
+          { "@type": "SiteNavigationElement", position: 4, name: "Case Studies", url: "https://stellrit.com/case-studies" },
+          { "@type": "SiteNavigationElement", position: 5, name: "Insights", url: "https://stellrit.com/insights" },
+          { "@type": "SiteNavigationElement", position: 6, name: "Contact", url: "https://stellrit.com/contact" },
+        ],
       },
     ],
   };

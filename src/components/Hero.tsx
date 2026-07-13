@@ -46,7 +46,9 @@ function HeroVideoFrame({ isPlaying = true }: { isPlaying?: boolean }) {
           muted
           loop
           playsInline
-          preload="auto"
+          preload="none"
+          fetchPriority="low"
+          aria-hidden="true"
           onLoadedData={() => setLoaded(true)}
           onError={() => setErrored(true)}
           className="h-full w-full object-cover"

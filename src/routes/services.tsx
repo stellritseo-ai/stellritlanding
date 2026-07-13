@@ -77,8 +77,88 @@ function BulletList({ items }: { items: string[] }) {
 }
 
 function ServicesPage() {
+  const servicesSchema = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "@id": "https://stellrit.com/services#services",
+    name: "StellR IT LLC Services",
+    itemListElement: [
+      {
+        "@type": "ListItem", position: 1,
+        item: {
+          "@type": "Service",
+          name: "UX Research & Strategy",
+          description: "Strategy-led UX and UI for web, SaaS, and mobile. We engineer calm, intuitive interfaces designed to convert and retain your users.",
+          provider: { "@type": "Organization", "@id": "https://stellrit.com/#organization" },
+          serviceType: "UX Design",
+          areaServed: "US",
+          url: "https://stellrit.com/services",
+        },
+      },
+      {
+        "@type": "ListItem", position: 2,
+        item: {
+          "@type": "Service",
+          name: "Brand Identity Design",
+          description: "Crafting iconic identities that command attention. We build distinctive brand systems, naming, and messaging.",
+          provider: { "@type": "Organization", "@id": "https://stellrit.com/#organization" },
+          serviceType: "Brand Design",
+          areaServed: "US",
+          url: "https://stellrit.com/services",
+        },
+      },
+      {
+        "@type": "ListItem", position: 3,
+        item: {
+          "@type": "Service",
+          name: "Web & Product Design",
+          description: "From concept to conversion — we design beautifully engineered digital products and SaaS platforms that scale.",
+          provider: { "@type": "Organization", "@id": "https://stellrit.com/#organization" },
+          serviceType: "Web Design",
+          areaServed: "US",
+          url: "https://stellrit.com/services",
+        },
+      },
+      {
+        "@type": "ListItem", position: 4,
+        item: {
+          "@type": "Service",
+          name: "Custom Software & Web Development",
+          description: "Full-stack delivery in modern frameworks. Performance and reliability are core features, not afterthoughts.",
+          provider: { "@type": "Organization", "@id": "https://stellrit.com/#organization" },
+          serviceType: "Software Development",
+          areaServed: "US",
+          url: "https://stellrit.com/services",
+        },
+      },
+      {
+        "@type": "ListItem", position: 5,
+        item: {
+          "@type": "Service",
+          name: "Digital Marketing & CRO",
+          description: "Data-driven paid and organic campaigns that unlock compounding growth across every channel that matters.",
+          provider: { "@type": "Organization", "@id": "https://stellrit.com/#organization" },
+          serviceType: "Digital Marketing",
+          areaServed: "US",
+          url: "https://stellrit.com/services",
+        },
+      },
+    ],
+  };
+
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://stellrit.com" },
+      { "@type": "ListItem", position: 2, name: "Services", item: "https://stellrit.com/services" },
+    ],
+  };
+
   return (
     <main className="relative min-h-screen selection:bg-[#ff8a5b]/30">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(servicesSchema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
       <ScrollBackground />
       <SiteHeader transparent />
       

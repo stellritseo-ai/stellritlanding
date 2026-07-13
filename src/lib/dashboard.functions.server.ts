@@ -999,7 +999,7 @@ export const getDashboardStatsFn = createServerFn({ method: "GET" }).handler(asy
   const totalProjects = projects.length;
   const totalEmails = websiteEmails.length;
   const totalChats = chatSessions.length;
-  
+
   // Total leads = total signed projects + other unconverted inbound inquiries (emails, chats)
   const totalLeads = totalProjects + totalEmails + totalChats;
   const overallConversion = totalLeads > 0 ? (totalProjects / totalLeads) * 100 : 0;

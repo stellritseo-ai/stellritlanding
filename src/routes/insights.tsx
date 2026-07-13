@@ -123,8 +123,48 @@ function InsightsPage() {
     (article) => activeTab === "ALL INSIGHTS" || article.category === activeTab
   );
 
+  const blogSchema = {
+    "@context": "https://schema.org",
+    "@type": "Blog",
+    "@id": "https://stellrit.com/insights#blog",
+    name: "StellR IT Insights",
+    description:
+      "Expert insights, case notes, and field reports on custom software development, UX/UI design, AI automation, SaaS, and digital marketing strategy.",
+    url: "https://stellrit.com/insights",
+    publisher: {
+      "@type": "Organization",
+      "@id": "https://stellrit.com/#organization",
+      name: "StellR IT LLC",
+      logo: { "@type": "ImageObject", url: "https://stellrit.com/fav.png" },
+    },
+    blogPost: ARTICLES.map((a) => ({
+      "@type": "BlogPosting",
+      headline: a.title,
+      description: a.description,
+      keywords: a.tags.join(", "),
+      articleSection: a.category,
+      author: { "@type": "Organization", "@id": "https://stellrit.com/#organization" },
+      publisher: { "@type": "Organization", "@id": "https://stellrit.com/#organization" },
+      datePublished: "2025-06-01",
+      dateModified: "2026-07-01",
+      url: `https://stellrit.com/insights`,
+      mainEntityOfPage: { "@type": "WebPage", "@id": "https://stellrit.com/insights" },
+    })),
+  };
+
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://stellrit.com" },
+      { "@type": "ListItem", position: 2, name: "Insights", item: "https://stellrit.com/insights" },
+    ],
+  };
+
   return (
     <main className="relative min-h-screen selection:bg-[#a855f7]/30">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(blogSchema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
       <ScrollBackground />
       <SiteHeader transparent />
 

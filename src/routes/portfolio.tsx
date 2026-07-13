@@ -255,6 +255,35 @@ function PortfolioPage() {
 
   const { scrollY } = useScroll();
 
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://stellrit.com" },
+      { "@type": "ListItem", position: 2, name: "Portfolio", item: "https://stellrit.com/portfolio" },
+    ],
+  };
+
+  const portfolioSchema = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "@id": "https://stellrit.com/portfolio#projects",
+    name: "StellR IT LLC Portfolio",
+    description: "Custom software development, SaaS, AI automation, brand identity, and digital marketing projects.",
+    itemListElement: PROJECTS.map((p, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      item: {
+        "@type": "CreativeWork",
+        name: p.title,
+        description: p.description,
+        creator: { "@type": "Organization", "@id": "https://stellrit.com/#organization" },
+        keywords: p.tags.join(", "),
+        url: `https://stellrit.com/case-studies/${p.slug}`,
+      },
+    })),
+  };
+
   // Scroll-Reactive Glowing Blobs (Parallax + Color Morphing)
   const blobColor1 = useTransform(
     scrollY,
@@ -288,6 +317,8 @@ function PortfolioPage() {
 
   return (
     <main className="relative min-h-screen bg-[#180028] text-white overflow-hidden">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(portfolioSchema) }} />
       <ScrollBackground />
       <SiteHeader transparent />
 
