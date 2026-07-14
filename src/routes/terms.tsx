@@ -7,9 +7,9 @@ import ScrollBackground from "@/components/ScrollBackground";
 export const Route = createFileRoute("/terms")({
   head: () => ({
     meta: [
-      { title: "Terms of Use — StellR IT LLC" },
-      { name: "description", content: "Terms governing the use of the StellR IT LLC website and services." },
-      { property: "og:title", content: "Terms of Use — StellR IT LLC" },
+      { title: "Terms of Conditions — StellR IT LLC" },
+      { name: "description", content: "Terms and conditions governing the use of the StellR IT LLC website and services." },
+      { property: "og:title", content: "Terms of Conditions — StellR IT LLC" },
       { property: "og:description", content: "Terms governing use of stellr.it and our services." },
     ],
   }),
@@ -54,7 +54,7 @@ function TermsPage() {
       <SiteHeader transparent />
       <PageHero
         eyebrow="Legal"
-        title="Terms of Use"
+        title="Terms of Conditions"
         description="Last updated June 10, 2026. The terms governing your use of the StellR IT LLC website."
       />
       <article className="relative z-10 mx-auto max-w-[860px] px-6 pb-32 md:px-12">

@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TermsRouteImport } from './routes/terms'
+import { Route as SmsTermsRouteImport } from './routes/sms-terms'
 import { Route as ServicesRouteImport } from './routes/services'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as PortfolioRouteImport } from './routes/portfolio'
@@ -40,6 +41,11 @@ import { Route as CaseStudiesSlugRouteImport } from './routes/case-studies.$slug
 const TermsRoute = TermsRouteImport.update({
   id: '/terms',
   path: '/terms',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SmsTermsRoute = SmsTermsRouteImport.update({
+  id: '/sms-terms',
+  path: '/sms-terms',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ServicesRoute = ServicesRouteImport.update({
@@ -185,6 +191,7 @@ export interface FileRoutesByFullPath {
   '/portfolio': typeof PortfolioRoute
   '/privacy': typeof PrivacyRoute
   '/services': typeof ServicesRoute
+  '/sms-terms': typeof SmsTermsRoute
   '/terms': typeof TermsRoute
   '/case-studies/$slug': typeof CaseStudiesSlugRoute
   '/dashboard/admin': typeof DashboardAdminRoute
@@ -212,6 +219,7 @@ export interface FileRoutesByTo {
   '/portfolio': typeof PortfolioRoute
   '/privacy': typeof PrivacyRoute
   '/services': typeof ServicesRoute
+  '/sms-terms': typeof SmsTermsRoute
   '/terms': typeof TermsRoute
   '/case-studies/$slug': typeof CaseStudiesSlugRoute
   '/dashboard/admin': typeof DashboardAdminRoute
@@ -242,6 +250,7 @@ export interface FileRoutesById {
   '/portfolio': typeof PortfolioRoute
   '/privacy': typeof PrivacyRoute
   '/services': typeof ServicesRoute
+  '/sms-terms': typeof SmsTermsRoute
   '/terms': typeof TermsRoute
   '/case-studies/$slug': typeof CaseStudiesSlugRoute
   '/dashboard/admin': typeof DashboardAdminRoute
@@ -273,6 +282,7 @@ export interface FileRouteTypes {
     | '/portfolio'
     | '/privacy'
     | '/services'
+    | '/sms-terms'
     | '/terms'
     | '/case-studies/$slug'
     | '/dashboard/admin'
@@ -300,6 +310,7 @@ export interface FileRouteTypes {
     | '/portfolio'
     | '/privacy'
     | '/services'
+    | '/sms-terms'
     | '/terms'
     | '/case-studies/$slug'
     | '/dashboard/admin'
@@ -329,6 +340,7 @@ export interface FileRouteTypes {
     | '/portfolio'
     | '/privacy'
     | '/services'
+    | '/sms-terms'
     | '/terms'
     | '/case-studies/$slug'
     | '/dashboard/admin'
@@ -359,6 +371,7 @@ export interface RootRouteChildren {
   PortfolioRoute: typeof PortfolioRoute
   PrivacyRoute: typeof PrivacyRoute
   ServicesRoute: typeof ServicesRoute
+  SmsTermsRoute: typeof SmsTermsRoute
   TermsRoute: typeof TermsRoute
   UploadTokenRoute: typeof UploadTokenRoute
 }
@@ -370,6 +383,13 @@ declare module '@tanstack/react-router' {
       path: '/terms'
       fullPath: '/terms'
       preLoaderRoute: typeof TermsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sms-terms': {
+      id: '/sms-terms'
+      path: '/sms-terms'
+      fullPath: '/sms-terms'
+      preLoaderRoute: typeof SmsTermsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/services': {
@@ -617,6 +637,7 @@ const rootRouteChildren: RootRouteChildren = {
   PortfolioRoute: PortfolioRoute,
   PrivacyRoute: PrivacyRoute,
   ServicesRoute: ServicesRoute,
+  SmsTermsRoute: SmsTermsRoute,
   TermsRoute: TermsRoute,
   UploadTokenRoute: UploadTokenRoute,
 }

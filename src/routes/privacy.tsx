@@ -43,7 +43,7 @@ const SECTIONS = [
   },
   {
     t: "Contact",
-    d: "Questions? Email privacy@stellr.it or write to StellR IT LLC, 633 W 5th St, Floor 26, Los Angeles, CA 90071.",
+    d: "Questions? Email info@stellr.it or write to StellR IT LLC, 633 W 5th St, Floor 26, Los Angeles, CA 90071.",
   },
 ];
 

@@ -25,8 +25,9 @@ const SOLUTIONS: LinkItem[] = [{ label: "StellR Solutions", to: "/services" }];
 const LEGAL: LinkItem[] = [
   { label: "Privacy Policy", to: "/privacy" },
   { label: "Security", to: "/privacy" },
-  { label: "Terms of Use", to: "/terms" },
+  { label: "Terms of Conditions", to: "/terms" },
   { label: "Data Security", to: "/privacy" },
+  { label: "SMS Term & Conditions", to: "/sms-terms" },
 ];
 
 export default function Footer() {
@@ -240,7 +241,8 @@ export default function Footer() {
           </span>
           <div className="flex items-center gap-6 md:gap-8 text-[14px] text-white/70">
             <Link to="/privacy" className="transition-colors hover:text-[#ff8a5b]">Privacy Policy</Link>
-            <Link to="/terms" className="transition-colors hover:text-[#ff8a5b]">Terms of Use</Link>
+            <Link to="/terms" className="transition-colors hover:text-[#ff8a5b]">Terms of Conditions</Link>
+            <Link to="/sms-terms" className="transition-colors hover:text-[#ff8a5b]">SMS Term & Conditions</Link>
           </div>
         </div>
       </div>
