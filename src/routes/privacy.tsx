@@ -44,9 +44,9 @@ function PrivacyPage() {
         description="Last updated July 14, 2026. This policy explains what we collect, why, and how we protect your privacy."
       />
 
-      <article className="relative z-10 mx-auto max-w-[1000px] px-6 pb-32 md:px-12">
+      <article className="relative z-10 mx-auto max-w-[98%] px-6 pb-32 md:px-12">
         {/* Intro Card */}
-        <div className="glass rounded-2xl p-6 sm:p-8 md:p-10 mb-12 shadow-soft">
+        <div className="glass rounded-2xl p-6 sm:p-8 md:p-10 mt-[50px] mb-12 shadow-soft">
           <div className="flex items-start gap-4">
             <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[#7a2adc] to-[#ff8a5b] text-white">
               <Shield className="h-6 w-6" />
