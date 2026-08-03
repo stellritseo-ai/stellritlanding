@@ -126,7 +126,7 @@ function HomeFAQSection() {
   return (
     <section
       aria-label="Frequently Asked Questions about StellR IT LLC"
-      className="relative z-10 mx-auto max-w-[1400px] px-6 md:px-12 lg:px-20 py-20 md:py-32"
+      className="relative z-10 mx-auto max-w-[1400px] px-6 md:px-12 lg:px-20 py-[60px]"
     >
       {/* Background ambient lighting */}
       <div className="pointer-events-none absolute left-1/4 top-1/2 -z-10 h-[500px] w-[500px] -translate-y-1/2 rounded-full bg-gradient-to-r from-[#a855f7]/15 to-[#ff8a5b]/10 blur-[120px]" />
