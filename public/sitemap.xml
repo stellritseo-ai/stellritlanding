@@ -150,7 +150,7 @@
     <priority>0.80</priority>
   </url>
 
-  <!-- Article: What Is Generative AI Development -->
+  <!-- Article 1: What Is Generative AI Development -->
   <url>
     <loc>https://stellrit.com/insights/what-is-generative-ai-development</loc>
     <lastmod>2026-08-03</lastmod>
@@ -160,6 +160,19 @@
       <image:loc>https://stellrit.com/og-image.png</image:loc>
       <image:title>What Is Generative AI Development? A Complete Business Guide for 2025</image:title>
       <image:caption>A comprehensive guide on generative AI development, LLM integration, RAG architecture, implementation costs, security, and ROI.</image:caption>
+    </image:image>
+  </url>
+
+  <!-- Article 2: How to Build a Custom AI Chatbot -->
+  <url>
+    <loc>https://stellrit.com/insights/how-to-build-custom-ai-chatbot</loc>
+    <lastmod>2026-08-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stellrit.com/og-image.png</image:loc>
+      <image:title>How to Build a Custom AI Chatbot for Your Business in 2025</image:title>
+      <image:caption>A strategic and engineering guide to building enterprise conversational AI, virtual assistants, and autonomous customer support bots.</image:caption>
     </image:image>
   </url>
 
