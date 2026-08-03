@@ -295,8 +295,8 @@ export default function Hero() {
       <div className="relative w-full bg-[#180028] px-6 pt-16 pb-12 flex flex-col items-center text-center gap-8 overflow-hidden">
         {/* Ambient background glow behind flower */}
         <div
-          className="pointer-events-none absolute left-1/2 top-[38%] h-[440px] w-[440px] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-70 blur-3xl"
-          style={{ background: "radial-gradient(circle, rgba(168,85,247,0.5) 0%, rgba(255,146,194,0.25) 45%, transparent 70%)" }}
+          className="pointer-events-none absolute left-1/2 top-[38%] h-[520px] w-[520px] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-75 blur-3xl"
+          style={{ background: "radial-gradient(circle, rgba(168,85,247,0.55) 0%, rgba(255,146,194,0.3) 45%, transparent 70%)" }}
         />
 
         {/* Headline — Pixel-perfect match to reference */}
@@ -304,8 +304,8 @@ export default function Hero() {
           Digital Evolution for <br /> Business
         </h1>
 
-        {/* Center 3D Organic Flower Video — Made significantly bigger */}
-        <div className="pointer-events-none relative w-[98%] sm:w-[90%] max-w-[440px] aspect-[4/5] scale-110 z-10 overflow-visible my-3 flex items-center justify-center">
+        {/* Center 3D Organic Flower Video — Made even larger */}
+        <div className="pointer-events-none relative w-full max-w-[520px] aspect-[4/5] scale-135 sm:scale-125 z-10 overflow-visible my-6 flex items-center justify-center">
           <video
             ref={mobileCenterVideoRef}
             autoPlay
