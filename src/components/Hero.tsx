@@ -314,7 +314,7 @@ export default function Hero() {
         </h1>
 
         {/* Center 3D Organic Flower Video — transparent via pixel keying, zero black */}
-        <div className="pointer-events-none relative w-screen -mx-4 aspect-[10/6] z-10 overflow-visible -mb-8 scale-[1.35]" style={{ marginTop: "30px" }}>
+        <div className="pointer-events-none relative w-screen -mx-4 aspect-[8/6] z-10 overflow-visible scale-[1.35]" style={{ marginTop: "30px", marginBottom: "15px" }}>
           <CanvasVideo
             src={CENTER_VIDEO}
             className="h-full w-full"
