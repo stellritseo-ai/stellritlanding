@@ -176,6 +176,19 @@
     </image:image>
   </url>
 
+  <!-- Article 3: Custom Software Development vs. SaaS -->
+  <url>
+    <loc>https://stellrit.com/insights/custom-software-development-vs-saas</loc>
+    <lastmod>2026-08-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://stellrit.com/og-image.png</image:loc>
+      <image:title>Custom Software Development vs. SaaS: Which Is Right for Your Business?</image:title>
+      <image:caption>An executive decision-making guide on total cost of ownership, scalability, IP ownership, and operational flexibility.</image:caption>
+    </image:image>
+  </url>
+
   <!-- Careers -->
   <url>
     <loc>https://stellrit.com/careers</loc>
