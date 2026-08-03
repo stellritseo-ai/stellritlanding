@@ -292,7 +292,7 @@ function ServicesPage() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
       <ScrollBackground />
       <SiteHeader transparent />
-      
+
       <PageHero
         eyebrow="Services"
         title={
@@ -588,8 +588,8 @@ function ServicesPage() {
       <section className="bg-[#180028] border-t border-white/10 py-[60px]">
         <div className="mx-auto max-w-[1400px] px-6 md:px-12 lg:px-20 relative">
           <div className="absolute top-0 right-10 w-[400px] h-[400px] bg-gradient-to-tl from-[#ff8a5b]/20 to-transparent blur-[80px] rounded-full pointer-events-none" />
-          
-          <motion.h2 
+
+          <motion.h2
             initial={{ opacity: 0, y: 40, scale: 0.95 }}
             whileInView={{ opacity: 1, y: 0, scale: 1 }}
             viewport={{ once: true, amount: 0.1 }}
