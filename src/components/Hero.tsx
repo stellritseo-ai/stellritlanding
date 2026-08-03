@@ -299,8 +299,8 @@ export default function Hero() {
           style={{ background: "radial-gradient(circle, rgba(168,85,247,0.55) 0%, rgba(255,146,194,0.3) 45%, transparent 70%)" }}
         />
 
-        {/* Headline — Pixel-perfect match to reference */}
-        <h1 className="text-glow z-10 max-w-lg font-serif text-[34px] sm:text-[44px] font-normal leading-[1.12] tracking-tight text-white mt-4 px-2">
+        {/* Headline — Applied exact user styling */}
+        <h1 className="text-glow z-10 max-w-lg font-serif text-[44px] font-black leading-[1.12] tracking-tight text-white mt-[78px] mb-[-104px] px-2" style={{ marginTop: "78px", fontSize: "44px", fontWeight: 900, marginBottom: "-104px" }}>
           Digital Evolution for <br /> Business
         </h1>
 
