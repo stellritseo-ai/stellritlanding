@@ -146,6 +146,16 @@ function ContactPage() {
           type: "contact",
         },
       });
+      // Push generate_lead event to GTM dataLayer on successful form submission
+      if (typeof window !== "undefined") {
+        (window as any).dataLayer = (window as any).dataLayer || [];
+        (window as any).dataLayer.push({
+          event: "generate_lead",
+          lead_type: "contact_form",
+          service_requested: form.service,
+          budget_selected: form.budget,
+        });
+      }
       setForm({ name: "", email: "", phone: "", company: "", budget: BUDGETS[1], service: SERVICES[0], message: "" });
       setFile(null);
       generateCaptcha();
