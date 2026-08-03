@@ -314,7 +314,7 @@ export default function Hero() {
         </h1>
 
         {/* Center 3D Organic Flower Video — transparent via pixel keying, zero black */}
-        <div className="pointer-events-none relative w-full max-w-[500px] aspect-square z-10 overflow-visible -mt-8 -mb-8">
+        <div className="pointer-events-none relative w-full max-w-[560px] aspect-square z-10 overflow-visible -mt-8 -mb-8">
           <CanvasVideo
             src={CENTER_VIDEO}
             className="h-full w-full"
