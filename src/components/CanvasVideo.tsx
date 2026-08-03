@@ -23,7 +23,6 @@ export function CanvasVideo({
     const canvas = canvasRef.current;
     if (!video || !canvas) return;
 
-    // Enforce programmatically muted playsInline for iOS Safari
     video.muted = true;
     video.defaultMuted = true;
     video.playsInline = true;
@@ -32,23 +31,52 @@ export function CanvasVideo({
     video.setAttribute("webkit-playsinline", "");
 
     let animationFrameId: number;
-    let lastTime = 0;
+    // Offscreen small canvas for FAST pixel keying at 25% resolution
+    const offscreen = document.createElement("canvas");
+    const offCtx = offscreen.getContext("2d", { willReadFrequently: true });
     const ctx = canvas.getContext("2d", { alpha: true });
+    const SCALE = 0.35; // Key at 35% resolution — fast yet clean
 
-    const renderLoop = (timestamp: number) => {
-      // Smooth 60fps GPU draw loop
-      if (timestamp - lastTime >= 15) {
-        lastTime = timestamp;
-        if (video.readyState >= 2 && ctx) {
-          const w = video.videoWidth || 480;
-          const h = video.videoHeight || 480;
-          if (canvas.width !== w || canvas.height !== h) {
-            canvas.width = w;
-            canvas.height = h;
-          }
-          ctx.clearRect(0, 0, w, h);
-          ctx.drawImage(video, 0, 0, w, h);
+    const renderLoop = () => {
+      if (video.readyState >= 2 && ctx && offCtx) {
+        const vw = video.videoWidth || 480;
+        const vh = video.videoHeight || 480;
+        const sw = Math.floor(vw * SCALE);
+        const sh = Math.floor(vh * SCALE);
+
+        // Sync display canvas size
+        if (canvas.width !== vw || canvas.height !== vh) {
+          canvas.width = vw;
+          canvas.height = vh;
         }
+
+        // Sync offscreen canvas size
+        if (offscreen.width !== sw || offscreen.height !== sh) {
+          offscreen.width = sw;
+          offscreen.height = sh;
+        }
+
+        // Step 1: Draw video at reduced resolution into offscreen canvas
+        offCtx.clearRect(0, 0, sw, sh);
+        offCtx.drawImage(video, 0, 0, sw, sh);
+
+        // Step 2: Pixel key — strip black pixels into alpha=0 (at low res, very fast)
+        try {
+          const imgData = offCtx.getImageData(0, 0, sw, sh);
+          const d = imgData.data;
+          const len = d.length;
+          for (let i = 0; i < len; i += 4) {
+            const maxRGB = d[i] > d[i + 1] ? (d[i] > d[i + 2] ? d[i] : d[i + 2]) : (d[i + 1] > d[i + 2] ? d[i + 1] : d[i + 2]);
+            if (maxRGB < 40) {
+              d[i + 3] = Math.floor((maxRGB / 40) * d[i + 3]);
+            }
+          }
+          offCtx.putImageData(imgData, 0, 0);
+        } catch (_) {}
+
+        // Step 3: Upscale the keyed frame to full display canvas
+        ctx.clearRect(0, 0, vw, vh);
+        ctx.drawImage(offscreen, 0, 0, vw, vh);
       }
       animationFrameId = requestAnimationFrame(renderLoop);
     };
@@ -63,12 +91,9 @@ export function CanvasVideo({
             })
             .catch(() => {
               const retry = () => {
-                video
-                  .play()
-                  .then(() => {
-                    animationFrameId = requestAnimationFrame(renderLoop);
-                  })
-                  .catch(() => {});
+                video.play().then(() => {
+                  animationFrameId = requestAnimationFrame(renderLoop);
+                }).catch(() => {});
                 window.removeEventListener("touchstart", retry);
                 window.removeEventListener("click", retry);
                 window.removeEventListener("scroll", retry);
@@ -85,7 +110,6 @@ export function CanvasVideo({
     };
 
     attemptPlay();
-
     video.addEventListener("loadedmetadata", attemptPlay);
     video.addEventListener("canplay", attemptPlay);
 
@@ -100,7 +124,6 @@ export function CanvasVideo({
 
   return (
     <div className={className} style={{ position: "relative", ...style }}>
-      {/* Hidden decoding video element */}
       <video
         ref={videoRef}
         autoPlay={isPlaying}
@@ -117,10 +140,9 @@ export function CanvasVideo({
         {fallbackMp4 && <source src={fallbackMp4} type="video/mp4" />}
         {!isWebm && <source src={src} type="video/mp4" />}
       </video>
-      {/* GPU hardware-accelerated 60 FPS canvas with mixBlendMode screen */}
       <canvas
         ref={canvasRef}
-        className="h-full w-full object-contain"
+        className="h-full w-full"
         style={{
           mixBlendMode: "screen",
           WebkitMixBlendMode: "screen",
@@ -129,6 +151,7 @@ export function CanvasVideo({
           transform: "translateZ(0)",
           WebkitTransform: "translateZ(0)",
           willChange: "transform",
+          imageRendering: "auto",
         }}
       />
     </div>
