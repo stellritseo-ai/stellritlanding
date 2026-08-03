@@ -299,9 +299,18 @@ export default function Hero() {
           style={{ background: "radial-gradient(circle, rgba(168,85,247,0.55) 0%, rgba(255,146,194,0.3) 45%, transparent 70%)" }}
         />
 
-        {/* Headline — Applied exact user styling */}
-        <h1 className="text-glow z-10 max-w-lg font-serif text-[44px] font-black leading-[1.12] tracking-tight text-white mt-[78px] mb-[-104px] px-2" style={{ marginTop: "78px", fontSize: "44px", fontWeight: 900, marginBottom: "-104px" }}>
-          Digital Evolution for <br /> Business
+        {/* Headline — Stylish luxury editorial typography */}
+        <h1
+          className="z-10 max-w-lg font-serif tracking-tight px-2 drop-shadow-[0_4px_30px_rgba(190,167,255,0.4)]"
+          style={{ marginTop: "78px", fontSize: "44px", fontWeight: 900, marginBottom: "-104px", lineHeight: "1.08" }}
+        >
+          <span className="bg-gradient-to-b from-white via-white to-white/80 bg-clip-text text-transparent">
+            Digital Evolution for
+          </span>{" "}
+          <br />
+          <span className="font-serif italic font-normal text-transparent bg-clip-text bg-gradient-to-r from-[#d7dcfc] via-[#c4b5fd] to-[#f472b6]">
+            Business
+          </span>
         </h1>
 
         {/* Center 3D Organic Flower Video — Made even larger */}
