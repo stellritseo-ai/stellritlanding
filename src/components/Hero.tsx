@@ -302,7 +302,7 @@ export default function Hero() {
         {/* Headline — Stylish luxury editorial typography */}
         <h1
           className="z-20 max-w-lg font-serif tracking-tight px-2 drop-shadow-[0_4px_30px_rgba(190,167,255,0.4)] mb-0"
-          style={{ fontSize: "38px", fontWeight: 900, lineHeight: "1.1" }}
+          style={{ fontSize: "38px", fontWeight: 900, lineHeight: "1.1", marginTop: "65px", marginBottom: "30px" }}
         >
           <span className="bg-gradient-to-b from-white via-white to-white/80 bg-clip-text text-transparent">
             Digital Evolution for
@@ -314,7 +314,7 @@ export default function Hero() {
         </h1>
 
         {/* Center 3D Organic Flower Video — transparent via pixel keying, zero black */}
-        <div className="pointer-events-none relative w-screen -mx-4 aspect-[4/5] z-10 overflow-visible -mt-8 -mb-8">
+        <div className="pointer-events-none relative w-screen -mx-4 aspect-[10/6] z-10 overflow-visible -mt-8 -mb-8">
           <CanvasVideo
             src={CENTER_VIDEO}
             className="h-full w-full"
