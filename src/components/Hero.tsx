@@ -249,7 +249,7 @@ export default function Hero() {
     const playMobileVideo = () => {
       video.play().catch(() => {
         const retry = () => {
-          video.play().catch(() => {});
+          video.play().catch(() => { });
           window.removeEventListener("touchstart", retry);
           window.removeEventListener("click", retry);
           window.removeEventListener("scroll", retry);
