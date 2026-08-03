@@ -81,9 +81,24 @@ function ServiceDynamicPage() {
 
       {/* Hero Section */}
       <section ref={heroRef} className="relative pt-32 pb-20 md:pt-48 md:pb-32 px-6 md:px-12 lg:px-20 min-h-[85vh] flex flex-col justify-center overflow-hidden">
+        
+        {/* Parallax Image Background */}
+        <motion.div 
+          style={{ y: useTransform(scrollYProgress, [0, 1], [0, 300]) }}
+          className="absolute inset-0 z-0 opacity-50 mix-blend-luminosity"
+        >
+          <img 
+            src={service.heroImage} 
+            alt="" 
+            className="w-full h-full object-cover object-center"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#180028] via-[#180028]/80 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#180028] via-[#180028]/60 to-[#180028]/20" />
+        </motion.div>
+
         {/* Dynamic Glow */}
         <div 
-          className="absolute top-0 right-0 w-[800px] h-[800px] rounded-full blur-[120px] opacity-20 pointer-events-none mix-blend-screen"
+          className="absolute top-0 right-0 w-[800px] h-[800px] rounded-full blur-[120px] opacity-20 pointer-events-none mix-blend-screen z-0"
           style={{ background: `radial-gradient(circle, ${service.heroColor} 0%, transparent 70%)` }}
         />
         
@@ -96,7 +111,7 @@ function ServiceDynamicPage() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-            className="font-serif text-[48px] md:text-[80px] lg:text-[100px] leading-[0.95] tracking-tight mb-8"
+            className="font-serif text-[48px] md:text-[80px] lg:text-[100px] leading-[0.95] tracking-tight mb-8 drop-shadow-xl"
           >
             {service.title}
           </motion.h1>
@@ -104,7 +119,7 @@ function ServiceDynamicPage() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-            className="text-[20px] md:text-[28px] text-white/80 font-light max-w-3xl leading-[1.4]"
+            className="text-[20px] md:text-[28px] text-white/90 font-light max-w-3xl leading-[1.4] drop-shadow-md"
           >
             {service.subtitle}
           </motion.p>
@@ -113,36 +128,60 @@ function ServiceDynamicPage() {
 
       {/* Description & Value Prop */}
       <section className="py-24 px-6 md:px-12 lg:px-20 bg-white text-[#180028] relative rounded-t-[40px] md:rounded-t-[80px] -mt-10 z-20 shadow-[0_-20px_50px_rgba(0,0,0,0.2)]">
-        <div className="max-w-4xl mx-auto">
-          <span className="text-[12px] font-bold uppercase tracking-[0.2em] text-[#180028]/50 mb-6 block">
-            The Advantage
-          </span>
-          <p className="font-serif text-[28px] md:text-[40px] leading-[1.3] font-medium mb-20 text-[#180028]/90">
-            {service.description}
-          </p>
+        <div className="max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-24 items-center">
+            
+            {/* Text Side */}
+            <div className="lg:col-span-7">
+              <span className="text-[12px] font-bold uppercase tracking-[0.2em] text-[#180028]/50 mb-6 block">
+                The Advantage
+              </span>
+              <p className="font-serif text-[28px] md:text-[40px] leading-[1.3] font-medium mb-16 text-[#180028]/90">
+                {service.description}
+              </p>
 
-          {/* Benefits Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-16 gap-y-12">
-            {service.benefits.map((benefit, i) => (
-              <motion.div 
-                key={i}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
-                className="group"
-              >
-                <div className="flex items-center gap-4 mb-4">
-                  <div className="w-10 h-10 rounded-full flex items-center justify-center bg-[#180028]/5 text-[#180028] group-hover:bg-[#180028] group-hover:text-white transition-colors duration-300">
-                    <CheckCircle2 className="w-5 h-5" />
-                  </div>
-                  <h3 className="font-bold text-[20px]">{benefit.title}</h3>
-                </div>
-                <p className="text-[15px] leading-[1.7] text-[#180028]/70">
-                  {benefit.description}
-                </p>
-              </motion.div>
-            ))}
+              {/* Benefits Grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-12">
+                {service.benefits.map((benefit, i) => (
+                  <motion.div 
+                    key={i}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: i * 0.1 }}
+                    className="group"
+                  >
+                    <div className="flex items-center gap-4 mb-4">
+                      <div className="w-10 h-10 rounded-full flex items-center justify-center bg-[#180028]/5 text-[#180028] group-hover:bg-[#180028] group-hover:text-white transition-colors duration-300">
+                        <CheckCircle2 className="w-5 h-5" />
+                      </div>
+                      <h3 className="font-bold text-[20px]">{benefit.title}</h3>
+                    </div>
+                    <p className="text-[15px] leading-[1.7] text-[#180028]/70">
+                      {benefit.description}
+                    </p>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+
+            {/* Image Side */}
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8, ease: "easeOut" }}
+              className="lg:col-span-5 relative h-[500px] lg:h-[700px] rounded-3xl overflow-hidden shadow-2xl group"
+            >
+              <img 
+                src={service.featureImage} 
+                alt={`${service.title} showcase`} 
+                className="w-full h-full object-cover transition-transform duration-[1.5s] group-hover:scale-110" 
+              />
+              <div className="absolute inset-0 border border-black/10 rounded-3xl pointer-events-none" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent pointer-events-none" />
+            </motion.div>
+
           </div>
         </div>
       </section>
