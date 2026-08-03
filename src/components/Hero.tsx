@@ -121,21 +121,30 @@ export default function Hero() {
   // Use a highly responsive spring to smooth out scroll increments (wheel stepping)
   // while maintaining absolute snappiness and lightweight feel
   const smoothProgress = useSpring(scrollYProgress, {
-    stiffness: 150,
-    damping: 38,
-    mass: 0.2,
-    restDelta: 0.0001
+    stiffness: 180,
+    damping: 25,
+    mass: 0.1,
+    restDelta: 0.001
   });
 
   const p = smoothProgress;
 
   // Phase 2-3: left video card expands to fit screen (centered, with gutters)
+  // Throttled window resize handler
   const [vp, setVp] = useState({ w: 1280, h: 720 });
   useEffect(() => {
-    const update = () => setVp({ w: window.innerWidth, h: window.innerHeight });
+    let rId: number;
+    const update = () => {
+      rId = requestAnimationFrame(() => {
+        setVp({ w: window.innerWidth, h: window.innerHeight });
+      });
+    };
     update();
     window.addEventListener("resize", update);
-    return () => window.removeEventListener("resize", update);
+    return () => {
+      window.removeEventListener("resize", update);
+      cancelAnimationFrame(rId);
+    };
   }, []);
 
   const isMobile = vp.w < 768;
@@ -223,11 +232,22 @@ export default function Hero() {
   const [isCenterVideoPlaying, setIsCenterVideoPlaying] = useState(true);
   const [isCardVideoPlaying, setIsCardVideoPlaying] = useState(true);
 
+  // Deduplicated scroll listener — fires React state updates ONLY on state transitions
   useEffect(() => {
     if (isMobile) return;
+    let isCenter = true;
+    let isCard = true;
     const unsubscribe = p.on("change", (latest) => {
-      setIsCenterVideoPlaying(latest < 0.6);
-      setIsCardVideoPlaying(latest < 1.0);
+      const nextCenter = latest < 0.6;
+      const nextCard = latest < 1.0;
+      if (nextCenter !== isCenter) {
+        isCenter = nextCenter;
+        setIsCenterVideoPlaying(nextCenter);
+      }
+      if (nextCard !== isCard) {
+        isCard = nextCard;
+        setIsCardVideoPlaying(nextCard);
+      }
     });
     return () => unsubscribe();
   }, [p, isMobile]);
