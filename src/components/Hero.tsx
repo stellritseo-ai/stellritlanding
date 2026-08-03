@@ -292,17 +292,17 @@ export default function Hero() {
 
   if (isMobile) {
     return (
-      <div className="relative w-full bg-[#180028] px-6 pt-16 pb-12 flex flex-col items-center text-center gap-8 overflow-hidden">
+      <div className="relative w-full bg-[#180028] px-4 pt-24 pb-12 flex flex-col items-center text-center gap-0 overflow-hidden">
         {/* Ambient background glow behind flower */}
         <div
-          className="pointer-events-none absolute left-1/2 top-[38%] h-[520px] w-[520px] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-75 blur-3xl"
+          className="pointer-events-none absolute left-1/2 top-[45%] h-[500px] w-[500px] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-70 blur-3xl"
           style={{ background: "radial-gradient(circle, rgba(168,85,247,0.55) 0%, rgba(255,146,194,0.3) 45%, transparent 70%)" }}
         />
 
         {/* Headline — Stylish luxury editorial typography */}
         <h1
-          className="z-10 max-w-lg font-serif tracking-tight px-2 drop-shadow-[0_4px_30px_rgba(190,167,255,0.4)]"
-          style={{ marginTop: "78px", fontSize: "44px", fontWeight: 900, marginBottom: "-104px", lineHeight: "1.08" }}
+          className="z-20 max-w-lg font-serif tracking-tight px-2 drop-shadow-[0_4px_30px_rgba(190,167,255,0.4)] mb-0"
+          style={{ fontSize: "38px", fontWeight: 900, lineHeight: "1.1" }}
         >
           <span className="bg-gradient-to-b from-white via-white to-white/80 bg-clip-text text-transparent">
             Digital Evolution for
@@ -313,11 +313,11 @@ export default function Hero() {
           </span>
         </h1>
 
-        {/* Center 3D Organic Flower Video — Zero black background, 100% HTML5 Canvas screen blend matching reference image */}
-        <div className="pointer-events-none relative w-full max-w-[520px] aspect-[4/5] scale-135 sm:scale-125 z-10 overflow-visible my-6 flex items-center justify-center">
+        {/* Center 3D Organic Flower Video — clean below headline with no overlap */}
+        <div className="pointer-events-none relative w-full max-w-[420px] aspect-square z-10 overflow-visible -mt-8 -mb-8 flex items-center justify-center">
           <CanvasVideo
             src={CENTER_VIDEO}
-            className="relative z-10 h-full w-full object-contain bg-transparent"
+            className="h-full w-full"
             style={{
               mixBlendMode: "screen",
               WebkitMixBlendMode: "screen",
@@ -325,9 +325,9 @@ export default function Hero() {
           />
         </div>
 
-        {/* Description Text — Positioned directly beneath flower with user exact styling */}
-        <div className="z-10 max-w-md px-2 mt-[-95px]" style={{ marginTop: "-95px" }}>
-          <p className="text-[16px] leading-[32px] text-white/80 font-sans font-light" style={{ fontSize: "16px", lineHeight: "32px" }}>
+        {/* Description Text */}
+        <div className="z-20 max-w-md px-4 mt-0">
+          <p className="text-[15px] leading-[28px] text-white/80 font-sans font-light">
             Our <a href="#" className="underline decoration-white/40 underline-offset-4 hover:text-white font-normal text-white">web design agency</a> helps enterprise brands and market leaders navigate digital, evolve profitably, and launch unforgettable websites, products, and campaigns.
           </p>
         </div>
