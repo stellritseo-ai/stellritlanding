@@ -313,25 +313,14 @@ export default function Hero() {
           </span>
         </h1>
 
-        {/* Center 3D Organic Flower Video — Zero black background, 100% seamless blend matching reference image */}
+        {/* Center 3D Organic Flower Video — Zero black background, 100% HTML5 Canvas screen blend matching reference image */}
         <div className="pointer-events-none relative w-full max-w-[520px] aspect-[4/5] scale-135 sm:scale-125 z-10 overflow-visible my-6 flex items-center justify-center">
-          <video
-            ref={mobileCenterVideoRef}
+          <CanvasVideo
             src={CENTER_VIDEO}
-            autoPlay
-            muted
-            loop
-            playsInline
-            // @ts-ignore
-            webkit-playsinline="true"
-            controls={false}
-            preload="auto"
             className="relative z-10 h-full w-full object-contain bg-transparent"
             style={{
               mixBlendMode: "screen",
               WebkitMixBlendMode: "screen",
-              transform: "translateZ(0)",
-              WebkitTransform: "translateZ(0)",
             }}
           />
         </div>
