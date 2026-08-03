@@ -15,19 +15,28 @@ const COMPANY: LinkItem[] = [
   { label: "About Us", to: "/about" },
   { label: "Portfolio", to: "/portfolio" },
   { label: "Case Studies", to: "/case-studies" },
+  { label: "Careers", to: "/careers" },
   { label: "Contact", to: "/contact" },
 ];
 const RESOURCES: LinkItem[] = [
   { label: "StellR Insights", to: "/insights" },
   { label: "StellR Academy", to: "/insights" },
+  { label: "Blog", to: "/insights" },
 ];
-const SOLUTIONS: LinkItem[] = [{ label: "StellR Solutions", to: "/services" }];
+const SOLUTIONS: LinkItem[] = [
+  { label: "AI Development", to: "/services" },
+  { label: "Software Development", to: "/services" },
+  { label: "Web Development", to: "/services" },
+  { label: "Mobile App Development", to: "/services" },
+  { label: "Dedicated Teams", to: "/services" },
+  { label: "Digital Marketing", to: "/services" },
+];
 const LEGAL: LinkItem[] = [
   { label: "Privacy Policy", to: "/privacy" },
   { label: "Security", to: "/privacy" },
-  { label: "Terms of Conditions", to: "/terms" },
+  { label: "Terms of Service", to: "/terms" },
   { label: "Data Security", to: "/privacy" },
-  { label: "SMS Term & Conditions", to: "/sms-terms" },
+  { label: "SMS Terms & Conditions", to: "/sms-terms" },
 ];
 
 export default function Footer() {
@@ -129,18 +138,40 @@ export default function Footer() {
             </Link>
           </div>
 
-          <nav className="flex items-center gap-3">
+          <nav className="flex items-center gap-3" aria-label="Social media links">
             {[
-              { label: "Facebook", svg: <path d="M22 12a10 10 0 1 0-11.6 9.9v-7H7.9V12h2.5V9.8c0-2.5 1.5-3.9 3.8-3.9 1.1 0 2.2.2 2.2.2v2.5h-1.3c-1.2 0-1.6.8-1.6 1.6V12h2.8l-.5 2.9h-2.3v7A10 10 0 0 0 22 12z" /> },
-              { label: "Instagram", svg: <><rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="currentColor" strokeWidth="1.8" /><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" strokeWidth="1.8" /><circle cx="17.5" cy="6.5" r="1" /></> },
-              { label: "YouTube", svg: <path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8zM9.6 15.6V8.4l6.3 3.6-6.3 3.6z" /> },
-              { label: "LinkedIn", svg: <path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM3 9h4v12H3zM10 9h3.8v1.7h.1c.5-1 1.9-2 3.9-2 4.1 0 4.9 2.7 4.9 6.2V21h-4v-5.6c0-1.3 0-3-1.9-3s-2.1 1.4-2.1 2.9V21h-4z" /> },
-              { label: "TikTok", svg: <path d="M19.5 8.2a6.4 6.4 0 0 1-3.8-1.2v7.6a5.5 5.5 0 1 1-5.5-5.5c.3 0 .6 0 .9.1v2.8a2.7 2.7 0 1 0 1.9 2.6V2h2.7a3.7 3.7 0 0 0 3.8 3.4z" /> },
+              {
+                label: "Facebook",
+                href: "https://www.facebook.com/stellrit",
+                svg: <path d="M22 12a10 10 0 1 0-11.6 9.9v-7H7.9V12h2.5V9.8c0-2.5 1.5-3.9 3.8-3.9 1.1 0 2.2.2 2.2.2v2.5h-1.3c-1.2 0-1.6.8-1.6 1.6V12h2.8l-.5 2.9h-2.3v7A10 10 0 0 0 22 12z" />,
+              },
+              {
+                label: "Instagram",
+                href: "https://www.instagram.com/stellrit",
+                svg: <><rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="currentColor" strokeWidth="1.8" /><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" strokeWidth="1.8" /><circle cx="17.5" cy="6.5" r="1" /></>,
+              },
+              {
+                label: "YouTube",
+                href: "https://www.youtube.com/@stellrit",
+                svg: <path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8zM9.6 15.6V8.4l6.3 3.6-6.3 3.6z" />,
+              },
+              {
+                label: "LinkedIn",
+                href: "https://www.linkedin.com/company/stellrit",
+                svg: <path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM3 9h4v12H3zM10 9h3.8v1.7h.1c.5-1 1.9-2 3.9-2 4.1 0 4.9 2.7 4.9 6.2V21h-4v-5.6c0-1.3 0-3-1.9-3s-2.1 1.4-2.1 2.9V21h-4z" />,
+              },
+              {
+                label: "TikTok",
+                href: "https://www.tiktok.com/@stellrit",
+                svg: <path d="M19.5 8.2a6.4 6.4 0 0 1-3.8-1.2v7.6a5.5 5.5 0 1 1-5.5-5.5c.3 0 .6 0 .9.1v2.8a2.7 2.7 0 1 0 1.9 2.6V2h2.7a3.7 3.7 0 0 0 3.8 3.4z" />,
+              },
             ].map((s) => (
               <a
                 key={s.label}
-                href="#"
-                aria-label={s.label}
+                href={s.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={`StellR IT LLC on ${s.label}`}
                 className="flex h-11 w-11 items-center justify-center rounded-full border border-white/15 bg-white/5 text-white/80 transition-all hover:border-[#ff8a5b] hover:text-[#ff8a5b]"
               >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">

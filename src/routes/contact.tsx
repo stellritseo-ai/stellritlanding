@@ -28,41 +28,42 @@ export const Route = createFileRoute("/contact")({
     meta: [
       {
         title:
-          "Contact StellR IT LLC \u2014 Hire a Software Development Company | Garland, TX",
+          "Contact StellR IT LLC — Hire AI & Software Developers | Free Consultation",
       },
       {
         name: "description",
         content:
-          "Start your project with StellR IT LLC — a custom software development company in Garland, TX. We respond within one business day. Get a free consultation for web apps, SaaS, AI automation, or digital marketing.",
+          "Start your AI or software project with StellR IT LLC. Get a free consultation — we respond within 24 hours. Hire dedicated AI engineers, software developers, and remote engineering teams. Based in Garland, TX, serving clients worldwide.",
       },
       {
         name: "keywords",
         content:
-          "hire software development company, software engineer consulting, custom web application development quote, digital agency contact, garland texas software company, saas development agency contact, free software development consultation",
+          "contact StellR IT LLC, hire AI developers, hire software developers, hire dedicated engineering team, get AI development quote, free software development consultation, hire remote developers, software development quote, AI development company contact, custom software development inquiry, dedicated team inquiry, IT outsourcing contact, web development company contact, mobile app development quote",
       },
-      { name: "robots", content: "index, follow" },
+      { name: "robots", content: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" },
       {
         property: "og:title",
         content:
-          "Contact StellR IT LLC \u2014 Start Your Software Project Today",
+          "Contact StellR IT LLC — Hire AI & Software Developers Today",
       },
       {
         property: "og:description",
         content:
-          "Tell us about your project. We build custom software, SaaS platforms, AI automation & digital experiences. Based in Garland, TX. Reply within 1 business day.",
+          "Free consultation. We build AI software, SaaS, web & mobile apps. Hire dedicated remote engineers. Response within 24 hours. Garland, TX — serving worldwide.",
       },
       { property: "og:url", content: "https://stellrit.com/contact" },
       { property: "og:type", content: "website" },
       { property: "og:image", content: "https://stellrit.com/og-image.png" },
+      { property: "og:image:alt", content: "Contact StellR IT LLC — Hire AI & Software Developers" },
       { name: "twitter:card", content: "summary_large_image" },
       {
         name: "twitter:title",
-        content: "Contact StellR IT LLC \u2014 Custom Software Development",
+        content: "Contact StellR IT LLC — Hire AI & Software Developers",
       },
       {
         name: "twitter:description",
         content:
-          "Start your project. Custom software, SaaS, AI & digital marketing. Garland, TX.",
+          "Free consultation. AI, software, SaaS & mobile development. Hire dedicated remote teams. Response within 24 hours.",
       },
       { name: "twitter:image", content: "https://stellrit.com/og-image.png" },
     ],
@@ -72,6 +73,7 @@ export const Route = createFileRoute("/contact")({
 });
 
 const BUDGETS = ["< $1K", "$2k – $10k", "$10k – $20k", "$20+"];
+
 const SERVICES = [
   "UX Research & Strategy",
   "Brand Identity",

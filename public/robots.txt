@@ -1,36 +1,107 @@
+# =========================================================
+# robots.txt — StellR IT LLC (https://stellrit.com)
+# Updated: 2026-08-03
+# =========================================================
+
+# ---- Default: All Robots --------------------------------
 User-agent: *
 Allow: /
 
-# Disallow dashboard & admin areas
+# Disallow private/admin pages
 Disallow: /dashboard/
+Disallow: /dashboard
 Disallow: /login
 Disallow: /upload/
+Disallow: /upload
 
-# Googlebot — full access, gentle crawl
+# ---- Google (full access, standard crawl) ---------------
 User-agent: Googlebot
 Allow: /
 Crawl-delay: 1
 
-# Bingbot
+User-agent: Googlebot-Image
+Allow: /
+
+User-agent: Googlebot-Video
+Allow: /
+
+# ---- Bing -----------------------------------------------
 User-agent: Bingbot
 Allow: /
 Crawl-delay: 2
 
-# Block AI training scrapers
+# ---- AI & Generative Search (Allow for GEO visibility) --
+# Allow GPTBot so StellR IT appears in ChatGPT responses
 User-agent: GPTBot
-Disallow: /
+Allow: /
 
+# Allow Google-Extended for Gemini AI and Google AI Overviews
+User-agent: Google-Extended
+Allow: /
+
+# Allow Claude (Anthropic) for AI search visibility
 User-agent: Claude-Web
-Disallow: /
+Allow: /
+User-agent: anthropic-ai
+Allow: /
+User-agent: ClaudeBot
+Allow: /
 
-User-agent: CCBot
-Disallow: /
-
-User-agent: Diffbot
-Disallow: /
-
+# Allow Perplexity for AI search
 User-agent: PerplexityBot
+Allow: /
+
+# Allow Cohere for AI indexing
+User-agent: cohere-ai
+Allow: /
+
+# Allow Meta AI
+User-agent: FacebookBot
+Allow: /
+
+# Allow Microsoft Copilot (OAI-SearchBot)
+User-agent: OAI-SearchBot
+Allow: /
+
+# Allow Amazon Alexa
+User-agent: Amazonbot
+Allow: /
+
+# Allow Apple (Applebot)
+User-agent: Applebot
+Allow: /
+
+# ---- Content Aggregators (allow) -----------------------
+User-agent: Twitterbot
+Allow: /
+
+User-agent: LinkedInBot
+Allow: /
+
+User-agent: Slackbot
+Allow: /
+
+# ---- Disallow harmful/scraper bots ---------------------
+User-agent: AhrefsBot
+Disallow: /dashboard/
+Disallow: /login
+
+User-agent: SemrushBot
+Disallow: /dashboard/
+Disallow: /login
+
+User-agent: MJ12bot
 Disallow: /
 
-# Sitemap
+User-agent: DotBot
+Disallow: /
+
+User-agent: BLEXBot
+Disallow: /
+
+User-agent: DataForSeoBot
+Disallow: /
+
+# ---- Sitemaps ------------------------------------------
 Sitemap: https://stellrit.com/sitemap.xml
+Sitemap: https://stellrit.com/sitemap-images.xml

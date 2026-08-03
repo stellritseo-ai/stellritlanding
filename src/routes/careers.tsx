@@ -10,18 +10,41 @@ import ChatWidget from "@/components/ChatWidget";
 export const Route = createFileRoute("/careers")({
   head: () => ({
     meta: [
-      { title: "Careers — Join StellR IT LLC" },
+      {
+        title:
+          "Careers at StellR IT LLC — Join Our AI & Software Engineering Team | Remote",
+      },
       {
         name: "description",
         content:
-          "Open roles at StellR IT. Senior designers, engineers and strategists shaping the next era of digital brands.",
+          "Join StellR IT LLC's global AI and software engineering team. Open roles in AI development, full-stack engineering, UI/UX design, brand design, and digital marketing. Remote-friendly positions worldwide. Senior-only team with competitive compensation.",
       },
-      { property: "og:title", content: "Careers — StellR IT LLC" },
+      {
+        name: "keywords",
+        content:
+          "careers at StellR IT, AI engineer jobs, software developer jobs remote, full stack developer jobs, React developer jobs, Flutter developer jobs, UX designer jobs remote, brand designer jobs, digital marketing jobs remote, AI development company jobs, software engineering careers, senior developer jobs, remote tech jobs, IT company careers Texas",
+      },
+      { name: "robots", content: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" },
+      { property: "og:title", content: "Careers at StellR IT LLC — AI & Software Engineering Jobs | Remote" },
       {
         property: "og:description",
-        content: "Senior-only studio. Remote-friendly. Open roles in design, engineering and strategy.",
+        content:
+          "Join our global AI and software engineering team. Open roles in AI development, engineering, design & marketing. Senior-only. Remote-friendly worldwide.",
       },
+      { property: "og:url", content: "https://stellrit.com/careers" },
+      { property: "og:type", content: "website" },
+      { property: "og:image", content: "https://stellrit.com/og-image.png" },
+      { property: "og:image:alt", content: "Careers at StellR IT LLC — AI & Software Engineering Jobs" },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "Careers at StellR IT LLC — AI & Software Engineering Jobs" },
+      {
+        name: "twitter:description",
+        content:
+          "Join our AI & software engineering team. Remote-friendly, senior-only studio. Open roles worldwide.",
+      },
+      { name: "twitter:image", content: "https://stellrit.com/og-image.png" },
     ],
+    links: [{ rel: "canonical", href: "https://stellrit.com/careers" }],
   }),
   component: CareersPage,
 });

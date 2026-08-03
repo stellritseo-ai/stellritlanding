@@ -24,40 +24,41 @@ export const Route = createFileRoute("/portfolio")({
     meta: [
       {
         title:
-          "Portfolio — Custom Software & SaaS Development Projects | StellR IT LLC",
+          "Portfolio — AI, Software & Web Development Projects | StellR IT LLC",
       },
       {
         name: "description",
         content:
-          "Browse StellR IT LLC's portfolio of custom software development, SaaS products, AI automation, brand identity, mobile apps, and digital marketing campaigns delivering measurable ROI for enterprise clients.",
+          "Explore StellR IT LLC's portfolio of AI development, custom software, SaaS platforms, mobile apps, websites, and digital marketing projects. Real results for real clients worldwide.",
       },
       {
         name: "keywords",
         content:
-          "software development portfolio, saas development case studies, ux ui design portfolio, brand identity portfolio, ai automation projects, mobile app development portfolio, web design projects, digital marketing results, enterprise software examples",
+          "AI software development portfolio, custom software projects, SaaS development portfolio, web development portfolio, mobile app development portfolio, AI automation projects, brand identity portfolio, digital marketing results, UX UI design portfolio, enterprise software examples, StellR IT work, software development case studies, AI project examples",
       },
-      { name: "robots", content: "index, follow" },
+      { name: "robots", content: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" },
       {
         property: "og:title",
-        content: "Portfolio — Software Development & Design Projects | StellR IT LLC",
+        content: "Portfolio — AI, Software & Web Development Projects | StellR IT LLC",
       },
       {
         property: "og:description",
         content:
-          "Custom software, SaaS, AI automation, brand identity, mobile apps & digital marketing. Explore proven case studies with measurable ROI.",
+          "AI software, custom SaaS, mobile apps, web development & digital marketing. Explore our portfolio of real results for clients worldwide.",
       },
       { property: "og:url", content: "https://stellrit.com/portfolio" },
       { property: "og:type", content: "website" },
       { property: "og:image", content: "https://stellrit.com/og-image.png" },
+      { property: "og:image:alt", content: "StellR IT LLC Portfolio — AI, Software & Web Development Projects" },
       { name: "twitter:card", content: "summary_large_image" },
       {
         name: "twitter:title",
-        content: "Portfolio — Software & SaaS Development Projects | StellR IT",
+        content: "Portfolio — AI, Software & Web Projects | StellR IT LLC",
       },
       {
         name: "twitter:description",
         content:
-          "Software, SaaS, AI, brand, apps & digital marketing portfolio. Real results.",
+          "AI software, SaaS, mobile apps, web development & digital marketing portfolio. Real results.",
       },
       { name: "twitter:image", content: "https://stellrit.com/og-image.png" },
     ],
@@ -65,6 +66,7 @@ export const Route = createFileRoute("/portfolio")({
   }),
   component: PortfolioPage,
 });
+
 
 type Project = {
   slug: string;

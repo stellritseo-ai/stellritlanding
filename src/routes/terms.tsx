@@ -25,11 +25,20 @@ import {
 export const Route = createFileRoute("/terms")({
   head: () => ({
     meta: [
-      { title: "Terms of Conditions — StellR IT LLC" },
-      { name: "description", content: "Terms and conditions governing the use of the StellR IT LLC website and services." },
-      { property: "og:title", content: "Terms of Conditions — StellR IT LLC" },
-      { property: "og:description", content: "Terms governing use of stellr.it and our services." },
+      { title: "Terms of Service — StellR IT LLC" },
+      { name: "description", content: "Terms of Service governing the use of StellR IT LLC's website, software development services, and digital solutions. Read our complete terms and conditions." },
+      { name: "robots", content: "index, follow" },
+      { property: "og:title", content: "Terms of Service — StellR IT LLC" },
+      { property: "og:description", content: "Terms and conditions governing the use of StellR IT LLC's website and services." },
+      { property: "og:url", content: "https://stellrit.com/terms" },
+      { property: "og:type", content: "website" },
+      { property: "og:image", content: "https://stellrit.com/og-image.png" },
+      { property: "og:image:alt", content: "StellR IT LLC Terms of Service" },
+      { name: "twitter:card", content: "summary" },
+      { name: "twitter:title", content: "Terms of Service — StellR IT LLC" },
+      { name: "twitter:description", content: "Terms and conditions governing the use of StellR IT LLC's website and services." },
     ],
+    links: [{ rel: "canonical", href: "https://stellrit.com/terms" }],
   }),
   component: TermsPage,
 });

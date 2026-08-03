@@ -12,41 +12,42 @@ export const Route = createFileRoute("/case-studies/")({
     meta: [
       {
         title:
-          "Case Studies \u2014 Enterprise Software Development & Digital Marketing Results | StellR IT LLC",
+          "Case Studies — AI & Software Development Results | StellR IT LLC",
       },
       {
         name: "description",
         content:
-          "Explore real-world case studies from StellR IT LLC: enterprise software development, SaaS product design, AI automation, digital marketing campaigns, and UX redesigns delivering measurable ROI for companies like LiveNation, Upli, and Tilton School.",
+          "Real-world case studies from StellR IT LLC: AI automation, custom software development, SaaS products, mobile apps, digital marketing, and UX redesigns delivering measurable ROI for clients worldwide.",
       },
       {
         name: "keywords",
         content:
-          "enterprise software case studies, saas development results, ux redesign case study, digital marketing roi examples, ai automation case study, software development results, web design case studies, custom software development examples",
+          "AI development case studies, software development results, SaaS development examples, AI automation case study, web development case studies, mobile app case studies, digital marketing ROI, UX redesign case study, enterprise software case studies, custom software examples, StellR IT projects, AI project results",
       },
-      { name: "robots", content: "index, follow" },
+      { name: "robots", content: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" },
       {
         property: "og:title",
         content:
-          "Case Studies \u2014 Software Development & Marketing Results | StellR IT LLC",
+          "Case Studies — AI & Software Development Results | StellR IT LLC",
       },
       {
         property: "og:description",
         content:
-          "Real results: SaaS design, AI automation, digital marketing & enterprise software. See the ROI we deliver.",
+          "Real results: AI automation, software development, SaaS, mobile apps & digital marketing case studies from StellR IT LLC.",
       },
       { property: "og:url", content: "https://stellrit.com/case-studies" },
       { property: "og:type", content: "website" },
       { property: "og:image", content: "https://stellrit.com/og-image.png" },
+      { property: "og:image:alt", content: "StellR IT LLC Case Studies — AI & Software Development Results" },
       { name: "twitter:card", content: "summary_large_image" },
       {
         name: "twitter:title",
-        content: "Case Studies \u2014 Software Dev & Marketing ROI | StellR IT",
+        content: "Case Studies — AI & Software Development Results | StellR IT",
       },
       {
         name: "twitter:description",
         content:
-          "Real ROI: SaaS, AI, digital marketing & software development results.",
+          "Real ROI: AI automation, software, SaaS & digital marketing case studies.",
       },
       { name: "twitter:image", content: "https://stellrit.com/og-image.png" },
     ],

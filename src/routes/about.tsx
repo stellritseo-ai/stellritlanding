@@ -22,40 +22,41 @@ export const Route = createFileRoute("/about")({
     meta: [
       {
         title:
-          "About StellR IT LLC — Software Development Company & Digital Agency | Garland, TX",
+          "About StellR IT LLC — AI Development & Software Engineering Company | Garland, TX",
       },
       {
         name: "description",
         content:
-          "StellR IT LLC is a senior-led custom software development company and digital agency in Garland, TX. Over a decade of building enterprise web apps, SaaS products, brand identities, and digital campaigns for global brands.",
+          "StellR IT LLC is a global AI development and custom software engineering company based in Garland, TX. We build AI software, SaaS platforms, web & mobile apps, and provide dedicated engineering teams for businesses worldwide. 12+ years, 180+ brands served.",
       },
       {
         name: "keywords",
         content:
-          "digital agency garland texas, software development company texas, enterprise digital agency, digital transformation company, software outsourcing company, custom web application development, ux design agency, brand identity design agency",
+          "about StellR IT LLC, AI development company Texas, software development company Garland TX, AI engineering team, digital transformation company USA, enterprise software company Texas, dedicated development team provider, IT outsourcing company USA, software engineering firm Texas, AI consulting company, remote engineering team, offshore development company, SaaS company Texas, web development company Garland, digital agency Texas",
       },
-      { name: "robots", content: "index, follow" },
+      { name: "robots", content: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" },
       {
         property: "og:title",
-        content: "About StellR IT LLC — Software Development Company & Digital Agency",
+        content: "About StellR IT LLC — AI Development & Software Engineering Company",
       },
       {
         property: "og:description",
         content:
-          "A senior team of strategists, designers and engineers building enterprise software and unforgettable digital experiences. Based in Garland, TX.",
+          "Global AI development and software engineering company. 12+ years, 180+ brands served worldwide. Senior-led teams. Based in Garland, TX.",
       },
       { property: "og:url", content: "https://stellrit.com/about" },
       { property: "og:type", content: "website" },
       { property: "og:image", content: "https://stellrit.com/og-image.png" },
+      { property: "og:image:alt", content: "About StellR IT LLC — AI & Software Engineering Company" },
       { name: "twitter:card", content: "summary_large_image" },
       {
         name: "twitter:title",
-        content: "About StellR IT LLC — Digital Agency & Software Development",
+        content: "About StellR IT LLC — AI Development & Software Engineering",
       },
       {
         name: "twitter:description",
         content:
-          "Senior-led digital agency. Enterprise software, SaaS, brand, UX & marketing. Garland, TX.",
+          "Global AI development & software engineering firm. 12+ years, 180+ brands. Senior-led. Garland, TX.",
       },
       { name: "twitter:image", content: "https://stellrit.com/og-image.png" },
     ],

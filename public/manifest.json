@@ -1,0 +1,21 @@
+{
+  "name": "StellR IT LLC",
+  "short_name": "StellR IT",
+  "description": "AI Development, Custom Software, Web & Mobile Development Company. Serving businesses worldwide.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#180028",
+  "theme_color": "#7a2adc",
+  "icons": [
+    {
+      "src": "/fav.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable any"
+    }
+  ],
+  "categories": ["business", "productivity", "technology"],
+  "lang": "en-US",
+  "orientation": "portrait-primary",
+  "scope": "/"
+}

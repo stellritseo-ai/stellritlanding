@@ -20,40 +20,42 @@ export const Route = createFileRoute("/insights")({
     meta: [
       {
         title:
-          "Insights — Software Development, UX Design & AI Blog | StellR IT LLC",
+          "AI & Tech Insights — Software, Automation & Digital Strategy Blog | StellR IT LLC",
       },
       {
         name: "description",
         content:
-          "Expert insights, case notes, and field reports on custom software development, UX/UI design, AI automation, SaaS development, and digital marketing strategy from the StellR IT LLC team.",
+          "Expert insights, guides, and articles on AI development, generative AI, software engineering, automation, SaaS, mobile apps, web development, SEO, and digital marketing strategy from the StellR IT LLC engineering team.",
       },
       {
         name: "keywords",
         content:
-          "software development blog, ux design best practices, ai for business, enterprise web design tips, saas product design, digital marketing strategy, rag implementation guide, mvp development tips, api development guide, custom software insights",
+          "AI development blog, software development insights, generative AI articles, AI automation guide, LLM integration tutorial, SaaS development tips, web development blog, mobile app development guide, digital marketing strategy, SEO tips, business automation, AI for business, machine learning tutorials, AI chatbot guide, RAG implementation, custom software insights, technology blog, engineering blog",
       },
-      { name: "robots", content: "index, follow" },
+      { name: "robots", content: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" },
       {
         property: "og:title",
-        content: "Insights — Software Development & UX Design Blog | StellR IT LLC",
+        content: "AI & Tech Insights — Software & Digital Strategy Blog | StellR IT LLC",
       },
       {
         property: "og:description",
         content:
-          "Expert essays on custom software development, UX design, AI automation, SaaS, and digital marketing from the StellR IT studio.",
+          "Expert articles on AI development, software engineering, SaaS, automation, web & mobile development, SEO and digital marketing from the StellR IT engineering team.",
       },
       { property: "og:url", content: "https://stellrit.com/insights" },
-      { property: "og:type", content: "website" },
+      { property: "og:type", content: "blog" },
       { property: "og:image", content: "https://stellrit.com/og-image.png" },
+      { property: "og:image:alt", content: "StellR IT LLC Insights — AI & Software Development Blog" },
+      { property: "article:publisher", content: "https://www.linkedin.com/company/stellrit" },
       { name: "twitter:card", content: "summary_large_image" },
       {
         name: "twitter:title",
-        content: "Insights — Software Dev & UX Blog | StellR IT",
+        content: "AI & Tech Insights — Software Blog | StellR IT LLC",
       },
       {
         name: "twitter:description",
         content:
-          "Software development, UX, AI & digital marketing insights from StellR IT LLC.",
+          "AI development, software engineering, automation & digital marketing insights from the StellR IT LLC team.",
       },
       { name: "twitter:image", content: "https://stellrit.com/og-image.png" },
     ],

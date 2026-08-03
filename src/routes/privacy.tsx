@@ -25,10 +25,19 @@ export const Route = createFileRoute("/privacy")({
   head: () => ({
     meta: [
       { title: "Privacy Policy — StellR IT LLC" },
-      { name: "description", content: "StellR IT LLC Privacy Policy - Learn how we collect, use, and protect your information." },
+      { name: "description", content: "StellR IT LLC Privacy Policy — Learn how we collect, use, and protect your personal information. We are committed to data privacy and security for all our clients and website visitors." },
+      { name: "robots", content: "index, follow" },
       { property: "og:title", content: "Privacy Policy — StellR IT LLC" },
-      { property: "og:description", content: "How StellR IT LLC collects, uses, and protects your information." },
+      { property: "og:description", content: "How StellR IT LLC collects, uses, and protects your information. Read our full privacy policy." },
+      { property: "og:url", content: "https://stellrit.com/privacy" },
+      { property: "og:type", content: "website" },
+      { property: "og:image", content: "https://stellrit.com/og-image.png" },
+      { property: "og:image:alt", content: "StellR IT LLC Privacy Policy" },
+      { name: "twitter:card", content: "summary" },
+      { name: "twitter:title", content: "Privacy Policy — StellR IT LLC" },
+      { name: "twitter:description", content: "How StellR IT LLC collects, uses, and protects your information." },
     ],
+    links: [{ rel: "canonical", href: "https://stellrit.com/privacy" }],
   }),
   component: PrivacyPage,
 });

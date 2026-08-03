@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset
+  xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+  xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+
+  <!-- Homepage OG image -->
+  <url>
+    <loc>https://stellrit.com/</loc>
+    <image:image>
+      <image:loc>https://stellrit.com/og-image.png</image:loc>
+      <image:title>StellR IT LLC — AI Development &amp; Software Engineering Company Worldwide</image:title>
+      <image:caption>StellR IT LLC is a leading AI development, custom software development, and digital transformation company serving startups to enterprises worldwide.</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://stellrit.com/fav.png</image:loc>
+      <image:title>StellR IT LLC Logo</image:title>
+      <image:caption>StellR IT LLC company logo — AI and software development company.</image:caption>
+    </image:image>
+  </url>
+
+  <!-- Services page -->
+  <url>
+    <loc>https://stellrit.com/services</loc>
+    <image:image>
+      <image:loc>https://stellrit.com/og-image.png</image:loc>
+      <image:title>AI, Software &amp; Digital Services — StellR IT LLC</image:title>
+      <image:caption>StellR IT LLC offers AI development, custom software, SaaS, web development, mobile apps, and digital marketing services globally.</image:caption>
+    </image:image>
+  </url>
+
+  <!-- About page -->
+  <url>
+    <loc>https://stellrit.com/about</loc>
+    <image:image>
+      <image:loc>https://stellrit.com/og-image.png</image:loc>
+      <image:title>About StellR IT LLC — Senior AI &amp; Software Engineering Team</image:title>
+      <image:caption>About StellR IT LLC — a globally distributed AI and software engineering team based in Garland, TX.</image:caption>
+    </image:image>
+  </url>
+
+  <!-- Portfolio -->
+  <url>
+    <loc>https://stellrit.com/portfolio</loc>
+    <image:image>
+      <image:loc>https://stellrit.com/og-image.png</image:loc>
+      <image:title>StellR IT LLC Portfolio — AI, Software &amp; Web Projects</image:title>
+      <image:caption>Portfolio of AI development, custom software, mobile apps, SaaS platforms, and digital marketing projects by StellR IT LLC.</image:caption>
+    </image:image>
+  </url>
+
+  <!-- Case Studies -->
+  <url>
+    <loc>https://stellrit.com/case-studies</loc>
+    <image:image>
+      <image:loc>https://stellrit.com/og-image.png</image:loc>
+      <image:title>Case Studies — Measurable AI &amp; Software Development Results</image:title>
+      <image:caption>Real-world case studies showing measurable ROI from AI automation, software development, and digital marketing projects.</image:caption>
+    </image:image>
+  </url>
+
+  <!-- Insights -->
+  <url>
+    <loc>https://stellrit.com/insights</loc>
+    <image:image>
+      <image:loc>https://stellrit.com/og-image.png</image:loc>
+      <image:title>StellR IT Insights — AI &amp; Software Development Blog</image:title>
+      <image:caption>Expert insights, articles, and guides on AI development, software engineering, automation, and digital marketing.</image:caption>
+    </image:image>
+  </url>
+
+</urlset>
