@@ -29,7 +29,7 @@ function HeroVideoFrame({ isPlaying = true }: { isPlaying?: boolean }) {
     const video = videoRef.current;
     if (!video) return;
     if (isPlaying && !errored) {
-      video.play().catch(() => {});
+      video.play().catch(() => { });
     } else {
       video.pause();
     }
@@ -192,11 +192,9 @@ export default function Hero() {
   const fitScale = Math.min(scaleX, scaleY);
 
   const targetCenterX = vp.w / 2;
-  const targetCenterY = vp.h - targetH / 2 - 32;
   const currentCenterX = CARD_LEFT + CARD_W / 2;
-  const currentCenterY = vp.h - CARD_BOTTOM - CARD_H / 2;
   const deltaX = targetCenterX - currentCenterX;
-  const deltaY = targetCenterY - currentCenterY;
+  const deltaY = -16; // Slight offset to maintain clean 48px bottom gutter when expanded
 
   const cardScale = useTransform(p, [0.3, 0.65], [1, fitScale]);
   const cardX = useTransform(p, [0.3, 0.65], [0, deltaX]);
@@ -217,7 +215,7 @@ export default function Hero() {
       video.pause();
       setIsMobileSizzlePlaying(false);
     } else {
-      video.play().catch(() => {});
+      video.play().catch(() => { });
       setIsMobileSizzlePlaying(true);
     }
   };
@@ -463,8 +461,9 @@ export default function Hero() {
             x: cardX,
             y: cardY,
             borderRadius: cardRadius,
+            transformOrigin: "center bottom",
           }}
-          className="absolute left-4 bottom-8 z-[99] h-[140px] w-[240px] origin-bottom-left overflow-hidden shadow-[0_30px_80px_-20px_rgba(0,0,0,0.7)] sm:left-6 sm:h-[160px] sm:w-[280px] md:left-12 md:h-[200px] md:w-[360px] bg-[#0e0228] will-change-transform transform-gpu"
+          className="absolute left-4 bottom-8 z-[99] h-[140px] w-[240px] origin-bottom overflow-hidden shadow-[0_30px_80px_-20px_rgba(0,0,0,0.7)] sm:left-6 sm:h-[160px] sm:w-[280px] md:left-12 md:h-[200px] md:w-[360px] bg-[#0e0228] will-change-transform transform-gpu"
         >
           <HeroVideoFrame isPlaying={isCardVideoPlaying} />
           <div className="pointer-events-none absolute inset-0 z-10 ring-1 ring-inset ring-white/15" style={{ borderRadius: "inherit" }} />
