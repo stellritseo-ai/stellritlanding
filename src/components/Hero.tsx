@@ -330,9 +330,9 @@ export default function Hero() {
           </video>
         </div>
 
-        {/* Description Text — Positioned directly beneath flower */}
-        <div className="z-10 max-w-md px-2">
-          <p className="text-[14px] sm:text-[15px] leading-[1.55] text-white/80 font-sans font-light">
+        {/* Description Text — Positioned directly beneath flower with user exact styling */}
+        <div className="z-10 max-w-md px-2 mt-[-95px]" style={{ marginTop: "-95px" }}>
+          <p className="text-[16px] leading-[32px] text-white/80 font-sans font-light" style={{ fontSize: "16px", lineHeight: "32px" }}>
             Our <a href="#" className="underline decoration-white/40 underline-offset-4 hover:text-white font-normal text-white">web design agency</a> helps enterprise brands and market leaders navigate digital, evolve profitably, and launch unforgettable websites, products, and campaigns.
           </p>
         </div>
