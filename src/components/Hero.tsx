@@ -254,7 +254,7 @@ export default function Hero() {
 
   if (isMobile) {
     return (
-      <div className="relative w-full bg-[#0c0428] px-6 py-12 flex flex-col items-center text-center gap-10 overflow-hidden">
+      <div className="relative w-full bg-[#180028] px-6 py-12 flex flex-col items-center text-center gap-10 overflow-hidden">
         {/* Ambient background glow */}
         <div className="pointer-events-none absolute left-1/2 top-1/3 h-[350px] w-[350px] -translate-x-1/2 -translate-y-1/2" style={{ background: "var(--grad-glow)", opacity: 0.6 }} />
 
@@ -329,6 +329,7 @@ export default function Hero() {
           </svg>
           <CanvasVideo
             src={CENTER_VIDEO}
+            fallbackMp4={LEFT_VIDEO_SRC}
             isPlaying={true}
             className="relative z-10 h-full w-full object-cover"
             style={{ mixBlendMode: "screen" }}
@@ -370,13 +371,17 @@ export default function Hero() {
         </div>
 
         {/* Splay Video Card (Reel) with Play/Pause button */}
-        <div className="relative w-full aspect-[16/9] rounded-xl overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.5)] bg-[#0e0228] z-10 border border-white/10">
+        <div className="relative w-full aspect-[16/9] rounded-xl overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.5)] bg-[#180028] z-10 border border-white/10">
           <video
             ref={mobileSizzleRef}
             src={LEFT_VIDEO_SRC}
+            autoPlay
             muted
             loop
             playsInline
+            // @ts-ignore
+            webkit-playsinline="true"
+            controls={false}
             className="h-full w-full object-cover"
           />
           {/* Circular Play/Pause Button in Bottom Right */}
