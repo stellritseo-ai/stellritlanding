@@ -265,7 +265,7 @@ export default function Hero() {
 
         {/* Center 3D Flower Video with SVG Glow — edge-to-edge, no black box */}
         <div
-          className="pointer-events-none relative w-[calc(100%+96px)] -mx-12 aspect-[16/10] z-10 overflow-visible my-2"
+          className="pointer-events-none relative w-full aspect-[16/10] z-10 overflow-hidden my-2"
           style={{ mixBlendMode: "screen" }}
         >
           {/* SVG Glow Background */}
@@ -343,7 +343,7 @@ export default function Hero() {
         </div>
 
         {/* Client Logos — auto-scrolling ticker */}
-        <div className="z-10 w-[calc(100%+48px)] -mx-6 overflow-hidden py-3 opacity-75"
+        <div className="z-10 w-full overflow-hidden py-3 opacity-75"
           style={{
             maskImage: "linear-gradient(to right, transparent, black 12%, black 88%, transparent)",
             WebkitMaskImage: "linear-gradient(to right, transparent, black 12%, black 88%, transparent)",

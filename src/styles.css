@@ -79,9 +79,10 @@
     color: var(--color-foreground);
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
+    overflow-x: hidden !important;
+    max-width: 100vw !important;
+    width: 100%;
   }
-
-
 }
 
 @utility glass {
