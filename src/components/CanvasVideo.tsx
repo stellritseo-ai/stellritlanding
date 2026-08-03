@@ -23,97 +23,103 @@ export function CanvasVideo({
     const canvas = canvasRef.current;
     if (!video || !canvas) return;
 
+    // Force autoplay attributes on DOM element (required for iOS Safari)
     video.muted = true;
-    video.defaultMuted = true;
+    (video as any).defaultMuted = true;
     video.playsInline = true;
     video.setAttribute("muted", "");
     video.setAttribute("playsinline", "");
     video.setAttribute("webkit-playsinline", "");
 
+    // Canvas context with alpha transparency enabled
+    const ctx = canvas.getContext("2d", { alpha: true, willReadFrequently: true });
     let animationFrameId: number;
-    // Offscreen small canvas for FAST pixel keying at 25% resolution
-    const offscreen = document.createElement("canvas");
-    const offCtx = offscreen.getContext("2d", { willReadFrequently: true });
-    const ctx = canvas.getContext("2d", { alpha: true });
-    const SCALE = 0.35; // Key at 35% resolution — fast yet clean
+    let isRunning = false;
 
     const renderLoop = () => {
-      if (video.readyState >= 2 && ctx && offCtx) {
+      if (!isRunning) return;
+      if (video.readyState >= 2 && ctx) {
         const vw = video.videoWidth || 480;
         const vh = video.videoHeight || 480;
-        const sw = Math.floor(vw * SCALE);
-        const sh = Math.floor(vh * SCALE);
 
-        // Sync display canvas size
         if (canvas.width !== vw || canvas.height !== vh) {
           canvas.width = vw;
           canvas.height = vh;
         }
 
-        // Sync offscreen canvas size
-        if (offscreen.width !== sw || offscreen.height !== sh) {
-          offscreen.width = sw;
-          offscreen.height = sh;
-        }
+        ctx.clearRect(0, 0, vw, vh);
+        ctx.drawImage(video, 0, 0, vw, vh);
 
-        // Step 1: Draw video at reduced resolution into offscreen canvas
-        offCtx.clearRect(0, 0, sw, sh);
-        offCtx.drawImage(video, 0, 0, sw, sh);
-
-        // Step 2: Pixel key — strip black pixels into alpha=0 (at low res, very fast)
+        // Pixel keying: remove black/near-black background
+        // Using a generous threshold of 55 to catch dark video backgrounds
+        // Soft feathered edges for natural blending
         try {
-          const imgData = offCtx.getImageData(0, 0, sw, sh);
+          const imgData = ctx.getImageData(0, 0, vw, vh);
           const d = imgData.data;
           const len = d.length;
+          const THRESHOLD = 55;
+
           for (let i = 0; i < len; i += 4) {
-            const maxRGB = d[i] > d[i + 1] ? (d[i] > d[i + 2] ? d[i] : d[i + 2]) : (d[i + 1] > d[i + 2] ? d[i + 1] : d[i + 2]);
-            if (maxRGB < 40) {
-              d[i + 3] = Math.floor((maxRGB / 40) * d[i + 3]);
+            const r = d[i];
+            const g = d[i + 1];
+            const b = d[i + 2];
+            // Max channel brightness determines if pixel is "background black"
+            const maxRGB = r > g ? (r > b ? r : b) : (g > b ? g : b);
+            if (maxRGB < THRESHOLD) {
+              // Smooth feather: alpha fades 0→1 as maxRGB goes 0→THRESHOLD
+              d[i + 3] = Math.round((maxRGB / THRESHOLD) * 255);
             }
           }
-          offCtx.putImageData(imgData, 0, 0);
-        } catch (_) {}
-
-        // Step 3: Upscale the keyed frame to full display canvas
-        ctx.clearRect(0, 0, vw, vh);
-        ctx.drawImage(offscreen, 0, 0, vw, vh);
+          ctx.putImageData(imgData, 0, 0);
+        } catch (_) {
+          // Cross-origin or security error — silently continue without keying
+        }
       }
       animationFrameId = requestAnimationFrame(renderLoop);
     };
 
-    const attemptPlay = () => {
-      if (isPlaying) {
-        const promise = video.play();
-        if (promise !== undefined) {
-          promise
-            .then(() => {
-              animationFrameId = requestAnimationFrame(renderLoop);
-            })
-            .catch(() => {
-              const retry = () => {
-                video.play().then(() => {
-                  animationFrameId = requestAnimationFrame(renderLoop);
-                }).catch(() => {});
-                window.removeEventListener("touchstart", retry);
-                window.removeEventListener("click", retry);
-                window.removeEventListener("scroll", retry);
-              };
-              window.addEventListener("touchstart", retry, { once: true, passive: true });
-              window.addEventListener("click", retry, { once: true, passive: true });
-              window.addEventListener("scroll", retry, { once: true, passive: true });
-            });
-        }
-      } else {
-        video.pause();
-        cancelAnimationFrame(animationFrameId);
+    const startLoop = () => {
+      if (!isRunning) {
+        isRunning = true;
+        animationFrameId = requestAnimationFrame(renderLoop);
       }
     };
 
-    attemptPlay();
+    const attemptPlay = () => {
+      if (!isPlaying) {
+        video.pause();
+        isRunning = false;
+        cancelAnimationFrame(animationFrameId);
+        return;
+      }
+      const promise = video.play();
+      if (promise !== undefined) {
+        promise
+          .then(() => startLoop())
+          .catch(() => {
+            // Browser blocked autoplay — retry on first user interaction
+            const retry = () => {
+              video
+                .play()
+                .then(() => startLoop())
+                .catch(() => {});
+              window.removeEventListener("touchstart", retry);
+              window.removeEventListener("click", retry);
+              window.removeEventListener("scroll", retry);
+            };
+            window.addEventListener("touchstart", retry, { once: true, passive: true });
+            window.addEventListener("click", retry, { once: true, passive: true });
+            window.addEventListener("scroll", retry, { once: true, passive: true });
+          });
+      }
+    };
+
     video.addEventListener("loadedmetadata", attemptPlay);
     video.addEventListener("canplay", attemptPlay);
+    attemptPlay();
 
     return () => {
+      isRunning = false;
       cancelAnimationFrame(animationFrameId);
       video.removeEventListener("loadedmetadata", attemptPlay);
       video.removeEventListener("canplay", attemptPlay);
@@ -123,7 +129,17 @@ export function CanvasVideo({
   const isWebm = src.endsWith(".webm") || src.includes("webm");
 
   return (
-    <div className={className} style={{ position: "relative", ...style }}>
+    <div
+      className={className}
+      style={{
+        position: "relative",
+        background: "transparent",
+        // NO isolation — blend mode must reach parent background
+        isolation: "auto",
+        ...style,
+      }}
+    >
+      {/* Hidden video element — draws into canvas, never shown directly */}
       <video
         ref={videoRef}
         autoPlay={isPlaying}
@@ -134,24 +150,23 @@ export function CanvasVideo({
         webkit-playsinline="true"
         controls={false}
         preload="auto"
-        style={{ display: "none" }}
+        style={{ position: "absolute", opacity: 0, pointerEvents: "none", width: 1, height: 1 }}
       >
         {isWebm && <source src={src} type="video/webm" />}
         {fallbackMp4 && <source src={fallbackMp4} type="video/mp4" />}
-        {!isWebm && <source src={src} type="video/mp4" />}
+        {!isWebm && !fallbackMp4 && <source src={src} type="video/mp4" />}
       </video>
+
+      {/* Canvas renders keyed transparent frames — black pixels removed */}
       <canvas
         ref={canvasRef}
-        className="h-full w-full"
         style={{
-          mixBlendMode: "screen",
-          WebkitMixBlendMode: "screen",
-          pointerEvents: "none",
           display: "block",
-          transform: "translateZ(0)",
-          WebkitTransform: "translateZ(0)",
-          willChange: "transform",
-          imageRendering: "auto",
+          width: "100%",
+          height: "100%",
+          pointerEvents: "none",
+          background: "transparent",
+          // NO willChange or transform — these break blend mode compositing
         }}
       />
     </div>

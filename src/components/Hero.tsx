@@ -313,15 +313,11 @@ export default function Hero() {
           </span>
         </h1>
 
-        {/* Center 3D Organic Flower Video — clean below headline with no overlap */}
-        <div className="pointer-events-none relative w-full max-w-[420px] aspect-square z-10 overflow-visible -mt-8 -mb-8 flex items-center justify-center">
+        {/* Center 3D Organic Flower Video — transparent via pixel keying, zero black */}
+        <div className="pointer-events-none relative w-full max-w-[420px] aspect-square z-10 overflow-visible -mt-8 -mb-8">
           <CanvasVideo
             src={CENTER_VIDEO}
             className="h-full w-full"
-            style={{
-              mixBlendMode: "screen",
-              WebkitMixBlendMode: "screen",
-            }}
           />
         </div>
 
