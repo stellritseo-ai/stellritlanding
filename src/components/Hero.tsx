@@ -322,7 +322,7 @@ export default function Hero() {
         </div>
 
         {/* Description Text */}
-        <div className="z-20 max-w-md px-4 mt-0">
+        <div className="z-20 max-w-md px-4" style={{ marginTop: "50px" }}>
           <p className="text-[15px] leading-[28px] text-white/80 font-sans font-light">
             Our <a href="#" className="underline decoration-white/40 underline-offset-4 hover:text-white font-normal text-white">web design agency</a> helps enterprise brands and market leaders navigate digital, evolve profitably, and launch unforgettable websites, products, and campaigns.
           </p>
