@@ -33,7 +33,11 @@ export default function SiteHeader({ transparent = false, homepage = false, hide
         <Link to="/" className="block flex-shrink-0">
           <img
             src={logoImg}
-            alt="StellR IT"
+            alt="StellR IT LLC — AI & Software Development Company Logo"
+            fetchPriority="high"
+            decoding="async"
+            width={200}
+            height={64}
             className={`w-auto object-contain transition-all duration-300 ${
               scrolled ? "h-10 md:h-12" : "h-14 md:h-16"
             }`}

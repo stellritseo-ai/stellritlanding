@@ -246,7 +246,7 @@ function TestimonialCard({ t }: { t: typeof TESTIMONIALS[0] }) {
 
           {/* Client Logo Indicator */}
           <div className="flex items-center justify-center">
-            <img src={t.logo} alt={`${t.brand} logo`} className="h-8 md:h-10 max-w-[100px] object-contain brightness-0 invert opacity-60 transition-all duration-500 group-hover:opacity-100" />
+            <img src={t.logo} alt={`StellR IT LLC client ${t.brand} company logo`} loading="lazy" decoding="async" className="h-8 md:h-10 max-w-[100px] object-contain brightness-0 invert opacity-60 transition-all duration-500 group-hover:opacity-100" />
           </div>
         </div>
 
