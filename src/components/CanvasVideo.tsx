@@ -10,6 +10,7 @@ interface CanvasVideoProps {
 
 export function CanvasVideo({
   src,
+  fallbackMp4,
   className,
   style,
   isPlaying = true,
@@ -41,6 +42,26 @@ export function CanvasVideo({
         }
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+        // Convert black background pixels (#000000) to true transparent alpha channel
+        try {
+          const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+          const d = imgData.data;
+          const len = d.length;
+          for (let i = 0; i < len; i += 4) {
+            const r = d[i];
+            const g = d[i + 1];
+            const b = d[i + 2];
+            const maxRGB = Math.max(r, g, b);
+            if (maxRGB < 32) {
+              // Smoothly fade out dark background pixels to transparent alpha 0
+              d[i + 3] = Math.floor((maxRGB / 32) * d[i + 3]);
+            }
+          }
+          ctx.putImageData(imgData, 0, 0);
+        } catch (err) {
+          // Fallback if canvas security context prevents getImageData
+        }
       }
       animationFrameId = requestAnimationFrame(renderLoop);
     };
@@ -84,14 +105,15 @@ export function CanvasVideo({
       video.removeEventListener("loadedmetadata", attemptPlay);
       video.removeEventListener("canplay", attemptPlay);
     };
-  }, [src, isPlaying]);
+  }, [src, fallbackMp4, isPlaying]);
+
+  const isWebm = src.endsWith(".webm") || src.includes("webm");
 
   return (
     <div className={className} style={{ position: "relative", ...style }}>
       {/* Hidden decoding video element */}
       <video
         ref={videoRef}
-        src={src}
         autoPlay={isPlaying}
         muted
         loop
@@ -101,8 +123,12 @@ export function CanvasVideo({
         controls={false}
         preload="auto"
         style={{ display: "none" }}
-      />
-      {/* HTML5 Canvas element: iOS Safari supports mixBlendMode: screen on <canvas> natively */}
+      >
+        {isWebm && <source src={src} type="video/webm" />}
+        {fallbackMp4 && <source src={fallbackMp4} type="video/mp4" />}
+        {!isWebm && <source src={src} type="video/mp4" />}
+      </video>
+      {/* 2D Canvas with physical alpha transparency + mixBlendMode screen */}
       <canvas
         ref={canvasRef}
         className="h-full w-full object-contain"
