@@ -215,6 +215,7 @@ export default function Hero() {
   const phase4Y = useTransform(p, [0.7, 0.9], [60, 0]);
 
   const mobileSizzleRef = useRef<HTMLVideoElement>(null);
+  const mobileCenterVideoRef = useRef<HTMLVideoElement>(null);
   const [isMobileSizzlePlaying, setIsMobileSizzlePlaying] = useState(false);
 
   const toggleMobileSizzle = () => {
@@ -231,6 +232,43 @@ export default function Hero() {
 
   const [isCenterVideoPlaying, setIsCenterVideoPlaying] = useState(true);
   const [isCardVideoPlaying, setIsCardVideoPlaying] = useState(true);
+
+  // Programmatic autoplay enforcer for mobile iOS/Android
+  useEffect(() => {
+    if (!isMobile) return;
+    const video = mobileCenterVideoRef.current;
+    if (!video) return;
+
+    video.muted = true;
+    video.defaultMuted = true;
+    video.playsInline = true;
+    video.setAttribute("muted", "");
+    video.setAttribute("playsinline", "");
+    video.setAttribute("webkit-playsinline", "");
+
+    const playMobileVideo = () => {
+      video.play().catch(() => {
+        const retry = () => {
+          video.play().catch(() => {});
+          window.removeEventListener("touchstart", retry);
+          window.removeEventListener("click", retry);
+          window.removeEventListener("scroll", retry);
+        };
+        window.addEventListener("touchstart", retry, { once: true, passive: true });
+        window.addEventListener("click", retry, { once: true, passive: true });
+        window.addEventListener("scroll", retry, { once: true, passive: true });
+      });
+    };
+
+    playMobileVideo();
+    video.addEventListener("loadedmetadata", playMobileVideo);
+    video.addEventListener("canplay", playMobileVideo);
+
+    return () => {
+      video.removeEventListener("loadedmetadata", playMobileVideo);
+      video.removeEventListener("canplay", playMobileVideo);
+    };
+  }, [isMobile]);
 
   // Deduplicated scroll listener — fires React state updates ONLY on state transitions
   useEffect(() => {
@@ -254,97 +292,53 @@ export default function Hero() {
 
   if (isMobile) {
     return (
-      <div className="relative w-full bg-[#180028] px-6 py-12 flex flex-col items-center text-center gap-10 overflow-hidden">
-        {/* Ambient background glow */}
-        <div className="pointer-events-none absolute left-1/2 top-1/3 h-[350px] w-[350px] -translate-x-1/2 -translate-y-1/2" style={{ background: "var(--grad-glow)", opacity: 0.6 }} />
+      <div className="relative w-full bg-[#180028] px-6 pt-16 pb-12 flex flex-col items-center text-center gap-8 overflow-hidden">
+        {/* Ambient background glow behind flower */}
+        <div
+          className="pointer-events-none absolute left-1/2 top-[38%] h-[440px] w-[440px] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-70 blur-3xl"
+          style={{ background: "radial-gradient(circle, rgba(168,85,247,0.5) 0%, rgba(255,146,194,0.25) 45%, transparent 70%)" }}
+        />
 
-        {/* Headline */}
-        <h1 className="text-glow z-10 max-w-lg font-serif text-[36px] sm:text-[42px] font-normal leading-[1.15] tracking-tight text-white mt-16 px-4">
+        {/* Headline — Pixel-perfect match to reference */}
+        <h1 className="text-glow z-10 max-w-lg font-serif text-[34px] sm:text-[44px] font-normal leading-[1.12] tracking-tight text-white mt-4 px-2">
           Digital Evolution for <br /> Business
         </h1>
 
-        {/* Center 3D Flower Video with SVG Glow — edge-to-edge, no black box */}
-        <div
-          className="pointer-events-none relative w-full aspect-[16/10] z-10 overflow-hidden my-2"
-          style={{ mixBlendMode: "screen" }}
-        >
-          {/* SVG Glow Background */}
-          <svg
-            className="absolute top-1/2 left-1/2 w-[140%] h-[140%] -translate-x-1/2 -translate-y-1/2 pointer-events-none z-0 opacity-75"
-            viewBox="0 0 929 1031"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
+        {/* Center 3D Organic Flower Video — Made significantly bigger */}
+        <div className="pointer-events-none relative w-[98%] sm:w-[90%] max-w-[440px] aspect-[4/5] scale-110 z-10 overflow-visible my-3 flex items-center justify-center">
+          <video
+            ref={mobileCenterVideoRef}
+            autoPlay
+            muted
+            loop
+            playsInline
+            // @ts-ignore
+            webkit-playsinline="true"
+            controls={false}
+            preload="auto"
+            className="relative z-10 h-full w-full object-contain"
+            style={{
+              mixBlendMode: "screen",
+              maskImage: "radial-gradient(circle at center, black 45%, transparent 75%)",
+              WebkitMaskImage: "radial-gradient(circle at center, black 45%, transparent 75%)",
+              transform: "translateZ(0)",
+              WebkitTransform: "translateZ(0)",
+            }}
           >
-            <g opacity="0.7" filter="url(#filter0_f_7187_16734_mobile)">
-              <mask id="mask0_7187_16734_mobile" style={{ maskType: "alpha" }} maskUnits="userSpaceOnUse" x="210" y="189" width="509" height="632">
-                <path d="M341.083 235.644C459.314 149.684 604.547 187.719 665.468 320.596L692.048 378.572C752.969 511.45 706.51 688.853 588.278 774.813C470.046 860.773 324.814 822.738 263.893 689.861L237.312 631.885C176.391 499.008 222.851 321.605 341.083 235.644Z" fill="url(#paint0_linear_7187_16734_mobile)"></path>
-              </mask>
-              <g mask="url(#mask0_7187_16734_mobile)">
-                <g filter="url(#filter1_f_7187_16734_mobile)">
-                  <path d="M485.757 631.657C515.392 768.555 278.311 809.003 231.389 793.446C180.35 775.816 71.8528 711.308 46.169 594.323C14.0643 448.091 117.787 311.193 211.632 233.41C305.477 155.627 431.426 336.084 399.321 420.089C367.217 504.095 456.122 494.759 485.757 631.657Z" fill="#FF92C2"></path>
-                </g>
-                <g filter="url(#filter2_f_7187_16734_mobile)">
-                  <path d="M636.493 555.245C762.127 589.979 708.508 703.201 674.753 779.933C620.392 845.922 502.791 897.673 446.225 866.121C346.298 810.384 282.864 730.092 255.356 617.55C227.848 505.007 309.757 449.506 368.97 521.392C428.182 593.277 510.859 520.51 636.493 555.245Z" fill="#A1AFFF"></path>
-                </g>
-                <g filter="url(#filter3_f_7187_16734_mobile)">
-                  <path d="M630.157 649.243C588.786 333.288 259.504 440.763 127.198 445.133C232.395 240.052 638.784 -0.546038 780.463 230.907C863.217 366.1 843.806 502.088 742.675 677.543C641.545 852.997 644.155 756.147 630.157 649.243Z" fill="#6337D8"></path>
-                </g>
-                <g filter="url(#filter4_f_7187_16734_mobile)">
-                  <path d="M686.182 515.232C763.84 535.839 729.699 608.733 708.163 658.102C673.929 700.873 600.579 735.341 565.738 715.911C504.189 681.588 465.467 631.149 449.282 559.692C433.096 488.233 484.336 451.814 520.504 496.942C556.673 542.07 608.524 494.626 686.182 515.232Z" fill="#A21844"></path>
-                </g>
-              </g>
-            </g>
-            <defs>
-              <filter id="filter0_f_7187_16734_mobile" x="0.515625" y="-20.3457" width="928.332" height="1051.15" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
-                <feFlood floodOpacity="0" result="BackgroundImageFix"></feFlood>
-                <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"></feBlend>
-                <feGaussianBlur stdDeviation="105" result="effect1_foregroundBlur_7187_16734"></feGaussianBlur>
-              </filter>
-              <filter id="filter1_f_7187_16734_mobile" x="-13.7891" y="160.387" width="556.102" height="690.199" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
-                <feFlood floodOpacity="0" result="BackgroundImageFix"></feFlood>
-                <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"></feBlend>
-                <feGaussianBlur stdDeviation="27" result="effect1_foregroundBlur_7187_16734"></feGaussianBlur>
-              </filter>
-              <filter id="filter2_f_7187_16734_mobile" x="195.871" y="435.168" width="573.66" height="494.451" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
-                <feFlood floodOpacity="0" result="BackgroundImageFix"></feFlood>
-                <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"></feBlend>
-                <feGaussianBlur stdDeviation="27" result="effect1_foregroundBlur_7187_16734"></feGaussianBlur>
-              </filter>
-              <filter id="filter3_f_7187_16734_mobile" x="73.1992" y="82.2617" width="812.984" height="745.904" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
-                <feFlood floodOpacity="0" result="BackgroundImageFix"></feFlood>
-                <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"></feBlend>
-                <feGaussianBlur stdDeviation="27" result="effect1_foregroundBlur_7187_16734"></feGaussianBlur>
-              </filter>
-              <filter id="filter4_f_7187_16734_mobile" x="392.207" y="423.088" width="396.301" height="352.379" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
-                <feFlood floodOpacity="0" result="BackgroundImageFix"></feFlood>
-                <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"></feBlend>
-                <feGaussianBlur stdDeviation="27" result="effect1_foregroundBlur_7187_16734"></feGaussianBlur>
-              </filter>
-              <linearGradient id="paint0_linear_7187_16734_mobile" x1="663.887" y1="439.496" x2="221.229" y2="551.25" gradientUnits="userSpaceOnUse">
-                <stop offset="0.012844" stopColor="#D7DCFC"></stop>
-                <stop offset="0.5044" stopColor="#BEA7FF"></stop>
-                <stop offset="1" stopColor="#E98EB9"></stop>
-              </linearGradient>
-            </defs>
-          </svg>
-          <CanvasVideo
-            src={CENTER_VIDEO}
-            fallbackMp4={LEFT_VIDEO_SRC}
-            isPlaying={true}
-            className="relative z-10 h-full w-full object-cover"
-            style={{ mixBlendMode: "screen" }}
-          />
+            <source src={CENTER_VIDEO} type="video/webm" />
+            <source src={LEFT_VIDEO_SRC} type="video/mp4" />
+          </video>
         </div>
 
-        {/* Description Text */}
-        <div className="z-10 max-w-xl px-4">
-          <p className="text-[15px] sm:text-[16px] leading-[1.55] text-white/80 font-sans font-light">
+        {/* Description Text — Positioned directly beneath flower */}
+        <div className="z-10 max-w-md px-2">
+          <p className="text-[14px] sm:text-[15px] leading-[1.55] text-white/80 font-sans font-light">
             Our <a href="#" className="underline decoration-white/40 underline-offset-4 hover:text-white font-normal text-white">web design agency</a> helps enterprise brands and market leaders navigate digital, evolve profitably, and launch unforgettable websites, products, and campaigns.
           </p>
         </div>
 
         {/* Client Logos — auto-scrolling ticker */}
-        <div className="z-10 w-full overflow-hidden py-3 opacity-75"
+        <div className="z-10 w-full overflow-hidden py-3 opacity-75 mt-2"
           style={{
             maskImage: "linear-gradient(to right, transparent, black 12%, black 88%, transparent)",
             WebkitMaskImage: "linear-gradient(to right, transparent, black 12%, black 88%, transparent)",
@@ -371,7 +365,7 @@ export default function Hero() {
         </div>
 
         {/* Splay Video Card (Reel) with Play/Pause button */}
-        <div className="relative w-full aspect-[16/9] rounded-xl overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.5)] bg-[#180028] z-10 border border-white/10">
+        <div className="relative w-full aspect-[16/9] rounded-xl overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.5)] bg-[#180028] z-10 border border-white/10 mt-2">
           <video
             ref={mobileSizzleRef}
             src={LEFT_VIDEO_SRC}
