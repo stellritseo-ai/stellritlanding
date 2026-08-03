@@ -4,18 +4,23 @@ import { motion, useMotionValue, useSpring } from "framer-motion";
 export default function CustomCursor() {
   const [isSupported, setIsSupported] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+  const [isClicked, setIsClicked] = useState(false);
+  const [hoverText, setHoverText] = useState("");
   const [isVisible, setIsVisible] = useState(false);
 
-  // Precise coordinates for the pinpoint pointer
+  // Exact mouse coordinates
   const mouseX = useMotionValue(-100);
   const mouseY = useMotionValue(-100);
 
-  // Smooth springs for the trailing colorful glow spotlight
-  const glowX = useSpring(mouseX, { stiffness: 120, damping: 22, mass: 0.5 });
-  const glowY = useSpring(mouseY, { stiffness: 120, damping: 22, mass: 0.5 });
+  // Ultra-fluid spring physics for outer magnetic ring
+  const ringX = useSpring(mouseX, { stiffness: 220, damping: 24, mass: 0.4 });
+  const ringY = useSpring(mouseY, { stiffness: 220, damping: 24, mass: 0.4 });
+
+  // Soft ambient glow trail
+  const trailX = useSpring(mouseX, { stiffness: 80, damping: 20, mass: 0.8 });
+  const trailY = useSpring(mouseY, { stiffness: 80, damping: 20, mass: 0.8 });
 
   useEffect(() => {
-    // Only enable custom cursor on desktop/fine-pointer devices
     const mediaQuery = window.matchMedia("(pointer: fine)");
     const handleDeviceChange = (e: MediaQueryListEvent | MediaQueryList) => {
       setIsSupported(e.matches);
@@ -40,7 +45,6 @@ export default function CustomCursor() {
   useEffect(() => {
     if (!isSupported) return;
 
-    // Add CSS flag to document to hide standard cursor
     document.documentElement.classList.add("has-custom-cursor");
 
     const handleMouseMove = (e: MouseEvent) => {
@@ -49,26 +53,31 @@ export default function CustomCursor() {
       if (!isVisible) setIsVisible(true);
     };
 
-    const handleMouseLeave = () => {
-      setIsVisible(false);
-    };
-
-    const handleMouseEnter = () => {
-      setIsVisible(true);
-    };
+    const handleMouseDown = () => setIsClicked(true);
+    const handleMouseUp = () => setIsClicked(false);
+    const handleMouseLeave = () => setIsVisible(false);
+    const handleMouseEnter = () => setIsVisible(true);
 
     const handleMouseOver = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
       if (!target) return;
 
-      // Check if mouse is hovering over an interactive element
+      const card = target.closest('[data-cursor-text], article, .group');
+      if (card && card.getAttribute('data-cursor-text')) {
+        setHoverText(card.getAttribute('data-cursor-text') || '');
+      } else {
+        setHoverText('');
+      }
+
       const isClickable = !!target.closest(
-        'a, button, [role="button"], input[type="submit"], input[type="button"], select, textarea, .clickable, .glass'
+        'a, button, [role="button"], input, select, textarea, .clickable, .glass, [data-cursor-hover]'
       );
       setIsHovered(isClickable);
     };
 
     window.addEventListener("mousemove", handleMouseMove, { passive: true });
+    window.addEventListener("mousedown", handleMouseDown);
+    window.addEventListener("mouseup", handleMouseUp);
     document.addEventListener("mouseleave", handleMouseLeave);
     document.addEventListener("mouseenter", handleMouseEnter);
     window.addEventListener("mouseover", handleMouseOver, { passive: true });
@@ -76,6 +85,8 @@ export default function CustomCursor() {
     return () => {
       document.documentElement.classList.remove("has-custom-cursor");
       window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mousedown", handleMouseDown);
+      window.removeEventListener("mouseup", handleMouseUp);
       document.removeEventListener("mouseleave", handleMouseLeave);
       document.removeEventListener("mouseenter", handleMouseEnter);
       window.removeEventListener("mouseover", handleMouseOver);
@@ -86,33 +97,58 @@ export default function CustomCursor() {
 
   return (
     <>
-      {/* Premium ambient colorful glow spotlight */}
+      {/* 1. Deep Ambient Radial Glow Trail */}
       <motion.div
         style={{
-          x: glowX,
-          y: glowY,
+          x: trailX,
+          y: trailY,
           translateX: "-50%",
           translateY: "-50%",
         }}
         animate={{
-          width: isHovered ? 240 : 120,
-          height: isHovered ? 240 : 120,
-          opacity: isHovered ? 0.45 : 0.22,
-          background: isHovered
-            ? "radial-gradient(circle, rgba(168, 85, 247, 0.6) 0%, rgba(255, 138, 91, 0.45) 45%, transparent 70%)"
-            : "radial-gradient(circle, rgba(168, 85, 247, 0.45) 0%, rgba(255, 138, 91, 0.2) 40%, transparent 65%)",
+          scale: isClicked ? 0.8 : isHovered ? 1.8 : 1,
+          opacity: isVisible ? (isHovered ? 0.5 : 0.25) : 0,
+        }}
+        transition={{ duration: 0.3 }}
+        className="pointer-events-none fixed left-0 top-0 z-[99996] h-48 w-48 rounded-full bg-gradient-to-r from-[#a855f7] via-[#7a2adc] to-[#ff8a5b] blur-3xl opacity-30 transform-gpu"
+      />
+
+      {/* 2. Outer Fluid Magnetic Halo Ring */}
+      <motion.div
+        style={{
+          x: ringX,
+          y: ringY,
+          translateX: "-50%",
+          translateY: "-50%",
+        }}
+        animate={{
+          width: isHovered ? (hoverText ? 80 : 54) : 38,
+          height: isHovered ? (hoverText ? 80 : 54) : 38,
+          scale: isClicked ? 0.75 : 1,
+          borderColor: isHovered ? "rgba(255, 138, 91, 0.8)" : "rgba(168, 85, 247, 0.5)",
+          backgroundColor: isHovered
+            ? "rgba(168, 85, 247, 0.12)"
+            : "rgba(255, 255, 255, 0.02)",
+          backdropFilter: isHovered ? "blur(4px)" : "blur(0px)",
         }}
         transition={{
           type: "spring",
-          stiffness: 180,
-          damping: 24,
-          mass: 0.6,
+          stiffness: 280,
+          damping: 22,
+          mass: 0.3,
         }}
-        className={`pointer-events-none fixed left-0 top-0 z-[99998] rounded-full blur-[35px] mix-blend-screen transform-gpu transition-opacity duration-300 ${isVisible ? "opacity-100" : "opacity-0"
-          }`}
-      />
+        className={`pointer-events-none fixed left-0 top-0 z-[99997] flex items-center justify-center rounded-full border-2 border-solid shadow-[0_0_20px_rgba(168,85,247,0.3)] transform-gpu transition-opacity duration-300 ${
+          isVisible ? "opacity-100" : "opacity-0"
+        }`}
+      >
+        {hoverText && (
+          <span className="text-[9px] font-bold uppercase tracking-wider text-white drop-shadow-md">
+            {hoverText}
+          </span>
+        )}
+      </motion.div>
 
-      {/* Tiny precise pinpoint pointer dot */}
+      {/* 3. Central Glowing Laser Core Dot */}
       <motion.div
         style={{
           x: mouseX,
@@ -121,17 +157,19 @@ export default function CustomCursor() {
           translateY: "-50%",
         }}
         animate={{
-          scale: isHovered ? 2.5 : 1.0,
-          backgroundColor: isHovered ? "rgba(255, 255, 255, 0.15)" : "rgba(255, 255, 255, 1)",
-          borderColor: isHovered ? "rgba(255, 255, 255, 0.8)" : "rgba(255, 255, 255, 0)",
-          borderWidth: isHovered ? 1 : 0,
+          scale: isClicked ? 0.5 : isHovered ? 1.6 : 1,
+          backgroundColor: isHovered ? "#ff8a5b" : "#ffffff",
+          boxShadow: isHovered
+            ? "0 0 15px #ff8a5b, 0 0 30px #a855f7"
+            : "0 0 10px rgba(255, 255, 255, 0.8)",
         }}
         transition={{
-          duration: 0.25,
+          duration: 0.15,
           ease: "easeOut",
         }}
-        className={`pointer-events-none fixed left-0 top-0 z-[99999] h-2 w-2 rounded-full border-solid mix-blend-difference transform-gpu transition-opacity duration-300 ${isVisible ? "opacity-100" : "opacity-0"
-          }`}
+        className={`pointer-events-none fixed left-0 top-0 z-[99999] h-2.5 w-2.5 rounded-full transform-gpu transition-opacity duration-300 ${
+          isVisible ? "opacity-100" : "opacity-0"
+        }`}
       />
     </>
   );
