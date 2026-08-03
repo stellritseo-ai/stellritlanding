@@ -352,7 +352,7 @@ function ServicesPage() {
                   "UX/UI Design Workshops",
                 ]}
               />
-              <Link to="/contact" className="inline-flex items-center justify-center px-8 py-3.5 bg-[#180028] text-[#FAF5EE] rounded-full text-[13px] font-semibold transition-transform hover:bg-[#240945] hover:scale-105 shadow-xl">
+              <Link to="/services/$slug" params={{ slug: "ux-research-strategy" }} className="inline-flex items-center justify-center px-8 py-3.5 bg-[#180028] text-[#FAF5EE] rounded-full text-[13px] font-semibold transition-transform hover:bg-[#240945] hover:scale-105 shadow-xl">
                 View UX Research Service
               </Link>
             </motion.div>
@@ -380,7 +380,7 @@ function ServicesPage() {
                   "Content Strategy",
                 ]}
               />
-              <Link to="/contact" className="inline-flex items-center justify-center px-8 py-3.5 bg-[#180028] text-[#FAF5EE] rounded-full text-[13px] font-semibold transition-transform hover:bg-[#240945] hover:scale-105 shadow-xl">
+              <Link to="/services/$slug" params={{ slug: "brand-identity" }} className="inline-flex items-center justify-center px-8 py-3.5 bg-[#180028] text-[#FAF5EE] rounded-full text-[13px] font-semibold transition-transform hover:bg-[#240945] hover:scale-105 shadow-xl">
                 View Brand Services
               </Link>
             </motion.div>
@@ -463,7 +463,7 @@ function ServicesPage() {
                   "Interactive Prototyping",
                 ]}
               />
-              <Link to="/contact" className="inline-flex items-center justify-center px-8 py-3.5 bg-[#180028] text-[#FAF5EE] rounded-full text-[13px] font-semibold transition-transform hover:bg-[#240945] hover:scale-105 shadow-xl">
+              <Link to="/services/$slug" params={{ slug: "web-product-design" }} className="inline-flex items-center justify-center px-8 py-3.5 bg-[#180028] text-[#FAF5EE] rounded-full text-[13px] font-semibold transition-transform hover:bg-[#240945] hover:scale-105 shadow-xl">
                 View Design Services
               </Link>
             </motion.div>
@@ -490,7 +490,7 @@ function ServicesPage() {
                   "DevOps & Automation",
                 ]}
               />
-              <Link to="/contact" className="inline-flex items-center justify-center px-8 py-3.5 bg-[#180028] text-[#FAF5EE] rounded-full text-[13px] font-semibold transition-transform hover:bg-[#240945] hover:scale-105 shadow-xl">
+              <Link to="/services/$slug" params={{ slug: "web-development" }} className="inline-flex items-center justify-center px-8 py-3.5 bg-[#180028] text-[#FAF5EE] rounded-full text-[13px] font-semibold transition-transform hover:bg-[#240945] hover:scale-105 shadow-xl">
                 View Web Services
               </Link>
             </motion.div>
@@ -573,7 +573,7 @@ function ServicesPage() {
                   "Advanced Analytics",
                 ]}
               />
-              <Link to="/contact" className="inline-flex items-center justify-center px-8 py-3.5 bg-[#180028] text-[#FAF5EE] rounded-full text-[13px] font-semibold transition-transform hover:bg-[#240945] hover:scale-105 shadow-xl">
+              <Link to="/services/$slug" params={{ slug: "digital-marketing" }} className="inline-flex items-center justify-center px-8 py-3.5 bg-[#180028] text-[#FAF5EE] rounded-full text-[13px] font-semibold transition-transform hover:bg-[#240945] hover:scale-105 shadow-xl">
                 View Marketing Services
               </Link>
             </motion.div>
