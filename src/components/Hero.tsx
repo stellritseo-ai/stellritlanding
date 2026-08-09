@@ -309,7 +309,7 @@ export default function Hero() {
             AI Development
           </span>
           <br />
-          <span className="font-sans text-[20px] font-light text-white/90">USA & Dallas, TX</span>
+          {/* <span className="font-sans text-[20px] font-light text-white/90">USA & Dallas, TX</span> */}
         </h1>
 
         {/* Center 3D Organic Flower Video — transparent via pixel keying, zero black */}
@@ -405,7 +405,7 @@ export default function Hero() {
             />
           </div>
           <h1 className="text-glow relative z-20 max-w-5xl font-serif text-[32px] font-bold leading-[1.05] tracking-tight text-white sm:text-[42px] md:text-[60px] lg:text-[76px] mt-6">
-            Custom Software & <span className="italic bg-gradient-to-r from-[#d9b8ff] via-[#cc7aff] to-[#ff9f7a] bg-clip-text text-transparent drop-shadow-sm">AI Development</span> <br/> <span className="font-semibold text-white/95 text-[24px] md:text-[40px]">USA & Dallas, TX</span>
+            Custom Software & <span className="italic bg-gradient-to-r from-[#d9b8ff] via-[#cc7aff] to-[#ff9f7a] bg-clip-text text-transparent drop-shadow-sm">AI Development</span> <br /> <span className="font-semibold text-white/95 text-[24px] md:text-[40px]">USA & Dallas, TX</span>
           </h1>
           <p className="mt-4 max-w-xl text-[14px] sm:text-[15px] leading-[1.55] text-white/85 px-2">
             We empower enterprises with custom AI software, generative AI, automation systems, SaaS, and dedicated engineering teams to drive digital transformation.
