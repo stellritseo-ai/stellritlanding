@@ -84,17 +84,17 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       {
         title:
-          "StellR IT LLC — AI Development Company | Software Development | Digital Transformation",
+          "StellR IT LLC — AI Development Company USA | Custom Software Dallas TX",
       },
       {
         name: "description",
         content:
-          "StellR IT LLC is a leading AI development company and custom software development firm. We build AI software, generative AI, chatbots, automation systems, SaaS platforms, web & mobile apps, and deliver dedicated engineering teams for startups to enterprises worldwide.",
+          "StellR IT LLC is a leading AI development company and custom software development firm in the USA (Dallas, TX). We build AI software, SaaS platforms, eCommerce, web & mobile apps, and deliver dedicated engineering teams.",
       },
       {
         name: "keywords",
         content:
-          "AI development company, AI software development, generative AI development, AI chatbot development, AI automation company, LLM integration, custom AI solutions, software development company, custom software development, SaaS development, web development company, mobile app development, React development, Next.js development, Flutter development, dedicated development team, dedicated AI engineers, remote development team, offshore development company, white label development, staff augmentation, IT outsourcing, digital transformation company, enterprise software development, healthcare AI development, dental AI solutions, AI consulting, business process automation, AI workflow automation, RAG development, vector database, knowledge base AI, AI CRM, AI voice agent, conversational AI, OpenAI integration, Claude AI integration, Gemini AI integration, SEO company, digital marketing agency, web design company, Garland TX software company, Texas AI company",
+          "web development company USA, custom software development company USA, software development company USA, AI development company USA, AI automation company USA, custom AI development services, mobile app development company USA, eCommerce development company USA, UI UX design agency USA, digital product development company, SaaS development company USA, custom web development company, web development company Dallas TX, software development company Dallas TX, AI development company Dallas TX, AI automation company Dallas TX, mobile app development Dallas TX, eCommerce development Dallas TX, SEO company Dallas TX, digital marketing agency Dallas TX, AI software development, generative AI development, LLM integration, custom AI solutions, React development, Next.js development, Flutter development, dedicated development team, offshore development company, white label development, staff augmentation, IT outsourcing, digital transformation company",
       },
       { name: "author", content: "StellR IT LLC" },
       { name: "robots", content: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" },

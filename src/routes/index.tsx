@@ -24,17 +24,17 @@ export const Route = createFileRoute("/")(({
     meta: [
       {
         title:
-          "StellR IT LLC — AI Development Company | Custom Software Development | Digital Transformation",
+          "StellR IT LLC — Custom Software & AI Development Company USA",
       },
       {
         name: "description",
         content:
-          "StellR IT LLC is a leading AI development company offering custom AI software, generative AI, chatbots, voice agents, automation, SaaS, web & mobile development. We provide dedicated remote engineering teams for startups to enterprises worldwide. Based in Garland, TX.",
+          "StellR IT LLC is a leading custom software development company and AI development company in the USA. We provide web development, SaaS, mobile apps, digital marketing, and dedicated engineering teams in Dallas, TX.",
       },
       {
         name: "keywords",
         content:
-          "AI development company, AI software development company, generative AI development, AI chatbot development company, AI voice agent development, AI automation company, LLM integration, OpenAI integration, Claude AI integration, Gemini AI integration, custom AI solutions, RAG development, vector database, knowledge base AI, AI consulting, AI CRM automation, AI call center, healthcare AI, dental AI, custom software development company, enterprise software development, SaaS development company, web development company, mobile app development company, React development company, Next.js development, Flutter development, dedicated AI engineers, dedicated development team, remote development team, offshore development company, white label development, staff augmentation, IT outsourcing, digital transformation company, business process automation, AI workflow automation, software development company USA, AI company Texas, digital agency Garland TX",
+          "web development company USA, custom software development company USA, software development company USA, AI development company USA, AI automation company USA, custom AI development services, mobile app development company USA, eCommerce development company USA, UI UX design agency USA, digital product development company, SaaS development company USA, custom web development company, web development company Dallas TX, software development company Dallas TX, AI development company Dallas TX, AI automation company Dallas TX, mobile app development Dallas TX, eCommerce development Dallas TX, SEO company Dallas TX, digital marketing agency Dallas TX, AI software development, generative AI development, LLM integration, custom AI solutions, React development, Next.js development, Flutter development, dedicated development team, offshore development company, white label development, staff augmentation, IT outsourcing, digital transformation company",
       },
       { name: "robots", content: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" },
       // Open Graph
@@ -166,6 +166,31 @@ function Index() {
     ],
   };
 
+  const organizationSchema = {
+    "@context": "https://schema.org",
+    "@type": "ProfessionalService",
+    "@id": "https://stellrit.com/#organization",
+    name: "StellR IT LLC",
+    url: "https://stellrit.com",
+    logo: "https://stellrit.com/og-image.png",
+    image: "https://stellrit.com/og-image.png",
+    description: "Leading AI development company and custom software development firm offering generative AI, automation systems, SaaS platforms, and dedicated engineering teams.",
+    address: {
+      "@type": "PostalAddress",
+      addressLocality: "Garland",
+      addressRegion: "TX",
+      addressCountry: "US"
+    },
+    contactPoint: {
+      "@type": "ContactPoint",
+      contactType: "customer service",
+      email: "hello@stellrit.com"
+    },
+    sameAs: [
+      "https://www.linkedin.com/company/stellrit"
+    ]
+  };
+
   const siteNavSchema = {
     "@context": "https://schema.org",
     "@type": "ItemList",
@@ -188,6 +213,10 @@ function Index() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
       />
       <script
         type="application/ld+json"

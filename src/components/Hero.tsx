@@ -302,12 +302,14 @@ export default function Hero() {
           style={{ fontSize: "38px", fontWeight: 900, lineHeight: "1.1", marginTop: "65px", marginBottom: "30px" }}
         >
           <span className="bg-gradient-to-b from-white via-white to-white/80 bg-clip-text text-transparent">
-            Digital Evolution for
+            Custom Software &
           </span>{" "}
           <br />
           <span className="font-serif italic font-normal text-transparent bg-clip-text bg-gradient-to-r from-[#d7dcfc] via-[#c4b5fd] to-[#f472b6]">
-            Business
+            AI Development
           </span>
+          <br />
+          <span className="font-sans text-[20px] font-light text-white/90">USA & Dallas, TX</span>
         </h1>
 
         {/* Center 3D Organic Flower Video — transparent via pixel keying, zero black */}
@@ -403,10 +405,10 @@ export default function Hero() {
             />
           </div>
           <h1 className="text-glow relative z-20 max-w-5xl font-serif text-[32px] font-bold leading-[1.05] tracking-tight text-white sm:text-[42px] md:text-[60px] lg:text-[76px] mt-6">
-            Digital <span className="italic bg-gradient-to-r from-[#d9b8ff] via-[#cc7aff] to-[#ff9f7a] bg-clip-text text-transparent drop-shadow-sm">Evolution</span> <span className="font-semibold text-white/95">for Business</span>
+            Custom Software & <span className="italic bg-gradient-to-r from-[#d9b8ff] via-[#cc7aff] to-[#ff9f7a] bg-clip-text text-transparent drop-shadow-sm">AI Development</span> <br/> <span className="font-semibold text-white/95 text-[24px] md:text-[40px]">USA & Dallas, TX</span>
           </h1>
           <p className="mt-4 max-w-xl text-[14px] sm:text-[15px] leading-[1.55] text-white/85 px-2">
-            Our creative studio helps enterprise brands and market leaders navigate digital, evolve profitably, and launch unforgettable websites, products, and campaigns.
+            We empower enterprises with custom AI software, generative AI, automation systems, SaaS, and dedicated engineering teams to drive digital transformation.
           </p>
         </div>
 
@@ -525,10 +527,10 @@ export default function Hero() {
           className="pointer-events-none absolute inset-0 z-30 flex flex-col items-center justify-center px-6 text-center text-white"
         >
           <h2 className="max-w-5xl font-serif text-[40px] font-normal leading-[1.1] tracking-[-0.02em] text-white md:text-[54px] lg:text-[68px]">
-            Digital <span className="font-serif italic bg-gradient-to-r from-[#c9a4ff] via-[#be50ff] to-[#ff8a5b] bg-clip-text text-transparent">Evolution</span> <span className="font-sans font-light tracking-wide text-white/90">for Business</span>
+            Custom Software & <span className="font-serif italic bg-gradient-to-r from-[#c9a4ff] via-[#be50ff] to-[#ff8a5b] bg-clip-text text-transparent">AI Development</span> <br/> <span className="font-sans font-light tracking-wide text-white/90 text-[24px] md:text-[40px]">USA & Dallas, TX</span>
           </h2>
           <p className="mt-6 max-w-2xl font-sans text-sm leading-[1.6] text-white/75 md:text-[17px]">
-            Our creative studio helps enterprise brands and market leaders navigate digital, evolve profitably, and launch unforgettable websites, products, and campaigns.
+            We empower enterprises with custom AI software, generative AI, automation systems, SaaS, and dedicated engineering teams to drive digital transformation.
           </p>
           <Link
             to="/contact"
