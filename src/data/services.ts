@@ -1,3 +1,45 @@
+import uxImg from "@/assets/services/UX Research & Strategy.png";
+import brandImg from "@/assets/services/Brand Identity.png";
+import webProductImg from "@/assets/services/Web & Product Design.png";
+import webDevImg from "@/assets/services/Web Development.png";
+import marketingImg from "@/assets/services/Digital Marketing & CRO.png";
+import aiImg from "@/assets/services/AI Development & Automation.png";
+
+// Portfolio Imports
+import p_ux1 from "@/assets/portfolio_collect/product_development/product1.jpg";
+import p_ux2 from "@/assets/portfolio_collect/product_development/product2.jpg";
+import p_ux3 from "@/assets/portfolio_collect/product_development/product3.jpg";
+import p_ux4 from "@/assets/portfolio_collect/product_development/product4.jpg";
+
+import p_brand1 from "@/assets/portfolio_collect/brand_building/desktop.jpg";
+import p_brand2 from "@/assets/portfolio_collect/brand_building/Goat-Milk.jpg";
+import p_brand3 from "@/assets/portfolio_collect/brand_building/laptop.jpg";
+import p_brand4 from "@/assets/portfolio_collect/brand_building/Mobile.jpg";
+
+import p_webdesign1 from "@/assets/portfolio_collect/product_development/pools1.jpg";
+import p_webdesign2 from "@/assets/portfolio_collect/product_development/pools2.jpg";
+import p_webdesign3 from "@/assets/portfolio_collect/product_development/pools3.jpg";
+import p_webdesign4 from "@/assets/portfolio_collect/product_development/pools4.jpg";
+
+import p_webdev1 from "@/assets/portfolio_collect/websites/first/a1.jpg";
+import p_webdev2 from "@/assets/portfolio_collect/websites/first/a2.jpg";
+import p_webdev3 from "@/assets/portfolio_collect/websites/second/b1.jpg";
+import p_webdev4 from "@/assets/portfolio_collect/websites/second/b2.jpg";
+
+import p_marketing1 from "@/assets/portfolio_collect/growth-marketing/a1.jpg";
+import p_marketing2 from "@/assets/portfolio_collect/growth-marketing/a2.jpg";
+
+import p_ai1 from "@/assets/portfolio_collect/ai_automation/a1.jpg";
+import p_ai2 from "@/assets/portfolio_collect/ai_automation/a2.jpg";
+
+import p_app1 from "@/assets/portfolio_collect/app_development/Mobile.jpg";
+import p_app2 from "@/assets/portfolio_collect/app_development/Mobile-1.jpg";
+import p_app3 from "@/assets/portfolio_collect/app_development/Mobile-2.jpg";
+import p_app4 from "@/assets/portfolio_collect/app_development/product1.jpg";
+
+import p_pools1 from "@/assets/portfolio_collect/pools/pools1.jpg";
+import p_pools2 from "@/assets/portfolio_collect/pools/pools2.jpg";
+
 export interface ServiceData {
   slug: string;
   title: string;
@@ -6,6 +48,7 @@ export interface ServiceData {
   heroColor: string;
   heroImage: string;
   featureImage: string;
+  portfolioImages?: string[];
   seo: {
     title: string;
     description: string;
@@ -33,8 +76,9 @@ export const servicesData: ServiceData[] = [
     description:
       "We don't just design interfaces; we engineer digital experiences rooted in deep user psychology and business strategy. Our UX research uncovers the friction points costing you revenue, while our strategic UI design builds calm, intuitive pathways that guide users seamlessly toward conversion. From enterprise SaaS platforms to consumer mobile apps, we create digital products that people actually want to use.",
     heroColor: "#a855f7",
-    heroImage: "https://images.unsplash.com/photo-1618761714954-0b8cd0026356?q=80&w=2070&auto=format&fit=crop", // Abstract premium purple/dark
-    featureImage: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=2070&auto=format&fit=crop", // Data/UI analytics
+    heroImage: uxImg,
+    featureImage: uxImg,
+    portfolioImages: [p_ux1, p_ux2, p_webdesign1, p_webdesign2],
     seo: {
       title: "UX Research & Strategy Services | StellR IT LLC",
       description: "Enterprise UX research and UI strategy services. We design intuitive, high-converting digital products, SaaS platforms, and mobile applications.",
@@ -98,8 +142,9 @@ export const servicesData: ServiceData[] = [
     description:
       "Your brand is your most valuable business asset. We craft distinctive, memorable brand identities that position you as the premium authority in your space. We go beyond logos, building comprehensive brand systems—including naming, verbal strategy, typography, and visual architecture—that feel inevitable and resonate deeply with your target market. We build brands designed to scale.",
     heroColor: "#ff8a5b",
-    heroImage: "https://images.unsplash.com/photo-1600132806370-bf17e65e942f?q=80&w=2194&auto=format&fit=crop", // Premium abstract orange/gold
-    featureImage: "https://images.unsplash.com/photo-1542744094-24638eff58bb?q=80&w=2071&auto=format&fit=crop", // Branding/marketing
+    heroImage: brandImg,
+    featureImage: brandImg,
+    portfolioImages: [p_brand1, p_brand2, p_brand3, p_brand4],
     seo: {
       title: "Premium Brand Identity Design Services | StellR IT LLC",
       description: "Crafting iconic brand identities, naming, and messaging for enterprise brands and market leaders. Elevate your market positioning with StellR IT.",
@@ -163,8 +208,9 @@ export const servicesData: ServiceData[] = [
     description:
       "We design digital products that look stunning and perform flawlessly. Our web and product design service bridges the gap between aesthetic excellence and technical feasibility. Whether you are building a complex SaaS dashboard, a high-converting marketing site, or a native mobile app, we create cohesive design systems that ensure a premium, consistent experience across every screen size and device.",
     heroColor: "#cc7aff",
-    heroImage: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=2070&auto=format&fit=crop", // Abstract tech purple
-    featureImage: "https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?q=80&w=2055&auto=format&fit=crop", // Modern laptop/design
+    heroImage: webProductImg,
+    featureImage: webProductImg,
+    portfolioImages: [p_webdesign1, p_webdesign2, p_webdesign3, p_webdesign4],
     seo: {
       title: "Web & Product Design Services | StellR IT LLC",
       description: "Design beautifully engineered digital products, SaaS platforms, and enterprise websites with StellR IT's expert product design team.",
@@ -228,8 +274,9 @@ export const servicesData: ServiceData[] = [
     description:
       "We build robust, scalable, and secure web applications using modern technology stacks. For us, performance, accessibility, and security are core features, not afterthoughts. We specialize in React, Next.js, and Node.js, delivering everything from high-performance marketing sites with headless CMS architectures to complex, data-intensive enterprise portals and bespoke software solutions.",
     heroColor: "#7a2adc",
-    heroImage: "https://images.unsplash.com/photo-1618401471353-b98afee0b2eb?q=80&w=2088&auto=format&fit=crop", // Code/abstract dark
-    featureImage: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=2070&auto=format&fit=crop", // Coding environment
+    heroImage: webDevImg,
+    featureImage: webDevImg,
+    portfolioImages: [p_webdev1, p_webdev2, p_webdev3, p_webdev4],
     seo: {
       title: "Custom Web & Software Development Services | StellR IT LLC",
       description: "Full-stack web and software development using React, Next.js, and modern tech stacks. Enterprise-grade performance and security.",
@@ -293,8 +340,9 @@ export const servicesData: ServiceData[] = [
     description:
       "Building a great product is only half the battle; acquiring customers efficiently is the other. Our digital marketing strategies are rooted in deep data analytics and relentless experimentation. We combine technical SEO, high-ROI paid media campaigns, and rigorous Conversion Rate Optimization (CRO) to lower your Customer Acquisition Cost (CAC) and scale your revenue predictably.",
     heroColor: "#ff8a5b",
-    heroImage: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=2070&auto=format&fit=crop", // Graph/Growth
-    featureImage: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=2015&auto=format&fit=crop", // Analytics screen
+    heroImage: marketingImg,
+    featureImage: marketingImg,
+    portfolioImages: [p_marketing1, p_marketing2],
     seo: {
       title: "Digital Marketing & CRO Services | StellR IT LLC",
       description: "Data-driven digital marketing, technical SEO, Google Ads, and Conversion Rate Optimization (CRO) to scale your business revenue.",
@@ -358,8 +406,9 @@ export const servicesData: ServiceData[] = [
     description:
       "We help enterprises leverage the power of Artificial Intelligence to gain a massive competitive advantage. Whether you need to integrate LLMs (like OpenAI's GPT-4 or Anthropic's Claude) into your existing software, build a custom RAG (Retrieval-Augmented Generation) system trained on your proprietary data, or deploy autonomous AI agents to automate complex workflows, our specialized AI engineering team can deliver.",
     heroColor: "#38bdf8",
-    heroImage: "https://images.unsplash.com/photo-1620712943543-bcc4688e7485?q=80&w=2165&auto=format&fit=crop", // Abstract AI/Neural
-    featureImage: "https://images.unsplash.com/photo-1677442136019-21780ecad995?q=80&w=2070&auto=format&fit=crop", // AI tech screen
+    heroImage: aiImg,
+    featureImage: aiImg,
+    portfolioImages: [p_ai1, p_ai2],
     seo: {
       title: "AI Software Development & Integration Services | StellR IT LLC",
       description: "Custom AI software development, LLM integration, RAG systems, and AI automation. Leverage generative AI to scale your enterprise.",
@@ -425,6 +474,7 @@ export const servicesData: ServiceData[] = [
     heroColor: "#10b981",
     heroImage: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=2070&auto=format&fit=crop", // Used graph instead, wait let's use phone
     featureImage: "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?q=80&w=2070&auto=format&fit=crop", // Mobile phone modern
+    portfolioImages: [p_app1, p_app2, p_app3, p_app4],
     seo: {
       title: "Mobile App Development Services | iOS & Android | StellR IT LLC",
       description: "Custom mobile app development for iOS and Android. We build high-performance native and cross-platform apps using React Native and Flutter.",
@@ -490,6 +540,7 @@ export const servicesData: ServiceData[] = [
     heroColor: "#f43f5e",
     heroImage: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=2070&auto=format&fit=crop", // Team working
     featureImage: "https://images.unsplash.com/photo-1600880292203-757bb62b4baf?q=80&w=2070&auto=format&fit=crop", // Modern office/collaboration
+    portfolioImages: [p_webdev1, p_webdev2, p_pools1, p_pools2],
     seo: {
       title: "Dedicated Engineering Teams & IT Staff Augmentation | StellR IT",
       description: "Hire dedicated remote development teams and elite software engineers. White-label staff augmentation for agencies and enterprises.",
@@ -555,6 +606,7 @@ export const servicesData: ServiceData[] = [
     heroColor: "#3b82f6",
     heroImage: "https://images.unsplash.com/photo-1551434678-e076c223a692?q=80&w=2070&auto=format&fit=crop", // Tech architecture/servers
     featureImage: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=2015&auto=format&fit=crop", // Dashboard UI
+    portfolioImages: [p_ux3, p_ux4, p_webdesign3, p_webdesign4],
     seo: {
       title: "Custom SaaS Development Services & Architecture | StellR IT",
       description: "End-to-end SaaS application development. We build scalable, secure, multi-tenant software platforms with modern tech stacks.",

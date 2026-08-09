@@ -13,6 +13,7 @@ import brandVideo from "@/assets/video/Brand.mp4";
 import webProductVideo from "@/assets/video/Web-Product.mp4";
 import webDevVideo from "@/assets/video/Web-Development.mp4";
 import marketingVideo from "@/assets/video/Website-Management.mp4";
+import aiImg from "@/assets/services/AI Development & Automation.png";
 
 export const Route = createFileRoute("/services/")({
   head: () => ({
@@ -576,6 +577,45 @@ function ServicesPage() {
               <Link to="/services/$slug" params={{ slug: "digital-marketing" }} className="inline-flex items-center justify-center px-8 py-3.5 bg-[#180028] text-[#FAF5EE] rounded-full text-[13px] font-semibold transition-transform hover:bg-[#240945] hover:scale-105 shadow-xl">
                 View Marketing Services
               </Link>
+            </motion.div>
+          </div>
+          {/* 6. AI Development & Automation */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 items-center mb-[60px] mt-[60px]">
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              className="order-2 lg:order-1"
+            >
+              <span className="text-[12px] font-bold uppercase tracking-[0.2em] text-[#240945]/60 mb-4 block">AI Development & Automation</span>
+              <h2 className="font-serif text-[32px] md:text-[40px] font-bold leading-[1.15] mb-8">
+                Integrate generative AI to automate, scale, and innovate your operations.
+              </h2>
+              <BulletList
+                items={[
+                  "Generative AI & LLMs",
+                  "RAG Systems",
+                  "AI Workflow Automation",
+                  "AI Agents",
+                  "Predictive Analytics",
+                ]}
+              />
+              <Link to="/services/$slug" params={{ slug: "ai-software-development" }} className="inline-flex items-center justify-center px-8 py-3.5 bg-[#180028] text-[#FAF5EE] rounded-full text-[13px] font-semibold transition-transform hover:bg-[#240945] hover:scale-105 shadow-xl">
+                View AI Services
+              </Link>
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, x: 30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              className="relative order-1 lg:order-2"
+            >
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-[80%] bg-[#38bdf8]/20 blur-[80px] rounded-full pointer-events-none" />
+              <img
+                src={aiImg}
+                alt="AI Development and Automation"
+                className="relative z-10 w-full h-auto rounded-2xl shadow-[0_20px_40px_rgba(36,9,69,0.1)] bg-white/50 border border-[#240945]/5 object-cover"
+              />
             </motion.div>
           </div>
         </div>

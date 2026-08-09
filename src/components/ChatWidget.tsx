@@ -150,7 +150,7 @@ export default function ChatWidget() {
         data: {
           sessionId: sess.id,
           sender: "admin",
-          text: `Hi ${visitorName.split(" ")[0]}! 👋 Thanks for reaching out to StellR IT. How can we help you today?`,
+          text: `Hi ${visitorName.split(" ")[0]}! 👋 Thanks for reaching out. StellR IT AI can help you today!`,
         },
       });
 
@@ -244,11 +244,10 @@ export default function ChatWidget() {
 
       {/* ── Panel ────────────────────────────────────────────────────────── */}
       <div
-        className={`fixed bottom-24 right-6 z-[60] w-[min(390px,calc(100vw-1.5rem))] origin-bottom-right overflow-hidden rounded-2xl border border-white/10 bg-[#120025]/95 text-white shadow-[0_30px_80px_-20px_rgba(0,0,0,0.7)] backdrop-blur-xl transition-all duration-300 ${
-          open
-            ? "pointer-events-auto translate-y-0 scale-100 opacity-100"
-            : "pointer-events-none translate-y-3 scale-95 opacity-0"
-        }`}
+        className={`fixed bottom-24 right-6 z-[60] w-[min(390px,calc(100vw-1.5rem))] origin-bottom-right overflow-hidden rounded-2xl border border-white/10 bg-[#120025]/95 text-white shadow-[0_30px_80px_-20px_rgba(0,0,0,0.7)] backdrop-blur-xl transition-all duration-300 ${open
+          ? "pointer-events-auto translate-y-0 scale-100 opacity-100"
+          : "pointer-events-none translate-y-3 scale-95 opacity-0"
+          }`}
       >
         {/* Header */}
         <div className="relative flex items-center gap-3 bg-gradient-to-br from-[#3A0A7A] via-[#4a1290] to-[#1a0533] px-4 py-4">
@@ -256,7 +255,7 @@ export default function ChatWidget() {
             <img src={favImg} alt="StellR IT Logo" className="h-full w-full object-cover" />
           </div>
           <div className="flex-1">
-            <div className="text-[15px] font-semibold leading-tight">StellR IT</div>
+            <div className="text-[15px] font-semibold leading-tight">StellR IT AI</div>
             <div className="flex items-center gap-1.5 text-xs text-white/70">
               {isClosed ? (
                 <><span className="h-1.5 w-1.5 rounded-full bg-gray-400" />Conversation closed</>
@@ -364,11 +363,10 @@ export default function ChatWidget() {
                 return (
                   <div key={m.id} className={`flex flex-col ${isVisitor ? "items-end" : "items-start"}`}>
                     <div
-                      className={`max-w-[85%] rounded-2xl px-3.5 py-2.5 text-sm leading-snug ${
-                        isVisitor
-                          ? "bg-gradient-to-br from-[#ff8a5b] to-[#e8674a] text-white"
-                          : "bg-white/[0.06] text-white/90 ring-1 ring-white/10"
-                      }`}
+                      className={`max-w-[85%] rounded-2xl px-3.5 py-2.5 text-sm leading-snug ${isVisitor
+                        ? "bg-gradient-to-br from-[#ff8a5b] to-[#e8674a] text-white"
+                        : "bg-white/[0.06] text-white/90 ring-1 ring-white/10"
+                        }`}
                     >
                       {m.text}
                     </div>

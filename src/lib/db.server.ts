@@ -48,6 +48,7 @@ const ChatSessionSchema = new mongoose.Schema({
   lastMessageTime: { type: String, required: true },
   unread: { type: Boolean, default: false },
   status: { type: String, enum: ["open", "closed"], default: "open" },
+  aiMode: { type: Boolean, default: true },
   messages: { type: [ChatMessageSchema], default: [] },
   createdAt: { type: String, required: true },
 });

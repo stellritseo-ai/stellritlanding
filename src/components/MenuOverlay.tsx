@@ -31,6 +31,7 @@ const NAV: { label: string; to: string; children?: { label: string; to: string }
       { label: "Brand Identity & Campaigns", to: "/services" },
       { label: "Web Development", to: "/services" },
       { label: "Digital Marketing & CRO", to: "/services" },
+      { label: "AI Development & Automation", to: "/services" },
     ],
   },
   { label: "Insights", to: "/insights" },

@@ -18,6 +18,7 @@ export interface ChatSession {
   lastMessageTime: string;
   unread: boolean;
   status: "open" | "closed";
+  aiMode: boolean;
   messages: ChatMessage[];
   createdAt: string;
 }
@@ -64,6 +65,7 @@ export const createChatSessionFn = createServerFn({ method: "POST" }).handler(
       lastMessageTime: new Date().toISOString(),
       unread: false,
       status: "open",
+      aiMode: true,
       messages: [],
       createdAt: new Date().toISOString(),
     });
@@ -108,7 +110,7 @@ export const sendChatMessageFn = createServerFn({ method: "POST" }).handler(
     const isFirstVisitorMessage = data.sender === "visitor" && visitorMessagesCount === 0;
 
     const now = new Date().toISOString();
-    const updated = await ChatSessionModel.findByIdAndUpdate(
+    let updated = await ChatSessionModel.findByIdAndUpdate(
       data.sessionId,
       {
         $push: { messages: { sender: data.sender, text: data.text, timestamp: now } },
@@ -126,11 +128,126 @@ export const sendChatMessageFn = createServerFn({ method: "POST" }).handler(
         data.sender === "admin" ? "Agent" : `Visitor: ${updated.visitorName}`
       );
 
-      if (isFirstVisitorMessage) {
+      if (updated.aiMode !== false && data.sender === "visitor") {
+        console.log("[AI] Intercepting message for AI. aiMode is true.");
+        const { generateAIResponse, isAIAvailable } = await import("./gemini.server");
+        console.log("[AI] isAIAvailable:", isAIAvailable);
+        
+        if (isAIAvailable) {
+          console.log("[AI] Generating response for:", data.text);
+          try {
+            const aiRes = await generateAIResponse(updated.messages, data.text, updated.visitorName);
+            console.log("[AI] Received response:", aiRes);
+            const aiNow = new Date().toISOString();
+          
+          if (aiRes.functionCall) {
+            if (aiRes.functionCall.name === "request_human") {
+              // Turn off AI mode and notify admin
+              updated = await ChatSessionModel.findByIdAndUpdate(
+                data.sessionId,
+                { aiMode: false },
+                { new: true }
+              ).lean();
+              
+              // Send Email Notification
+              try {
+                const { sendEmail, getChatNotificationHtml } = await import("./mail.server");
+                const siteUrl = process.env.VITE_SITE_URL || "http://localhost:8083";
+                const adminUrl = `${siteUrl}/dashboard/team-chat`;
+                const startedAt = new Date().toLocaleString("en-US", { dateStyle: "short", timeStyle: "short" });
+                
+                const htmlContent = getChatNotificationHtml({
+                  visitorName: updated.visitorName,
+                  visitorContact: updated.visitorContact || "Not provided",
+                  firstMessage: "Human assistance requested. Last message: " + data.text,
+                  startedAt,
+                  adminUrl,
+                });
+
+                await sendEmail({
+                  to: process.env.EMAIL_USER || "jitenksony@gmail.com",
+                  subject: `StellR IT: Human Requested by ${updated.visitorName}`,
+                  text: `A visitor has requested human assistance.`,
+                  html: htmlContent,
+                });
+              } catch (mailErr) {
+                console.error("[Mail] Failed to send handoff email:", mailErr);
+              }
+              
+              const handoffMsg = "All agents are currently busy, please wait a few moments. A Human or Agent will be available in 1 minute.";
+              updated = await ChatSessionModel.findByIdAndUpdate(
+                data.sessionId,
+                {
+                  $push: { messages: { sender: "admin", text: handoffMsg, timestamp: aiNow } },
+                  lastMessage: handoffMsg,
+                  lastMessageTime: aiNow,
+                  unread: false,
+                },
+                { new: true }
+              ).lean();
+            } else if (aiRes.functionCall.name === "schedule_callback") {
+              const bookMsg = `Perfect! Your appointment is booked. One of our experts will call you in exactly 10 minutes to discuss your project!`;
+              updated = await ChatSessionModel.findByIdAndUpdate(
+                data.sessionId,
+                {
+                  $push: { messages: { sender: "admin", text: bookMsg, timestamp: aiNow } },
+                  lastMessage: bookMsg,
+                  lastMessageTime: aiNow,
+                  unread: false,
+                },
+                { new: true }
+              ).lean();
+              
+              // Optional: Send Email Notification to admin with the lead's phone number!
+              try {
+                const { sendEmail } = await import("./mail.server");
+                await sendEmail({
+                  to: process.env.EMAIL_USER || "jitenksony@gmail.com",
+                  subject: `StellR IT: NEW HOT LEAD - Call in 10 mins!`,
+                  text: `A visitor just gave their phone number in the AI chat! Please call them in 10 minutes. Check the chat dashboard for full context.`,
+                  html: `<h3>New Lead Captured!</h3><p>A visitor just finished the AI qualification flow and provided their phone number for a callback in 10 minutes.</p><p><a href="${process.env.VITE_SITE_URL || "http://localhost:8083"}/dashboard/team-chat">Click here to view the chat and get their number!</a></p>`,
+                });
+              } catch (e) {
+                console.error("[Mail] Callback notification failed", e);
+              }
+            }
+          } else if (aiRes.text) {
+            updated = await ChatSessionModel.findByIdAndUpdate(
+              data.sessionId,
+              {
+                $push: { messages: { sender: "admin", text: aiRes.text, timestamp: aiNow } },
+                lastMessage: aiRes.text,
+                lastMessageTime: aiNow,
+                unread: false,
+              },
+              { new: true }
+            ).lean();
+          }
+          } catch(err: any) {
+            console.error("[AI] Error generating AI response:", err);
+            updated = await ChatSessionModel.findByIdAndUpdate(
+              data.sessionId,
+              {
+                $push: { messages: { sender: "admin", text: "I'm having trouble connecting to my brain right now. Our human agents have been notified and will be with you shortly.", timestamp: new Date().toISOString() } }
+              },
+              { new: true }
+            ).lean();
+          }
+        } else {
+           console.log("[AI] AI is not available (key missing?)");
+           updated = await ChatSessionModel.findByIdAndUpdate(
+             data.sessionId,
+             {
+               $push: { messages: { sender: "admin", text: "[DEBUG] AI is not available (key missing?)", timestamp: new Date().toISOString() } }
+             },
+             { new: true }
+           ).lean();
+        }
+      } else if (!updated.aiMode && isFirstVisitorMessage) {
         try {
           const { sendEmail, getChatNotificationHtml } = await import("./mail.server");
           const siteUrl = process.env.VITE_SITE_URL || "http://localhost:8083";
-          const adminUrl = `${siteUrl}/dashboard/chat`;
+          const adminUrl = `${siteUrl}/dashboard/team-chat`;
           const startedAt = new Date().toLocaleString("en-US", {
             dateStyle: "short",
             timeStyle: "short",
@@ -145,7 +262,7 @@ export const sendChatMessageFn = createServerFn({ method: "POST" }).handler(
           });
 
           await sendEmail({
-            to: "jitenksony@gmail.com",
+            to: process.env.EMAIL_USER || "jitenksony@gmail.com",
             subject: `StellR IT: New Chat Conversation with ${session.visitorName}`,
             text: `You have received a new chat conversation on StellR IT from ${session.visitorName}. Message: "${data.text}"`,
             html: htmlContent,

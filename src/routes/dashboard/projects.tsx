@@ -187,7 +187,7 @@ function ProjectsPage() {
         return "Partially Paid";
       }
     }
-    
+
     const progress = getProgress(proj);
     if (progress < 30) return "In Progress";
     return "Partially Paid";
@@ -411,11 +411,10 @@ function ProjectsPage() {
             placeholder="Search by client, project, owner or domain..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className={`w-full h-10 pl-10 pr-4 border rounded-xl text-xs font-medium transition duration-300 focus:outline-none focus:ring-1 ${
-              isDark
+            className={`w-full h-10 pl-10 pr-4 border rounded-xl text-xs font-medium transition duration-300 focus:outline-none focus:ring-1 ${isDark
                 ? "bg-white/5 border-white/5 text-white placeholder-white/30 focus:border-[#a855f7]/50 focus:ring-[#a855f7]/50"
                 : "bg-white border-slate-200 text-slate-800 placeholder-slate-400 focus:border-[#a855f7]/50 focus:ring-[#a855f7]/50"
-            }`}
+              }`}
           />
         </div>
 
@@ -426,11 +425,10 @@ function ProjectsPage() {
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className={`pl-9 pr-8 py-2.5 border rounded-xl text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-[#a855f7]/30 transition ${
-                isDark
+              className={`pl-9 pr-8 py-2.5 border rounded-xl text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-[#a855f7]/30 transition ${isDark
                   ? "bg-[#12052c]/90 border-white/5 text-white/80 focus:border-[#a855f7]/40"
                   : "bg-white border-slate-200 text-slate-700 focus:border-[#a855f7]/30"
-              }`}
+                }`}
             >
               <option value="All">All Statuses</option>
               <option value="Not Started">Not Started</option>
@@ -447,11 +445,10 @@ function ProjectsPage() {
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as any)}
-              className={`pl-9 pr-8 py-2.5 border rounded-xl text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-[#a855f7]/30 transition ${
-                isDark
+              className={`pl-9 pr-8 py-2.5 border rounded-xl text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-[#a855f7]/30 transition ${isDark
                   ? "bg-[#12052c]/90 border-white/5 text-white/80 focus:border-[#a855f7]/40"
                   : "bg-white border-slate-200 text-slate-700 focus:border-[#a855f7]/30"
-              }`}
+                }`}
             >
               <option value="dueDate">Close By</option>
               <option value="progress">Payment Progress</option>
@@ -468,9 +465,8 @@ function ProjectsPage() {
           <span className={`text-xs mt-3 ${isDark ? "text-white/50" : "text-slate-500"}`}>Loading MongoDB billing database records...</span>
         </div>
       ) : error ? (
-        <div className={`p-6 border rounded-2xl text-center max-w-md mx-auto ${
-          isDark ? "bg-red-500/10 border-red-500/20 text-red-300" : "bg-red-50 border-red-200 text-red-700"
-        }`}>
+        <div className={`p-6 border rounded-2xl text-center max-w-md mx-auto ${isDark ? "bg-red-500/10 border-red-500/20 text-red-300" : "bg-red-50 border-red-200 text-red-700"
+          }`}>
           <AlertTriangle className="h-8 w-8 mx-auto mb-2 text-red-500" />
           <h4 className="font-semibold text-sm">Database Sync Error</h4>
           <p className="text-xs mt-1">{error}</p>
@@ -482,13 +478,11 @@ function ProjectsPage() {
         <div className="space-y-4">
           {/* Table for Desktop/Tablet */}
           <div className="hidden md:block overflow-hidden rounded-2xl border border-white/5 shadow-lg">
-            <table className={`w-full border-collapse text-left text-xs ${
-              isDark ? "text-white bg-[#12052c]/30" : "text-slate-700 bg-white"
-            }`}>
+            <table className={`w-full border-collapse text-left text-xs ${isDark ? "text-white bg-[#12052c]/30" : "text-slate-700 bg-white"
+              }`}>
               <thead>
-                <tr className={`border-b font-mono font-bold tracking-wider uppercase ${
-                  isDark ? "border-white/5 text-white/40 bg-white/[0.01]" : "border-slate-100 text-slate-400 bg-slate-50/50"
-                }`}>
+                <tr className={`border-b font-mono font-bold tracking-wider uppercase ${isDark ? "border-white/5 text-white/40 bg-white/[0.01]" : "border-slate-100 text-slate-400 bg-slate-50/50"
+                  }`}>
                   <th className="px-6 py-4">Client & Project</th>
                   <th className="px-6 py-4">Sales Date</th>
                   <th className="px-6 py-4">Domain Info</th>
@@ -507,19 +501,28 @@ function ProjectsPage() {
                     <tr
                       key={proj.id}
                       onClick={() => setActiveProjectId(proj.id)}
-                      className={`group hover:bg-white/[0.02] transition cursor-pointer ${
-                        activeProjectId === proj.id 
-                          ? isDark ? "bg-[#a855f7]/10" : "bg-[#a855f7]/5" 
+                      className={`group hover:bg-white/[0.02] transition cursor-pointer ${activeProjectId === proj.id
+                          ? isDark ? "bg-[#a855f7]/10" : "bg-[#a855f7]/5"
                           : ""
-                      }`}
+                        }`}
                     >
                       <td className="px-6 py-4">
                         <div>
                           <span className="font-semibold block text-sm group-hover:text-[#a855f7] transition">
                             {proj.clientName}
                           </span>
-                          <span className="text-[10px] block opacity-50 font-medium font-mono">
-                            {proj.email || proj.projectName || "No Email"}
+                          {proj.businessName && (
+                            <span className="text-[12px] block opacity-90 font-medium mt-0.5">
+                              {proj.businessName}
+                            </span>
+                          )}
+                          {proj.projectName && (
+                            <span className="text-[11px] block opacity-75 font-medium mt-0.5">
+                              {proj.projectName}
+                            </span>
+                          )}
+                          <span className="text-[10px] block opacity-50 font-medium font-mono mt-0.5">
+                            {proj.email || "No Email"}
                           </span>
                         </div>
                       </td>
@@ -528,9 +531,9 @@ function ProjectsPage() {
                       </td>
                       <td className="px-6 py-4 font-mono font-medium opacity-80">
                         {proj.domainName ? (
-                          <a 
-                            href={`https://${proj.domainName}`} 
-                            target="_blank" 
+                          <a
+                            href={`https://${proj.domainName}`}
+                            target="_blank"
                             rel="noreferrer"
                             onClick={(e) => e.stopPropagation()}
                             className="hover:underline text-[#a855f7]"
@@ -572,11 +575,10 @@ function ProjectsPage() {
                         <div className="flex items-center justify-end gap-2">
                           <button
                             onClick={() => openEditForm(proj)}
-                            className={`h-7 w-7 rounded-lg flex items-center justify-center border transition ${
-                              isDark 
-                                ? "border-white/5 hover:border-white/10 text-white/50 hover:text-white bg-white/5" 
+                            className={`h-7 w-7 rounded-lg flex items-center justify-center border transition ${isDark
+                                ? "border-white/5 hover:border-white/10 text-white/50 hover:text-white bg-white/5"
                                 : "border-slate-200 hover:border-slate-300 text-slate-500 hover:text-slate-800 bg-slate-50"
-                            }`}
+                              }`}
                             title="Edit Details"
                           >
                             <Edit className="h-3.5 w-3.5" />
@@ -590,9 +592,8 @@ function ProjectsPage() {
                           </button>
                           <button
                             onClick={() => setActiveProjectId(proj.id)}
-                            className={`h-7 px-2.5 rounded-lg border text-[10px] font-semibold flex items-center gap-1 transition ${
-                              isDark ? "bg-white/5 border-white/5 hover:border-white/10" : "bg-slate-50 border-slate-200 hover:border-slate-300 text-slate-700"
-                            }`}
+                            className={`h-7 px-2.5 rounded-lg border text-[10px] font-semibold flex items-center gap-1 transition ${isDark ? "bg-white/5 border-white/5 hover:border-white/10" : "bg-slate-50 border-slate-200 hover:border-slate-300 text-slate-700"
+                              }`}
                           >
                             Details
                             <ChevronRight className="h-3 w-3" />
@@ -616,16 +617,21 @@ function ProjectsPage() {
                 <div
                   key={proj.id}
                   onClick={() => setActiveProjectId(proj.id)}
-                  className={`rounded-2xl border p-5 transition relative ${
-                    isDark
+                  className={`rounded-2xl border p-5 transition relative ${isDark
                       ? "bg-[#12052c]/65 border-white/5 text-white"
                       : "bg-white border-slate-200 shadow-sm text-slate-800"
-                  } ${activeProjectId === proj.id ? "border-[#a855f7]/40 ring-1 ring-[#a855f7]/40" : ""}`}
+                    } ${activeProjectId === proj.id ? "border-[#a855f7]/40 ring-1 ring-[#a855f7]/40" : ""}`}
                 >
                   <div className="flex justify-between items-start">
                     <div>
                       <span className="font-mono text-[9px] uppercase tracking-wider block opacity-50">{proj.clientName}</span>
-                      <h4 className="font-bold text-sm mt-0.5 font-mono">{proj.email || proj.projectName || "No Email"}</h4>
+                      {proj.businessName && (
+                        <h4 className="font-bold text-sm mt-0.5 text-[#a855f7]">{proj.businessName}</h4>
+                      )}
+                      {proj.projectName && (
+                        <h4 className="font-bold text-[13px] mt-0.5">{proj.projectName}</h4>
+                      )}
+                      <span className="text-[10px] block opacity-50 font-medium font-mono mt-0.5">{proj.email || "No Email"}</span>
                     </div>
                     <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[9px] font-extrabold uppercase tracking-wider border ${getBadgeStyles(status)}`}>
                       {status}
@@ -660,9 +666,8 @@ function ProjectsPage() {
                   <div className="mt-4 flex items-center justify-end gap-2" onClick={(e) => e.stopPropagation()}>
                     <button
                       onClick={() => openEditForm(proj)}
-                      className={`h-8 px-3 rounded-lg border text-xs font-semibold flex items-center gap-1.5 ${
-                        isDark ? "border-white/5 bg-white/5 text-white/70" : "border-slate-200 bg-slate-50 text-slate-700"
-                      }`}
+                      className={`h-8 px-3 rounded-lg border text-xs font-semibold flex items-center gap-1.5 ${isDark ? "border-white/5 bg-white/5 text-white/70" : "border-slate-200 bg-slate-50 text-slate-700"
+                        }`}
                     >
                       <Edit className="h-3.5 w-3.5" />
                       Edit
@@ -681,9 +686,8 @@ function ProjectsPage() {
           </div>
         </div>
       ) : (
-        <div className={`flex flex-col items-center justify-center text-center p-16 border border-dashed rounded-2xl ${
-          isDark ? "border-white/10 text-white/40" : "border-slate-200 text-slate-400"
-        }`}>
+        <div className={`flex flex-col items-center justify-center text-center p-16 border border-dashed rounded-2xl ${isDark ? "border-white/10 text-white/40" : "border-slate-200 text-slate-400"
+          }`}>
           <FolderKanban className="h-10 w-10 mb-3 text-slate-400" />
           <h3 className="font-semibold text-sm">No Client Project Accounts</h3>
           <p className="text-xs mt-1 max-w-xs">
@@ -711,16 +715,14 @@ function ProjectsPage() {
                 animate={{ x: 0 }}
                 exit={{ x: "100%" }}
                 transition={{ type: "spring", damping: 24, stiffness: 200 }}
-                className={`w-screen max-w-lg border-l flex flex-col backdrop-blur-xl h-screen ${
-                  isDark
+                className={`w-screen max-w-lg border-l flex flex-col backdrop-blur-xl h-screen ${isDark
                     ? "bg-[#12052c]/95 border-white/10 text-white shadow-[0_0_50px_rgba(0,0,0,0.6)]"
                     : "bg-white border-slate-200 text-slate-800 shadow-[0_0_50px_rgba(0,0,0,0.1)]"
-                }`}
+                  }`}
               >
                 {/* Drawer Header */}
-                <div className={`p-6 border-b flex items-center justify-between ${
-                  isDark ? "border-white/5" : "border-slate-100"
-                }`}>
+                <div className={`p-6 border-b flex items-center justify-between ${isDark ? "border-white/5" : "border-slate-100"
+                  }`}>
                   <div>
                     <span className="text-[10px] font-mono uppercase tracking-widest block opacity-50">
                       {selectedProject.clientName}
@@ -731,9 +733,8 @@ function ProjectsPage() {
                   </div>
                   <button
                     onClick={() => setActiveProjectId(null)}
-                    className={`h-9 w-9 rounded-lg flex items-center justify-center border transition ${
-                      isDark ? "border-white/5 hover:bg-white/5 text-white/50" : "border-slate-200 hover:bg-slate-100 text-slate-400"
-                    }`}
+                    className={`h-9 w-9 rounded-lg flex items-center justify-center border transition ${isDark ? "border-white/5 hover:bg-white/5 text-white/50" : "border-slate-200 hover:bg-slate-100 text-slate-400"
+                      }`}
                   >
                     <X className="h-4.5 w-4.5" />
                   </button>
@@ -741,18 +742,16 @@ function ProjectsPage() {
 
                 {/* Drawer Scrollable Content */}
                 <div className="flex-1 overflow-y-auto p-6 space-y-6">
-                  
+
                   {/* Status & Checkbox Bar */}
-                  <div className={`p-4 rounded-2xl border flex items-center justify-between gap-4 ${
-                    isDark ? "bg-white/[0.02] border-white/5" : "bg-slate-50 border-slate-100"
-                  }`}>
+                  <div className={`p-4 rounded-2xl border flex items-center justify-between gap-4 ${isDark ? "bg-white/[0.02] border-white/5" : "bg-slate-50 border-slate-100"
+                    }`}>
                     <div>
                       <span className="text-[9px] font-bold uppercase tracking-wider block opacity-40 mb-1">
                         Current Status
                       </span>
-                      <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wider border ${
-                        getBadgeStyles(getPaymentStatus(selectedProject))
-                      }`}>
+                      <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wider border ${getBadgeStyles(getPaymentStatus(selectedProject))
+                        }`}>
                         {getPaymentStatus(selectedProject)}
                       </span>
                     </div>
@@ -767,13 +766,12 @@ function ProjectsPage() {
                       <button
                         type="button"
                         onClick={() => handleToggleCompleted(selectedProject.id)}
-                        className={`h-6 w-6 rounded-lg border flex items-center justify-center transition ${
-                          selectedProject.isCompleted
+                        className={`h-6 w-6 rounded-lg border flex items-center justify-center transition ${selectedProject.isCompleted
                             ? "bg-emerald-500 border-emerald-600 text-white"
                             : isDark
-                            ? "border-white/20 bg-white/5 group-hover:border-white/40"
-                            : "border-slate-300 bg-white group-hover:border-slate-400"
-                        }`}
+                              ? "border-white/20 bg-white/5 group-hover:border-white/40"
+                              : "border-slate-300 bg-white group-hover:border-slate-400"
+                          }`}
                       >
                         {selectedProject.isCompleted && <CheckCircle className="h-4.5 w-4.5" />}
                       </button>
@@ -805,9 +803,8 @@ function ProjectsPage() {
                     <h4 className="text-[10px] font-bold uppercase tracking-widest opacity-40">
                       General Information
                     </h4>
-                    <div className={`grid grid-cols-2 gap-4 p-4 rounded-2xl border text-xs leading-relaxed ${
-                      isDark ? "bg-white/[0.01] border-white/5" : "bg-slate-50/50 border-slate-100"
-                    }`}>
+                    <div className={`grid grid-cols-2 gap-4 p-4 rounded-2xl border text-xs leading-relaxed ${isDark ? "bg-white/[0.01] border-white/5" : "bg-slate-50/50 border-slate-100"
+                      }`}>
                       <div>
                         <span className="block opacity-40 font-medium">Sales Date</span>
                         <span className="font-semibold flex items-center gap-1.5 mt-0.5">
@@ -863,9 +860,8 @@ function ProjectsPage() {
                     <h4 className="text-[10px] font-bold uppercase tracking-widest opacity-40 flex items-center gap-1.5">
                       <FileText className="h-3.5 w-3.5" /> Project Details & Scope
                     </h4>
-                    <div className={`p-4 rounded-2xl border text-xs leading-relaxed ${
-                      isDark ? "bg-white/[0.01] border-white/5" : "bg-slate-50/50 border-slate-100"
-                    }`}>
+                    <div className={`p-4 rounded-2xl border text-xs leading-relaxed ${isDark ? "bg-white/[0.01] border-white/5" : "bg-slate-50/50 border-slate-100"
+                      }`}>
                       <p className="whitespace-pre-wrap">{selectedProject.projectDetails || "No project description provided."}</p>
                     </div>
                   </div>
@@ -881,9 +877,8 @@ function ProjectsPage() {
                       </span>
                     </div>
 
-                    <div className={`p-5 rounded-2xl border space-y-4 ${
-                      isDark ? "bg-white/[0.01] border-white/5" : "bg-slate-50/50 border-slate-100"
-                    }`}>
+                    <div className={`p-5 rounded-2xl border space-y-4 ${isDark ? "bg-white/[0.01] border-white/5" : "bg-slate-50/50 border-slate-100"
+                      }`}>
                       {/* Cost Row */}
                       <div className="flex justify-between items-center text-sm border-b border-white/5 pb-3">
                         <span className="font-semibold flex items-center gap-1.5">
@@ -924,9 +919,8 @@ function ProjectsPage() {
                         <span className="opacity-40 flex items-center gap-1.5 font-semibold">
                           <CreditCard className="h-4 w-4" /> Card Billing Details (Encrypted)
                         </span>
-                        <div className={`p-3.5 rounded-xl border font-mono whitespace-pre-wrap ${
-                          isDark ? "bg-[#180d32] border-white/5 text-white/95" : "bg-white border-slate-200 text-slate-800 shadow-sm"
-                        }`}>
+                        <div className={`p-3.5 rounded-xl border font-mono whitespace-pre-wrap ${isDark ? "bg-[#180d32] border-white/5 text-white/95" : "bg-white border-slate-200 text-slate-800 shadow-sm"
+                          }`}>
                           {selectedProject.cardDetails || "None"}
                         </div>
                       </div>
@@ -935,16 +929,14 @@ function ProjectsPage() {
                 </div>
 
                 {/* Drawer Footer Actions */}
-                <div className={`p-6 border-t flex items-center justify-between ${
-                  isDark ? "border-white/5" : "border-slate-100"
-                }`}>
+                <div className={`p-6 border-t flex items-center justify-between ${isDark ? "border-white/5" : "border-slate-100"
+                  }`}>
                   <button
                     onClick={() => openEditForm(selectedProject)}
-                    className={`inline-flex items-center gap-1.5 px-4.5 py-2.5 rounded-xl border text-xs font-bold transition ${
-                      isDark 
-                        ? "border-white/5 bg-white/5 text-white hover:bg-white/10" 
+                    className={`inline-flex items-center gap-1.5 px-4.5 py-2.5 rounded-xl border text-xs font-bold transition ${isDark
+                        ? "border-white/5 bg-white/5 text-white hover:bg-white/10"
                         : "border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100"
-                    }`}
+                      }`}
                   >
                     <Edit className="h-4 w-4" />
                     Modify Ledger / Info
@@ -982,27 +974,24 @@ function ProjectsPage() {
               initial={{ opacity: 0, scale: 0.95, y: 15 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 15 }}
-              className={`relative w-full max-w-2xl rounded-2xl border p-6 shadow-2xl z-10 backdrop-blur-xl overflow-y-auto max-h-[90vh] ${
-                isDark
+              className={`relative w-full max-w-2xl rounded-2xl border p-6 shadow-2xl z-10 backdrop-blur-xl overflow-y-auto max-h-[90vh] ${isDark
                   ? "bg-[#12052c]/95 border-white/10 text-white shadow-purple-950/20"
                   : "bg-white border-slate-200 text-slate-800"
-              }`}
+                }`}
             >
               <button
                 onClick={() => setIsFormOpen(false)}
-                className={`absolute right-4 top-4 h-8 w-8 rounded-lg flex items-center justify-center border transition ${
-                  isDark ? "border-white/5 hover:bg-white/5 text-white/50" : "border-slate-200 hover:bg-slate-100 text-slate-400"
-                }`}
+                className={`absolute right-4 top-4 h-8 w-8 rounded-lg flex items-center justify-center border transition ${isDark ? "border-white/5 hover:bg-white/5 text-white/50" : "border-slate-200 hover:bg-slate-100 text-slate-400"
+                  }`}
               >
                 <X className="h-4.5 w-4.5" />
               </button>
 
               <div className="flex items-center gap-2.5 mb-6">
-                <div className={`h-10 w-10 rounded-xl flex items-center justify-center border ${
-                  editingProject 
-                    ? "bg-amber-500/15 border-amber-500/20 text-amber-400" 
+                <div className={`h-10 w-10 rounded-xl flex items-center justify-center border ${editingProject
+                    ? "bg-amber-500/15 border-amber-500/20 text-amber-400"
                     : "bg-purple-500/15 border-purple-500/20 text-purple-400"
-                }`}>
+                  }`}>
                   <FolderKanban className="h-5.5 w-5.5" />
                 </div>
                 <div>
@@ -1032,9 +1021,8 @@ function ProjectsPage() {
                         placeholder="e.g. Harmony Care LLC"
                         value={clientName}
                         onChange={(e) => setClientName(e.target.value)}
-                        className={`w-full h-10 px-3.5 border rounded-xl text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-[#a855f7]/30 transition ${
-                          isDark ? "bg-white/5 border-white/10 text-white focus:border-[#a855f7]/50" : "bg-slate-50 border-slate-200 text-slate-800"
-                        }`}
+                        className={`w-full h-10 px-3.5 border rounded-xl text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-[#a855f7]/30 transition ${isDark ? "bg-white/5 border-white/10 text-white focus:border-[#a855f7]/50" : "bg-slate-50 border-slate-200 text-slate-800"
+                          }`}
                       />
                     </div>
 
@@ -1047,9 +1035,8 @@ function ProjectsPage() {
                         placeholder="e.g. Harmony Care"
                         value={businessName}
                         onChange={(e) => setBusinessName(e.target.value)}
-                        className={`w-full h-10 px-3.5 border rounded-xl text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-[#a855f7]/30 transition ${
-                          isDark ? "bg-white/5 border-white/10 text-white focus:border-[#a855f7]/50" : "bg-slate-50 border-slate-200 text-slate-800"
-                        }`}
+                        className={`w-full h-10 px-3.5 border rounded-xl text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-[#a855f7]/30 transition ${isDark ? "bg-white/5 border-white/10 text-white focus:border-[#a855f7]/50" : "bg-slate-50 border-slate-200 text-slate-800"
+                          }`}
                       />
                     </div>
 
@@ -1063,9 +1050,8 @@ function ProjectsPage() {
                         placeholder="e.g. client@company.com"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        className={`w-full h-10 px-3.5 border rounded-xl text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-[#a855f7]/30 transition ${
-                          isDark ? "bg-white/5 border-white/10 text-white focus:border-[#a855f7]/50" : "bg-slate-50 border-slate-200 text-slate-800"
-                        }`}
+                        className={`w-full h-10 px-3.5 border rounded-xl text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-[#a855f7]/30 transition ${isDark ? "bg-white/5 border-white/10 text-white focus:border-[#a855f7]/50" : "bg-slate-50 border-slate-200 text-slate-800"
+                          }`}
                       />
                     </div>
 
@@ -1078,9 +1064,8 @@ function ProjectsPage() {
                         placeholder="e.g. harmonycareportal.com"
                         value={domainName}
                         onChange={(e) => setDomainName(e.target.value)}
-                        className={`w-full h-10 px-3.5 border rounded-xl text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-[#a855f7]/30 transition ${
-                          isDark ? "bg-white/5 border-white/10 text-white focus:border-[#a855f7]/50" : "bg-slate-50 border-slate-200 text-slate-800"
-                        }`}
+                        className={`w-full h-10 px-3.5 border rounded-xl text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-[#a855f7]/30 transition ${isDark ? "bg-white/5 border-white/10 text-white focus:border-[#a855f7]/50" : "bg-slate-50 border-slate-200 text-slate-800"
+                          }`}
                       />
                     </div>
 
@@ -1093,9 +1078,8 @@ function ProjectsPage() {
                         placeholder="e.g. +1 (317) 555-0199"
                         value={phoneNumber}
                         onChange={(e) => setPhoneNumber(e.target.value)}
-                        className={`w-full h-10 px-3.5 border rounded-xl text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-[#a855f7]/30 transition ${
-                          isDark ? "bg-white/5 border-white/10 text-white focus:border-[#a855f7]/50" : "bg-slate-50 border-slate-200 text-slate-800"
-                        }`}
+                        className={`w-full h-10 px-3.5 border rounded-xl text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-[#a855f7]/30 transition ${isDark ? "bg-white/5 border-white/10 text-white focus:border-[#a855f7]/50" : "bg-slate-50 border-slate-200 text-slate-800"
+                          }`}
                       />
                     </div>
 
@@ -1108,9 +1092,8 @@ function ProjectsPage() {
                         placeholder="Enter card details, expiration, CVV, billing address..."
                         value={cardDetails}
                         onChange={(e) => setCardDetails(e.target.value)}
-                        className={`w-full p-3 border rounded-xl text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-[#a855f7]/30 transition resize-none ${
-                          isDark ? "bg-white/5 border-white/10 text-white focus:border-[#a855f7]/50" : "bg-slate-50 border-slate-200 text-slate-800"
-                        }`}
+                        className={`w-full p-3 border rounded-xl text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-[#a855f7]/30 transition resize-none ${isDark ? "bg-white/5 border-white/10 text-white focus:border-[#a855f7]/50" : "bg-slate-50 border-slate-200 text-slate-800"
+                          }`}
                       />
                     </div>
 
@@ -1122,9 +1105,8 @@ function ProjectsPage() {
                         type="date"
                         value={salesDate}
                         onChange={(e) => setSalesDate(e.target.value)}
-                        className={`w-full h-10 px-3.5 border rounded-xl text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-[#a855f7]/30 transition ${
-                          isDark ? "bg-[#12052c] border-white/10 text-white focus:border-[#a855f7]/50" : "bg-slate-50 border-slate-200 text-slate-800"
-                        }`}
+                        className={`w-full h-10 px-3.5 border rounded-xl text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-[#a855f7]/30 transition ${isDark ? "bg-[#12052c] border-white/10 text-white focus:border-[#a855f7]/50" : "bg-slate-50 border-slate-200 text-slate-800"
+                          }`}
                       />
                     </div>
 
@@ -1137,9 +1119,8 @@ function ProjectsPage() {
                         placeholder="Enter target date or agent name..."
                         value={closeBy}
                         onChange={(e) => setCloseBy(e.target.value)}
-                        className={`w-full h-10 px-3.5 border rounded-xl text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-[#a855f7]/30 transition ${
-                          isDark ? "bg-[#12052c] border-white/10 text-white focus:border-[#a855f7]/50" : "bg-slate-50 border-slate-200 text-slate-800"
-                        }`}
+                        className={`w-full h-10 px-3.5 border rounded-xl text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-[#a855f7]/30 transition ${isDark ? "bg-[#12052c] border-white/10 text-white focus:border-[#a855f7]/50" : "bg-slate-50 border-slate-200 text-slate-800"
+                          }`}
                       />
                     </div>
                   </div>
@@ -1155,9 +1136,8 @@ function ProjectsPage() {
                     placeholder="Enter comprehensive description..."
                     value={projectDetails}
                     onChange={(e) => setProjectDetails(e.target.value)}
-                    className={`w-full p-3 border rounded-xl text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-[#a855f7]/30 transition resize-none ${
-                      isDark ? "bg-white/5 border-white/10 text-white focus:border-[#a855f7]/50" : "bg-slate-50 border-slate-200 text-slate-800"
-                    }`}
+                    className={`w-full p-3 border rounded-xl text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-[#a855f7]/30 transition resize-none ${isDark ? "bg-white/5 border-white/10 text-white focus:border-[#a855f7]/50" : "bg-slate-50 border-slate-200 text-slate-800"
+                      }`}
                   />
                 </div>
 
@@ -1180,11 +1160,10 @@ function ProjectsPage() {
                           placeholder="12000"
                           value={projectCost || ""}
                           onChange={(e) => setProjectCost(Number(e.target.value || 0))}
-                          className={`w-full h-10 pl-9 pr-4 border rounded-xl text-xs font-mono font-bold focus:outline-none focus:ring-1 focus:ring-[#a855f7]/30 transition ${
-                            isDark 
-                              ? "bg-white/5 border-white/10 text-white focus:border-[#a855f7]/50" 
+                          className={`w-full h-10 pl-9 pr-4 border rounded-xl text-xs font-mono font-bold focus:outline-none focus:ring-1 focus:ring-[#a855f7]/30 transition ${isDark
+                              ? "bg-white/5 border-white/10 text-white focus:border-[#a855f7]/50"
                               : "bg-slate-50 border-slate-200 text-slate-800"
-                          }`}
+                            }`}
                         />
                       </div>
                     </div>
@@ -1199,9 +1178,8 @@ function ProjectsPage() {
                         placeholder="0"
                         value={accountSetup || ""}
                         onChange={(e) => setAccountSetup(Number(e.target.value || 0))}
-                        className={`w-full h-10 px-3.5 border rounded-xl text-xs font-mono font-semibold focus:outline-none focus:ring-1 focus:ring-[#a855f7]/30 transition ${
-                          isDark ? "bg-white/5 border-white/10 text-white focus:border-[#a855f7]/50" : "bg-slate-50 border-slate-200 text-slate-800"
-                        }`}
+                        className={`w-full h-10 px-3.5 border rounded-xl text-xs font-mono font-semibold focus:outline-none focus:ring-1 focus:ring-[#a855f7]/30 transition ${isDark ? "bg-white/5 border-white/10 text-white focus:border-[#a855f7]/50" : "bg-slate-50 border-slate-200 text-slate-800"
+                          }`}
                       />
                     </div>
 
@@ -1215,9 +1193,8 @@ function ProjectsPage() {
                         placeholder="0"
                         value={firstInstallment || ""}
                         onChange={(e) => setFirstInstallment(Number(e.target.value || 0))}
-                        className={`w-full h-10 px-3.5 border rounded-xl text-xs font-mono font-semibold focus:outline-none focus:ring-1 focus:ring-[#a855f7]/30 transition ${
-                          isDark ? "bg-white/5 border-white/10 text-white focus:border-[#a855f7]/50" : "bg-slate-50 border-slate-200 text-slate-800"
-                        }`}
+                        className={`w-full h-10 px-3.5 border rounded-xl text-xs font-mono font-semibold focus:outline-none focus:ring-1 focus:ring-[#a855f7]/30 transition ${isDark ? "bg-white/5 border-white/10 text-white focus:border-[#a855f7]/50" : "bg-slate-50 border-slate-200 text-slate-800"
+                          }`}
                       />
                     </div>
 
@@ -1231,9 +1208,8 @@ function ProjectsPage() {
                         placeholder="0"
                         value={secondInstallment || ""}
                         onChange={(e) => setSecondInstallment(Number(e.target.value || 0))}
-                        className={`w-full h-10 px-3.5 border rounded-xl text-xs font-mono font-semibold focus:outline-none focus:ring-1 focus:ring-[#a855f7]/30 transition ${
-                          isDark ? "bg-white/5 border-white/10 text-white focus:border-[#a855f7]/50" : "bg-slate-50 border-slate-200 text-slate-800"
-                        }`}
+                        className={`w-full h-10 px-3.5 border rounded-xl text-xs font-mono font-semibold focus:outline-none focus:ring-1 focus:ring-[#a855f7]/30 transition ${isDark ? "bg-white/5 border-white/10 text-white focus:border-[#a855f7]/50" : "bg-slate-50 border-slate-200 text-slate-800"
+                          }`}
                       />
                     </div>
 
@@ -1247,9 +1223,8 @@ function ProjectsPage() {
                         placeholder="0"
                         value={thirdInstallment || ""}
                         onChange={(e) => setThirdInstallment(Number(e.target.value || 0))}
-                        className={`w-full h-10 px-3.5 border rounded-xl text-xs font-mono font-semibold focus:outline-none focus:ring-1 focus:ring-[#a855f7]/30 transition ${
-                          isDark ? "bg-white/5 border-white/10 text-white focus:border-[#a855f7]/50" : "bg-slate-50 border-slate-200 text-slate-800"
-                        }`}
+                        className={`w-full h-10 px-3.5 border rounded-xl text-xs font-mono font-semibold focus:outline-none focus:ring-1 focus:ring-[#a855f7]/30 transition ${isDark ? "bg-white/5 border-white/10 text-white focus:border-[#a855f7]/50" : "bg-slate-50 border-slate-200 text-slate-800"
+                          }`}
                       />
                     </div>
 
@@ -1263,9 +1238,8 @@ function ProjectsPage() {
                         placeholder="0"
                         value={hostingFee || ""}
                         onChange={(e) => setHostingFee(Number(e.target.value || 0))}
-                        className={`w-full h-10 px-3.5 border rounded-xl text-xs font-mono font-semibold focus:outline-none focus:ring-1 focus:ring-[#a855f7]/30 transition ${
-                          isDark ? "bg-white/5 border-white/10 text-white focus:border-[#a855f7]/50" : "bg-slate-50 border-slate-200 text-slate-800"
-                        }`}
+                        className={`w-full h-10 px-3.5 border rounded-xl text-xs font-mono font-semibold focus:outline-none focus:ring-1 focus:ring-[#a855f7]/30 transition ${isDark ? "bg-white/5 border-white/10 text-white focus:border-[#a855f7]/50" : "bg-slate-50 border-slate-200 text-slate-800"
+                          }`}
                       />
                     </div>
                   </div>
@@ -1282,13 +1256,12 @@ function ProjectsPage() {
                         key={preset.value}
                         type="button"
                         onClick={() => setFormColor(preset.value)}
-                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-[10px] font-extrabold transition ${
-                          formColor === preset.value
+                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-[10px] font-extrabold transition ${formColor === preset.value
                             ? "border-[#a855f7] bg-[#a855f7]/10 text-white"
                             : isDark
-                            ? "border-white/5 bg-white/5 text-white/50 hover:border-white/10"
-                            : "border-slate-200 bg-slate-50 text-slate-600 hover:border-slate-300"
-                        }`}
+                              ? "border-white/5 bg-white/5 text-white/50 hover:border-white/10"
+                              : "border-slate-200 bg-slate-50 text-slate-600 hover:border-slate-300"
+                          }`}
                       >
                         <span className={`h-2 w-2 rounded-full bg-gradient-to-r ${preset.value}`} />
                         {preset.name}
@@ -1302,9 +1275,8 @@ function ProjectsPage() {
                   <button
                     type="button"
                     onClick={() => setIsFormOpen(false)}
-                    className={`px-5 py-2.5 rounded-full text-xs font-semibold border transition ${
-                      isDark ? "border-white/5 bg-white/5 text-white/70 hover:bg-white/10" : "border-slate-250 bg-slate-50 text-slate-600 hover:bg-slate-100"
-                    }`}
+                    className={`px-5 py-2.5 rounded-full text-xs font-semibold border transition ${isDark ? "border-white/5 bg-white/5 text-white/70 hover:bg-white/10" : "border-slate-250 bg-slate-50 text-slate-600 hover:bg-slate-100"
+                      }`}
                   >
                     Cancel
                   </button>
@@ -1339,17 +1311,16 @@ function ProjectsPage() {
               initial={{ opacity: 0, scale: 0.95, y: 15 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 15 }}
-              className={`relative w-full max-w-sm rounded-2xl border p-6 shadow-2xl z-10 backdrop-blur-xl ${
-                isDark
+              className={`relative w-full max-w-sm rounded-2xl border p-6 shadow-2xl z-10 backdrop-blur-xl ${isDark
                   ? "bg-[#12052c]/95 border-white/10 text-white shadow-red-950/10"
                   : "bg-white border-slate-200 text-slate-800 shadow-slate-400/20"
-              }`}
+                }`}
             >
               <div className="flex flex-col items-center text-center">
                 <div className="h-12 w-12 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-500 mb-4 animate-pulse">
                   <Trash2 className="h-6 w-6" />
                 </div>
-                
+
                 <h3 className="font-serif text-base font-bold">Delete Project Record</h3>
                 <p className={`text-xs mt-2 leading-relaxed ${isDark ? "text-white/60" : "text-slate-500"}`}>
                   Are you sure you want to delete <span className="font-semibold text-red-400">"{projectToDelete.email || projectToDelete.projectName || "No Email"}"</span> and its payment history permanently? This action is irreversible.
@@ -1358,9 +1329,8 @@ function ProjectsPage() {
                 <div className="flex items-center gap-3 w-full mt-6">
                   <button
                     onClick={() => setProjectToDelete(null)}
-                    className={`flex-1 py-2.5 rounded-full text-xs font-semibold border transition ${
-                      isDark ? "border-white/5 bg-white/5 text-white/70 hover:bg-white/10" : "border-slate-250 bg-slate-50 text-slate-600 hover:bg-slate-100"
-                    }`}
+                    className={`flex-1 py-2.5 rounded-full text-xs font-semibold border transition ${isDark ? "border-white/5 bg-white/5 text-white/70 hover:bg-white/10" : "border-slate-250 bg-slate-50 text-slate-600 hover:bg-slate-100"
+                      }`}
                   >
                     Cancel
                   </button>
@@ -1394,15 +1364,14 @@ function ProjectsPage() {
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, x: 50, scale: 0.95 }}
                 transition={{ duration: 0.25, ease: "easeOut" }}
-                className={`pointer-events-auto flex items-center justify-between gap-3 px-4 py-3.5 rounded-xl border shadow-xl backdrop-blur-md transition-all text-xs font-semibold ${
-                  isSuccess
+                className={`pointer-events-auto flex items-center justify-between gap-3 px-4 py-3.5 rounded-xl border shadow-xl backdrop-blur-md transition-all text-xs font-semibold ${isSuccess
                     ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-300 shadow-emerald-950/10"
                     : isError
-                    ? "bg-red-500/10 border-red-500/20 text-red-300 shadow-red-950/10"
-                    : isWarning
-                    ? "bg-amber-500/10 border-amber-500/20 text-amber-300 shadow-amber-950/10"
-                    : "bg-white/10 dark:bg-[#12052c]/90 border-white/10 dark:border-white/5 text-slate-200 dark:text-white/80 shadow-slate-950/20"
-                }`}
+                      ? "bg-red-500/10 border-red-500/20 text-red-300 shadow-red-950/10"
+                      : isWarning
+                        ? "bg-amber-500/10 border-amber-500/20 text-amber-300 shadow-amber-950/10"
+                        : "bg-white/10 dark:bg-[#12052c]/90 border-white/10 dark:border-white/5 text-slate-200 dark:text-white/80 shadow-slate-950/20"
+                  }`}
               >
                 <div className="flex items-center gap-2">
                   {isSuccess && <CheckCircle className="h-4.5 w-4.5 text-emerald-400" />}

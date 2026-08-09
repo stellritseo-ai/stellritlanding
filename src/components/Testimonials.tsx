@@ -12,7 +12,7 @@ import logo4 from "@/assets/logos/logo-DdbW9O7g.png";
 import logo5 from "@/assets/logos/logo-I6fgEckf.png";
 
 const STATS = [
-  { value: "4.9", label: "Average rating on Google Reviews" },
+  { value: "5*", label: "Average rating on Google Reviews" },
   { value: "50+", label: "Verified 5-star client testimonials" },
   { value: "100%", label: "Commitment to client satisfaction" },
   { value: "24/7", label: "Dedicated technical support" },
