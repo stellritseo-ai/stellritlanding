@@ -2,9 +2,9 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { Link } from "@tanstack/react-router";
 import { ArrowUpRight } from "lucide-react";
-import imgAnalytics from "@/assets/conver.webp";
+import imgAnalytics from "@/assets/conver.png";
 import imgFintech from "@/assets/uxui.png";
-import imgCyber from "@/assets/cyber.jpg";
+import imgCyber from "@/assets/cyber.png";
 
 type Study = {
   slug: string;

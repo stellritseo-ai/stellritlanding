@@ -295,8 +295,26 @@ function CaseStudyPage() {
         </div>
       </section>
 
+      {/* Project Overview */}
+      <section className="relative z-10 px-6 py-12 md:px-12 lg:px-20 md:py-16">
+        <div className="mx-auto max-w-[1400px]">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-60px" }}
+            transition={{ duration: 0.8 }}
+            className="max-w-4xl"
+          >
+            <div className="text-[11px] uppercase tracking-[0.4em] text-[#ff8a5b] font-semibold">About The Project</div>
+            <p className="mt-6 text-[18px] md:text-[24px] leading-[1.6] text-white/90 font-medium">
+              {study.overview}
+            </p>
+          </motion.div>
+        </div>
+      </section>
+
       {/* Challenge Callout Banner */}
-      <section className="relative z-10 px-6 py-12 md:px-12 lg:px-20">
+      <section className="relative z-10 px-6 pb-12 md:px-12 lg:px-20">
         <div className="mx-auto max-w-[1400px]">
           <motion.div
             initial={{ opacity: 0, y: 24 }}

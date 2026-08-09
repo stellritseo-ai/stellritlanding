@@ -105,7 +105,7 @@ export default function Welcome() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-80px" }}
           transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
-          className="mb-20 flex flex-nowrap md:flex-wrap items-center justify-between sm:justify-center md:justify-center gap-0.5 sm:gap-6 md:mb-28 md:gap-12 w-full"
+          className="mb-[60px] flex flex-nowrap md:flex-wrap items-center justify-between sm:justify-center md:justify-center gap-0.5 sm:gap-6 md:gap-12 w-full"
         >
           <Laurel><img src={aw1Img} alt="StellR IT LLC Software Development Industry Excellence Award" loading="lazy" decoding="async" className="h-7 sm:h-12 md:h-14 mx-auto w-auto object-contain" style={{ filter: "brightness(0) invert(1)" }} /></Laurel>
           <Laurel><img src={aw2Img} alt="StellR IT LLC Enterprise AI Innovation Award" loading="lazy" decoding="async" className="h-7 sm:h-12 md:h-14 mx-auto w-auto object-contain" style={{ filter: "brightness(0) invert(1)" }} /></Laurel>

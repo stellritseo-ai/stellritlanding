@@ -22,10 +22,12 @@ import { Route as CaseStudiesRouteImport } from './routes/case-studies'
 import { Route as CareersRouteImport } from './routes/careers'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ServicesIndexRouteImport } from './routes/services.index'
 import { Route as InsightsIndexRouteImport } from './routes/insights.index'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard/index'
 import { Route as CaseStudiesIndexRouteImport } from './routes/case-studies.index'
 import { Route as UploadTokenRouteImport } from './routes/upload.$token'
+import { Route as ServicesSlugRouteImport } from './routes/services.$slug'
 import { Route as InsightsSlugRouteImport } from './routes/insights.$slug'
 import { Route as DashboardTeamChatRouteImport } from './routes/dashboard/team-chat'
 import { Route as DashboardTasksRouteImport } from './routes/dashboard/tasks'
@@ -105,6 +107,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ServicesIndexRoute = ServicesIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => ServicesRoute,
+} as any)
 const InsightsIndexRoute = InsightsIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -124,6 +131,11 @@ const UploadTokenRoute = UploadTokenRouteImport.update({
   id: '/upload/$token',
   path: '/upload/$token',
   getParentRoute: () => rootRouteImport,
+} as any)
+const ServicesSlugRoute = ServicesSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => ServicesRoute,
 } as any)
 const InsightsSlugRoute = InsightsSlugRouteImport.update({
   id: '/$slug',
@@ -202,7 +214,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/portfolio': typeof PortfolioRoute
   '/privacy': typeof PrivacyRoute
-  '/services': typeof ServicesRoute
+  '/services': typeof ServicesRouteWithChildren
   '/sms-terms': typeof SmsTermsRoute
   '/terms': typeof TermsRoute
   '/case-studies/$slug': typeof CaseStudiesSlugRoute
@@ -218,10 +230,12 @@ export interface FileRoutesByFullPath {
   '/dashboard/tasks': typeof DashboardTasksRoute
   '/dashboard/team-chat': typeof DashboardTeamChatRoute
   '/insights/$slug': typeof InsightsSlugRoute
+  '/services/$slug': typeof ServicesSlugRoute
   '/upload/$token': typeof UploadTokenRoute
   '/case-studies/': typeof CaseStudiesIndexRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/insights/': typeof InsightsIndexRoute
+  '/services/': typeof ServicesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -231,7 +245,6 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/portfolio': typeof PortfolioRoute
   '/privacy': typeof PrivacyRoute
-  '/services': typeof ServicesRoute
   '/sms-terms': typeof SmsTermsRoute
   '/terms': typeof TermsRoute
   '/case-studies/$slug': typeof CaseStudiesSlugRoute
@@ -247,10 +260,12 @@ export interface FileRoutesByTo {
   '/dashboard/tasks': typeof DashboardTasksRoute
   '/dashboard/team-chat': typeof DashboardTeamChatRoute
   '/insights/$slug': typeof InsightsSlugRoute
+  '/services/$slug': typeof ServicesSlugRoute
   '/upload/$token': typeof UploadTokenRoute
   '/case-studies': typeof CaseStudiesIndexRoute
   '/dashboard': typeof DashboardIndexRoute
   '/insights': typeof InsightsIndexRoute
+  '/services': typeof ServicesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -264,7 +279,7 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/portfolio': typeof PortfolioRoute
   '/privacy': typeof PrivacyRoute
-  '/services': typeof ServicesRoute
+  '/services': typeof ServicesRouteWithChildren
   '/sms-terms': typeof SmsTermsRoute
   '/terms': typeof TermsRoute
   '/case-studies/$slug': typeof CaseStudiesSlugRoute
@@ -280,10 +295,12 @@ export interface FileRoutesById {
   '/dashboard/tasks': typeof DashboardTasksRoute
   '/dashboard/team-chat': typeof DashboardTeamChatRoute
   '/insights/$slug': typeof InsightsSlugRoute
+  '/services/$slug': typeof ServicesSlugRoute
   '/upload/$token': typeof UploadTokenRoute
   '/case-studies/': typeof CaseStudiesIndexRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/insights/': typeof InsightsIndexRoute
+  '/services/': typeof ServicesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -314,10 +331,12 @@ export interface FileRouteTypes {
     | '/dashboard/tasks'
     | '/dashboard/team-chat'
     | '/insights/$slug'
+    | '/services/$slug'
     | '/upload/$token'
     | '/case-studies/'
     | '/dashboard/'
     | '/insights/'
+    | '/services/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -327,7 +346,6 @@ export interface FileRouteTypes {
     | '/login'
     | '/portfolio'
     | '/privacy'
-    | '/services'
     | '/sms-terms'
     | '/terms'
     | '/case-studies/$slug'
@@ -343,10 +361,12 @@ export interface FileRouteTypes {
     | '/dashboard/tasks'
     | '/dashboard/team-chat'
     | '/insights/$slug'
+    | '/services/$slug'
     | '/upload/$token'
     | '/case-studies'
     | '/dashboard'
     | '/insights'
+    | '/services'
   id:
     | '__root__'
     | '/'
@@ -375,10 +395,12 @@ export interface FileRouteTypes {
     | '/dashboard/tasks'
     | '/dashboard/team-chat'
     | '/insights/$slug'
+    | '/services/$slug'
     | '/upload/$token'
     | '/case-studies/'
     | '/dashboard/'
     | '/insights/'
+    | '/services/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -392,7 +414,7 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   PortfolioRoute: typeof PortfolioRoute
   PrivacyRoute: typeof PrivacyRoute
-  ServicesRoute: typeof ServicesRoute
+  ServicesRoute: typeof ServicesRouteWithChildren
   SmsTermsRoute: typeof SmsTermsRoute
   TermsRoute: typeof TermsRoute
   UploadTokenRoute: typeof UploadTokenRoute
@@ -491,6 +513,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/services/': {
+      id: '/services/'
+      path: '/'
+      fullPath: '/services/'
+      preLoaderRoute: typeof ServicesIndexRouteImport
+      parentRoute: typeof ServicesRoute
+    }
     '/insights/': {
       id: '/insights/'
       path: '/'
@@ -518,6 +547,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/upload/$token'
       preLoaderRoute: typeof UploadTokenRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/services/$slug': {
+      id: '/services/$slug'
+      path: '/$slug'
+      fullPath: '/services/$slug'
+      preLoaderRoute: typeof ServicesSlugRouteImport
+      parentRoute: typeof ServicesRoute
     }
     '/insights/$slug': {
       id: '/insights/$slug'
@@ -675,6 +711,20 @@ const InsightsRouteWithChildren = InsightsRoute._addFileChildren(
   InsightsRouteChildren,
 )
 
+interface ServicesRouteChildren {
+  ServicesSlugRoute: typeof ServicesSlugRoute
+  ServicesIndexRoute: typeof ServicesIndexRoute
+}
+
+const ServicesRouteChildren: ServicesRouteChildren = {
+  ServicesSlugRoute: ServicesSlugRoute,
+  ServicesIndexRoute: ServicesIndexRoute,
+}
+
+const ServicesRouteWithChildren = ServicesRoute._addFileChildren(
+  ServicesRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
@@ -686,7 +736,7 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   PortfolioRoute: PortfolioRoute,
   PrivacyRoute: PrivacyRoute,
-  ServicesRoute: ServicesRoute,
+  ServicesRoute: ServicesRouteWithChildren,
   SmsTermsRoute: SmsTermsRoute,
   TermsRoute: TermsRoute,
   UploadTokenRoute: UploadTokenRoute,

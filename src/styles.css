@@ -74,7 +74,9 @@
   * {
     border-color: var(--color-border);
   }
-  html, body {
+
+  html,
+  body {
     background: #180028;
     color: var(--color-foreground);
     font-family: var(--font-sans);
@@ -99,6 +101,7 @@
 @utility noise-overlay {
   position: relative;
 }
+
 @utility noise-overlay {
   &::after {
     content: "";
@@ -112,39 +115,61 @@
 }
 
 @keyframes scroll-up {
-  0% { transform: translateY(0); }
-  100% { transform: translateY(-50%); }
+  0% {
+    transform: translateY(0);
+  }
+
+  100% {
+    transform: translateY(-50%);
+  }
 }
+
 .animate-scroll-up {
   animation: scroll-up 30s linear infinite;
 }
+
 .animate-scroll-up:hover {
   animation-play-state: paused;
 }
 
 @keyframes scroll-left {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(-50%);
+  }
 }
+
 .animate-scroll-left {
   animation: scroll-left 30s linear infinite;
 }
+
 .animate-scroll-left:hover {
   animation-play-state: paused;
 }
 
 @keyframes float-soft {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-12px); }
+
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(-12px);
+  }
 }
+
 .animate-float-soft {
   animation: float-soft 6s ease-in-out infinite;
 }
 
 @media (pointer: fine) {
+
   .has-custom-cursor,
   .has-custom-cursor * {
     cursor: none !important;
   }
 }
-

@@ -3,6 +3,7 @@ import { ArrowUpRight } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import logoImg from "@/assets/logo.png";
+import paynowImg from "@/assets/paynow.png";
 import { CanvasVideo } from "./CanvasVideo";
 
 const MENU_IMAGES: Record<string, string> = {
@@ -12,6 +13,7 @@ const MENU_IMAGES: Record<string, string> = {
   "Insights": "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=600&q=80&auto=format&fit=crop",
   "Portfolio": "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=600&q=80&auto=format&fit=crop",
   "Contact": "https://images.unsplash.com/photo-1423666639041-f56000c27a9a?w=600&q=80&auto=format&fit=crop",
+  "Pay Now": paynowImg,
 };
 const DEFAULT_IMAGE = "https://images.unsplash.com/photo-1542744094-3a31f103e35f?w=600&q=80&auto=format&fit=crop";
 const DEFAULT_VIDEO = "https://isadoradigitalagency.com/wp-content/uploads/2025/04/ISA_FLOR_04__444.webm";

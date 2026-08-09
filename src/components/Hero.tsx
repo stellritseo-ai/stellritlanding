@@ -51,7 +51,7 @@ function HeroVideoFrame({ isPlaying = true }: { isPlaying?: boolean }) {
           aria-hidden="true"
           onLoadedData={() => setLoaded(true)}
           onError={() => setErrored(true)}
-          className="h-full w-full object-cover"
+          className="h-full w-full object-contain"
         />
       )}
       {!loaded && !errored && (
@@ -129,8 +129,7 @@ export default function Hero() {
 
   const p = smoothProgress;
 
-  // Phase 2-3: left video card expands to fit screen (centered, with gutters)
-  // Throttled window resize handler
+  // Phase 2-3: Throttled window resize handler
   const [vp, setVp] = useState({ w: 1280, h: 720 });
   useEffect(() => {
     let rId: number;
@@ -178,41 +177,57 @@ export default function Hero() {
   const logosOpacity = useTransform(p, [0, 0.35, 0.5], [1, 0.7, 0]);
 
   // Card dimensions tailored exactly to class names at each viewport size:
-  // Mobile: left-4 (16px), w=240, h=140
-  // SM: left-6 (24px), w=280, h=160
-  // MD+: left-12 (48px), w=360, h=200
   const getCardDims = () => {
     if (vp.w >= 768) {
-      return { w: 360, h: 200, left: 48 };
+      return { w: 360, h: 360 * 9 / 16, left: 48 };
     }
     if (vp.w >= 640) {
-      return { w: 280, h: 160, left: 24 };
+      return { w: 280, h: 280 * 9 / 16, left: 24 };
     }
-    return { w: 240, h: 140, left: 16 };
+    return { w: 240, h: 240 * 9 / 16, left: 16 };
   };
   const { w: CARD_W, h: CARD_H, left: CARD_LEFT } = getCardDims();
-  const CARD_BOTTOM = 32; // bottom-8 = 32px
+  const CARD_BOTTOM = 32;
 
-  const gutter = 48;
-  const targetW = vp.w - gutter * 2;
-  const targetH = vp.h - gutter * 2 - 80;
-  const scaleX = targetW / CARD_W;
-  const scaleY = targetH / CARD_H;
-  const fitScale = Math.min(scaleX, scaleY);
+  // -- SIZZLE REEL (CINEMATIC VIDEO) ANIMATION --
+  // We want the video to start small on the left, and zoom/scale to the exact center of the viewport.
 
-  const targetCenterX = vp.w / 2;
-  const currentCenterX = CARD_LEFT + CARD_W / 2;
-  const deltaX = targetCenterX - currentCenterX;
-  const deltaY = -16; // Slight offset to maintain clean 48px bottom gutter when expanded
+  // Calculate maximum width that fits the screen (with minimal padding for a full-screen effect)
+  const paddingX = 130; // 32px on each side
+  // We must leave enough vertical padding so the video isn't taller than the space below the navbar!
+  // If the video is too tall, it gets cut off by the navbar at the top when you scroll to it.
+  const paddingY = 100;
 
-  const cardScale = useTransform(p, [0.3, 0.65], [1, fitScale]);
-  const cardX = useTransform(p, [0.3, 0.65], [0, deltaX]);
-  const cardY = useTransform(p, [0.3, 0.65], [0, deltaY]);
-  const cardRadius = useTransform(p, [0.3, 0.65], [24, 16]);
+  const maxWByWidth = vp.w - paddingX;
+  const maxWByHeight = (vp.h - paddingY) * (16 / 9);
 
-  // Phase 4: content reveal
-  const phase4Opacity = useTransform(p, [0.7, 0.85], [0, 1]);
-  const phase4Y = useTransform(p, [0.7, 0.9], [60, 0]);
+  // Allow true full-screen scaling while keeping it fully on-screen
+  const endWidth = Math.min(maxWByWidth, maxWByHeight);
+  const endHeight = endWidth * (9 / 16);
+
+  // Start positions using top/left to avoid bottom-anchored upward growth
+  const startTop = vp.h - CARD_BOTTOM - CARD_H;
+
+  // To center it horizontally at the end:
+  const endX = (vp.w - endWidth) / 2 - CARD_LEFT;
+
+  // The user explicitly stated they want the video "little down on buttom"
+  // to avoid the gap and prevent the top edge from cutting early.
+  // We use a positive translation (pushing it downwards).
+  const endY = 160;
+
+  // We complete the animation over the full scroll duration (p=1.0)
+  // since we are reducing the container height from 300svh to 180svh to remove the blank space.
+  const videoWidth = useTransform(p, [0, 1.0], [CARD_W, endWidth]);
+  const videoX = useTransform(p, [0, 1.0], [0, endX]);
+  const videoY = useTransform(p, [0, 1.0], [0, endY]);
+
+  // In the reference image, the border radius goes away when full screen
+  const cardRadius = useTransform(p, [0, 1.0], [24, 0]);
+
+  // Phase 4 is commented out, so we don't need these transforms taking up scroll space
+  // const phase4Opacity = useTransform(p, [0.7, 0.85], [0, 1]);
+  // const phase4Y = useTransform(p, [0.7, 0.9], [60, 0]);
 
   const mobileSizzleRef = useRef<HTMLVideoElement>(null);
   const mobileCenterVideoRef = useRef<HTMLVideoElement>(null);
@@ -270,25 +285,7 @@ export default function Hero() {
     };
   }, [isMobile]);
 
-  // Deduplicated scroll listener — fires React state updates ONLY on state transitions
-  useEffect(() => {
-    if (isMobile) return;
-    let isCenter = true;
-    let isCard = true;
-    const unsubscribe = p.on("change", (latest) => {
-      const nextCenter = latest < 0.6;
-      const nextCard = latest < 1.0;
-      if (nextCenter !== isCenter) {
-        isCenter = nextCenter;
-        setIsCenterVideoPlaying(nextCenter);
-      }
-      if (nextCard !== isCard) {
-        isCard = nextCard;
-        setIsCardVideoPlaying(nextCard);
-      }
-    });
-    return () => unsubscribe();
-  }, [p, isMobile]);
+  // Removed scroll-based video pausing because Hero is now a standard 100vh section
 
   if (isMobile) {
     return (
@@ -399,10 +396,10 @@ export default function Hero() {
     return (
       <div className="relative h-screen w-full overflow-hidden noise-overlay">
         <div className="relative flex flex-col items-center justify-center px-6 pt-24 text-center">
-          <div className="pointer-events-none relative mt-[80px] w-full sm:w-[480px] md:w-[640px] lg:w-[800px] aspect-[16/10] z-[99] overflow-hidden rounded-2xl bg-transparent isolate">
+          <div className="pointer-events-none relative mt-[80px] w-full max-w-[500px] lg:max-w-[600px] aspect-[8/6] z-[99] overflow-visible scale-110 lg:scale-[1.35] bg-transparent isolate">
             <CanvasVideo
               src={CENTER_VIDEO}
-              className="h-full w-full object-cover"
+              className="h-full w-full"
             />
           </div>
           <h1 className="text-glow relative z-20 max-w-5xl font-serif text-[32px] font-bold leading-[1.05] tracking-tight text-white sm:text-[42px] md:text-[60px] lg:text-[76px] mt-6">
@@ -418,37 +415,34 @@ export default function Hero() {
   }
 
   return (
-    <div ref={containerRef} className="relative" style={{ height: "150vh" }}>
-      <div className="sticky top-0 h-screen w-full overflow-hidden noise-overlay">
+    <div ref={containerRef} className="relative h-[180svh] w-full z-10" style={{ zIndex: 10 }}>
+      <div className="sticky top-0 h-[100svh] w-full overflow-visible noise-overlay">
 
         {/* Gradient mask at the top of the viewport to fade out content scrolling behind header */}
         <div className="pointer-events-none absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-[#180028] via-[#180028]/80 to-transparent z-[20]" />
 
         {/* Center radial glow behind video */}
         <motion.div
-          style={{ opacity: glowOpacity }}
           className="pointer-events-none absolute left-1/2 top-1/2 h-[400px] w-[400px] md:h-[800px] md:w-[800px] -translate-x-1/2 -translate-y-1/2"
         >
-          <div className="h-full w-full" style={{ background: "var(--grad-glow)" }} />
+          <div className="h-full w-full opacity-90" style={{ background: "var(--grad-glow)" }} />
         </motion.div>
 
 
 
         {/* Center hero video — sits below gradient mask and headline */}
         <motion.div
-          style={{ y: centerY, opacity: centerOpacity }}
-          className="pointer-events-none absolute left-1/2 top-[12%] mt-[100px] sm:mt-[130px] md:mt-[150px] z-[10] w-full sm:w-[480px] md:w-[640px] lg:w-[800px] aspect-[16/10] -translate-x-1/2 overflow-hidden rounded-2xl bg-transparent isolate"
+          className="pointer-events-none absolute left-1/2 top-[12%] mt-[100px] sm:mt-[130px] md:mt-[150px] z-[10] w-full max-w-[500px] lg:max-w-[600px] aspect-[8/6] -translate-x-1/2 overflow-visible scale-110 lg:scale-[1.35] bg-transparent isolate"
         >
           <CanvasVideo
             src={CENTER_VIDEO}
             isPlaying={isCenterVideoPlaying}
-            className="h-full w-full object-cover"
+            className="h-full w-full"
           />
         </motion.div>
 
         {/* Headline — sits on top of video, below gradient mask */}
         <motion.h1
-          style={{ scale: headlineScale, opacity: headlineOpacity, y: headlineY }}
           className="text-glow absolute left-1/2 top-[14%] z-[15] w-full max-w-[1800px] -translate-x-1/2 px-4 sm:px-6 text-center font-serif text-[28px] sm:text-[38px] font-bold leading-[1.05] tracking-tight text-white md:text-[60px] lg:text-[76px] mt-[20px] sm:mt-[30px]"
         >
           Digital <span className="italic bg-gradient-to-r from-[#d9b8ff] via-[#cc7aff] to-[#ff9f7a] bg-clip-text text-transparent drop-shadow-sm">Evolution</span> <span className="font-semibold text-white/95">for Business</span>
@@ -464,19 +458,20 @@ export default function Hero() {
           </p>
         </motion.div>
 
-        {/* Expanding left video card */}
+        {/* Cinematic Sizzle Reel — precision positioning from top/left */}
         <motion.div
           style={{
-            scale: cardScale,
-            x: cardX,
-            y: cardY,
             borderRadius: cardRadius,
-            transformOrigin: "center bottom",
+            width: videoWidth,
+            x: videoX,
+            y: videoY,
+            left: CARD_LEFT,
+            top: startTop,
           }}
-          className="absolute left-4 bottom-8 z-[99] h-[140px] w-[240px] origin-bottom overflow-hidden shadow-[0_30px_80px_-20px_rgba(0,0,0,0.7)] sm:left-6 sm:h-[160px] sm:w-[280px] md:left-12 md:h-[200px] md:w-[360px] bg-[#0e0228] will-change-transform transform-gpu"
+          className="absolute z-[99] aspect-video overflow-hidden shadow-[0_30px_100px_rgba(0,0,0,0.8)] bg-[#0e0228]"
         >
           <HeroVideoFrame isPlaying={isCardVideoPlaying} />
-          <div className="pointer-events-none absolute inset-0 z-10 ring-1 ring-inset ring-white/15" style={{ borderRadius: "inherit" }} />
+          <motion.div style={{ borderRadius: cardRadius }} className="pointer-events-none absolute inset-0 z-10 ring-1 ring-inset ring-white/15" />
         </motion.div>
 
         {/* Right logo slider — desktop only */}

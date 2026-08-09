@@ -72,7 +72,7 @@ function ServiceDynamicPage() {
   const [openFaq, setOpenFaq] = useState<number | null>(0);
 
   return (
-    <main className="relative min-h-screen bg-[#180028] text-white selection:bg-[#ff8a5b]/30 overflow-hidden">
+    <main className="relative min-h-screen bg-[#180028] text-white selection:bg-[#ff8a5b]/30">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(serviceSchema) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
       
