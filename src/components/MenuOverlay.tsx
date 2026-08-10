@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import logoImg from "@/assets/logo.png";
 import paynowImg from "@/assets/paynow.png";
-import { CanvasVideo } from "./CanvasVideo";
 
 const MENU_IMAGES: Record<string, string> = {
   "Case Studies": "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600&q=80&auto=format&fit=crop",
@@ -16,7 +15,6 @@ const MENU_IMAGES: Record<string, string> = {
   "Pay Now": paynowImg,
 };
 const DEFAULT_IMAGE = "https://images.unsplash.com/photo-1542744094-3a31f103e35f?w=600&q=80&auto=format&fit=crop";
-const DEFAULT_VIDEO = "https://isadoradigitalagency.com/wp-content/uploads/2025/04/ISA_FLOR_04__444.webm";
 
 
 const NAV: { label: string; to: string; children?: { label: string; to: string }[] }[] = [
@@ -43,16 +41,14 @@ const NAV: { label: string; to: string; children?: { label: string; to: string }
 const EASE = [0.76, 0, 0.24, 1] as const;
 
 const backdrop: Variants = {
-  hidden: { opacity: 0, backdropFilter: "blur(0px)" },
+  hidden: { opacity: 0 },
   show: {
     opacity: 1,
-    backdropFilter: "blur(24px)",
-    transition: { duration: 0.5, ease: EASE },
+    transition: { duration: 0.4, ease: EASE },
   },
   exit: {
     opacity: 0,
-    backdropFilter: "blur(0px)",
-    transition: { duration: 0.4, ease: EASE, delay: 0.3 },
+    transition: { duration: 0.35, ease: EASE, delay: 0.2 },
   },
 };
 
@@ -81,25 +77,23 @@ const lineWrap: Variants = {
 };
 
 const lineItem: Variants = {
-  hidden: { y: "110%", opacity: 0, filter: "blur(8px)" },
+  hidden: { y: "110%", opacity: 0 },
   show: {
     y: "0%",
     opacity: 1,
-    filter: "blur(0px)",
-    transition: { duration: 0.8, ease: EASE },
+    transition: { duration: 0.7, ease: EASE },
   },
   exit: {
     y: "110%",
     opacity: 0,
-    filter: "blur(8px)",
-    transition: { duration: 0.45, ease: EASE },
+    transition: { duration: 0.4, ease: EASE },
   },
 };
 
 const fadeUp: Variants = {
-  hidden: { y: 30, opacity: 0, filter: "blur(6px)" },
-  show: { y: 0, opacity: 1, filter: "blur(0px)", transition: { duration: 0.7, ease: EASE } },
-  exit: { y: 20, opacity: 0, filter: "blur(6px)", transition: { duration: 0.35, ease: EASE } },
+  hidden: { y: 24, opacity: 0 },
+  show: { y: 0, opacity: 1, transition: { duration: 0.6, ease: EASE } },
+  exit: { y: 16, opacity: 0, transition: { duration: 0.3, ease: EASE } },
 };
 
 import { createPortal } from "react-dom";
@@ -166,16 +160,14 @@ export default function MenuOverlay({ open, onClose }: { open: boolean; onClose:
                 "radial-gradient(120% 80% at 80% 0%, rgba(120,40,200,0.35), transparent 60%), linear-gradient(180deg, #190640 0%, #0e0228 100%)",
             }}
           >
-            {/* Ambient glow */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1, transition: { duration: 1.2, ease: EASE } }}
-              exit={{ opacity: 0, transition: { duration: 0.3 } }}
+            {/* Ambient glow — static, no animation to save GPU */}
+            <div
               className="pointer-events-none absolute -right-40 -top-40 h-[700px] w-[700px] rounded-full"
               style={{
                 background:
-                  "radial-gradient(circle, rgba(168,85,247,0.35), transparent 70%)",
-                filter: "blur(40px)",
+                  "radial-gradient(circle, rgba(168,85,247,0.28), transparent 70%)",
+                filter: "blur(60px)",
+                opacity: 0.9,
               }}
             />
 
@@ -271,34 +263,18 @@ export default function MenuOverlay({ open, onClose }: { open: boolean; onClose:
                 <motion.aside variants={fadeUp} className="hidden md:flex flex-col gap-6 md:pt-2">
                   {/* Hover Image Block with Clocks */}
                   <div className="flex flex-col gap-3">
-                    <div className="relative aspect-[16/10] w-full overflow-hidden rounded-lg bg-transparent isolate">
+                    <div className="relative aspect-[16/10] w-full overflow-hidden rounded-lg bg-[#1a0640] isolate">
                       <AnimatePresence mode="wait">
-                        {!hoveredItem ? (
-                          <motion.div
-                            key="default-video"
-                            initial={{ opacity: 0, scale: 1.05 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            exit={{ opacity: 0, scale: 0.98 }}
-                            transition={{ duration: 0.35, ease: EASE }}
-                            className="h-full w-full"
-                          >
-                            <CanvasVideo
-                              src={DEFAULT_VIDEO}
-                              className="h-full w-full object-cover"
-                            />
-                          </motion.div>
-                        ) : (
-                          <motion.img
-                            key={activeImage}
-                            src={activeImage}
-                            alt={hoveredItem}
-                            initial={{ opacity: 0, scale: 1.05 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            exit={{ opacity: 0, scale: 0.98 }}
-                            transition={{ duration: 0.35, ease: EASE }}
-                            className="h-full w-full object-cover"
-                          />
-                        )}
+                        <motion.img
+                          key={activeImage}
+                          src={activeImage}
+                          alt={hoveredItem || "StellR IT"}
+                          initial={{ opacity: 0, scale: 1.04 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          exit={{ opacity: 0, scale: 0.98 }}
+                          transition={{ duration: 0.3, ease: EASE }}
+                          className="h-full w-full object-cover"
+                        />
                       </AnimatePresence>
                     </div>
 
