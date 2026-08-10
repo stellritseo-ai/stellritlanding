@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import logoImg from "@/assets/logo.png";
 import paynowImg from "@/assets/paynow.png";
+import { CanvasVideo } from "./CanvasVideo";
 
 const MENU_IMAGES: Record<string, string> = {
   "Case Studies": "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600&q=80&auto=format&fit=crop",
@@ -15,7 +16,7 @@ const MENU_IMAGES: Record<string, string> = {
   "Pay Now": paynowImg,
 };
 const DEFAULT_IMAGE = "https://images.unsplash.com/photo-1542744094-3a31f103e35f?w=600&q=80&auto=format&fit=crop";
-
+const DEFAULT_VIDEO = "https://isadoradigitalagency.com/wp-content/uploads/2025/04/ISA_FLOR_04__444.webm";
 
 const NAV: { label: string; to: string; children?: { label: string; to: string }[] }[] = [
   { label: "Case Studies", to: "/case-studies" },
@@ -265,16 +266,34 @@ export default function MenuOverlay({ open, onClose }: { open: boolean; onClose:
                   <div className="flex flex-col gap-3">
                     <div className="relative aspect-[16/10] w-full overflow-hidden rounded-lg bg-[#1a0640] isolate">
                       <AnimatePresence mode="wait">
-                        <motion.img
-                          key={activeImage}
-                          src={activeImage}
-                          alt={hoveredItem || "StellR IT"}
-                          initial={{ opacity: 0, scale: 1.04 }}
-                          animate={{ opacity: 1, scale: 1 }}
-                          exit={{ opacity: 0, scale: 0.98 }}
-                          transition={{ duration: 0.3, ease: EASE }}
-                          className="h-full w-full object-cover"
-                        />
+                        {!hoveredItem ? (
+                          <motion.div
+                            key="default-video"
+                            initial={{ opacity: 0, scale: 1.05 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.98 }}
+                            transition={{ duration: 0.35, ease: EASE }}
+                            className="h-full w-full"
+                          >
+                            {/* isPlaying={open} stops the pixel-keying loop when menu is closed */}
+                            <CanvasVideo
+                              src={DEFAULT_VIDEO}
+                              isPlaying={open}
+                              className="h-full w-full object-cover"
+                            />
+                          </motion.div>
+                        ) : (
+                          <motion.img
+                            key={activeImage}
+                            src={activeImage}
+                            alt={hoveredItem}
+                            initial={{ opacity: 0, scale: 1.04 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.98 }}
+                            transition={{ duration: 0.3, ease: EASE }}
+                            className="h-full w-full object-cover"
+                          />
+                        )}
                       </AnimatePresence>
                     </div>
 
