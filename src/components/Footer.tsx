@@ -134,7 +134,7 @@ export default function Footer() {
         >
           <div className="flex flex-col gap-8">
             <Link to="/" className="inline-block">
-              <img src={logoImg} alt="StellR IT" className="h-14 md:h-16 w-auto object-contain" style={{ filter: "brightness(0) invert(1)" }} />
+              <img src={logoImg} alt="StellR IT" className="h-14 md:h-16 w-auto object-contain" loading="lazy" decoding="async" style={{ filter: "brightness(0) invert(1)" }} />
             </Link>
           </div>
 

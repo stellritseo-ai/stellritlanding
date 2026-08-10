@@ -97,9 +97,9 @@ export default function ChatWidget() {
     });
   }, [session?.id]);
 
-  // ── 3-second polling fallback (same as JRM) ───────────────────────────────
+  // ── 3-second polling fallback — only runs when chat is open ─────────────
   useEffect(() => {
-    if (!session?.id) return;
+    if (!session?.id || !open) return;
     const interval = setInterval(async () => {
       try {
         const refreshed = await getChatSessionFn({ data: { sessionId: session.id } });
@@ -107,7 +107,7 @@ export default function ChatWidget() {
       } catch { /* non-fatal */ }
     }, 3000);
     return () => clearInterval(interval);
-  }, [session?.id]);
+  }, [session?.id, open]);
 
   // ── On open: restore session from localStorage ────────────────────────────
   useEffect(() => {
@@ -222,9 +222,13 @@ export default function ChatWidget() {
     <>
       {/* ── Tooltip notification ──────────────────────────────────────────── */}
       {showNotification && !open && (
-        <div className="fixed bottom-24 right-6 z-[60] mb-2 flex items-center gap-2 rounded-xl border border-white/10 bg-[#1a003a] px-4 py-2.5 text-sm text-white shadow-xl backdrop-blur-xl animate-bounce">
-          <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
-          <span className="font-medium">Have questions? Chat with us!</span>
+        <div
+          className="fixed bottom-24 right-6 z-[60] mb-2 flex items-center gap-2 rounded-xl border border-white/10 bg-[#1a003a] px-4 py-2.5 text-sm text-white shadow-xl"
+          style={{ animation: "chat-notify-in 0.4s ease both" }}
+        >
+          <style>{`@keyframes chat-notify-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }`}</style>
+          <span className="h-2 w-2 rounded-full bg-emerald-400" />
+          <span className="font-medium">Have questions? Chat with AI!</span>
           <button onClick={() => setShowNotification(false)} className="ml-1 text-white/50 hover:text-white">
             <X className="h-3.5 w-3.5" />
           </button>
