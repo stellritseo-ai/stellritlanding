@@ -7,12 +7,6 @@
 User-agent: *
 Allow: /
 
-# Disallow private/admin pages
-Disallow: /dashboard/
-Disallow: /dashboard
-Disallow: /login
-Disallow: /upload/
-Disallow: /upload
 
 # ---- Google (full access, standard crawl) ---------------
 User-agent: Googlebot
@@ -83,12 +77,7 @@ Allow: /
 
 # ---- Disallow harmful/scraper bots ---------------------
 User-agent: AhrefsBot
-Disallow: /dashboard/
-Disallow: /login
-
 User-agent: SemrushBot
-Disallow: /dashboard/
-Disallow: /login
 
 User-agent: MJ12bot
 Disallow: /
