@@ -175,6 +175,7 @@ function AboutPage() {
       />
 
       {/* Cream Section */}
+      <div style={{ contentVisibility: "auto", containIntrinsicSize: "0 1000px" }}>
       <section className="bg-[#FAF5EE] text-[#240945] rounded-t-[40px] md:rounded-t-[80px] -mt-10 relative z-30 pt-24 md:pt-32 pb-10">
         {/* Story Section */}
         <div className="mx-auto max-w-[1400px] px-6 md:px-12 lg:px-20 mb-32">
@@ -282,6 +283,7 @@ function AboutPage() {
           </div>
         </div>
       </section>
+      </div>
 
       {/* Colorful Wave Transition */}
       <div className="relative z-20 w-full overflow-hidden leading-none bg-[#180028] -mt-[1px]">
