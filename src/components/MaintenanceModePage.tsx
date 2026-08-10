@@ -161,7 +161,7 @@ export default function MaintenanceModePage({ onRefresh }: MaintenanceModePagePr
           &copy; {new Date().getFullYear()} StellR IT LLC. All rights reserved.
         </div>
         <div className="flex gap-6">
-          <a href="mailto:hello@stellrit.com" className="hover:text-white transition">hello@stellrit.com</a>
+          <a href="mailto:info@stellrit.com" className="hover:text-white transition">info@stellrit.com</a>
           <a href="/privacy" className="hover:text-white transition">Privacy Policy</a>
         </div>
       </footer>

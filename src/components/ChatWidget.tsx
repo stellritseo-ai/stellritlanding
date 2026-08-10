@@ -414,7 +414,7 @@ export default function ChatWidget() {
             <div className="px-4 pb-3">
               <a
                 id="chat-book-call"
-                href="mailto:hello@stellrit.com?subject=Book%20a%20discovery%20call"
+                href="mailto:info@stellrit.com?subject=Book%20a%20discovery%20call"
                 className="flex items-center justify-center gap-2 rounded-xl border border-white/15 bg-white/[0.05] px-4 py-2.5 text-sm font-medium text-white transition hover:border-[#ff8a5b]/50 hover:bg-white/[0.1]"
               >
                 <Calendar className="h-4 w-4" />

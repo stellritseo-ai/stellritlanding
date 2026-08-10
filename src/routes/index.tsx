@@ -184,7 +184,7 @@ function Index() {
     contactPoint: {
       "@type": "ContactPoint",
       contactType: "customer service",
-      email: "hello@stellrit.com"
+      email: "info@stellrit.com"
     },
     sameAs: [
       "https://www.linkedin.com/company/stellrit"
