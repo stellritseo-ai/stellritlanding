@@ -55,10 +55,10 @@ export default function HomeFAQSection() {
         }}
       />
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-stretch">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
         {/* Left Column: Sticky Title & Support Card */}
-        <div className="lg:col-span-5 relative z-20 h-full">
-          <div className="sticky top-[100px] lg:top-[120px] space-y-8">
+        <div className="lg:col-span-5 relative z-20 self-start">
+          <div className="sticky top-[100px] space-y-8">
             <div>
               <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/5 border border-white/10 text-[#ff8a5b] text-xs font-bold uppercase tracking-[0.2em] mb-4 backdrop-blur-md">
                 <Sparkles className="w-3.5 h-3.5" /> GOT QUESTIONS?
