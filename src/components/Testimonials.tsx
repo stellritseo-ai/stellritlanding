@@ -1,5 +1,5 @@
 import { useRef, useEffect } from "react";
-import { motion, useScroll, useSpring, useTransform, MotionValue } from "framer-motion";
+import { motion } from "framer-motion";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
@@ -52,20 +52,33 @@ export default function Testimonials() {
   const gridRef = useRef<HTMLDivElement>(null);
   const textRef = useRef<HTMLHeadingElement>(null);
 
-  // Per-word reveal driven by scroll progress through the text block
-  const { scrollYProgress: textProgress } = useScroll({
-    target: textRef,
-    offset: ["start 0.85", "start 0.15"],
-  });
-  const smoothText = useSpring(textProgress, {
-    stiffness: 80,
-    damping: 28,
-    mass: 0.4,
-  });
-
   const headline = "Leading brands turn to us at pivotal moments of digital evolution. Our global creative team fuses story, technology, and design to make experiences that captivate and convert.";
   const words = headline.split(" ");
   const highlightWords = ["team", "technology,", "design", "convert."];
+
+  // CSS-based word reveal using IntersectionObserver — zero JS springs, GPU-only
+  useEffect(() => {
+    const heading = textRef.current;
+    if (!heading) return;
+    const spans = heading.querySelectorAll<HTMLSpanElement>(".word-reveal");
+    let delay = 0;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            spans.forEach((span, i) => {
+              (span as HTMLElement).style.transitionDelay = `${i * 18}ms`;
+              span.classList.add("word-visible");
+            });
+            observer.disconnect();
+          }
+        });
+      },
+      { threshold: 0.2 }
+    );
+    observer.observe(heading);
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     const grid = gridRef.current;
@@ -122,19 +135,23 @@ export default function Testimonials() {
 
       <div className="mx-auto max-w-[1300px] px-6">
 
-        {/* Dynamic Editorial Heading */}
+        {/* Editorial Heading — CSS word-reveal (IntersectionObserver, no JS springs) */}
         <h2
           ref={textRef}
           className="font-serif text-[22px] leading-[1.2] tracking-tight max-w-5xl sm:text-[28px] md:text-[38px] lg:text-[50px]"
         >
+          <style>{`
+            .word-reveal { opacity: 0.15; transition: opacity 0.6s ease; }
+            .word-reveal.word-visible { opacity: 1; }
+            .word-reveal.highlight { font-style: italic; font-family: serif; background: linear-gradient(135deg, #ff8a5b 0%, #c084fc 50%, #a855f7 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+            .word-reveal.highlight.word-visible { opacity: 1; }
+          `}</style>
           {words.map((w, i) => {
-            const start = i / words.length;
-            const end = start + 1 / words.length;
             const isHighlight = highlightWords.includes(w);
             return (
-              <Word key={i} progress={smoothText} range={[start, end]} isHighlight={isHighlight}>
+              <span key={i} className={`word-reveal relative mr-[0.25em] inline-block${isHighlight ? " highlight" : ""}`}>
                 {w}
-              </Word>
+              </span>
             );
           })}
         </h2>
@@ -252,55 +269,5 @@ function TestimonialCard({ t }: { t: typeof TESTIMONIALS[0] }) {
 
       </div>
     </div>
-  );
-}
-
-function Highlight({ children }: { children: React.ReactNode }) {
-  return (
-    <span
-      className="relative inline-block italic font-serif font-normal text-transparent bg-clip-text"
-      style={{
-        background: "linear-gradient(135deg, #ff8a5b 0%, #c084fc 50%, #a855f7 100%)",
-        WebkitBackgroundClip: "text",
-        WebkitTextFillColor: "transparent"
-      }}
-    >
-      {children}
-    </span>
-  );
-}
-
-function Word({
-  children,
-  progress,
-  range,
-  isHighlight
-}: {
-  children: string;
-  progress: MotionValue<number>;
-  range: [number, number];
-  isHighlight?: boolean;
-}) {
-  const opacity = useTransform(progress, range, [0.2, 1]);
-  return (
-    <span className="relative mr-[0.25em] inline-block">
-      <span className={`inline-block text-white/15 ${isHighlight ? "italic font-serif font-normal" : ""}`}>
-        {children}
-      </span>
-      <motion.span
-        className={`absolute left-0 top-0 inline-block ${isHighlight ? "italic font-serif font-normal" : "text-white"}`}
-        style={{
-          opacity,
-          willChange: "opacity",
-          ...(isHighlight ? {
-            background: "linear-gradient(135deg, #ff8a5b 0%, #c084fc 50%, #a855f7 100%)",
-            WebkitBackgroundClip: "text",
-            WebkitTextFillColor: "transparent"
-          } : {})
-        }}
-      >
-        {children}
-      </motion.span>
-    </span>
   );
 }

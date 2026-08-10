@@ -233,16 +233,23 @@ function Index() {
       <ScrollBackground />
       <SiteHeader transparent homepage />
       <Hero />
-      <Welcome />
-      <Services />
-      <PartnershipModels />
-      <CaseStudies />
-      <Testimonials />
-      <Portfolio />
-      <Insights />
-
-      {/* FAQ Section for GEO / AI Search Optimization */}
-      <HomeFAQSection />
+      {/* content-visibility:auto skips rendering off-screen sections until scrolled into view */}
+      <div style={{ contentVisibility: "auto", containIntrinsicSize: "0 800px" }}>
+        <Welcome />
+        <Services />
+      </div>
+      <div style={{ contentVisibility: "auto", containIntrinsicSize: "0 900px" }}>
+        <PartnershipModels />
+        <CaseStudies />
+      </div>
+      <div style={{ contentVisibility: "auto", containIntrinsicSize: "0 900px" }}>
+        <Testimonials />
+        <Portfolio />
+      </div>
+      <div style={{ contentVisibility: "auto", containIntrinsicSize: "0 700px" }}>
+        <Insights />
+        <HomeFAQSection />
+      </div>
 
       <Footer />
       <ChatWidget />

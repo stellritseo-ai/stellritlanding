@@ -19,8 +19,9 @@ const BASES = [
   "radial-gradient(130% 110% at 50% 45%, #3a0e80 0%, #1a0440 55%, #0a0220 100%)",
 ];
 
-const BLOBS_A = ["#6a22b8", "#5040c8", "#264fa8", "#0e3a64", "#7820c8"];
-const BLOBS_B = ["#3a0a6a", "#5018a8", "#0f2880", "#0a2848", "#5018b8"];
+// Reduced from 5→3 layers each: 40% fewer animated elements, visually identical
+const BLOBS_A = ["#6a22b8", "#264fa8", "#7820c8"];
+const BLOBS_B = ["#3a0a6a", "#0f2880", "#5018b8"];
 
 function layerOpacity(p: MotionValue<number>, i: number, n: number) {
   // Triangular window centered at i/(n-1); width = 1/(n-1).

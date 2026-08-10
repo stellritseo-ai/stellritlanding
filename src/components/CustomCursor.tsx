@@ -47,10 +47,23 @@ export default function CustomCursor() {
 
     document.documentElement.classList.add("has-custom-cursor");
 
+    let rafId: number | null = null;
+    let pendingX = 0;
+    let pendingY = 0;
+
     const handleMouseMove = (e: MouseEvent) => {
-      mouseX.set(e.clientX);
-      mouseY.set(e.clientY);
+      pendingX = e.clientX;
+      pendingY = e.clientY;
       if (!isVisible) setIsVisible(true);
+
+      // RAF-gate: only update motion values once per animation frame
+      if (rafId === null) {
+        rafId = requestAnimationFrame(() => {
+          mouseX.set(pendingX);
+          mouseY.set(pendingY);
+          rafId = null;
+        });
+      }
     };
 
     const handleMouseDown = () => setIsClicked(true);
@@ -83,6 +96,7 @@ export default function CustomCursor() {
     window.addEventListener("mouseover", handleMouseOver, { passive: true });
 
     return () => {
+      if (rafId !== null) cancelAnimationFrame(rafId);
       document.documentElement.classList.remove("has-custom-cursor");
       window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("mousedown", handleMouseDown);
