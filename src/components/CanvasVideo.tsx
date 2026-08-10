@@ -8,6 +8,10 @@ interface CanvasVideoProps {
   isPlaying?: boolean;
 }
 
+// Target 24fps for pixel-keying — visually identical to 60fps but ~60% less CPU work
+const TARGET_FPS = 24;
+const FRAME_INTERVAL = 1000 / TARGET_FPS; // ~41ms
+
 export function CanvasVideo({
   src,
   fallbackMp4,
@@ -35,10 +39,15 @@ export function CanvasVideo({
     const ctx = canvas.getContext("2d", { alpha: true, willReadFrequently: true });
     let animationFrameId: number;
     let isRunning = false;
+    let lastFrameTime = 0;
 
-    const renderLoop = () => {
+    const renderLoop = (timestamp: number) => {
       if (!isRunning) return;
-      if (video.readyState >= 2 && ctx) {
+
+      // Throttle: only do expensive pixel work when FRAME_INTERVAL has elapsed
+      const elapsed = timestamp - lastFrameTime;
+      if (elapsed >= FRAME_INTERVAL && video.readyState >= 2 && ctx) {
+        lastFrameTime = timestamp - (elapsed % FRAME_INTERVAL);
 
         const vw = video.videoWidth || 480;
         const vh = video.videoHeight || 480;
@@ -82,6 +91,7 @@ export function CanvasVideo({
     const startLoop = () => {
       if (!isRunning) {
         isRunning = true;
+        lastFrameTime = 0;
         animationFrameId = requestAnimationFrame(renderLoop);
       }
     };
