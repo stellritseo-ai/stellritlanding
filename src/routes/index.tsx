@@ -248,8 +248,8 @@ function Index() {
       </div>
       <div style={{ contentVisibility: "auto", containIntrinsicSize: "0 700px" }}>
         <Insights />
-        <HomeFAQSection />
       </div>
+      <HomeFAQSection />
 
       <Footer />
       <ChatWidget />
