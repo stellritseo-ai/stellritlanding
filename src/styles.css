@@ -81,7 +81,7 @@
     color: var(--color-foreground);
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
-    overflow-x: hidden !important;
+    overflow-x: clip !important; /* clip prevents horizontal scroll without breaking position: sticky like hidden does */
     max-width: 100vw !important;
     width: 100%;
   }
