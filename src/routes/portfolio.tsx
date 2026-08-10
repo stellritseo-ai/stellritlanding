@@ -372,7 +372,7 @@ function PortfolioPage() {
 
       {/* Portfolio Grid Layout */}
       <section className="relative z-10 px-6 md:px-12 lg:px-20 max-w-[1400px] mx-auto pb-32">
-        <div className="grid grid-cols-1 gap-20">
+        <div className="grid grid-cols-1 gap-20" style={{ contentVisibility: "auto", containIntrinsicSize: "0 1500px" }}>
           <AnimatePresence mode="popLayout">
             {filteredProjects.map((p, idx) => {
               const IconComponent = p.icon;

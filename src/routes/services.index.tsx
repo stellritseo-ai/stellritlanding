@@ -304,8 +304,9 @@ function ServicesPage() {
         description="From AI development and brand foundations to engineered platforms and the growth programs that scale them. We replace the agency-of-agencies model with one accountable senior team."
       />
 
-      <section className="bg-[#FAF5EE] text-[#240945] py-[60px]">
-        <div className="mx-auto max-w-[1400px] px-6 md:px-12 lg:px-20">
+      <div style={{ contentVisibility: "auto", containIntrinsicSize: "0 2000px" }}>
+        <section className="bg-[#FAF5EE] text-[#240945] py-[60px]">
+          <div className="mx-auto max-w-[1400px] px-6 md:px-12 lg:px-20">
           <motion.h1
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -620,6 +621,7 @@ function ServicesPage() {
           </div>
         </div>
       </section>
+      </div>
 
       {/* Services FAQ Section */}
       <ServicesFAQSection />
