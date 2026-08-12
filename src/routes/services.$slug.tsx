@@ -100,12 +100,12 @@ function ServiceDynamicPage() {
             className="w-full h-full object-cover object-center"
           />
           <div className="absolute inset-0 bg-gradient-to-b from-[#0d0015] via-transparent to-[#0d0015]" />
-          <div className="absolute inset-0 bg-[#0d0015]/30 backdrop-blur-[2px]" />
+          <div className="absolute inset-0 bg-[#0d0015]/50" />
         </motion.div>
 
         {/* Dynamic Glow aligned to service color */}
         <div 
-          className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[800px] h-[800px] rounded-full blur-[140px] opacity-30 pointer-events-none mix-blend-screen z-0"
+          className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[800px] h-[800px] rounded-full opacity-30 pointer-events-none mix-blend-screen z-0"
           style={{ background: `radial-gradient(circle, ${service.heroColor} 0%, transparent 60%)` }}
         />
         
@@ -160,7 +160,7 @@ function ServiceDynamicPage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.8, ease: "easeOut" }}
-            className="grid grid-cols-1 lg:grid-cols-12 rounded-[32px] md:rounded-[48px] overflow-hidden bg-white/5 border border-white/10 backdrop-blur-xl shadow-2xl mb-24"
+            className="grid grid-cols-1 lg:grid-cols-12 rounded-[32px] md:rounded-[48px] overflow-hidden bg-white/5 border border-white/10 backdrop-blur-md shadow-2xl mb-24"
           >
             {/* Left Image */}
             <div className="lg:col-span-6 relative h-[400px] lg:h-auto overflow-hidden group">
@@ -176,8 +176,8 @@ function ServiceDynamicPage() {
             {/* Right Content */}
             <div className="lg:col-span-6 p-8 md:p-16 lg:p-20 flex flex-col justify-center relative">
               <div 
-                className="absolute top-0 right-0 w-64 h-64 blur-[80px] opacity-20 pointer-events-none"
-                style={{ background: service.heroColor }}
+                className="absolute top-0 right-0 w-64 h-64 opacity-20 pointer-events-none"
+                style={{ background: `radial-gradient(circle, ${service.heroColor} 0%, transparent 70%)` }}
               />
               <span className="text-[12px] font-bold uppercase tracking-[0.2em] text-white/50 mb-6 block">
                 The Advantage
