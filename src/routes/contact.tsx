@@ -183,7 +183,7 @@ function ContactPage() {
       />
 
       {/* Main Content Area in Premium Glassmorphism */}
-      <section className="bg-gradient-to-b from-[#180028] via-[#180028]/85 to-transparent text-white pt-24 pb-32 relative z-10 overflow-clip">
+      <section className="bg-gradient-to-b from-[#180028] via-[#180028]/85 to-transparent text-white pt-24 pb-32 relative z-10">
         {/* Subtle grid lines background overlay - replaced heavy mask-image with a simple gradient fade to save GPU */}
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff03_1px,transparent_1px),linear-gradient(to_bottom,#ffffff03_1px,transparent_1px)] bg-[size:4rem_4rem] pointer-events-none z-0" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_50%_at_50%_0%,transparent_40%,#180028_100%)] pointer-events-none z-0" />
