@@ -211,32 +211,34 @@ function ContactPage() {
         <div className="mx-auto max-w-[1400px] px-6 md:px-12 lg:px-20 grid grid-cols-1 gap-16 lg:grid-cols-[4fr_6fr] relative z-10">
 
           {/* Left Sidebar */}
-          <aside className="space-y-12 pr-0 lg:pr-8 lg:sticky lg:top-32 self-start">
-            <div>
-              <h3 className="font-serif text-[36px] md:text-[48px] font-bold leading-[1.05] mb-6 tracking-tight text-white text-glow">
-                Let's build something <em className="italic font-light text-[#c9a4ff]">extraordinary.</em>
-              </h3>
-              <p className="text-[16px] leading-[1.6] text-white/70 max-w-[95%]">
-                From pixel-perfect platform engineering to scaling digital growth, StellR IT acts as your dedicated product and marketing arm. Let's discuss your vision.
-              </p>
-            </div>
+          <aside className="pr-0 lg:pr-8 relative h-full">
+            <div className="space-y-12 lg:sticky lg:top-32">
+              <div>
+                <h3 className="font-serif text-[36px] md:text-[48px] font-bold leading-[1.05] mb-6 tracking-tight text-white text-glow">
+                  Let's build something <em className="italic font-light text-[#c9a4ff]">extraordinary.</em>
+                </h3>
+                <p className="text-[16px] leading-[1.6] text-white/70 max-w-[95%]">
+                  From pixel-perfect platform engineering to scaling digital growth, StellR IT acts as your dedicated product and marketing arm. Let's discuss your vision.
+                </p>
+              </div>
 
-            <div className="space-y-8 p-8 md:p-10 glass rounded-[24px] shadow-[0_20px_50px_rgba(0,0,0,0.3)] border border-white/10 relative overflow-hidden backdrop-blur-md bg-white/5">
-              <div className="absolute top-0 right-0 w-40 h-40 bg-[radial-gradient(circle,rgba(168,85,247,0.1)_0%,transparent_70%)] rounded-full pointer-events-none" />
+              <div className="space-y-8 p-8 md:p-10 glass rounded-[24px] shadow-[0_20px_50px_rgba(0,0,0,0.3)] border border-white/10 relative overflow-hidden backdrop-blur-md bg-white/5">
+                <div className="absolute top-0 right-0 w-40 h-40 bg-[radial-gradient(circle,rgba(168,85,247,0.1)_0%,transparent_70%)] rounded-full pointer-events-none" />
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 relative z-10">
-                <ContactBlock icon={<Mail className="h-4 w-4" />} title="Email">
-                  <a href="mailto:info@stellrit.com" className="font-medium hover:text-[#ff8a5b] transition-colors duration-300">info@stellrit.com</a>
-                </ContactBlock>
-                <ContactBlock icon={<Phone className="h-4 w-4" />} title="Direct">
-                  <a href="tel:2148380543" className="font-medium hover:text-[#ff8a5b] transition-colors duration-300">(214) 838-0543</a>
-                </ContactBlock>
-                <ContactBlock icon={<Phone className="h-4 w-4" />} title="Toll Free">
-                  <a href="tel:3254808108" className="font-medium hover:text-[#ff8a5b] transition-colors duration-300">(325) 480-8108</a>
-                </ContactBlock>
-                <ContactBlock icon={<MapPin className="h-4 w-4" />} title="Office">
-                  <span className="font-medium text-[14px] text-white/90">5305 Creek CT<br />Garland, TX 75043</span>
-                </ContactBlock>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 relative z-10">
+                  <ContactBlock icon={<Mail className="h-4 w-4" />} title="Email">
+                    <a href="mailto:info@stellrit.com" className="font-medium hover:text-[#ff8a5b] transition-colors duration-300">info@stellrit.com</a>
+                  </ContactBlock>
+                  <ContactBlock icon={<Phone className="h-4 w-4" />} title="Direct">
+                    <a href="tel:2148380543" className="font-medium hover:text-[#ff8a5b] transition-colors duration-300">(214) 838-0543</a>
+                  </ContactBlock>
+                  <ContactBlock icon={<Phone className="h-4 w-4" />} title="Toll Free">
+                    <a href="tel:3254808108" className="font-medium hover:text-[#ff8a5b] transition-colors duration-300">(325) 480-8108</a>
+                  </ContactBlock>
+                  <ContactBlock icon={<MapPin className="h-4 w-4" />} title="Office">
+                    <span className="font-medium text-[14px] text-white/90">5305 Creek CT<br />Garland, TX 75043</span>
+                  </ContactBlock>
+                </div>
               </div>
             </div>
           </aside>
