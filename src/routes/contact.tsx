@@ -187,14 +187,24 @@ function ContactPage() {
         {/* Subtle grid lines background overlay */}
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff03_1px,transparent_1px),linear-gradient(to_bottom,#ffffff03_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] pointer-events-none z-0" />
 
-        {/* Scroll-Reactive Glowing Blobs (Parallax) */}
+        {/* Scroll-Reactive Glowing Blobs (Parallax) - using radial gradients instead of heavy blur filters */}
         <motion.div
-          style={{ y: blobY1, scale: blobScale1, opacity: blobOpacity1 }}
-          className="absolute top-[10%] left-[-15%] w-[500px] h-[500px] rounded-full bg-gradient-to-br from-[#a855f7] to-[#ff8a5b] blur-[120px] pointer-events-none z-0"
+          style={{ 
+            y: blobY1, 
+            scale: blobScale1, 
+            opacity: blobOpacity1,
+            background: "radial-gradient(circle, rgba(168,85,247,0.8) 0%, rgba(255,138,91,0.3) 45%, transparent 70%)"
+          }}
+          className="absolute top-[10%] left-[-15%] w-[500px] h-[500px] rounded-full pointer-events-none z-0"
         />
         <motion.div
-          style={{ y: blobY2, scale: blobScale2, opacity: blobOpacity2 }}
-          className="absolute bottom-[20%] right-[-15%] w-[600px] h-[600px] rounded-full bg-gradient-to-tr from-[#7a2adc] to-[#c9a4ff] blur-[140px] pointer-events-none z-0"
+          style={{ 
+            y: blobY2, 
+            scale: blobScale2, 
+            opacity: blobOpacity2,
+            background: "radial-gradient(circle, rgba(122,42,220,0.8) 0%, rgba(201,164,255,0.3) 45%, transparent 70%)"
+          }}
+          className="absolute bottom-[20%] right-[-15%] w-[600px] h-[600px] rounded-full pointer-events-none z-0"
         />
 
         <div className="mx-auto max-w-[1400px] px-6 md:px-12 lg:px-20 grid grid-cols-1 gap-16 lg:grid-cols-[4fr_6fr] relative z-10">
@@ -211,7 +221,7 @@ function ContactPage() {
             </div>
 
             <div className="space-y-8 p-8 md:p-10 glass rounded-[24px] shadow-[0_20px_50px_rgba(0,0,0,0.3)] border border-white/10 relative overflow-hidden backdrop-blur-xl bg-white/5">
-              <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-bl from-[#a855f7]/10 to-transparent blur-[50px] rounded-full pointer-events-none" />
+              <div className="absolute top-0 right-0 w-40 h-40 bg-[radial-gradient(circle,rgba(168,85,247,0.1)_0%,transparent_70%)] rounded-full pointer-events-none" />
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 relative z-10">
                 <ContactBlock icon={<Mail className="h-4 w-4" />} title="Email">
@@ -240,7 +250,7 @@ function ContactPage() {
             className="glass rounded-[32px] p-8 md:p-14 shadow-[0_30px_100px_rgba(0,0,0,0.5)] border border-white/10 relative overflow-hidden backdrop-blur-2xl bg-white/5"
           >
             {/* Subtle decorative glow in top right */}
-            <div className="absolute -top-32 -right-32 w-64 h-64 bg-gradient-to-bl from-[#a855f7]/30 to-transparent blur-[80px] rounded-full pointer-events-none" />
+            <div className="absolute -top-32 -right-32 w-64 h-64 bg-[radial-gradient(circle,rgba(168,85,247,0.25)_0%,transparent_70%)] rounded-full pointer-events-none" />
 
             <div className="grid grid-cols-1 gap-8 md:grid-cols-2 relative z-10">
               <Field label="Your name">
@@ -429,7 +439,7 @@ function ContactPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {/* Step 1 */}
             <div className="glass p-8 rounded-[24px] bg-white/5 border border-white/10 relative overflow-hidden transition-all duration-300 hover:scale-[1.02] hover:border-[#a855f7]/40 shadow-lg group">
-              <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-[#a855f7]/10 to-transparent blur-2xl rounded-full pointer-events-none" />
+              <div className="absolute top-0 right-0 w-24 h-24 bg-[radial-gradient(circle,rgba(168,85,247,0.15)_0%,transparent_70%)] rounded-full pointer-events-none" />
               <div className="w-12 h-12 rounded-full border border-white/20 bg-white/5 flex items-center justify-center text-[#c9a4ff] text-[18px] font-extrabold mb-6 shadow-[0_0_15px_rgba(168,85,247,0.25)] group-hover:bg-[#a855f7] group-hover:text-white transition-all duration-300">
                 1
               </div>
@@ -441,7 +451,7 @@ function ContactPage() {
 
             {/* Step 2 */}
             <div className="glass p-8 rounded-[24px] bg-white/5 border border-white/10 relative overflow-hidden transition-all duration-300 hover:scale-[1.02] hover:border-[#a855f7]/40 shadow-lg group">
-              <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-[#a855f7]/10 to-transparent blur-2xl rounded-full pointer-events-none" />
+              <div className="absolute top-0 right-0 w-24 h-24 bg-[radial-gradient(circle,rgba(168,85,247,0.15)_0%,transparent_70%)] rounded-full pointer-events-none" />
               <div className="w-12 h-12 rounded-full border border-white/20 bg-white/5 flex items-center justify-center text-[#c9a4ff] text-[18px] font-extrabold mb-6 shadow-[0_0_15px_rgba(168,85,247,0.25)] group-hover:bg-[#a855f7] group-hover:text-white transition-all duration-300">
                 2
               </div>
@@ -453,7 +463,7 @@ function ContactPage() {
 
             {/* Step 3 */}
             <div className="glass p-8 rounded-[24px] bg-white/5 border border-white/10 relative overflow-hidden transition-all duration-300 hover:scale-[1.02] hover:border-[#a855f7]/40 shadow-lg group">
-              <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-[#a855f7]/10 to-transparent blur-2xl rounded-full pointer-events-none" />
+              <div className="absolute top-0 right-0 w-24 h-24 bg-[radial-gradient(circle,rgba(168,85,247,0.15)_0%,transparent_70%)] rounded-full pointer-events-none" />
               <div className="w-12 h-12 rounded-full border border-white/20 bg-white/5 flex items-center justify-center text-[#c9a4ff] text-[18px] font-extrabold mb-6 shadow-[0_0_15px_rgba(168,85,247,0.25)] group-hover:bg-[#a855f7] group-hover:text-white transition-all duration-300">
                 3
               </div>
