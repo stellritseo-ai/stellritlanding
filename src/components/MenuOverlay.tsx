@@ -99,14 +99,8 @@ const fadeUp: Variants = {
 
 import { createPortal } from "react-dom";
 
-export default function MenuOverlay({ open, onClose }: { open: boolean; onClose: () => void }) {
+function Clocks({ open }: { open: boolean }) {
   const [time, setTime] = useState(new Date());
-  const [hoveredItem, setHoveredItem] = useState<string | null>(null);
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   useEffect(() => {
     if (!open) return;
@@ -123,6 +117,32 @@ export default function MenuOverlay({ open, onClose }: { open: boolean; onClose:
       hour12: false,
     }).format(time);
   };
+
+  return (
+    <div className="grid grid-cols-3 gap-2 border-t border-white/10 pt-3 text-center">
+      <div>
+        <div className="text-[9px] font-semibold tracking-wider text-white/45 uppercase">PST (LA)</div>
+        <div className="mt-0.5 font-mono text-xs text-[#ff8a5b] font-medium">{formatTime("America/Los_Angeles")}</div>
+      </div>
+      <div>
+        <div className="text-[9px] font-semibold tracking-wider text-white/45 uppercase">CST (CHI)</div>
+        <div className="mt-0.5 font-mono text-xs text-[#c9a4ff] font-medium">{formatTime("America/Chicago")}</div>
+      </div>
+      <div>
+        <div className="text-[9px] font-semibold tracking-wider text-white/45 uppercase">EST (NY)</div>
+        <div className="mt-0.5 font-mono text-xs text-white font-medium">{formatTime("America/New_York")}</div>
+      </div>
+    </div>
+  );
+}
+
+export default function MenuOverlay({ open, onClose }: { open: boolean; onClose: () => void }) {
+  const [hoveredItem, setHoveredItem] = useState<string | null>(null);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const activeImage = (hoveredItem && MENU_IMAGES[hoveredItem]) || DEFAULT_IMAGE;
 
@@ -169,6 +189,8 @@ export default function MenuOverlay({ open, onClose }: { open: boolean; onClose:
                   "radial-gradient(circle, rgba(168,85,247,0.28), transparent 70%)",
                 filter: "blur(60px)",
                 opacity: 0.9,
+                willChange: "transform",
+                transform: "translateZ(0)",
               }}
             />
 
@@ -298,20 +320,7 @@ export default function MenuOverlay({ open, onClose }: { open: boolean; onClose:
                     </div>
 
                     {/* 3 US Timezones Clocks */}
-                    <div className="grid grid-cols-3 gap-2 border-t border-white/10 pt-3 text-center">
-                      <div>
-                        <div className="text-[9px] font-semibold tracking-wider text-white/45 uppercase">PST (LA)</div>
-                        <div className="mt-0.5 font-mono text-xs text-[#ff8a5b] font-medium">{formatTime("America/Los_Angeles")}</div>
-                      </div>
-                      <div>
-                        <div className="text-[9px] font-semibold tracking-wider text-white/45 uppercase">CST (CHI)</div>
-                        <div className="mt-0.5 font-mono text-xs text-[#c9a4ff] font-medium">{formatTime("America/Chicago")}</div>
-                      </div>
-                      <div>
-                        <div className="text-[9px] font-semibold tracking-wider text-white/45 uppercase">EST (NY)</div>
-                        <div className="mt-0.5 font-mono text-xs text-white font-medium">{formatTime("America/New_York")}</div>
-                      </div>
-                    </div>
+                    <Clocks open={open} />
                   </div>
 
                   <div>
