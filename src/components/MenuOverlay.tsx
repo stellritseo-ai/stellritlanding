@@ -181,13 +181,12 @@ export default function MenuOverlay({ open, onClose }: { open: boolean; onClose:
                 "radial-gradient(120% 80% at 80% 0%, rgba(120,40,200,0.35), transparent 60%), linear-gradient(180deg, #190640 0%, #0e0228 100%)",
             }}
           >
-            {/* Ambient glow — static, no animation to save GPU */}
+            {/* Ambient glow — static, no animation, no CSS blur to save GPU */}
             <div
               className="pointer-events-none absolute -right-40 -top-40 h-[700px] w-[700px] rounded-full"
               style={{
                 background:
-                  "radial-gradient(circle, rgba(168,85,247,0.28), transparent 70%)",
-                filter: "blur(60px)",
+                  "radial-gradient(circle, rgba(168,85,247,0.25) 0%, rgba(168,85,247,0.15) 30%, rgba(168,85,247,0.05) 50%, transparent 70%)",
                 opacity: 0.9,
               }}
             />
@@ -295,12 +294,17 @@ export default function MenuOverlay({ open, onClose }: { open: boolean; onClose:
                             transition={{ duration: 0.35, ease: EASE }}
                             className="h-full w-full"
                           >
-                            {/* isPlaying={open} stops the pixel-keying loop when menu is closed */}
-                            <CanvasVideo
-                              src={DEFAULT_VIDEO}
-                              isPlaying={open}
+                            {/* Hardware-accelerated video instead of heavy CPU pixel-keying */}
+                            <video
+                              autoPlay
+                              muted
+                              loop
+                              playsInline
                               className="h-full w-full object-cover"
-                            />
+                              style={{ mixBlendMode: "screen" }}
+                            >
+                              <source src={DEFAULT_VIDEO} type="video/webm" />
+                            </video>
                           </motion.div>
                         ) : (
                           <motion.img
