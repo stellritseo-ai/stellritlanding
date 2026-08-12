@@ -60,7 +60,7 @@ function HeroVideoFrame({ isPlaying = true }: { isPlaying?: boolean }) {
         </div>
       )}
       {errored && (
-        <div className="absolute inset-0 z-20 flex flex-col items-center justify-center gap-3 bg-black/40 backdrop-blur-sm">
+        <div className="absolute inset-0 z-20 flex flex-col items-center justify-center gap-3 bg-black/60">
           <p className="text-xs uppercase tracking-[0.3em] text-white/70">Video unavailable</p>
           <button
             onClick={retry}
@@ -292,7 +292,7 @@ export default function Hero() {
       <div className="relative w-full bg-[#180028] px-4 pt-24 pb-12 flex flex-col items-center text-center gap-0 overflow-hidden">
         {/* Ambient background glow behind flower */}
         <div
-          className="pointer-events-none absolute left-1/2 top-[45%] h-[500px] w-[500px] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-70 blur-3xl"
+          className="pointer-events-none absolute left-1/2 top-[45%] h-[500px] w-[500px] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-70"
           style={{ background: "radial-gradient(circle, rgba(168,85,247,0.55) 0%, rgba(255,146,194,0.3) 45%, transparent 70%)" }}
         />
 

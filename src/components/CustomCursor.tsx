@@ -151,9 +151,8 @@ export default function CustomCursor() {
           damping: 22,
           mass: 0.3,
         }}
-        className={`pointer-events-none fixed left-0 top-0 z-[99997] flex items-center justify-center rounded-full border-2 border-solid shadow-[0_0_20px_rgba(168,85,247,0.3)] transform-gpu transition-opacity duration-300 ${
-          isVisible ? "opacity-100" : "opacity-0"
-        }`}
+        className={`pointer-events-none fixed left-0 top-0 z-[99997] flex items-center justify-center rounded-full border-2 border-solid shadow-[0_0_20px_rgba(168,85,247,0.3)] transform-gpu transition-opacity duration-300 ${isVisible ? "opacity-100" : "opacity-0"
+          }`}
       >
         {hoverText && (
           <span className="text-[9px] font-bold uppercase tracking-wider text-white drop-shadow-md">
@@ -181,9 +180,8 @@ export default function CustomCursor() {
           duration: 0.15,
           ease: "easeOut",
         }}
-        className={`pointer-events-none fixed left-0 top-0 z-[99999] h-2.5 w-2.5 rounded-full transform-gpu transition-opacity duration-300 ${
-          isVisible ? "opacity-100" : "opacity-0"
-        }`}
+        className={`pointer-events-none fixed left-0 top-0 z-[99999] h-2.5 w-2.5 rounded-full transform-gpu transition-opacity duration-300 ${isVisible ? "opacity-100" : "opacity-0"
+          }`}
       />
     </>
   );

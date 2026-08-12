@@ -49,7 +49,7 @@ export default function HomeFAQSection() {
       {/* Background ambient lighting */}
       <div
         aria-hidden
-        className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[500px] w-[500px] rounded-full opacity-20 blur-[100px]"
+        className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[500px] w-[500px] rounded-full opacity-20"
         style={{
           background: "radial-gradient(circle, rgba(168,85,247,0.5) 0%, rgba(255,138,91,0.3) 50%, transparent 70%)",
         }}
@@ -72,8 +72,8 @@ export default function HomeFAQSection() {
             </div>
 
             {/* Support CTA Card */}
-            <div className="rounded-2xl p-6 md:p-8 border border-white/10 bg-gradient-to-br from-[#1f0538]/80 to-[#120022]/90 backdrop-blur-xl relative overflow-hidden group shadow-2xl">
-              <div className="absolute -right-8 -bottom-8 w-32 h-32 bg-[#a855f7]/20 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-500" />
+            <div className="rounded-2xl p-6 md:p-8 border border-white/10 bg-gradient-to-br from-[#1f0538]/80 to-[#120022]/90 backdrop-blur-md relative overflow-hidden group shadow-2xl">
+              <div className="absolute -right-8 -bottom-8 w-32 h-32 rounded-full group-hover:scale-150 transition-transform duration-500" style={{ background: "radial-gradient(circle, rgba(168,85,247,0.2) 0%, transparent 70%)" }} />
 
               <div className="relative z-10 space-y-4">
                 <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#a855f7] to-[#ff8a5b] flex items-center justify-center text-white shadow-lg">
