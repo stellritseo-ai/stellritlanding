@@ -317,6 +317,10 @@ function PortfolioPage() {
   const blobScale2 = useTransform(scrollY, [0, 1000], [1, 0.75]);
   const blobOpacity2 = useTransform(scrollY, [0, 1000], [0.8, 1]);
 
+  // Convert colors directly to pre-blurred radial gradients to avoid expensive blur() filters on scroll
+  const blobBg1 = useTransform(blobColor1, (color) => `radial-gradient(circle, ${color} 0%, transparent 70%)`);
+  const blobBg2 = useTransform(blobColor2, (color) => `radial-gradient(circle, ${color} 0%, transparent 70%)`);
+
   return (
     <main className="relative min-h-screen bg-[#180028] text-white overflow-hidden">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
@@ -338,17 +342,18 @@ function PortfolioPage() {
 
       {/* Blended Background Container with Scroll-Reactive Parallax Blobs */}
       <div className="bg-gradient-to-b from-[#180028] via-[#140224]/95 to-[#0b011c] relative z-10 overflow-clip">
-        {/* Subtle grid lines background overlay */}
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff03_1px,transparent_1px),linear-gradient(to_bottom,#ffffff03_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] pointer-events-none z-0" />
+        {/* Subtle grid lines background overlay - replaced heavy mask-image with a simple gradient fade to save GPU */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff03_1px,transparent_1px),linear-gradient(to_bottom,#ffffff03_1px,transparent_1px)] bg-[size:4rem_4rem] pointer-events-none z-0" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_50%_at_50%_0%,transparent_40%,#180028_100%)] pointer-events-none z-0" />
         
-        {/* Scroll-Reactive Glowing Blobs (Parallax + Morphing Colors) */}
+        {/* Scroll-Reactive Glowing Blobs (Parallax + Morphing Colors) - optimized with radial gradients */}
         <motion.div
-          style={{ y: blobY1, backgroundColor: blobColor1, scale: blobScale1, opacity: blobOpacity1 }}
-          className="absolute top-[10%] left-[-15%] w-[550px] h-[550px] rounded-full blur-[130px] pointer-events-none z-0 transition-colors duration-1000"
+          style={{ y: blobY1, backgroundImage: blobBg1, scale: blobScale1, opacity: blobOpacity1 }}
+          className="absolute top-[10%] left-[-15%] w-[550px] h-[550px] rounded-full pointer-events-none z-0 transition-colors duration-1000"
         />
         <motion.div
-          style={{ y: blobY2, backgroundColor: blobColor2, scale: blobScale2, opacity: blobOpacity2 }}
-          className="absolute bottom-[15%] right-[-15%] w-[650px] h-[650px] rounded-full blur-[140px] pointer-events-none z-0 transition-colors duration-1000"
+          style={{ y: blobY2, backgroundImage: blobBg2, scale: blobScale2, opacity: blobOpacity2 }}
+          className="absolute bottom-[15%] right-[-15%] w-[650px] h-[650px] rounded-full pointer-events-none z-0 transition-colors duration-1000"
         />
 
         {/* Interactive Filtering Navigation */}
@@ -384,15 +389,15 @@ function PortfolioPage() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.95 }}
                   transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-                  className="group relative grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-center rounded-3xl border border-white/[0.06] bg-[#0c0a20]/40 backdrop-blur-xl p-8 md:p-12 overflow-hidden hover:border-white/10 transition-colors duration-500"
+                  className="group relative grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-center rounded-3xl border border-white/[0.06] bg-[#0c0a20]/40 backdrop-blur-md p-8 md:p-12 overflow-hidden hover:border-white/10 transition-colors duration-500"
                   style={{
                     boxShadow: "0 30px 100px -20px rgba(0,0,0,0.85), inset 0 1px 0 rgba(255,255,255,0.02)",
                   }}
                 >
-                  {/* Subtle inner background gradient blur matching item's color */}
+                  {/* Subtle inner background gradient blur matching item's color - optimized as a radial gradient */}
                   <div
-                    className="absolute -right-24 -bottom-24 w-[350px] h-[350px] rounded-full opacity-10 blur-[60px] pointer-events-none transition-all duration-700 group-hover:scale-125"
-                    style={{ background: p.accentColor }}
+                    className="absolute -right-24 -bottom-24 w-[350px] h-[350px] rounded-full opacity-10 pointer-events-none transition-all duration-700 group-hover:scale-125"
+                    style={{ background: `radial-gradient(circle, ${p.accentColor} 0%, transparent 70%)` }}
                   />
 
                   {/* Left Column: Information Card */}
