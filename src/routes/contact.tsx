@@ -184,8 +184,9 @@ function ContactPage() {
 
       {/* Main Content Area in Premium Glassmorphism */}
       <section className="bg-gradient-to-b from-[#180028] via-[#180028]/85 to-transparent text-white pt-24 pb-32 relative z-10 overflow-clip">
-        {/* Subtle grid lines background overlay */}
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff03_1px,transparent_1px),linear-gradient(to_bottom,#ffffff03_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] pointer-events-none z-0" />
+        {/* Subtle grid lines background overlay - replaced heavy mask-image with a simple gradient fade to save GPU */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff03_1px,transparent_1px),linear-gradient(to_bottom,#ffffff03_1px,transparent_1px)] bg-[size:4rem_4rem] pointer-events-none z-0" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_50%_at_50%_0%,transparent_40%,#180028_100%)] pointer-events-none z-0" />
 
         {/* Scroll-Reactive Glowing Blobs (Parallax) - using radial gradients instead of heavy blur filters */}
         <motion.div
@@ -220,7 +221,7 @@ function ContactPage() {
               </p>
             </div>
 
-            <div className="space-y-8 p-8 md:p-10 glass rounded-[24px] shadow-[0_20px_50px_rgba(0,0,0,0.3)] border border-white/10 relative overflow-hidden backdrop-blur-xl bg-white/5">
+            <div className="space-y-8 p-8 md:p-10 glass rounded-[24px] shadow-[0_20px_50px_rgba(0,0,0,0.3)] border border-white/10 relative overflow-hidden backdrop-blur-md bg-white/5">
               <div className="absolute top-0 right-0 w-40 h-40 bg-[radial-gradient(circle,rgba(168,85,247,0.1)_0%,transparent_70%)] rounded-full pointer-events-none" />
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 relative z-10">
@@ -247,7 +248,7 @@ function ContactPage() {
             viewport={{ once: true }}
             transition={{ duration: 0.7 }}
             onSubmit={submit}
-            className="glass rounded-[32px] p-8 md:p-14 shadow-[0_30px_100px_rgba(0,0,0,0.5)] border border-white/10 relative overflow-hidden backdrop-blur-2xl bg-white/5"
+            className="glass rounded-[32px] p-8 md:p-14 shadow-[0_30px_100px_rgba(0,0,0,0.5)] border border-white/10 relative overflow-hidden backdrop-blur-md bg-white/5"
           >
             {/* Subtle decorative glow in top right */}
             <div className="absolute -top-32 -right-32 w-64 h-64 bg-[radial-gradient(circle,rgba(168,85,247,0.25)_0%,transparent_70%)] rounded-full pointer-events-none" />
@@ -488,7 +489,7 @@ function ContactPage() {
           <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-[#0d0220] to-transparent z-10 pointer-events-none" />
           <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-[#0d0220] to-transparent z-10 pointer-events-none" />
 
-          <div className="flex w-max" style={{ animation: "marquee-contact 45s linear infinite" }}>
+          <div className="flex w-max" style={{ animation: "marquee-contact 45s linear infinite", willChange: "transform" }}>
             {/* Repeat the logos array twice to create a seamless infinite loop */}
             {[...Array(2)].map((_, i) => (
               <div key={i} className="flex items-center">
