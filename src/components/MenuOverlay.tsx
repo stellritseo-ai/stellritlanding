@@ -99,7 +99,7 @@ const fadeUp: Variants = {
 
 import { createPortal } from "react-dom";
 
-function Clocks({ open }: { open: boolean }) {
+const MenuClocks = ({ open }: { open: boolean }) => {
   const [time, setTime] = useState(new Date());
 
   useEffect(() => {
@@ -134,7 +134,7 @@ function Clocks({ open }: { open: boolean }) {
       </div>
     </div>
   );
-}
+};
 
 export default function MenuOverlay({ open, onClose }: { open: boolean; onClose: () => void }) {
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
@@ -189,8 +189,6 @@ export default function MenuOverlay({ open, onClose }: { open: boolean; onClose:
                   "radial-gradient(circle, rgba(168,85,247,0.28), transparent 70%)",
                 filter: "blur(60px)",
                 opacity: 0.9,
-                willChange: "transform",
-                transform: "translateZ(0)",
               }}
             />
 
@@ -320,7 +318,7 @@ export default function MenuOverlay({ open, onClose }: { open: boolean; onClose:
                     </div>
 
                     {/* 3 US Timezones Clocks */}
-                    <Clocks open={open} />
+                    <MenuClocks open={open} />
                   </div>
 
                   <div>
