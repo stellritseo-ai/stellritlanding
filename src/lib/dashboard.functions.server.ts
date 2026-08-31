@@ -391,8 +391,9 @@ export const getProjectsFn = createServerFn({ method: "GET" }).handler(async () 
   });
 });
 
-export const createProjectFn = createServerFn({ method: "POST" }).handler(
-  async ({ data }: { data: any }) => {
+export const createProjectFn = createServerFn({ method: "POST" })
+  .validator((d: any) => d)
+  .handler(async ({ data }: { data: any }) => {
     const { connectDB, ProjectModel } = await import("./db.server");
     const { encryptPassword, decryptPassword } = await import("./crypto.server");
     await connectDB();
@@ -413,11 +414,11 @@ export const createProjectFn = createServerFn({ method: "POST" }).handler(
       plain.cardDetails = decryptPassword(plain.cardDetails);
     }
     return plain;
-  }
-);
+  });
 
-export const updateProjectFn = createServerFn({ method: "POST" }).handler(
-  async ({ data }: { data: { id: string; update: any } }) => {
+export const updateProjectFn = createServerFn({ method: "POST" })
+  .validator((d: any) => d)
+  .handler(async ({ data }: { data: { id: string; update: any } }) => {
     const { connectDB, ProjectModel } = await import("./db.server");
     const { encryptPassword, decryptPassword } = await import("./crypto.server");
     await connectDB();
@@ -439,11 +440,11 @@ export const updateProjectFn = createServerFn({ method: "POST" }).handler(
       plain.cardDetails = decryptPassword(plain.cardDetails);
     }
     return plain;
-  }
-);
+  });
 
-export const deleteProjectFn = createServerFn({ method: "POST" }).handler(
-  async ({ data }: { data: { id: string } }) => {
+export const deleteProjectFn = createServerFn({ method: "POST" })
+  .validator((d: any) => d)
+  .handler(async ({ data }: { data: { id: string } }) => {
     const { connectDB, ProjectModel } = await import("./db.server");
     await connectDB();
     const proj = await ProjectModel.findByIdAndDelete(data.id);
@@ -457,8 +458,7 @@ export const deleteProjectFn = createServerFn({ method: "POST" }).handler(
     }
 
     return { success: true };
-  }
-);
+  });
 
 // ── Tasks CRUD ───────────────────────────────────────────────────────────────
 export const getTasksFn = createServerFn({ method: "GET" }).handler(async () => {

@@ -53,6 +53,8 @@ interface Project {
   projectDetails: string;
   isCompleted: boolean;
   color: string; // Gradient preset for visual styling
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 const COLOR_PRESETS = [
@@ -81,7 +83,7 @@ function ProjectsPage() {
 
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
-  const [sortBy, setSortBy] = useState<"dueDate" | "progress" | "name">("dueDate");
+  const [sortBy, setSortBy] = useState<"newest" | "dueDate" | "progress" | "name">("newest");
 
   // Premium Toast notifications state
   interface ToastItem {
@@ -341,6 +343,14 @@ function ProjectsPage() {
         return matchesSearch && matchesStatus;
       })
       .sort((a, b) => {
+        if (sortBy === "newest") {
+          const timeA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+          const timeB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+          if (timeA !== timeB) {
+            return timeB - timeA;
+          }
+          return (b.id || "").localeCompare(a.id || "");
+        }
         if (sortBy === "dueDate") {
           const timeA = new Date(a.closeBy).getTime();
           const timeB = new Date(b.closeBy).getTime();
@@ -450,6 +460,7 @@ function ProjectsPage() {
                   : "bg-white border-slate-200 text-slate-700 focus:border-[#a855f7]/30"
                 }`}
             >
+              <option value="newest">Newest First</option>
               <option value="dueDate">Close By</option>
               <option value="progress">Payment Progress</option>
               <option value="name">Client Name</option>
