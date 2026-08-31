@@ -78,8 +78,9 @@ interface AssetRequest {
 interface Project {
   _id?: string;
   id?: string;
-  projectName: string;
+  projectName?: string;
   businessName: string;
+  clientName?: string;
 }
 
 const triggerDownload = async (url: string, filename: string) => {

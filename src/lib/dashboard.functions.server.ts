@@ -549,8 +549,9 @@ export const getAssetRequestsFn = createServerFn({ method: "GET" }).handler(asyn
   return list.map(mapDoc);
 });
 
-export const createAssetRequestFn = createServerFn({ method: "POST" }).handler(
-  async ({ data }: { data: any }) => {
+export const createAssetRequestFn = createServerFn({ method: "POST" })
+  .validator((d: any) => d)
+  .handler(async ({ data }: { data: any }) => {
     const { connectDB, AssetRequestModel } = await import("./db.server");
     await connectDB();
 
