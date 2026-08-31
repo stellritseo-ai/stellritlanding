@@ -13,7 +13,7 @@ import {
   ExternalLink
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import logoImg from "@/assets/logo.png";
 import { getSharedAssetByTokenFn } from "@/lib/dashboard.functions.server";
 
@@ -106,10 +106,18 @@ function SharedImageViewerPage() {
   const asset = loaderData.asset;
   const error = loaderData.error;
 
+  const imgRef = useRef<HTMLImageElement>(null);
   const [isCopied, setIsCopied] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
+  const [imageError, setImageError] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
+
+  useEffect(() => {
+    if (imgRef.current && imgRef.current.complete && imgRef.current.naturalWidth > 0) {
+      setImageLoaded(true);
+    }
+  }, [asset?.cloudinaryUrl]);
 
   const handleCopyLink = () => {
     navigator.clipboard.writeText(window.location.href).then(() => {
@@ -220,29 +228,53 @@ function SharedImageViewerPage() {
             <div className="relative bg-[#11042b]/70 border border-white/10 rounded-3xl overflow-hidden shadow-2xl backdrop-blur-xl group">
               {/* Image Preview Canvas */}
               <div className="relative min-h-[320px] sm:min-h-[440px] max-h-[75vh] w-full flex items-center justify-center bg-black/40 p-4 sm:p-8 select-none overflow-hidden">
-                {!imageLoaded && (
-                  <div className="absolute inset-0 flex items-center justify-center bg-[#0d0221]">
-                    <div className="h-10 w-10 rounded-full border-2 border-[#a855f7] border-t-transparent animate-spin" />
+                {!imageLoaded && !imageError && (
+                  <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 pointer-events-none z-0">
+                    <div className="h-9 w-9 rounded-full border-2 border-[#a855f7] border-t-transparent animate-spin" />
+                    <span className="text-[10px] text-white/40">Loading image...</span>
                   </div>
                 )}
-                
-                <img
-                  src={asset.cloudinaryUrl}
-                  alt={asset.originalFilename}
-                  onLoad={() => setImageLoaded(true)}
-                  className={`max-h-[70vh] w-auto max-w-full object-contain rounded-xl shadow-2xl transition-all duration-300 ${
-                    imageLoaded ? "opacity-100 scale-100" : "opacity-0 scale-95"
-                  }`}
-                />
+
+                {imageError ? (
+                  <div className="text-center py-12 space-y-3 z-10">
+                    <AlertCircle className="h-8 w-8 text-rose-400 mx-auto opacity-80" />
+                    <p className="text-xs text-white/50">Unable to preview image directly.</p>
+                    <a
+                      href={asset.cloudinaryUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-white/10 text-xs font-bold text-white hover:bg-white/20 transition"
+                    >
+                      <ExternalLink className="h-3.5 w-3.5" />
+                      Open Asset Link
+                    </a>
+                  </div>
+                ) : (
+                  <img
+                    ref={imgRef}
+                    src={asset.cloudinaryUrl}
+                    alt={asset.originalFilename}
+                    onLoad={() => setImageLoaded(true)}
+                    onError={() => {
+                      setImageError(true);
+                      setImageLoaded(true);
+                    }}
+                    className={`relative z-10 max-h-[70vh] w-auto max-w-full object-contain rounded-xl shadow-2xl transition-all duration-300 ${
+                      imageLoaded ? "opacity-100 scale-100" : "opacity-0 scale-98"
+                    }`}
+                  />
+                )}
 
                 {/* Floating Fullscreen Trigger */}
-                <button
-                  onClick={() => setIsFullscreen(true)}
-                  className="absolute top-4 right-4 h-9 w-9 rounded-xl bg-black/60 hover:bg-black/80 border border-white/15 text-white/80 hover:text-white flex items-center justify-center backdrop-blur-md transition active:scale-90"
-                  title="Expand to Fullscreen View"
-                >
-                  <Maximize2 className="h-4 w-4" />
-                </button>
+                {imageLoaded && !imageError && (
+                  <button
+                    onClick={() => setIsFullscreen(true)}
+                    className="absolute top-4 right-4 z-20 h-9 w-9 rounded-xl bg-black/60 hover:bg-black/80 border border-white/15 text-white/80 hover:text-white flex items-center justify-center backdrop-blur-md transition active:scale-90"
+                    title="Expand to Fullscreen View"
+                  >
+                    <Maximize2 className="h-4 w-4" />
+                  </button>
+                )}
               </div>
 
               {/* Asset Details & Action Bar */}
