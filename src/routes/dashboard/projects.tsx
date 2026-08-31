@@ -72,6 +72,37 @@ import {
   deleteProjectFn,
 } from "@/lib/dashboard.functions.server";
 
+function parseDateToTime(dateStr?: string): number {
+  if (!dateStr || typeof dateStr !== "string") return 0;
+  const trimmed = dateStr.trim();
+  if (!trimmed) return 0;
+
+  // 1. Standard ISO / YYYY-MM-DD or YYYY/MM/DD
+  if (/^\d{4}[-/.]\d{1,2}[-/.]\d{1,2}/.test(trimmed)) {
+    const parts = trimmed.split(/[-/.]/);
+    const y = Number(parts[0]);
+    const m = Number(parts[1]) - 1;
+    const d = Number(parts[2].slice(0, 2));
+    const t = new Date(y, m, d).getTime();
+    if (!isNaN(t)) return t;
+  }
+
+  // 2. Day-Month-Year (DD-MM-YYYY or DD/MM/YYYY)
+  if (/^\d{1,2}[-/.]\d{1,2}[-/.]\d{4}/.test(trimmed)) {
+    const parts = trimmed.split(/[-/.]/);
+    const d = Number(parts[0]);
+    const m = Number(parts[1]) - 1;
+    const y = Number(parts[2].slice(0, 4));
+    const t = new Date(y, m, d).getTime();
+    if (!isNaN(t)) return t;
+  }
+
+  const parsed = Date.parse(trimmed);
+  if (!isNaN(parsed)) return parsed;
+
+  return 0;
+}
+
 function ProjectsPage() {
   const { theme } = useDashboardTheme();
   const isDark = theme === "dark";
@@ -83,7 +114,7 @@ function ProjectsPage() {
 
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
-  const [sortBy, setSortBy] = useState<"newest" | "dueDate" | "progress" | "name">("newest");
+  const [sortBy, setSortBy] = useState<"salesDate" | "dueDate" | "progress" | "name">("salesDate");
 
   // Premium Toast notifications state
   interface ToastItem {
@@ -343,18 +374,23 @@ function ProjectsPage() {
         return matchesSearch && matchesStatus;
       })
       .sort((a, b) => {
-        if (sortBy === "newest") {
-          const timeA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
-          const timeB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+        if (sortBy === "salesDate") {
+          const timeA = parseDateToTime(a.salesDate) || parseDateToTime(a.createdAt);
+          const timeB = parseDateToTime(b.salesDate) || parseDateToTime(b.createdAt);
           if (timeA !== timeB) {
             return timeB - timeA;
+          }
+          const createA = parseDateToTime(a.createdAt);
+          const createB = parseDateToTime(b.createdAt);
+          if (createA !== createB) {
+            return createB - createA;
           }
           return (b.id || "").localeCompare(a.id || "");
         }
         if (sortBy === "dueDate") {
-          const timeA = new Date(a.closeBy).getTime();
-          const timeB = new Date(b.closeBy).getTime();
-          if (!isNaN(timeA) && !isNaN(timeB)) {
+          const timeA = parseDateToTime(a.closeBy);
+          const timeB = parseDateToTime(b.closeBy);
+          if (timeA !== 0 && timeB !== 0 && timeA !== timeB) {
             return timeA - timeB;
           }
           return (a.closeBy || "").localeCompare(b.closeBy || "");
@@ -460,8 +496,8 @@ function ProjectsPage() {
                   : "bg-white border-slate-200 text-slate-700 focus:border-[#a855f7]/30"
                 }`}
             >
-              <option value="newest">Newest First</option>
-              <option value="dueDate">Close By</option>
+              <option value="salesDate">Sales Date (Newest First)</option>
+              <option value="dueDate">Close By Date</option>
               <option value="progress">Payment Progress</option>
               <option value="name">Client Name</option>
             </select>

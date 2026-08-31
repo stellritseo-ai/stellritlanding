@@ -267,7 +267,7 @@ export const deleteSitePageFn = createServerFn({ method: "POST" }).handler(
 export const getProjectsFn = createServerFn({ method: "GET" }).handler(async () => {
   const { connectDB, ProjectModel, SiteConfigModel } = await import("./db.server");
   await connectDB();
-  let list = await ProjectModel.find().sort({ createdAt: -1 });
+  let list = await ProjectModel.find().sort({ salesDate: -1, createdAt: -1 });
 
   let config = await SiteConfigModel.findOne({});
   if (!config) {
