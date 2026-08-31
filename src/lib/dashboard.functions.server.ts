@@ -567,38 +567,56 @@ export const createAssetRequestFn = createServerFn({ method: "POST" }).handler(
   }
 );
 
-export const getAssetRequestByTokenFn = createServerFn({ method: "POST" }).handler(
-  async ({ data }: { data: { token: string } }) => {
+export const getAssetRequestByTokenFn = createServerFn({ method: "POST" })
+  .validator((d: any) => d)
+  .handler(async ({ data }: { data: { token: string } }) => {
     const { connectDB, AssetRequestModel } = await import("./db.server");
     await connectDB();
     const req = await AssetRequestModel.findOne({ token: data.token });
     return req ? mapDoc(req) : null;
-  }
-);
+  });
 
-export const deleteAssetRequestFn = createServerFn({ method: "POST" }).handler(
-  async ({ data }: { data: { id: string } }) => {
+export const deleteAssetRequestFn = createServerFn({ method: "POST" })
+  .validator((d: any) => d)
+  .handler(async ({ data }: { data: { id: string } }) => {
     const { connectDB, AssetRequestModel } = await import("./db.server");
     await connectDB();
     await AssetRequestModel.findByIdAndDelete(data.id);
     return { success: true };
-  }
-);
+  });
 
 // ── Uploaded Assets Management ──────────────────────────────────────────────
 export const getUploadedAssetsFn = createServerFn({ method: "GET" }).handler(async () => {
   const { connectDB, UploadedAssetModel } = await import("./db.server");
   await connectDB();
   const list = await UploadedAssetModel.find().sort({ createdAt: -1 });
+
+  // Backfill shareToken for any assets created before token generation
+  const needsToken = list.filter((a) => !a.shareToken);
+  if (needsToken.length > 0) {
+    await Promise.all(
+      needsToken.map(async (doc) => {
+        doc.shareToken = crypto.randomBytes(16).toString("hex");
+        await doc.save();
+      })
+    );
+  }
+
   return list.map(mapDoc);
 });
 
-export const registerUploadedAssetFn = createServerFn({ method: "POST" }).handler(
-  async ({ data }: { data: any }) => {
+export const registerUploadedAssetFn = createServerFn({ method: "POST" })
+  .validator((d: any) => d)
+  .handler(async ({ data }: { data: any }) => {
     const { connectDB, UploadedAssetModel, AssetRequestModel } = await import("./db.server");
     await connectDB();
 
-    const asset = new UploadedAssetModel(data);
+    const shareToken = data.shareToken || crypto.randomBytes(16).toString("hex");
+
+    const asset = new UploadedAssetModel({
+      ...data,
+      shareToken,
+    });
     await asset.save();
 
     // If this upload was tied to a token request portal, flag the portal as Completed
@@ -607,17 +625,46 @@ export const registerUploadedAssetFn = createServerFn({ method: "POST" }).handle
     }
 
     await logActivity(
-      "Client Upload Completed",
+      data.uploadedBy === "admin" ? "Admin Image Uploaded & Shared" : "Client Upload Completed",
       `Uploaded "${asset.originalFilename}" (${(asset.fileSize / (1024 * 1024)).toFixed(2)}MB) for ${asset.businessName}.`,
-      asset.uploadedBy || "Client Portal"
+      data.uploadedBy === "admin" ? "System Admin" : (asset.uploadedBy || "Client Portal")
     );
 
     return mapDoc(asset);
-  }
-);
+  });
 
-export const deleteUploadedAssetFn = createServerFn({ method: "POST" }).handler(
-  async ({ data }: { data: { id: string } }) => {
+// ── Public Shared Image Viewer (Secure Client Access) ───────────────────────
+export const getSharedAssetByTokenFn = createServerFn({ method: "POST" })
+  .validator((d: any) => d)
+  .handler(async ({ data }: { data: { token: string } }) => {
+    if (!data || !data.token || typeof data.token !== "string" || data.token.trim().length < 8) {
+      return null;
+    }
+    const { connectDB, UploadedAssetModel } = await import("./db.server");
+    await connectDB();
+
+    const asset = await UploadedAssetModel.findOne({ shareToken: data.token.trim() });
+    if (!asset) {
+      return null;
+    }
+
+    // Return strictly sanitized public metadata for the shared image
+    return {
+      shareToken: asset.shareToken,
+      originalFilename: asset.originalFilename,
+      fileType: asset.fileType,
+      mimeType: asset.mimeType || "",
+      fileSize: asset.fileSize,
+      cloudinaryUrl: asset.cloudinaryUrl,
+      businessName: asset.businessName,
+      notes: asset.notes || "",
+      createdAt: asset.createdAt ? new Date(asset.createdAt).toISOString() : new Date().toISOString(),
+    };
+  });
+
+export const deleteUploadedAssetFn = createServerFn({ method: "POST" })
+  .validator((d: any) => d)
+  .handler(async ({ data }: { data: { id: string } }) => {
     const { connectDB, UploadedAssetModel } = await import("./db.server");
     await connectDB();
 
@@ -625,21 +672,21 @@ export const deleteUploadedAssetFn = createServerFn({ method: "POST" }).handler(
     // Cloudinary storage files are retained, or optionally deleted using Cloudinary SDK in the future.
     await UploadedAssetModel.findByIdAndDelete(data.id);
     return { success: true };
-  }
-);
+  });
 
-export const deleteFolderFn = createServerFn({ method: "POST" }).handler(
-  async ({ data }: { data: { folderName: string } }) => {
+export const deleteFolderFn = createServerFn({ method: "POST" })
+  .validator((d: any) => d)
+  .handler(async ({ data }: { data: { folderName: string } }) => {
     const { connectDB, UploadedAssetModel } = await import("./db.server");
     await connectDB();
     await UploadedAssetModel.deleteMany({ businessName: data.folderName });
     return { success: true };
-  }
-);
+  });
 
 // ── Cloudinary Signed Upload Token ───────────────────────────────────────────
-export const generateCloudinarySignatureFn = createServerFn({ method: "POST" }).handler(
-  async ({ data }: { data: { timestamp: number } }) => {
+export const generateCloudinarySignatureFn = createServerFn({ method: "POST" })
+  .validator((d: any) => d)
+  .handler(async ({ data }: { data: { timestamp: number } }) => {
     const CLOUDINARY_API_KEY = process.env.CLOUDINARY_API_KEY || "374544111595111";
     const CLOUDINARY_API_SECRET = process.env.CLOUDINARY_API_SECRET || "YrC-QFQV3MbkjsDMLtn-lFX_sGI";
     const CLOUDINARY_CLOUD_NAME = process.env.CLOUDINARY_CLOUD_NAME || "ddlfscxrm";

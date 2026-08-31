@@ -227,6 +227,7 @@ export const AssetRequestModel =
 const UploadedAssetSchema = new mongoose.Schema(
   {
     requestId: { type: String, index: true },
+    shareToken: { type: String, unique: true, sparse: true, index: true },
     businessName: { type: String, required: true },
     clientName: { type: String },
     email: { type: String },
@@ -244,9 +245,10 @@ const UploadedAssetSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-export const UploadedAssetModel =
-  mongoose.models.UploadedAsset ||
-  mongoose.model("UploadedAsset", UploadedAssetSchema);
+if (mongoose.models.UploadedAsset) {
+  delete (mongoose.models as any).UploadedAsset;
+}
+export const UploadedAssetModel = mongoose.model("UploadedAsset", UploadedAssetSchema);
 
 // ── Operator schema ─────────────────────────────────────────────────────────
 const OperatorSchema = new mongoose.Schema(

@@ -2,6 +2,7 @@ import mongoose, { Document, Schema } from 'mongoose';
 
 export interface IUploadedAsset extends Document {
   requestId?: string;
+  shareToken?: string;
   businessName: string;
   clientName?: string;
   email?: string;
@@ -22,6 +23,7 @@ export interface IUploadedAsset extends Document {
 const UploadedAssetSchema = new Schema<IUploadedAsset>(
   {
     requestId: { type: String, index: true },
+    shareToken: { type: String, unique: true, sparse: true, index: true },
     businessName: { type: String, required: true },
     clientName: { type: String },
     email: { type: String },

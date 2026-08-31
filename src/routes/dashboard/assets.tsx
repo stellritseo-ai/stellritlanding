@@ -39,11 +39,14 @@ import {
   deleteUploadedAssetFn,
   deleteFolderFn,
   getProjectsFn,
+  generateCloudinarySignatureFn,
+  registerUploadedAssetFn,
 } from "@/lib/dashboard.functions.server";
 
 interface UploadedAsset {
   id: string;
   requestId?: string;
+  shareToken?: string;
   businessName: string;
   clientName?: string;
   email?: string;
@@ -141,7 +144,29 @@ function AssetsPage() {
   const [expandedFolders, setExpandedFolders] = useState<Record<string, boolean>>({});
   const [copiedToken, setCopiedToken] = useState<string | null>(null);
 
-  // Modal State
+  // Direct Image Upload & Share Modal State
+  const [showUploadModal, setShowUploadModal] = useState(false);
+  const [uploadImageFile, setUploadImageFile] = useState<File | null>(null);
+  const [uploadImagePreview, setUploadImagePreview] = useState<string | null>(null);
+  const [uploadBusinessName, setUploadBusinessName] = useState("");
+  const [uploadCustomBusiness, setUploadCustomBusiness] = useState("");
+  const [uploadClientName, setUploadClientName] = useState("");
+  const [uploadNotes, setUploadNotes] = useState("");
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const [imageUploadProgress, setImageUploadProgress] = useState(0);
+  const [imageUploadError, setImageUploadError] = useState<string | null>(null);
+  const [uploadedShareResult, setUploadedShareResult] = useState<{
+    token: string;
+    shareUrl: string;
+    filename: string;
+    fileSize: number;
+    cloudinaryUrl: string;
+  } | null>(null);
+  const [copiedShareAssetId, setCopiedShareAssetId] = useState<string | null>(null);
+  const [copiedModalLink, setCopiedModalLink] = useState(false);
+  const [dragActiveModal, setDragActiveModal] = useState(false);
+
+  // Request Portal Modal State
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [isCreatingLink, setIsCreatingLink] = useState(false);
   
@@ -190,6 +215,113 @@ function AssetsPage() {
       setCopiedToken(token);
       setTimeout(() => setCopiedToken(null), 2000);
     });
+  };
+
+  const handleCopyShareLink = (asset: UploadedAsset) => {
+    const token = asset.shareToken;
+    const shareUrl = token 
+      ? `${window.location.origin}/share/${token}` 
+      : `${window.location.origin}/share/${asset.id}`;
+    navigator.clipboard.writeText(shareUrl).then(() => {
+      setCopiedShareAssetId(asset.id);
+      setTimeout(() => setCopiedShareAssetId(null), 2000);
+    });
+  };
+
+  const handleImageFileSelect = (file: File) => {
+    if (!file.type.startsWith("image/")) {
+      setImageUploadError("Please select a valid image file (PNG, JPG, WEBP, SVG, GIF, etc.).");
+      return;
+    }
+    setUploadImageFile(file);
+    if (uploadImagePreview) URL.revokeObjectURL(uploadImagePreview);
+    setUploadImagePreview(URL.createObjectURL(file));
+    setImageUploadError(null);
+  };
+
+  const handleUploadImageSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!uploadImageFile) return;
+
+    const resolvedBusiness = (uploadBusinessName === "custom" ? uploadCustomBusiness.trim() : uploadBusinessName.trim()) || "General Assets";
+    const resolvedClient = uploadClientName.trim() || resolvedBusiness;
+
+    setIsUploadingImage(true);
+    setImageUploadProgress(0);
+    setImageUploadError(null);
+
+    try {
+      const timestamp = Math.round(new Date().getTime() / 1000);
+      const sigData = await generateCloudinarySignatureFn({ data: { timestamp } });
+
+      await new Promise<void>((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.open("POST", `https://api.cloudinary.com/v1_1/${sigData.cloudName}/image/upload`);
+
+        xhr.upload.onprogress = (event) => {
+          if (event.lengthComputable) {
+            const percent = Math.round((event.loaded / event.total) * 100);
+            setImageUploadProgress(percent);
+          }
+        };
+
+        xhr.onload = async () => {
+          if (xhr.status >= 200 && xhr.status < 300) {
+            try {
+              const result = JSON.parse(xhr.responseText);
+              
+              const registered = await registerUploadedAssetFn({
+                data: {
+                  businessName: resolvedBusiness,
+                  clientName: resolvedClient,
+                  originalFilename: uploadImageFile.name,
+                  fileType: "image",
+                  mimeType: uploadImageFile.type,
+                  fileSize: uploadImageFile.size,
+                  cloudinaryUrl: result.secure_url,
+                  cloudinaryPublicId: result.public_id,
+                  notes: uploadNotes.trim(),
+                  uploadedBy: "admin",
+                }
+              });
+
+              const token = (registered as any).shareToken;
+              const shareUrl = `${window.location.origin}/share/${token}`;
+
+              setUploadedShareResult({
+                token,
+                shareUrl,
+                filename: uploadImageFile.name,
+                fileSize: uploadImageFile.size,
+                cloudinaryUrl: result.secure_url,
+              });
+
+              fetchData();
+              resolve();
+            } catch (err: any) {
+              reject(new Error("Failed to register image in database."));
+            }
+          } else {
+            reject(new Error(`Cloudinary upload failed: ${xhr.statusText || xhr.status}`));
+          }
+        };
+
+        xhr.onerror = () => reject(new Error("Network error occurred during image upload."));
+
+        const clFormData = new FormData();
+        clFormData.append("file", uploadImageFile);
+        clFormData.append("api_key", sigData.apiKey);
+        clFormData.append("timestamp", timestamp.toString());
+        clFormData.append("signature", sigData.signature);
+        clFormData.append("folder", sigData.folder);
+        xhr.send(clFormData);
+      });
+    } catch (err: any) {
+      console.error("Direct image upload error:", err);
+      setImageUploadError(err.message || "Failed to upload image to Cloudinary.");
+    } finally {
+      setIsUploadingImage(false);
+    }
   };
 
   const handleCreateRequest = async (e: React.FormEvent) => {
@@ -312,8 +444,26 @@ function AssetsPage() {
         </div>
         <div className="flex items-center gap-3">
           <button 
-            onClick={() => setShowCreateModal(true)}
+            onClick={() => {
+              setUploadedShareResult(null);
+              setImageUploadError(null);
+              setUploadImageFile(null);
+              if (uploadImagePreview) URL.revokeObjectURL(uploadImagePreview);
+              setUploadImagePreview(null);
+              setUploadBusinessName(projects[0]?.businessName || "General Assets");
+              setUploadCustomBusiness("");
+              setUploadClientName(projects[0]?.clientName || "");
+              setUploadNotes("");
+              setShowUploadModal(true);
+            }}
             className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-gradient-to-r from-[#a855f7] to-[#ff8a5b] text-white hover:shadow-[0_0_20px_rgba(168,85,247,0.3)] transition text-xs font-bold active:scale-[0.98]"
+          >
+            <ImageIcon className="h-4 w-4" />
+            Upload & Share Image
+          </button>
+          <button 
+            onClick={() => setShowCreateModal(true)}
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-white transition text-xs font-bold active:scale-[0.98]"
           >
             <Plus className="h-4 w-4" />
             Create Request Link
@@ -520,29 +670,70 @@ function AssetsPage() {
                                       className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition duration-300"
                                     />
                                     {/* Glass Overlay Actions */}
-                                    <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition flex items-center justify-center gap-2">
+                                    <div className="absolute inset-0 bg-black/65 opacity-0 group-hover:opacity-100 transition flex items-center justify-center gap-2 p-2">
                                       <button 
                                         onClick={() => setLightboxAsset(asset)}
                                         className="h-8 w-8 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition active:scale-90"
+                                        title="View in Lightbox"
                                       >
                                         <Eye className="h-4 w-4" />
                                       </button>
                                       <button 
+                                        onClick={() => handleCopyShareLink(asset)}
+                                        className={`h-8 w-8 rounded-lg flex items-center justify-center text-white transition active:scale-90 ${
+                                          copiedShareAssetId === asset.id 
+                                            ? "bg-emerald-500/30 text-emerald-300 border border-emerald-500/40" 
+                                            : "bg-white/10 hover:bg-white/20"
+                                        }`}
+                                        title="Copy public share link"
+                                      >
+                                        {copiedShareAssetId === asset.id ? (
+                                          <Check className="h-4 w-4 text-emerald-400" />
+                                        ) : (
+                                          <Share2 className="h-4 w-4" />
+                                        )}
+                                      </button>
+                                      <button 
                                         onClick={() => triggerDownload(asset.cloudinaryUrl, asset.originalFilename)}
                                         className="h-8 w-8 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition active:scale-90"
+                                        title="Download Image"
                                       >
                                         <Download className="h-4 w-4" />
                                       </button>
                                       <button 
                                         onClick={() => setDeleteConfirmTarget({ type: "asset", idOrName: asset.id, extraLabel: asset.originalFilename })}
                                         className="h-8 w-8 rounded-lg bg-rose-500/20 hover:bg-rose-500/30 flex items-center justify-center text-rose-400 transition active:scale-90"
+                                        title="Delete Asset"
                                       >
                                         <Trash2 className="h-4 w-4" />
                                       </button>
                                     </div>
-                                    <div className="absolute bottom-0 inset-x-0 p-2 bg-gradient-to-t from-black/80 to-transparent">
-                                      <span className="block text-[9px] text-white/80 truncate">{asset.originalFilename}</span>
-                                      <span className="text-[8px] text-white/40">{formatSize(asset.fileSize)}</span>
+                                    <div className="absolute bottom-0 inset-x-0 p-2 bg-gradient-to-t from-black/85 via-black/50 to-transparent flex items-center justify-between">
+                                      <div className="min-w-0 pr-1">
+                                        <span className="block text-[9px] text-white/90 font-medium truncate">{asset.originalFilename}</span>
+                                        <span className="text-[8px] text-white/40">{formatSize(asset.fileSize)}</span>
+                                      </div>
+                                      <button
+                                        onClick={() => handleCopyShareLink(asset)}
+                                        className={`h-5 px-1.5 rounded text-[8px] font-bold shrink-0 transition flex items-center gap-1 ${
+                                          copiedShareAssetId === asset.id
+                                            ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
+                                            : "bg-white/10 hover:bg-white/20 text-white/70 hover:text-white"
+                                        }`}
+                                        title="Copy Share Link"
+                                      >
+                                        {copiedShareAssetId === asset.id ? (
+                                          <>
+                                            <Check className="h-2.5 w-2.5" />
+                                            <span>Copied</span>
+                                          </>
+                                        ) : (
+                                          <>
+                                            <Share2 className="h-2.5 w-2.5" />
+                                            <span>Share</span>
+                                          </>
+                                        )}
+                                      </button>
                                     </div>
                                   </div>
                                 ))}
@@ -743,6 +934,325 @@ function AssetsPage() {
         </div>
       )}
 
+      {/* UPLOAD & SHARE IMAGE MODAL */}
+      <AnimatePresence>
+        {showUploadModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+            <motion.div 
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              className="bg-[#11042b] border border-white/10 w-full max-w-lg rounded-3xl overflow-hidden shadow-2xl"
+            >
+              {/* Modal Header */}
+              <div className="px-6 py-4 border-b border-white/5 bg-gradient-to-r from-[#a855f7]/15 via-[#11042b] to-[#ff8a5b]/15 flex items-center justify-between">
+                <div className="flex items-center gap-2.5">
+                  <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-[#a855f7]/20 to-[#ff8a5b]/20 border border-[#a855f7]/30 flex items-center justify-center text-[#ff8a5b]">
+                    <ImageIcon className="h-4 w-4" />
+                  </div>
+                  <div>
+                    <h3 className="font-serif text-base font-bold text-white">Upload & Share Image</h3>
+                    <p className="text-[10px] text-white/40">Securely store on Cloudinary and get an instant shareable link</p>
+                  </div>
+                </div>
+                <button 
+                  onClick={() => setShowUploadModal(false)}
+                  className="h-8 w-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-white/40 hover:text-white transition"
+                >
+                  <EyeOff className="h-4 w-4" />
+                </button>
+              </div>
+
+              {uploadedShareResult ? (
+                /* Success State */
+                <div className="p-6 space-y-6 text-center">
+                  <div className="h-14 w-14 mx-auto rounded-2xl bg-emerald-500/10 border border-emerald-500/25 flex items-center justify-center text-emerald-400 shadow-inner">
+                    <Check className="h-7 w-7" />
+                  </div>
+
+                  <div className="space-y-1">
+                    <h4 className="text-lg font-serif font-bold text-white">Image Uploaded Successfully!</h4>
+                    <p className="text-xs text-white/50">Your public shareable link has been generated.</p>
+                  </div>
+
+                  {/* Uploaded Image Preview & Details */}
+                  <div className="p-3 bg-black/30 border border-white/5 rounded-2xl flex items-center gap-3 text-left">
+                    <img 
+                      src={uploadedShareResult.cloudinaryUrl} 
+                      alt={uploadedShareResult.filename}
+                      className="h-14 w-14 rounded-xl object-cover border border-white/10 shrink-0" 
+                    />
+                    <div className="min-w-0 flex-1">
+                      <span className="block text-xs font-bold text-white truncate">{uploadedShareResult.filename}</span>
+                      <span className="block text-[10px] text-white/40 font-mono mt-0.5">{formatSize(uploadedShareResult.fileSize)}</span>
+                    </div>
+                  </div>
+
+                  {/* Share Link Copy Box */}
+                  <div className="space-y-2 text-left">
+                    <label className="block text-[10px] font-bold text-white/50 uppercase tracking-wider">
+                      Public Shareable Link
+                    </label>
+                    <div className="flex items-center gap-2">
+                      <input 
+                        type="text" 
+                        readOnly 
+                        value={uploadedShareResult.shareUrl}
+                        className="flex-1 bg-black/40 border border-white/10 rounded-xl px-3.5 py-2.5 text-xs text-[#ff8a5b] font-mono select-all focus:outline-none"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          navigator.clipboard.writeText(uploadedShareResult.shareUrl);
+                          setCopiedModalLink(true);
+                          setTimeout(() => setCopiedModalLink(false), 2000);
+                        }}
+                        className="h-10 px-4 rounded-xl bg-gradient-to-r from-[#a855f7] to-[#ff8a5b] text-white text-xs font-bold flex items-center gap-1.5 hover:shadow-[0_0_15px_rgba(168,85,247,0.3)] transition active:scale-95 shrink-0"
+                      >
+                        {copiedModalLink ? (
+                          <>
+                            <Check className="h-4 w-4" />
+                            <span>Copied!</span>
+                          </>
+                        ) : (
+                          <>
+                            <Copy className="h-4 w-4" />
+                            <span>Copy Link</span>
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Actions */}
+                  <div className="flex items-center justify-between pt-2 border-t border-white/5">
+                    <a
+                      href={uploadedShareResult.shareUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 text-xs font-bold text-[#a855f7] hover:text-[#ff8a5b] transition"
+                    >
+                      <ExternalLink className="h-3.5 w-3.5" />
+                      Preview Shared Page
+                    </a>
+
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setUploadedShareResult(null);
+                          setUploadImageFile(null);
+                          if (uploadImagePreview) URL.revokeObjectURL(uploadImagePreview);
+                          setUploadImagePreview(null);
+                          setUploadNotes("");
+                        }}
+                        className="px-4 py-2 rounded-full border border-white/10 text-xs font-bold text-white/70 hover:bg-white/5 transition"
+                      >
+                        Upload Another
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setShowUploadModal(false)}
+                        className="px-5 py-2 rounded-full bg-white/10 hover:bg-white/20 text-xs font-bold text-white transition"
+                      >
+                        Done
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                /* Upload Form */
+                <form onSubmit={handleUploadImageSubmit} className="p-6 space-y-4">
+                  {/* Drag & Drop File Zone */}
+                  <div>
+                    <label className="block text-[10px] font-bold text-white/50 uppercase tracking-wider mb-1.5">
+                      Select Image File *
+                    </label>
+                    {uploadImagePreview ? (
+                      <div className="relative p-3 rounded-2xl border border-white/10 bg-black/30 flex items-center justify-between gap-3">
+                        <div className="flex items-center gap-3 min-w-0">
+                          <img 
+                            src={uploadImagePreview} 
+                            alt="Selected" 
+                            className="h-12 w-12 rounded-xl object-cover border border-white/10" 
+                          />
+                          <div className="min-w-0">
+                            <span className="block text-xs font-bold text-white truncate max-w-xs">{uploadImageFile?.name}</span>
+                            <span className="block text-[10px] text-white/40 font-mono mt-0.5">{uploadImageFile ? formatSize(uploadImageFile.size) : ""}</span>
+                          </div>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (uploadImagePreview) URL.revokeObjectURL(uploadImagePreview);
+                            setUploadImagePreview(null);
+                            setUploadImageFile(null);
+                          }}
+                          className="h-8 w-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-white/40 hover:text-white transition"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      </div>
+                    ) : (
+                      <label 
+                        onDragOver={(e) => { e.preventDefault(); setDragActiveModal(true); }}
+                        onDragLeave={() => setDragActiveModal(false)}
+                        onDrop={(e) => {
+                          e.preventDefault();
+                          setDragActiveModal(false);
+                          if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+                            handleImageFileSelect(e.dataTransfer.files[0]);
+                          }
+                        }}
+                        className={`border-2 border-dashed rounded-2xl p-6 flex flex-col items-center justify-center gap-2 cursor-pointer transition select-none ${
+                          dragActiveModal 
+                            ? "bg-[#a855f7]/15 border-[#a855f7]" 
+                            : "bg-white/5 border-white/10 hover:border-white/20"
+                        }`}
+                      >
+                        <input 
+                          type="file" 
+                          accept="image/*"
+                          onChange={(e) => {
+                            if (e.target.files && e.target.files[0]) {
+                              handleImageFileSelect(e.target.files[0]);
+                            }
+                          }}
+                          className="hidden" 
+                        />
+                        <div className="h-10 w-10 rounded-full bg-white/5 flex items-center justify-center text-[#ff8a5b]">
+                          <ImageIcon className="h-5 w-5" />
+                        </div>
+                        <p className="text-xs font-semibold text-white">Click or drag image file here</p>
+                        <p className="text-[10px] text-white/35">Supports PNG, JPG, WEBP, SVG, GIF</p>
+                      </label>
+                    )}
+                  </div>
+
+                  {/* Business / Client Group */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-[10px] font-bold text-white/50 uppercase tracking-wider mb-1">
+                        Client / Folder *
+                      </label>
+                      <select 
+                        value={uploadBusinessName}
+                        onChange={(e) => {
+                          setUploadBusinessName(e.target.value);
+                          if (e.target.value !== "custom") {
+                            const p = projects.find(proj => proj.businessName === e.target.value);
+                            if (p?.clientName) setUploadClientName(p.clientName);
+                          }
+                        }}
+                        className="w-full bg-[#1b0a3c] border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-[#a855f7]"
+                      >
+                        {projects.map((p, idx) => (
+                          <option key={p.id || idx} value={p.businessName}>
+                            {p.businessName} ({p.clientName})
+                          </option>
+                        ))}
+                        <option value="General Assets">General Assets</option>
+                        <option value="custom">+ New Custom Business</option>
+                      </select>
+                    </div>
+
+                    {uploadBusinessName === "custom" ? (
+                      <div>
+                        <label className="block text-[10px] font-bold text-white/50 uppercase tracking-wider mb-1">
+                          Custom Business Name *
+                        </label>
+                        <input 
+                          type="text" 
+                          required
+                          value={uploadCustomBusiness}
+                          onChange={(e) => setUploadCustomBusiness(e.target.value)}
+                          placeholder="e.g. Acme Studio"
+                          className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-xs text-white placeholder-white/20 focus:outline-none focus:border-[#a855f7]"
+                        />
+                      </div>
+                    ) : (
+                      <div>
+                        <label className="block text-[10px] font-bold text-white/50 uppercase tracking-wider mb-1">
+                          Client Name (Optional)
+                        </label>
+                        <input 
+                          type="text" 
+                          value={uploadClientName}
+                          onChange={(e) => setUploadClientName(e.target.value)}
+                          placeholder="e.g. John Smith"
+                          className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-xs text-white placeholder-white/20 focus:outline-none focus:border-[#a855f7]"
+                        />
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Notes / Instructions */}
+                  <div>
+                    <label className="block text-[10px] font-bold text-white/50 uppercase tracking-wider mb-1">
+                      Notes / Description (Optional)
+                    </label>
+                    <textarea 
+                      value={uploadNotes}
+                      onChange={(e) => setUploadNotes(e.target.value)}
+                      placeholder="e.g. High-resolution homepage hero mockup v2"
+                      rows={2}
+                      className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-xs text-white placeholder-white/20 focus:outline-none focus:border-[#a855f7] resize-none"
+                    />
+                  </div>
+
+                  {/* Upload Progress Bar */}
+                  {isUploadingImage && (
+                    <div className="space-y-1.5 p-3 rounded-xl bg-black/40 border border-white/5">
+                      <div className="flex items-center justify-between text-[10px] text-white/60 font-mono">
+                        <span className="flex items-center gap-1.5">
+                          <Loader2 className="h-3 w-3 animate-spin text-[#a855f7]" />
+                          Uploading to Cloudinary...
+                        </span>
+                        <span>{imageUploadProgress}%</span>
+                      </div>
+                      <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+                        <div 
+                          className="h-full bg-gradient-to-r from-[#a855f7] to-[#ff8a5b] transition-all duration-150"
+                          style={{ width: `${imageUploadProgress}%` }}
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Error display */}
+                  {imageUploadError && (
+                    <div className="p-3 rounded-xl border border-rose-500/20 bg-rose-500/10 text-rose-400 text-xs flex items-center gap-2">
+                      <AlertTriangle className="h-4 w-4 shrink-0" />
+                      <span>{imageUploadError}</span>
+                    </div>
+                  )}
+
+                  {/* Modal Footer Buttons */}
+                  <div className="flex justify-end gap-3 pt-3 border-t border-white/5">
+                    <button 
+                      type="button"
+                      onClick={() => setShowUploadModal(false)}
+                      disabled={isUploadingImage}
+                      className="px-4 py-2 rounded-full border border-white/10 text-xs text-white/70 hover:bg-white/5 transition disabled:opacity-50"
+                    >
+                      Cancel
+                    </button>
+                    <button 
+                      type="submit"
+                      disabled={!uploadImageFile || isUploadingImage || (uploadBusinessName === "custom" && !uploadCustomBusiness)}
+                      className="px-6 py-2.5 rounded-full bg-gradient-to-r from-[#a855f7] to-[#ff8a5b] text-white hover:shadow-[0_0_20px_rgba(168,85,247,0.3)] transition text-xs font-bold flex items-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed active:scale-95"
+                    >
+                      {isUploadingImage && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
+                      Upload & Create Link
+                    </button>
+                  </div>
+                </form>
+              )}
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
       {/* CREATE UPLOAD PORTAL LINK MODAL */}
       <AnimatePresence>
         {showCreateModal && (
@@ -895,6 +1405,26 @@ function AssetsPage() {
             onClick={() => setLightboxAsset(null)}
           >
             <div className="absolute top-4 right-4 flex items-center gap-3" onClick={e => e.stopPropagation()}>
+              <button 
+                onClick={() => handleCopyShareLink(lightboxAsset)}
+                className={`h-9 px-4 rounded-full border flex items-center gap-1.5 text-xs font-bold transition active:scale-95 ${
+                  copiedShareAssetId === lightboxAsset.id
+                    ? "bg-emerald-500/20 border-emerald-500/40 text-emerald-400"
+                    : "bg-white/10 hover:bg-white/20 border-white/10 text-white"
+                }`}
+              >
+                {copiedShareAssetId === lightboxAsset.id ? (
+                  <>
+                    <Check className="h-3.5 w-3.5 text-emerald-400" />
+                    <span>Link Copied!</span>
+                  </>
+                ) : (
+                  <>
+                    <Share2 className="h-3.5 w-3.5" />
+                    <span>Copy Share Link</span>
+                  </>
+                )}
+              </button>
               <a 
                 href={lightboxAsset.cloudinaryUrl} 
                 download={lightboxAsset.originalFilename}

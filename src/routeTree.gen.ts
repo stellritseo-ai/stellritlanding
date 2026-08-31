@@ -27,6 +27,7 @@ import { Route as InsightsIndexRouteImport } from './routes/insights.index'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard/index'
 import { Route as CaseStudiesIndexRouteImport } from './routes/case-studies.index'
 import { Route as UploadTokenRouteImport } from './routes/upload.$token'
+import { Route as ShareTokenRouteImport } from './routes/share.$token'
 import { Route as ServicesSlugRouteImport } from './routes/services.$slug'
 import { Route as InsightsSlugRouteImport } from './routes/insights.$slug'
 import { Route as DashboardTeamChatRouteImport } from './routes/dashboard/team-chat'
@@ -132,6 +133,11 @@ const UploadTokenRoute = UploadTokenRouteImport.update({
   path: '/upload/$token',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ShareTokenRoute = ShareTokenRouteImport.update({
+  id: '/share/$token',
+  path: '/share/$token',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ServicesSlugRoute = ServicesSlugRouteImport.update({
   id: '/$slug',
   path: '/$slug',
@@ -231,6 +237,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/team-chat': typeof DashboardTeamChatRoute
   '/insights/$slug': typeof InsightsSlugRoute
   '/services/$slug': typeof ServicesSlugRoute
+  '/share/$token': typeof ShareTokenRoute
   '/upload/$token': typeof UploadTokenRoute
   '/case-studies/': typeof CaseStudiesIndexRoute
   '/dashboard/': typeof DashboardIndexRoute
@@ -261,6 +268,7 @@ export interface FileRoutesByTo {
   '/dashboard/team-chat': typeof DashboardTeamChatRoute
   '/insights/$slug': typeof InsightsSlugRoute
   '/services/$slug': typeof ServicesSlugRoute
+  '/share/$token': typeof ShareTokenRoute
   '/upload/$token': typeof UploadTokenRoute
   '/case-studies': typeof CaseStudiesIndexRoute
   '/dashboard': typeof DashboardIndexRoute
@@ -296,6 +304,7 @@ export interface FileRoutesById {
   '/dashboard/team-chat': typeof DashboardTeamChatRoute
   '/insights/$slug': typeof InsightsSlugRoute
   '/services/$slug': typeof ServicesSlugRoute
+  '/share/$token': typeof ShareTokenRoute
   '/upload/$token': typeof UploadTokenRoute
   '/case-studies/': typeof CaseStudiesIndexRoute
   '/dashboard/': typeof DashboardIndexRoute
@@ -332,6 +341,7 @@ export interface FileRouteTypes {
     | '/dashboard/team-chat'
     | '/insights/$slug'
     | '/services/$slug'
+    | '/share/$token'
     | '/upload/$token'
     | '/case-studies/'
     | '/dashboard/'
@@ -362,6 +372,7 @@ export interface FileRouteTypes {
     | '/dashboard/team-chat'
     | '/insights/$slug'
     | '/services/$slug'
+    | '/share/$token'
     | '/upload/$token'
     | '/case-studies'
     | '/dashboard'
@@ -396,6 +407,7 @@ export interface FileRouteTypes {
     | '/dashboard/team-chat'
     | '/insights/$slug'
     | '/services/$slug'
+    | '/share/$token'
     | '/upload/$token'
     | '/case-studies/'
     | '/dashboard/'
@@ -417,6 +429,7 @@ export interface RootRouteChildren {
   ServicesRoute: typeof ServicesRouteWithChildren
   SmsTermsRoute: typeof SmsTermsRoute
   TermsRoute: typeof TermsRoute
+  ShareTokenRoute: typeof ShareTokenRoute
   UploadTokenRoute: typeof UploadTokenRoute
 }
 
@@ -546,6 +559,13 @@ declare module '@tanstack/react-router' {
       path: '/upload/$token'
       fullPath: '/upload/$token'
       preLoaderRoute: typeof UploadTokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/share/$token': {
+      id: '/share/$token'
+      path: '/share/$token'
+      fullPath: '/share/$token'
+      preLoaderRoute: typeof ShareTokenRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/services/$slug': {
@@ -739,6 +759,7 @@ const rootRouteChildren: RootRouteChildren = {
   ServicesRoute: ServicesRouteWithChildren,
   SmsTermsRoute: SmsTermsRoute,
   TermsRoute: TermsRoute,
+  ShareTokenRoute: ShareTokenRoute,
   UploadTokenRoute: UploadTokenRoute,
 }
 export const routeTree = rootRouteImport
