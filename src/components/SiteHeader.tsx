@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link } from "@tanstack/react-router";
 import { ArrowUpRight, Menu } from "lucide-react";
 import MenuOverlay from "./MenuOverlay";
@@ -8,12 +8,18 @@ import logoImg from "@/assets/logo.png";
 export default function SiteHeader({ transparent = false, homepage = false, hideNav = false }: { transparent?: boolean; homepage?: boolean; hideNav?: boolean }) {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const scrolledRef = useRef(false);
 
   useEffect(() => {
     const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
+      const next = window.scrollY > 20;
+      if (next !== scrolledRef.current) {
+        scrolledRef.current = next;
+        setScrolled(next);
+      }
     };
-    window.addEventListener("scroll", handleScroll);
+    handleScroll();
+    window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 

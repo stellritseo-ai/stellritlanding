@@ -43,7 +43,7 @@ function Word({
     <span className="relative mr-[0.25em] inline-block">
       <span className="text-white/15">{children}</span>
       <motion.span
-        style={{ opacity, willChange: "opacity" }}
+        style={{ opacity }}
         className="absolute left-0 top-0 inline-block text-white"
       >
         {children}

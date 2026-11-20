@@ -54,19 +54,26 @@ function ServiceRow({
   idx: number;
 }) {
   const ref = useRef<HTMLDivElement>(null);
+  const rectRef = useRef<DOMRect | null>(null);
   const mx = useMotionValue(0);
   const my = useMotionValue(0);
   const sx = useSpring(mx, { stiffness: 180, damping: 22, mass: 0.4 });
   const sy = useSpring(my, { stiffness: 180, damping: 22, mass: 0.4 });
 
+  const onEnter = () => {
+    if (ref.current) rectRef.current = ref.current.getBoundingClientRect();
+    onHover();
+  };
+
   const onMove = (e: MouseEvent<HTMLDivElement>) => {
-    const r = ref.current?.getBoundingClientRect();
+    const r = rectRef.current ?? ref.current?.getBoundingClientRect();
     if (!r) return;
     mx.set((e.clientX - (r.left + r.width / 2)) * 0.03);
     my.set((e.clientY - (r.top + r.height / 2)) * 0.05);
   };
 
   const onLeave = () => {
+    rectRef.current = null;
     mx.set(0);
     my.set(0);
   };
@@ -79,7 +86,7 @@ function ServiceRow({
     >
       <motion.div
         ref={ref}
-        onMouseEnter={onHover}
+        onMouseEnter={onEnter}
         onMouseMove={onMove}
         onMouseLeave={onLeave}
         initial={{ opacity: 0, y: 32 }}
@@ -170,6 +177,7 @@ function ServiceRow({
 export default function Services() {
   const [active, setActive] = useState(0);
   const stageRef = useRef<HTMLDivElement>(null);
+  const stageRectRef = useRef<DOMRect | null>(null);
 
   const ix = useMotionValue(0);
   const iy = useMotionValue(0);
@@ -180,13 +188,17 @@ export default function Services() {
   const tx = useTransform(six, [-1, 1], [-10, 10]);
   const ty = useTransform(siy, [-1, 1], [-10, 10]);
 
+  const onStageEnter = () => {
+    if (stageRef.current) stageRectRef.current = stageRef.current.getBoundingClientRect();
+  };
   const onStageMove = (e: MouseEvent<HTMLDivElement>) => {
-    const r = stageRef.current?.getBoundingClientRect();
-    if (!r) return;
+    const r = stageRectRef.current ?? stageRef.current?.getBoundingClientRect();
+    if (!r || !r.width || !r.height) return;
     ix.set(((e.clientX - r.left) / r.width - 0.5) * 2);
     iy.set(((e.clientY - r.top) / r.height - 0.5) * 2);
   };
   const onStageLeave = () => {
+    stageRectRef.current = null;
     ix.set(0);
     iy.set(0);
   };
@@ -205,6 +217,7 @@ export default function Services() {
 
       <div
         className="relative mx-auto max-w-7xl px-6 md:px-12 w-full"
+        onMouseEnter={onStageEnter}
         onMouseMove={onStageMove}
         onMouseLeave={onStageLeave}
       >
@@ -261,35 +274,36 @@ export default function Services() {
             className="relative mx-auto hidden h-[420px] w-full md:block lg:h-[480px]"
             style={{ perspective: 1200 }}
           >
-            {/* Ambient glow behind image */}
+            {/* Ambient glow behind image — pure radial gradient without blur-2xl */}
             <motion.div
               key={active}
               animate={{ opacity: [0, 0.5, 0.3] }}
               transition={{ duration: 1.2 }}
-              className="absolute -inset-6 rounded-[32px] blur-2xl"
+              className="pointer-events-none absolute -inset-10 rounded-[32px]"
               style={{
                 background:
-                  "radial-gradient(ellipse at center, rgba(122,42,220,0.3), rgba(255,138,91,0.15), transparent 70%)",
+                  "radial-gradient(ellipse at center, rgba(122,42,220,0.28) 0%, rgba(255,138,91,0.14) 40%, transparent 72%)",
               }}
             />
 
             <motion.div
               style={{ rotateX: rotX, rotateY: rotY, x: tx, y: ty, transformStyle: "preserve-3d" }}
-              className="relative h-full w-full will-change-transform"
+              className="relative h-full w-full"
             >
               <AnimatePresence mode="wait">
                 <motion.div
                   key={SERVICES[active].image}
-                  initial={{ opacity: 0, scale: 1.05, filter: "blur(12px)" }}
-                  animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
-                  exit={{ opacity: 0, scale: 0.97, filter: "blur(8px)" }}
-                  transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
+                  initial={{ opacity: 0, scale: 1.05 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.97 }}
+                  transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
                   className="absolute inset-0 overflow-hidden rounded-2xl shadow-[0_40px_100px_-20px_rgba(0,0,0,0.7)]"
                 >
                   <img
                     src={SERVICES[active].image}
                     alt={SERVICES[active].title}
                     loading="lazy"
+                    decoding="async"
                     className="h-full w-full object-cover"
                   />
                   {/* Overlay gradient */}

@@ -1,14 +1,11 @@
 import { useRef, useEffect, useState } from "react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { MapPin, Phone, Mail, Send } from "lucide-react";
 import { toast } from "sonner";
 import { Link } from "@tanstack/react-router";
 import { submitWebsiteEmailFn } from "../lib/dashboard.functions.server";
+import { useInViewActive } from "@/hooks/use-in-view-active";
 
 import logoImg from "@/assets/logo.png";
-
-gsap.registerPlugin(ScrollTrigger);
 
 type LinkItem = { label: string; to: string };
 const COMPANY: LinkItem[] = [
@@ -43,40 +40,54 @@ export default function Footer() {
   const topRef = useRef<HTMLDivElement>(null);
   const columnsRef = useRef<HTMLDivElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
+  const wordmarkRef = useRef<HTMLDivElement>(null);
+  const wordmarkActive = useInViewActive(wordmarkRef, "100px");
   const [email, setEmail] = useState("");
+  const [honeypot, setHoneypot] = useState("");
+  const formLoadedAtRef = useRef<number>(Date.now());
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
+  // Lightweight one-shot IntersectionObserver reveal (replaces GSAP ScrollTrigger global rAF ticker)
   useEffect(() => {
-    const ctx = gsap.context(() => {
-      const revealFrom = { y: 40, opacity: 0 };
-      const revealTo = {
-        y: 0,
-        opacity: 1,
-        duration: 0.9,
-        stagger: 0.1,
-        ease: "power3.out",
-      } as const;
-      const triggerConfig = {
-        start: "top 85%",
-        toggleActions: "play none none none",
-      } as const;
+    const containers = [topRef.current, columnsRef.current, bottomRef.current].filter(
+      (el): el is HTMLDivElement => el !== null
+    );
+    if (!containers.length) return;
 
-      [topRef, columnsRef, bottomRef].forEach((r) => {
-        if (r.current) {
-          gsap.fromTo(r.current.children, revealFrom, {
-            ...revealTo,
-            scrollTrigger: { trigger: r.current, ...triggerConfig },
-          });
-        }
+    containers.forEach((container) => {
+      Array.from(container.children).forEach((child, idx) => {
+        const el = child as HTMLElement;
+        el.style.opacity = "0";
+        el.style.transform = "translate3d(0, 40px, 0)";
+        el.style.transition = `opacity 0.9s cubic-bezier(0.22, 1, 0.36, 1) ${idx * 100}ms, transform 0.9s cubic-bezier(0.22, 1, 0.36, 1) ${idx * 100}ms`;
       });
     });
-    return () => ctx.revert();
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            Array.from(entry.target.children).forEach((child) => {
+              const el = child as HTMLElement;
+              el.style.opacity = "1";
+              el.style.transform = "translate3d(0, 0, 0)";
+            });
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { rootMargin: "0px 0px -10% 0px", threshold: 0.05 }
+    );
+
+    containers.forEach((c) => observer.observe(c));
+    return () => observer.disconnect();
   }, []);
 
   const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+    if (honeypot) return;
 
     const trimmed = email.trim();
     if (!trimmed) {
@@ -95,6 +106,8 @@ export default function Footer() {
         data: {
           email: trimmed,
           type: "newsletter",
+          hp: honeypot,
+          formLoadedAt: formLoadedAtRef.current,
         },
       });
       setEmail("");
@@ -230,6 +243,17 @@ export default function Footer() {
               </p>
             </div>
             <form onSubmit={handleSubscribe} className="flex w-full flex-col gap-3 md:w-auto md:flex-row md:items-start">
+              {/* Hidden honeypot field for bot filtering */}
+              <input
+                type="text"
+                name="company_website"
+                value={honeypot}
+                onChange={(e) => setHoneypot(e.target.value)}
+                tabIndex={-1}
+                autoComplete="off"
+                aria-hidden="true"
+                className="hidden"
+              />
               <div className="flex w-full flex-col gap-1 md:w-auto">
                 <input
                   type="email"
@@ -279,10 +303,16 @@ export default function Footer() {
       </div>
 
       {/* Giant wordmark */}
-      <div className="relative z-10 pointer-events-none overflow-hidden px-2 sm:px-4 pt-6 md:pt-0 pb-8 md:pb-4 mt-0 md:mt-0">
+      <div
+        ref={wordmarkRef}
+        className="relative z-10 pointer-events-none overflow-hidden px-2 sm:px-4 pt-6 md:pt-0 pb-8 md:pb-4 mt-0 md:mt-0"
+      >
         <div
           className="shimmer-text select-none whitespace-nowrap text-center font-sans font-black uppercase leading-[0.8] tracking-[0.1em] md:tracking-[0.25em] mr-[-0.1em] md:mr-[-0.25em] mt-0 md:mt-[-10px] mb-0 md:mb-[-33px]"
-          style={{ fontSize: "clamp(60px, 12vw, 220px)" }}
+          style={{
+            fontSize: "clamp(60px, 12vw, 220px)",
+            animationPlayState: wordmarkActive ? "running" : "paused",
+          }}
         >
           StellR IT
         </div>

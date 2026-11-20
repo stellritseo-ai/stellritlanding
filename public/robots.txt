@@ -1,17 +1,27 @@
 # =========================================================
 # robots.txt — StellR IT LLC (https://stellrit.com)
-# Updated: 2026-08-03
+# Updated: 2026-11-20
 # =========================================================
 
-# ---- Default: All Robots --------------------------------
+# ---- Default: Restrict private & internal endpoints -----
 User-agent: *
 Allow: /
+Disallow: /dashboard
+Disallow: /dashboard/
+Disallow: /login
+Disallow: /upload/
+Disallow: /share/
+Disallow: /_serverFn/
+Crawl-delay: 5
 
-
-# ---- Google (full access, standard crawl) ---------------
+# ---- Google (full public access for SEO) ----------------
 User-agent: Googlebot
 Allow: /
-Crawl-delay: 1
+Disallow: /dashboard
+Disallow: /login
+Disallow: /upload/
+Disallow: /share/
+Disallow: /_serverFn/
 
 User-agent: Googlebot-Image
 Allow: /
@@ -19,53 +29,46 @@ Allow: /
 User-agent: Googlebot-Video
 Allow: /
 
-# ---- Bing -----------------------------------------------
+# ---- Bing & DuckDuckGo & Apple --------------------------
 User-agent: Bingbot
 Allow: /
+Disallow: /dashboard
+Disallow: /login
+Disallow: /upload/
+Disallow: /share/
+Disallow: /_serverFn/
 Crawl-delay: 2
 
-# ---- AI & Generative Search (Allow for GEO visibility) --
-# Allow GPTBot so StellR IT appears in ChatGPT responses
-User-agent: GPTBot
+User-agent: DuckDuckBot
 Allow: /
+Disallow: /dashboard
+Disallow: /login
+Disallow: /upload/
+Disallow: /share/
 
-# Allow Google-Extended for Gemini AI and Google AI Overviews
-User-agent: Google-Extended
-Allow: /
-
-# Allow Claude (Anthropic) for AI search visibility
-User-agent: Claude-Web
-Allow: /
-User-agent: anthropic-ai
-Allow: /
-User-agent: ClaudeBot
-Allow: /
-
-# Allow Perplexity for AI search
-User-agent: PerplexityBot
-Allow: /
-
-# Allow Cohere for AI indexing
-User-agent: cohere-ai
-Allow: /
-
-# Allow Meta AI
-User-agent: FacebookBot
-Allow: /
-
-# Allow Microsoft Copilot (OAI-SearchBot)
-User-agent: OAI-SearchBot
-Allow: /
-
-# Allow Amazon Alexa
-User-agent: Amazonbot
-Allow: /
-
-# Allow Apple (Applebot)
 User-agent: Applebot
 Allow: /
+Disallow: /dashboard
+Disallow: /login
+Disallow: /upload/
+Disallow: /share/
 
-# ---- Content Aggregators (allow) -----------------------
+# ---- On-Demand AI Search (Allow for visibility) ---------
+User-agent: OAI-SearchBot
+Allow: /
+Disallow: /dashboard
+Disallow: /login
+Disallow: /upload/
+Disallow: /share/
+
+User-agent: PerplexityBot
+Allow: /
+Disallow: /dashboard
+Disallow: /login
+Disallow: /upload/
+Disallow: /share/
+
+# ---- Social Preview Bots (Allow for rich link cards) ----
 User-agent: Twitterbot
 Allow: /
 
@@ -75,9 +78,12 @@ Allow: /
 User-agent: Slackbot
 Allow: /
 
-# ---- Disallow harmful/scraper bots ---------------------
+# ---- Block Scrapers, SEO Crawlers & Bulk AI Harvesters --
 User-agent: AhrefsBot
+Disallow: /
+
 User-agent: SemrushBot
+Disallow: /
 
 User-agent: MJ12bot
 Disallow: /
@@ -89,6 +95,84 @@ User-agent: BLEXBot
 Disallow: /
 
 User-agent: DataForSeoBot
+Disallow: /
+
+User-agent: Barkrowler
+Disallow: /
+
+User-agent: MegaIndex
+Disallow: /
+
+User-agent: Bytespider
+Disallow: /
+
+User-agent: PetalBot
+Disallow: /
+
+User-agent: CCBot
+Disallow: /
+
+User-agent: GPTBot
+Disallow: /
+
+User-agent: ClaudeBot
+Disallow: /
+
+User-agent: Claude-Web
+Disallow: /
+
+User-agent: anthropic-ai
+Disallow: /
+
+User-agent: Amazonbot
+Disallow: /
+
+User-agent: Meta-ExternalAgent
+Disallow: /
+
+User-agent: FacebookBot
+Disallow: /
+
+User-agent: cohere-ai
+Disallow: /
+
+User-agent: ImagesiftBot
+Disallow: /
+
+User-agent: Diffbot
+Disallow: /
+
+User-agent: Omgilibot
+Disallow: /
+
+User-agent: Omgili
+Disallow: /
+
+User-agent: TurnitinBot
+Disallow: /
+
+User-agent: ZoominfoBot
+Disallow: /
+
+User-agent: Seekport
+Disallow: /
+
+User-agent: SentiBot
+Disallow: /
+
+User-agent: YandexBot
+Disallow: /
+
+User-agent: Baiduspider
+Disallow: /
+
+User-agent: Sogou
+Disallow: /
+
+User-agent: SeznamBot
+Disallow: /
+
+User-agent: Scrapy
 Disallow: /
 
 # ---- Sitemaps ------------------------------------------

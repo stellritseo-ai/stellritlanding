@@ -2,6 +2,7 @@ import { useState, useRef } from "react";
 import { motion, AnimatePresence, useMotionValue, useTransform, useSpring, useVelocity } from "framer-motion";
 import { ArrowUpRight, LayoutGrid, List } from "lucide-react";
 import { Link } from "@tanstack/react-router";
+import { useInViewActive } from "@/hooks/use-in-view-active";
 import brandImg from "@/assets/service-brand.jpg";
 import productImg from "@/assets/product.jpg";
 import liveNationImg from "@/assets/mobile-view.jpg";
@@ -99,6 +100,9 @@ export default function Portfolio() {
   const [layoutMode, setLayoutMode] = useState<"grid" | "list">("list");
 
   const listRef = useRef<HTMLDivElement>(null);
+  const listRectRef = useRef<DOMRect | null>(null);
+  const marqueeRef = useRef<HTMLDivElement>(null);
+  const marqueeActive = useInViewActive(marqueeRef, "100px");
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
   // List view mouse coordinates
@@ -120,15 +124,19 @@ export default function Portfolio() {
   const springRotate = useSpring(rotateVal, { stiffness: 150, damping: 25 });
   const springSkewX = useSpring(skewXVal, { stiffness: 150, damping: 25 });
 
-  const handleListMouseMove = (e: React.MouseEvent) => {
-    const container = listRef.current;
-    if (!container) return;
-    const rect = container.getBoundingClientRect();
-    const xVal = e.clientX - rect.left;
-    const yVal = e.clientY - rect.top;
+  const handleListMouseEnter = () => {
+    if (listRef.current) listRectRef.current = listRef.current.getBoundingClientRect();
+  };
 
-    cursorX.set(xVal);
-    cursorY.set(yVal);
+  const handleListMouseLeave = () => {
+    listRectRef.current = null;
+  };
+
+  const handleListMouseMove = (e: React.MouseEvent) => {
+    const rect = listRectRef.current ?? listRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    cursorX.set(e.clientX - rect.left);
+    cursorY.set(e.clientY - rect.top);
   };
 
   const filteredItems = ITEMS.filter(
@@ -137,19 +145,17 @@ export default function Portfolio() {
 
   return (
     <section className="relative z-10 py-[70px] overflow-hidden bg-[#070314]/20">
-      {/* Background ambient radial glows */}
+      {/* Background ambient radial glows — pure radial gradients without heavy live blur(90px) */}
       <div
-        className="pointer-events-none absolute left-1/3 top-1/4 h-[700px] w-[700px] rounded-full opacity-25"
+        className="pointer-events-none absolute left-1/3 top-1/4 h-[780px] w-[780px] rounded-full opacity-25"
         style={{
-          background: "radial-gradient(circle, rgba(168,85,247,0.1), transparent 70%)",
-          filter: "blur(90px)",
+          background: "radial-gradient(circle, rgba(168,85,247,0.12) 0%, rgba(168,85,247,0.04) 40%, transparent 70%)",
         }}
       />
       <div
-        className="pointer-events-none absolute right-1/4 bottom-1/4 h-[600px] w-[600px] rounded-full opacity-20"
+        className="pointer-events-none absolute right-1/4 bottom-1/4 h-[680px] w-[680px] rounded-full opacity-20"
         style={{
-          background: "radial-gradient(circle, rgba(255,138,91,0.08), transparent 70%)",
-          filter: "blur(95px)",
+          background: "radial-gradient(circle, rgba(255,138,91,0.1) 0%, rgba(255,138,91,0.03) 40%, transparent 70%)",
         }}
       />
 
@@ -254,6 +260,8 @@ export default function Portfolio() {
                 exit={{ opacity: 0, y: -20 }}
                 transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
                 ref={listRef}
+                onMouseEnter={handleListMouseEnter}
+                onMouseLeave={handleListMouseLeave}
                 onMouseMove={handleListMouseMove}
                 className="relative flex flex-col w-full border-t border-white/[0.06] mt-4"
               >
@@ -290,6 +298,8 @@ export default function Portfolio() {
                           key={item.title}
                           src={item.image}
                           alt={item.title}
+                          loading="lazy"
+                          decoding="async"
                           className="absolute inset-0 h-full w-full object-cover"
                           initial={{ opacity: 0 }}
                           animate={{ opacity: hoveredIndex === i ? 1 : 0 }}
@@ -305,7 +315,7 @@ export default function Portfolio() {
         </div>
 
         {/* Infinite Scrolling Logos */}
-        <div className="mt-24 overflow-hidden relative w-full flex flex-col items-center">
+        <div ref={marqueeRef} className="mt-24 overflow-hidden relative w-full flex flex-col items-center">
           <span className="text-[11px] uppercase tracking-[0.2em] text-white/30 font-medium mb-10 text-center">
             Trusted by innovative brands worldwide
           </span>
@@ -316,13 +326,18 @@ export default function Portfolio() {
               maskImage: "linear-gradient(to right, transparent, black 10%, black 90%, transparent)"
             }}
           >
-            <div className="flex w-max animate-infinite-scroll hover:[animation-play-state:paused] items-center">
+            <div
+              className="flex w-max animate-infinite-scroll hover:[animation-play-state:paused] items-center"
+              style={{ animationPlayState: marqueeActive ? "running" : "paused" }}
+            >
               {/* Double the logos array to create seamless loop */}
               {[...LOGOS, ...LOGOS].map((logo, idx) => (
                 <div key={idx} className="w-[150px] md:w-[180px] flex-shrink-0 flex items-center justify-center px-4 md:px-8">
                   <img
                     src={logo}
                     alt={`Partner Logo ${idx}`}
+                    loading="lazy"
+                    decoding="async"
                     className="max-h-12 md:max-h-12 w-auto object-contain brightness-0 invert opacity-50 hover:brightness-100 hover:invert-0 hover:opacity-100 transition-all duration-500"
                   />
                 </div>
@@ -347,6 +362,7 @@ export default function Portfolio() {
 
 function PortfolioCard({ item }: { item: PortfolioItem }) {
   const cardRef = useRef<HTMLDivElement>(null);
+  const rectRef = useRef<DOMRect | null>(null);
   const [isHovered, setIsHovered] = useState(false);
 
   const mouseX = useMotionValue(0);
@@ -360,10 +376,15 @@ function PortfolioCard({ item }: { item: PortfolioItem }) {
   const imgX = useSpring(useTransform(mouseX, [-0.5, 0.5], [12, -12]), { stiffness: 150, damping: 20 });
   const imgY = useSpring(useTransform(mouseY, [-0.5, 0.5], [12, -12]), { stiffness: 150, damping: 20 });
 
+  const handleMouseEnter = () => {
+    setIsHovered(true);
+    if (cardRef.current) rectRef.current = cardRef.current.getBoundingClientRect();
+  };
+
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const card = cardRef.current;
     if (!card) return;
-    const rect = card.getBoundingClientRect();
+    const rect = rectRef.current ?? card.getBoundingClientRect();
     const width = rect.width;
     const height = rect.height;
 
@@ -383,6 +404,7 @@ function PortfolioCard({ item }: { item: PortfolioItem }) {
 
   const handleMouseLeave = () => {
     setIsHovered(false);
+    rectRef.current = null;
     mouseX.set(0);
     mouseY.set(0);
   };
@@ -396,7 +418,7 @@ function PortfolioCard({ item }: { item: PortfolioItem }) {
       <motion.div
         ref={cardRef}
         onMouseMove={handleMouseMove}
-        onMouseEnter={() => setIsHovered(true)}
+        onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
         layout
         initial={{ opacity: 0, scale: 0.95 }}
@@ -476,13 +498,13 @@ function PortfolioCard({ item }: { item: PortfolioItem }) {
           </div>
         </div>
 
-        {/* Spotlight dynamic follow overlay */}
+        {/* Spotlight dynamic follow overlay — soft radial-gradient without live blur-[40px] */}
         <div
-          className="pointer-events-none absolute -translate-x-1/2 -translate-y-1/2 h-[320px] w-[320px] rounded-full opacity-0 transition-opacity duration-500 ease-out blur-[40px] group-hover:opacity-100 z-10"
+          className="pointer-events-none absolute -translate-x-1/2 -translate-y-1/2 h-[380px] w-[380px] rounded-full opacity-0 transition-opacity duration-500 ease-out group-hover:opacity-100 z-10"
           style={{
             left: "var(--mouse-x, 0px)",
             top: "var(--mouse-y, 0px)",
-            background: `radial-gradient(circle, ${item.glowColor} 0%, rgba(255,255,255,0.01) 60%, transparent 100%)`,
+            background: `radial-gradient(circle, ${item.glowColor} 0%, rgba(255,255,255,0.01) 48%, transparent 72%)`,
           }}
         />
 
@@ -493,6 +515,8 @@ function PortfolioCard({ item }: { item: PortfolioItem }) {
         <motion.img
           src={item.image}
           alt={item.title}
+          loading="lazy"
+          decoding="async"
           style={{
             x: imgX,
             y: imgY,

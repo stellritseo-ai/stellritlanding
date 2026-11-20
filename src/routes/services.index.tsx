@@ -7,6 +7,7 @@ import PageHero from "@/components/PageHero";
 import ScrollBackground from "@/components/ScrollBackground";
 import Footer from "@/components/Footer";
 import ChatWidget from "@/components/ChatWidget";
+import { ViewportVideo } from "@/components/ViewportVideo";
 
 import uxVideo from "@/assets/video/UX.mp4";
 import brandVideo from "@/assets/video/Brand.mp4";
@@ -304,7 +305,7 @@ function ServicesPage() {
         description="From AI development and brand foundations to engineered platforms and the growth programs that scale them. We replace the agency-of-agencies model with one accountable senior team."
       />
 
-      <div style={{ contentVisibility: "auto", containIntrinsicSize: "0 2000px" }}>
+      <div style={{ contentVisibility: "auto", containIntrinsicSize: "auto none auto 2000px" }}>
         <section className="bg-[#FAF5EE] text-[#240945] py-[60px]">
           <div className="mx-auto max-w-[1400px] px-6 md:px-12 lg:px-20">
           <motion.h1
@@ -324,13 +325,12 @@ function ServicesPage() {
               viewport={{ once: true }}
               className="relative"
             >
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-[80%] bg-[#a855f7]/20 blur-[80px] rounded-full pointer-events-none" />
-              <video
+              <div
+                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[95%] h-[95%] rounded-full pointer-events-none"
+                style={{ background: "radial-gradient(circle, rgba(168,85,247,0.2) 0%, transparent 70%)" }}
+              />
+              <ViewportVideo
                 src={uxVideo}
-                autoPlay
-                muted
-                loop
-                playsInline
                 aria-label="UX Research and Strategy demonstration video"
                 className="relative z-10 w-full h-auto rounded-2xl shadow-[0_20px_40px_rgba(36,9,69,0.1)] bg-white/50 border border-[#240945]/5"
               />
@@ -392,13 +392,12 @@ function ServicesPage() {
               viewport={{ once: true }}
               className="relative order-1 lg:order-2"
             >
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-[80%] bg-[#ff8a5b]/20 blur-[80px] rounded-full pointer-events-none" />
-              <video
+              <div
+                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[95%] h-[95%] rounded-full pointer-events-none"
+                style={{ background: "radial-gradient(circle, rgba(255,138,91,0.2) 0%, transparent 70%)" }}
+              />
+              <ViewportVideo
                 src={brandVideo}
-                autoPlay
-                muted
-                loop
-                playsInline
                 aria-label="Brand Identity Design demonstration video"
                 className="relative z-10 w-full h-auto rounded-2xl shadow-[0_20px_40px_rgba(36,9,69,0.1)] bg-white/50 border border-[#240945]/5"
               />
@@ -436,13 +435,12 @@ function ServicesPage() {
               viewport={{ once: true }}
               className="relative"
             >
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-[80%] bg-[#cc7aff]/20 blur-[80px] rounded-full pointer-events-none" />
-              <video
+              <div
+                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[95%] h-[95%] rounded-full pointer-events-none"
+                style={{ background: "radial-gradient(circle, rgba(204,122,255,0.2) 0%, transparent 70%)" }}
+              />
+              <ViewportVideo
                 src={webProductVideo}
-                autoPlay
-                muted
-                loop
-                playsInline
                 aria-label="Web and Product Design demonstration video"
                 className="relative z-10 w-full h-auto rounded-2xl shadow-[0_20px_40px_rgba(36,9,69,0.1)] bg-white/50 border border-[#240945]/5"
               />
@@ -502,13 +500,12 @@ function ServicesPage() {
               viewport={{ once: true }}
               className="relative order-1 lg:order-2"
             >
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-[80%] bg-[#7a2adc]/20 blur-[80px] rounded-full pointer-events-none" />
-              <video
+              <div
+                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[95%] h-[95%] rounded-full pointer-events-none"
+                style={{ background: "radial-gradient(circle, rgba(122,42,220,0.2) 0%, transparent 70%)" }}
+              />
+              <ViewportVideo
                 src={webDevVideo}
-                autoPlay
-                muted
-                loop
-                playsInline
                 aria-label="Web Development demonstration video"
                 className="relative z-10 w-full h-auto rounded-2xl shadow-[0_20px_40px_rgba(36,9,69,0.1)] bg-white/50 border border-[#240945]/5"
               />
@@ -546,13 +543,12 @@ function ServicesPage() {
               viewport={{ once: true }}
               className="relative"
             >
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-[80%] bg-[#ff8a5b]/20 blur-[80px] rounded-full pointer-events-none" />
-              <video
+              <div
+                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[95%] h-[95%] rounded-full pointer-events-none"
+                style={{ background: "radial-gradient(circle, rgba(255,138,91,0.2) 0%, transparent 70%)" }}
+              />
+              <ViewportVideo
                 src={marketingVideo}
-                autoPlay
-                muted
-                loop
-                playsInline
                 aria-label="Digital Marketing and CRO demonstration video"
                 className="relative z-10 w-full h-auto rounded-2xl shadow-[0_20px_40px_rgba(36,9,69,0.1)] bg-white/50 border border-[#240945]/5"
               />
@@ -611,10 +607,15 @@ function ServicesPage() {
               viewport={{ once: true }}
               className="relative order-1 lg:order-2"
             >
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-[80%] bg-[#38bdf8]/20 blur-[80px] rounded-full pointer-events-none" />
+              <div
+                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[95%] h-[95%] rounded-full pointer-events-none"
+                style={{ background: "radial-gradient(circle, rgba(56,189,248,0.2) 0%, transparent 70%)" }}
+              />
               <img
                 src={aiImg}
                 alt="AI Development and Automation"
+                loading="lazy"
+                decoding="async"
                 className="relative z-10 w-full h-auto rounded-2xl shadow-[0_20px_40px_rgba(36,9,69,0.1)] bg-white/50 border border-[#240945]/5 object-cover"
               />
             </motion.div>
@@ -629,7 +630,10 @@ function ServicesPage() {
       {/* Footer CTA */}
       <section className="bg-[#180028] border-t border-white/10 py-[60px]">
         <div className="mx-auto max-w-[1400px] px-6 md:px-12 lg:px-20 relative">
-          <div className="absolute top-0 right-10 w-[400px] h-[400px] bg-gradient-to-tl from-[#ff8a5b]/20 to-transparent blur-[80px] rounded-full pointer-events-none" />
+          <div
+            className="absolute top-0 right-10 w-[480px] h-[480px] rounded-full pointer-events-none"
+            style={{ background: "radial-gradient(circle, rgba(255,138,91,0.18) 0%, transparent 70%)" }}
+          />
 
           <motion.h2
             initial={{ opacity: 0, y: 40, scale: 0.95 }}

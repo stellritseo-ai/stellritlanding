@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { submitWebsiteEmailFn } from "@/lib/dashboard.functions.server";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { toast } from "sonner";
@@ -9,6 +9,7 @@ import PageHero from "@/components/PageHero";
 import Footer from "@/components/Footer";
 import ScrollBackground from "@/components/ScrollBackground";
 import ChatWidget from "@/components/ChatWidget";
+import { useInViewActive } from "@/hooks/use-in-view-active";
 
 // Importing all logos for the Marquee
 import logo1 from "@/assets/logos/logo-BX_kYZ7l.png";
@@ -90,6 +91,9 @@ function ContactPage() {
   const [numB, setNumB] = useState(0);
   const [userCaptchaInput, setUserCaptchaInput] = useState("");
   const [honeypot, setHoneypot] = useState("");
+  const formLoadedAtRef = useRef<number>(Date.now());
+  const contactMarqueeRef = useRef<HTMLDivElement>(null);
+  const contactMarqueeActive = useInViewActive(contactMarqueeRef, "100px");
 
   const generateCaptcha = () => {
     const a = Math.floor(Math.random() * 9) + 1;
@@ -144,6 +148,8 @@ function ContactPage() {
           budget: form.budget,
           message: form.message.trim(),
           type: "contact",
+          hp: honeypot,
+          formLoadedAt: formLoadedAtRef.current,
         },
       });
       // Push generate_lead event to GTM dataLayer on successful form submission
@@ -486,12 +492,18 @@ function ContactPage() {
             Trusted by innovative companies worldwide
           </p>
         </div>
-        <div className="relative overflow-hidden w-full max-w-[1600px] mx-auto">
+        <div ref={contactMarqueeRef} className="relative overflow-hidden w-full max-w-[1600px] mx-auto">
           {/* Subtle gradient fades on edges */}
           <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-[#0d0220] to-transparent z-10 pointer-events-none" />
           <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-[#0d0220] to-transparent z-10 pointer-events-none" />
 
-          <div className="flex w-max" style={{ animation: "marquee-contact 45s linear infinite", willChange: "transform" }}>
+          <div
+            className="flex w-max"
+            style={{
+              animation: "marquee-contact 45s linear infinite",
+              animationPlayState: contactMarqueeActive ? "running" : "paused",
+            }}
+          >
             {/* Repeat the logos array twice to create a seamless infinite loop */}
             {[...Array(2)].map((_, i) => (
               <div key={i} className="flex items-center">
@@ -500,6 +512,8 @@ function ContactPage() {
                     key={idx}
                     src={logo}
                     alt="Partner Logo"
+                    loading="lazy"
+                    decoding="async"
                     className="mx-10 md:mx-16 h-12 md:h-14 w-auto object-contain opacity-35 hover:opacity-100 transition-all duration-500"
                     style={{ filter: "brightness(0) invert(1)" }}
                   />

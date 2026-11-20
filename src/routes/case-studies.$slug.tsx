@@ -1,6 +1,6 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { motion, AnimatePresence } from "framer-motion";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ArrowLeft, ArrowUpRight, Check, X, ChevronLeft, ChevronRight } from "lucide-react";
 import SiteHeader from "@/components/SiteHeader";
 import Footer from "@/components/Footer";
@@ -8,6 +8,7 @@ import CtaBand from "@/components/CtaBand";
 import ScrollBackground from "@/components/ScrollBackground";
 import ChatWidget from "@/components/ChatWidget";
 import { CASE_STUDIES, getCaseStudy, type CaseStudy } from "@/data/case-studies";
+import { useInViewActive } from "@/hooks/use-in-view-active";
 
 export const Route = createFileRoute("/case-studies/$slug")({
   loader: ({ params }) => {
@@ -83,6 +84,22 @@ function CaseStudyPage() {
   const { study } = Route.useLoaderData() as { study: CaseStudy };
   const next = CASE_STUDIES.find((c) => c.slug === study.nextSlug) ?? CASE_STUDIES[0];
   const [activeImageIndex, setActiveImageIndex] = useState<number | null>(null);
+  const heroSectionRef = useRef<HTMLElement>(null);
+  const heroBgRef = useRef<HTMLDivElement>(null);
+  const heroActive = useInViewActive(heroSectionRef, "100px");
+
+  useEffect(() => {
+    const bg = heroBgRef.current;
+    if (!bg) return;
+    bg.querySelectorAll("svg").forEach((svg) => {
+      try {
+        if (heroActive) svg.unpauseAnimations?.();
+        else svg.pauseAnimations?.();
+      } catch {
+        // ignore
+      }
+    });
+  }, [heroActive]);
 
   return (
     <main className="relative min-h-screen">
@@ -90,9 +107,9 @@ function CaseStudyPage() {
       <SiteHeader transparent />
 
       {/* Hero */}
-      <section className="relative z-10 px-6 pt-24 pb-16 md:pt-32 md:pb-24 overflow-hidden bg-[#180028] text-white">
+      <section ref={heroSectionRef} className="relative z-10 px-6 pt-24 pb-16 md:pt-32 md:pb-24 overflow-hidden bg-[#180028] text-white">
         {/* Background SVGs (Broadcom style) */}
-        <div className="absolute inset-0 z-0 pointer-events-none mix-blend-screen">
+        <div ref={heroBgRef} className="absolute inset-0 z-0 pointer-events-none mix-blend-screen">
           {/* SVG 1 - Top Left Circle */}
           <div className="absolute -top-[10%] -left-[10%] w-[50%] min-w-[400px] max-w-[700px] opacity-80">
             <svg width="665" height="665" viewBox="0 0 665 665" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-auto">
@@ -105,7 +122,6 @@ function CaseStudyPage() {
                   <stop offset="100%" stopColor="transparent">
                     <animate attributeName="stop-color" values="transparent; #8E5CC0;  transparent" dur="10s" repeatCount="indefinite"></animate>
                   </stop>
-                  <animateTransform attributeName="gradientTransform" type="rotate" from="0 .5 .5" to="0 .5 .5" dur="10s" repeatCount="indefinite"></animateTransform>
                 </linearGradient>
               </defs>
             </svg>
@@ -123,7 +139,6 @@ function CaseStudyPage() {
                   <stop offset="100%" stopColor="transparent">
                     <animate attributeName="stop-color" values="transparent; #8E5CC0;  transparent" dur="10s" repeatCount="indefinite"></animate>
                   </stop>
-                  <animateTransform attributeName="gradientTransform" type="rotate" from="0 .5 .5" to="0 .5 .5" dur="10s" repeatCount="indefinite"></animateTransform>
                 </linearGradient>
               </defs>
             </svg>
@@ -156,7 +171,6 @@ function CaseStudyPage() {
                   <stop offset="100%" stopColor="#695FE4">
                     <animate attributeName="stop-color" values="#695FE4; #8052CD; #D15A8A; #8054DC; #BD6C95; #E09050; #9172B9; #695FE4" dur="10s" repeatCount="indefinite"></animate>
                   </stop>
-                  <animateTransform attributeName="gradientTransform" type="rotate" from="0 .5 .5" to="0 .5 .5" dur="10s" repeatCount="indefinite"></animateTransform>
                 </linearGradient>
               </defs>
             </svg>
@@ -189,7 +203,6 @@ function CaseStudyPage() {
                   <stop offset="100%" stopColor="#695FE4">
                     <animate attributeName="stop-color" values="#695FE4; #8052CD; #D15A8A; #8054DC; #BD6C95; #E09050; #9172B9; #695FE4" dur="10s" repeatCount="indefinite"></animate>
                   </stop>
-                  <animateTransform attributeName="gradientTransform" type="rotate" from="0 .5 .5" to="0 .5 .5" dur="10s" repeatCount="indefinite"></animateTransform>
                 </linearGradient>
               </defs>
             </svg>
@@ -219,7 +232,6 @@ function CaseStudyPage() {
                   <stop offset="100%" stopColor="#5D00DB">
                     <animate attributeName="stop-color" values="#5D00DB; #240945; #772588; #E35375; #F94F39; #C65CEB; #5D00DB" dur="10s" repeatCount="indefinite"></animate>
                   </stop>
-                  <animateTransform attributeName="gradientTransform" type="rotate" from="0 .5 .5" to="0 .5 .5" dur="10s" repeatCount="indefinite"></animateTransform>
                 </linearGradient>
               </defs>
             </svg>
@@ -455,6 +467,8 @@ function CaseStudyPage() {
                   <img
                     src={img.src}
                     alt={img.caption || "Gallery Image"}
+                    loading="lazy"
+                    decoding="async"
                     className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.03]"
                   />
                   <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center pointer-events-none">

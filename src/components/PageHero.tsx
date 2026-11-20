@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
-import { ReactNode } from "react";
+import { ReactNode, useEffect, useRef } from "react";
+import { useInViewActive } from "@/hooks/use-in-view-active";
 
 export default function PageHero({
   eyebrow,
@@ -14,10 +15,32 @@ export default function PageHero({
   children?: ReactNode;
   className?: string;
 }) {
+  const sectionRef = useRef<HTMLElement>(null);
+  const bgRef = useRef<HTMLDivElement>(null);
+  const isActive = useInViewActive(sectionRef, "100px");
+
+  // Pause SMIL SVG gradient animations when scrolled off-screen or tab hidden
+  useEffect(() => {
+    const bg = bgRef.current;
+    if (!bg) return;
+    const svgs = bg.querySelectorAll("svg");
+    svgs.forEach((svg) => {
+      try {
+        if (isActive) svg.unpauseAnimations?.();
+        else svg.pauseAnimations?.();
+      } catch {
+        // ignore
+      }
+    });
+  }, [isActive]);
+
   return (
-    <section className={`relative min-h-[40vh] flex flex-col justify-center overflow-hidden bg-[#180028] text-white pt-24 pb-16 md:pt-32 md:pb-24 ${className}`}>
+    <section
+      ref={sectionRef}
+      className={`relative min-h-[40vh] flex flex-col justify-center overflow-hidden bg-[#180028] text-white pt-24 pb-16 md:pt-32 md:pb-24 ${className}`}
+    >
       {/* Background SVGs */}
-      <div className="absolute inset-0 z-0 pointer-events-none mix-blend-screen">
+      <div ref={bgRef} className="absolute inset-0 z-0 pointer-events-none mix-blend-screen">
 
         {/* SVG 1 - Top Left Circle */}
         <div className="absolute -top-[10%] -left-[10%] w-[50%] min-w-[400px] max-w-[700px] opacity-80">
@@ -31,7 +54,6 @@ export default function PageHero({
                 <stop offset="100%" stopColor="transparent">
                   <animate attributeName="stop-color" values="transparent; #8E5CC0;  transparent" dur="10s" repeatCount="indefinite"></animate>
                 </stop>
-                <animateTransform attributeName="gradientTransform" type="rotate" from="0 .5 .5" to="0 .5 .5" dur="10s" repeatCount="indefinite"></animateTransform>
               </linearGradient>
             </defs>
           </svg>
@@ -49,7 +71,6 @@ export default function PageHero({
                 <stop offset="100%" stopColor="transparent">
                   <animate attributeName="stop-color" values="transparent; #8E5CC0;  transparent" dur="10s" repeatCount="indefinite"></animate>
                 </stop>
-                <animateTransform attributeName="gradientTransform" type="rotate" from="0 .5 .5" to="0 .5 .5" dur="10s" repeatCount="indefinite"></animateTransform>
               </linearGradient>
             </defs>
           </svg>
@@ -82,7 +103,6 @@ export default function PageHero({
                 <stop offset="100%" stopColor="#695FE4">
                   <animate attributeName="stop-color" values="#695FE4; #8052CD; #D15A8A; #8054DC; #BD6C95; #E09050; #9172B9; #695FE4" dur="10s" repeatCount="indefinite"></animate>
                 </stop>
-                <animateTransform attributeName="gradientTransform" type="rotate" from="0 .5 .5" to="0 .5 .5" dur="10s" repeatCount="indefinite"></animateTransform>
               </linearGradient>
             </defs>
           </svg>
@@ -115,7 +135,6 @@ export default function PageHero({
                 <stop offset="100%" stopColor="#695FE4">
                   <animate attributeName="stop-color" values="#695FE4; #8052CD; #D15A8A; #8054DC; #BD6C95; #E09050; #9172B9; #695FE4" dur="10s" repeatCount="indefinite"></animate>
                 </stop>
-                <animateTransform attributeName="gradientTransform" type="rotate" from="0 .5 .5" to="0 .5 .5" dur="10s" repeatCount="indefinite"></animateTransform>
               </linearGradient>
             </defs>
           </svg>
@@ -145,7 +164,6 @@ export default function PageHero({
                 <stop offset="100%" stopColor="#5D00DB">
                   <animate attributeName="stop-color" values="#5D00DB; #240945; #772588; #E35375; #F94F39; #C65CEB; #5D00DB" dur="10s" repeatCount="indefinite"></animate>
                 </stop>
-                <animateTransform attributeName="gradientTransform" type="rotate" from="0 .5 .5" to="0 .5 .5" dur="10s" repeatCount="indefinite"></animateTransform>
               </linearGradient>
             </defs>
           </svg>

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion, useMotionValue, useSpring } from "framer-motion";
 
 export default function CustomCursor() {
@@ -7,6 +7,11 @@ export default function CustomCursor() {
   const [isClicked, setIsClicked] = useState(false);
   const [hoverText, setHoverText] = useState("");
   const [isVisible, setIsVisible] = useState(false);
+
+  // Refs to prevent redundant state updates and listener re-subscriptions
+  const isVisibleRef = useRef(false);
+  const isHoveredRef = useRef(false);
+  const hoverTextRef = useRef("");
 
   // Exact mouse coordinates
   const mouseX = useMotionValue(-100);
@@ -22,23 +27,18 @@ export default function CustomCursor() {
 
   useEffect(() => {
     const mediaQuery = window.matchMedia("(pointer: fine)");
-    const handleDeviceChange = (e: MediaQueryListEvent | MediaQueryList) => {
-      setIsSupported(e.matches);
+    const reducedQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const update = () => {
+      setIsSupported(mediaQuery.matches && !reducedQuery.matches);
     };
 
-    handleDeviceChange(mediaQuery);
-    if (mediaQuery.addEventListener) {
-      mediaQuery.addEventListener("change", handleDeviceChange);
-    } else {
-      mediaQuery.addListener(handleDeviceChange);
-    }
+    update();
+    mediaQuery.addEventListener?.("change", update);
+    reducedQuery.addEventListener?.("change", update);
 
     return () => {
-      if (mediaQuery.removeEventListener) {
-        mediaQuery.removeEventListener("change", handleDeviceChange);
-      } else {
-        mediaQuery.removeListener(handleDeviceChange);
-      }
+      mediaQuery.removeEventListener?.("change", update);
+      reducedQuery.removeEventListener?.("change", update);
     };
   }, []);
 
@@ -54,9 +54,11 @@ export default function CustomCursor() {
     const handleMouseMove = (e: MouseEvent) => {
       pendingX = e.clientX;
       pendingY = e.clientY;
-      if (!isVisible) setIsVisible(true);
+      if (!isVisibleRef.current) {
+        isVisibleRef.current = true;
+        setIsVisible(true);
+      }
 
-      // RAF-gate: only update motion values once per animation frame
       if (rafId === null) {
         rafId = requestAnimationFrame(() => {
           mouseX.set(pendingX);
@@ -68,31 +70,44 @@ export default function CustomCursor() {
 
     const handleMouseDown = () => setIsClicked(true);
     const handleMouseUp = () => setIsClicked(false);
-    const handleMouseLeave = () => setIsVisible(false);
-    const handleMouseEnter = () => setIsVisible(true);
+    const handleMouseLeave = () => {
+      if (isVisibleRef.current) {
+        isVisibleRef.current = false;
+        setIsVisible(false);
+      }
+    };
+    const handleMouseEnter = () => {
+      if (!isVisibleRef.current) {
+        isVisibleRef.current = true;
+        setIsVisible(true);
+      }
+    };
 
     const handleMouseOver = (e: MouseEvent) => {
-      const target = e.target as HTMLElement;
-      if (!target) return;
+      const target = e.target as HTMLElement | null;
+      if (!target || typeof target.closest !== "function") return;
 
-      const card = target.closest('[data-cursor-text], article, .group');
-      if (card && card.getAttribute('data-cursor-text')) {
-        setHoverText(card.getAttribute('data-cursor-text') || '');
-      } else {
-        setHoverText('');
+      const card = target.closest("[data-cursor-text]");
+      const nextText = card?.getAttribute("data-cursor-text") || "";
+      if (nextText !== hoverTextRef.current) {
+        hoverTextRef.current = nextText;
+        setHoverText(nextText);
       }
 
-      const isClickable = !!target.closest(
+      const nextHovered = !!target.closest(
         'a, button, [role="button"], input, select, textarea, .clickable, .glass, [data-cursor-hover]'
       );
-      setIsHovered(isClickable);
+      if (nextHovered !== isHoveredRef.current) {
+        isHoveredRef.current = nextHovered;
+        setIsHovered(nextHovered);
+      }
     };
 
     window.addEventListener("mousemove", handleMouseMove, { passive: true });
-    window.addEventListener("mousedown", handleMouseDown);
-    window.addEventListener("mouseup", handleMouseUp);
-    document.addEventListener("mouseleave", handleMouseLeave);
-    document.addEventListener("mouseenter", handleMouseEnter);
+    window.addEventListener("mousedown", handleMouseDown, { passive: true });
+    window.addEventListener("mouseup", handleMouseUp, { passive: true });
+    document.addEventListener("mouseleave", handleMouseLeave, { passive: true });
+    document.addEventListener("mouseenter", handleMouseEnter, { passive: true });
     window.addEventListener("mouseover", handleMouseOver, { passive: true });
 
     return () => {
@@ -105,29 +120,34 @@ export default function CustomCursor() {
       document.removeEventListener("mouseenter", handleMouseEnter);
       window.removeEventListener("mouseover", handleMouseOver);
     };
-  }, [isSupported, isVisible, mouseX, mouseY]);
+  }, [isSupported, mouseX, mouseY]);
 
   if (!isSupported) return null;
 
+  // Compositor-only scale replaces animating width/height (eliminates layout thrashing)
+  const ringScale = isClicked ? 0.75 : isHovered ? (hoverText ? 2.1 : 1.42) : 1;
+
   return (
     <>
-      {/* 1. Deep Ambient Radial Glow Trail */}
+      {/* 1. Deep Ambient Radial Glow Trail — soft radial-gradient instead of expensive live blur-3xl */}
       <motion.div
         style={{
           x: trailX,
           y: trailY,
           translateX: "-50%",
           translateY: "-50%",
+          background:
+            "radial-gradient(circle, rgba(168,85,247,0.48) 0%, rgba(122,42,220,0.28) 38%, rgba(255,138,91,0.14) 58%, transparent 74%)",
         }}
         animate={{
           scale: isClicked ? 0.8 : isHovered ? 1.8 : 1,
-          opacity: isVisible ? (isHovered ? 0.5 : 0.25) : 0,
+          opacity: isVisible ? (isHovered ? 0.55 : 0.3) : 0,
         }}
         transition={{ duration: 0.3 }}
-        className="pointer-events-none fixed left-0 top-0 z-[99996] h-48 w-48 rounded-full bg-gradient-to-r from-[#a855f7] via-[#7a2adc] to-[#ff8a5b] blur-3xl opacity-30 transform-gpu"
+        className="pointer-events-none fixed left-0 top-0 z-[99996] h-72 w-72 rounded-full"
       />
 
-      {/* 2. Outer Fluid Magnetic Halo Ring */}
+      {/* 2. Outer Fluid Magnetic Halo Ring — compositor-only transform + opacity */}
       <motion.div
         style={{
           x: ringX,
@@ -135,27 +155,28 @@ export default function CustomCursor() {
           translateX: "-50%",
           translateY: "-50%",
         }}
-        animate={{
-          width: isHovered ? (hoverText ? 80 : 54) : 38,
-          height: isHovered ? (hoverText ? 80 : 54) : 38,
-          scale: isClicked ? 0.75 : 1,
-          borderColor: isHovered ? "rgba(255, 138, 91, 0.8)" : "rgba(168, 85, 247, 0.5)",
-          backgroundColor: isHovered
-            ? "rgba(168, 85, 247, 0.12)"
-            : "rgba(255, 255, 255, 0.02)",
-          backdropFilter: isHovered ? "blur(4px)" : "blur(0px)",
-        }}
-        transition={{
-          type: "spring",
-          stiffness: 280,
-          damping: 22,
-          mass: 0.3,
-        }}
-        className={`pointer-events-none fixed left-0 top-0 z-[99997] flex items-center justify-center rounded-full border-2 border-solid shadow-[0_0_20px_rgba(168,85,247,0.3)] transform-gpu transition-opacity duration-300 ${isVisible ? "opacity-100" : "opacity-0"
-          }`}
+        className={`pointer-events-none fixed left-0 top-0 z-[99997] flex items-center justify-center transition-opacity duration-300 ${
+          isVisible ? "opacity-100" : "opacity-0"
+        }`}
       >
+        <motion.div
+          animate={{
+            scale: ringScale,
+            borderColor: isHovered ? "rgba(255, 138, 91, 0.8)" : "rgba(168, 85, 247, 0.5)",
+            backgroundColor: isHovered
+              ? "rgba(168, 85, 247, 0.12)"
+              : "rgba(255, 255, 255, 0.02)",
+          }}
+          transition={{
+            type: "spring",
+            stiffness: 280,
+            damping: 22,
+            mass: 0.3,
+          }}
+          className="h-[38px] w-[38px] rounded-full border-2 border-solid shadow-[0_0_20px_rgba(168,85,247,0.3)]"
+        />
         {hoverText && (
-          <span className="text-[9px] font-bold uppercase tracking-wider text-white drop-shadow-md">
+          <span className="absolute text-[9px] font-bold uppercase tracking-wider text-white drop-shadow-md">
             {hoverText}
           </span>
         )}
@@ -180,8 +201,9 @@ export default function CustomCursor() {
           duration: 0.15,
           ease: "easeOut",
         }}
-        className={`pointer-events-none fixed left-0 top-0 z-[99999] h-2.5 w-2.5 rounded-full transform-gpu transition-opacity duration-300 ${isVisible ? "opacity-100" : "opacity-0"
-          }`}
+        className={`pointer-events-none fixed left-0 top-0 z-[99999] h-2.5 w-2.5 rounded-full transition-opacity duration-300 ${
+          isVisible ? "opacity-100" : "opacity-0"
+        }`}
       />
     </>
   );

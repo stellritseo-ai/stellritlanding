@@ -10,10 +10,10 @@ const STATS = [
 export default function StatsBand() {
   return (
     <section className="relative z-10 border-y border-white/10 bg-white/[0.015] py-16 md:py-20 overflow-hidden">
-      {/* Subtle purple glow behind */}
+      {/* Subtle purple glow behind — pure radial gradient without blur(80px) */}
       <div
-        className="pointer-events-none absolute left-1/2 top-1/2 h-[400px] w-[900px] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-20"
-        style={{ background: "radial-gradient(circle, rgba(168,85,247,0.5), transparent 70%)", filter: "blur(80px)" }}
+        className="pointer-events-none absolute left-1/2 top-1/2 h-[500px] w-[960px] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-20"
+        style={{ background: "radial-gradient(ellipse, rgba(168,85,247,0.5) 0%, rgba(168,85,247,0.15) 40%, transparent 70%)" }}
       />
 
       <div className="relative mx-auto max-w-[1400px] px-6 md:px-12">

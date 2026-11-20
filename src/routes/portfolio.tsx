@@ -286,29 +286,7 @@ function PortfolioPage() {
     })),
   };
 
-  // Scroll-Reactive Glowing Blobs (Parallax + Color Morphing)
-  const blobColor1 = useTransform(
-    scrollY,
-    [0, 500, 1000, 1500],
-    [
-      "rgba(168, 85, 247, 0.25)",  // Purple at top
-      "rgba(16, 185, 129, 0.25)",  // Emerald near UX
-      "rgba(14, 165, 233, 0.25)",  // Sky blue near Cyber
-      "rgba(168, 85, 247, 0.25)"   // Purple near Marketing
-    ]
-  );
-
-  const blobColor2 = useTransform(
-    scrollY,
-    [0, 600, 1100, 1700],
-    [
-      "rgba(255, 138, 91, 0.18)",  // Orange at top
-      "rgba(14, 165, 233, 0.22)",  // Sky blue near UX
-      "rgba(16, 185, 129, 0.22)",  // Emerald near Cyber
-      "rgba(255, 138, 91, 0.22)"   // Orange near Marketing
-    ]
-  );
-
+  // Scroll-Reactive Glowing Blobs — compositor-only transform/opacity (no per-frame backgroundImage string repaints)
   const blobY1 = useTransform(scrollY, [0, 2500], [0, 450]);
   const blobScale1 = useTransform(scrollY, [0, 1000], [1, 1.25]);
   const blobOpacity1 = useTransform(scrollY, [0, 1000], [0.8, 1]);
@@ -316,10 +294,6 @@ function PortfolioPage() {
   const blobY2 = useTransform(scrollY, [0, 2500], [0, -350]);
   const blobScale2 = useTransform(scrollY, [0, 1000], [1, 0.75]);
   const blobOpacity2 = useTransform(scrollY, [0, 1000], [0.8, 1]);
-
-  // Convert colors directly to pre-blurred radial gradients to avoid expensive blur() filters on scroll
-  const blobBg1 = useTransform(blobColor1, (color) => `radial-gradient(circle, ${color} 0%, transparent 70%)`);
-  const blobBg2 = useTransform(blobColor2, (color) => `radial-gradient(circle, ${color} 0%, transparent 70%)`);
 
   return (
     <main className="relative min-h-screen bg-[#180028] text-white overflow-hidden">
@@ -346,14 +320,24 @@ function PortfolioPage() {
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff03_1px,transparent_1px),linear-gradient(to_bottom,#ffffff03_1px,transparent_1px)] bg-[size:4rem_4rem] pointer-events-none z-0" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_50%_at_50%_0%,transparent_40%,#180028_100%)] pointer-events-none z-0" />
         
-        {/* Scroll-Reactive Glowing Blobs (Parallax + Morphing Colors) - optimized with radial gradients */}
+        {/* Scroll-Reactive Glowing Blobs (Parallax) — static radial-gradients moved via GPU transform */}
         <motion.div
-          style={{ y: blobY1, backgroundImage: blobBg1, scale: blobScale1, opacity: blobOpacity1 }}
-          className="absolute top-[10%] left-[-15%] w-[550px] h-[550px] rounded-full pointer-events-none z-0 transition-colors duration-1000"
+          style={{
+            y: blobY1,
+            scale: blobScale1,
+            opacity: blobOpacity1,
+            backgroundImage: "radial-gradient(circle, rgba(168, 85, 247, 0.25) 0%, transparent 70%)",
+          }}
+          className="absolute top-[10%] left-[-15%] w-[550px] h-[550px] rounded-full pointer-events-none z-0"
         />
         <motion.div
-          style={{ y: blobY2, backgroundImage: blobBg2, scale: blobScale2, opacity: blobOpacity2 }}
-          className="absolute bottom-[15%] right-[-15%] w-[650px] h-[650px] rounded-full pointer-events-none z-0 transition-colors duration-1000"
+          style={{
+            y: blobY2,
+            scale: blobScale2,
+            opacity: blobOpacity2,
+            backgroundImage: "radial-gradient(circle, rgba(255, 138, 91, 0.2) 0%, transparent 70%)",
+          }}
+          className="absolute bottom-[15%] right-[-15%] w-[650px] h-[650px] rounded-full pointer-events-none z-0"
         />
 
         {/* Interactive Filtering Navigation */}
@@ -377,7 +361,7 @@ function PortfolioPage() {
 
       {/* Portfolio Grid Layout */}
       <section className="relative z-10 px-6 md:px-12 lg:px-20 max-w-[1400px] mx-auto pb-32">
-        <div className="grid grid-cols-1 gap-20" style={{ contentVisibility: "auto", containIntrinsicSize: "0 1500px" }}>
+        <div className="grid grid-cols-1 gap-20" style={{ contentVisibility: "auto", containIntrinsicSize: "auto none auto 1500px" }}>
           <AnimatePresence mode="popLayout">
             {filteredProjects.map((p, idx) => {
               const IconComponent = p.icon;
@@ -466,6 +450,8 @@ function PortfolioPage() {
                     <img
                       src={p.image}
                       alt={p.title}
+                      loading="lazy"
+                      decoding="async"
                       className="absolute inset-0 h-full w-full object-cover transition-transform duration-1000 group-hover:scale-105"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-[#0c0a20]/60 via-transparent to-transparent pointer-events-none" />

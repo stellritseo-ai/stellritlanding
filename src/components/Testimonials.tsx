@@ -1,9 +1,5 @@
 import { useRef, useEffect } from "react";
 import { motion } from "framer-motion";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-
-gsap.registerPlugin(ScrollTrigger);
 
 import logo1 from "@/assets/logos/logo-BX_kYZ7l.png";
 import logo2 from "@/assets/logos/logo-BqMKyS9S.png";
@@ -80,56 +76,48 @@ export default function Testimonials() {
     return () => observer.disconnect();
   }, []);
 
+  // Lightweight one-shot IntersectionObserver reveal (replaces GSAP ScrollTrigger)
   useEffect(() => {
     const grid = gridRef.current;
     if (!grid) return;
 
-    const cards = gsap.utils.toArray<HTMLElement>(grid.children);
+    const cards = Array.from(grid.children) as HTMLElement[];
+    cards.forEach((card, idx) => {
+      card.style.opacity = "0";
+      card.style.transform = "translate3d(0, 60px, 0) scale(0.98)";
+      card.style.transition = `opacity 1.1s cubic-bezier(0.22, 1, 0.36, 1) ${idx * 120}ms, transform 1.1s cubic-bezier(0.22, 1, 0.36, 1) ${idx * 120}ms`;
+    });
 
-    const ctx = gsap.context(() => {
-
-      gsap.fromTo(
-        cards,
-        {
-          y: 60,
-          opacity: 0,
-          scale: 0.98,
-        },
-        {
-          y: 0,
-          opacity: 1,
-          scale: 1,
-          duration: 1.1,
-          stagger: 0.12,
-          ease: "power3.out",
-          scrollTrigger: {
-            trigger: grid,
-            start: "top 80%",
-            end: "top 30%",
-            toggleActions: "play none none none",
-          },
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting) {
+          cards.forEach((card) => {
+            card.style.opacity = "1";
+            card.style.transform = "translate3d(0, 0, 0) scale(1)";
+          });
+          observer.disconnect();
         }
-      );
-    }, grid);
+      },
+      { rootMargin: "0px 0px -15% 0px", threshold: 0.05 }
+    );
 
-    return () => ctx.revert();
+    observer.observe(grid);
+    return () => observer.disconnect();
   }, []);
 
   return (
     <section className="relative z-10 py-12 md:py-[70px] overflow-hidden">
-      {/* Dynamic Background Glows */}
+      {/* Dynamic Background Glows — pure radial gradients without heavy live blur(80px) */}
       <div
-        className="pointer-events-none absolute -right-60 top-1/3 h-[600px] w-[600px] rounded-full opacity-25"
+        className="pointer-events-none absolute -right-60 top-1/3 h-[680px] w-[680px] rounded-full opacity-25"
         style={{
-          background: "radial-gradient(circle, rgba(255,138,91,0.1), transparent 70%)",
-          filter: "blur(80px)",
+          background: "radial-gradient(circle, rgba(255,138,91,0.12) 0%, rgba(255,138,91,0.04) 40%, transparent 70%)",
         }}
       />
       <div
-        className="pointer-events-none absolute -left-60 bottom-1/3 h-[500px] w-[500px] rounded-full opacity-20"
+        className="pointer-events-none absolute -left-60 bottom-1/3 h-[580px] w-[580px] rounded-full opacity-20"
         style={{
-          background: "radial-gradient(circle, rgba(168,85,247,0.08), transparent 70%)",
-          filter: "blur(80px)",
+          background: "radial-gradient(circle, rgba(168,85,247,0.1) 0%, rgba(168,85,247,0.03) 40%, transparent 70%)",
         }}
       />
 
@@ -198,32 +186,52 @@ export default function Testimonials() {
 
 function TestimonialCard({ t }: { t: typeof TESTIMONIALS[0] }) {
   const cardRef = useRef<HTMLDivElement>(null);
+  const rectRef = useRef<DOMRect | null>(null);
+  const rafRef = useRef<number | null>(null);
+
+  const handleMouseEnter = () => {
+    if (cardRef.current) rectRef.current = cardRef.current.getBoundingClientRect();
+  };
+
+  const handleMouseLeave = () => {
+    rectRef.current = null;
+    if (rafRef.current !== null) {
+      cancelAnimationFrame(rafRef.current);
+      rafRef.current = null;
+    }
+  };
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const card = cardRef.current;
     if (!card) return;
-    const rect = card.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    card.style.setProperty("--mouse-x", `${x}px`);
-    card.style.setProperty("--mouse-y", `${y}px`);
+    const clientX = e.clientX;
+    const clientY = e.clientY;
+    if (rafRef.current !== null) return;
+    rafRef.current = requestAnimationFrame(() => {
+      rafRef.current = null;
+      const rect = rectRef.current ?? card.getBoundingClientRect();
+      card.style.setProperty("--mouse-x", `${clientX - rect.left}px`);
+      card.style.setProperty("--mouse-y", `${clientY - rect.top}px`);
+    });
   };
 
   return (
     <div
       ref={cardRef}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
       onMouseMove={handleMouseMove}
       className={`group relative ${t.span ?? "md:col-span-2"} overflow-hidden border-b border-r border-white/[0.08]`}
     >
       <div className="relative flex h-full flex-col justify-between p-8 md:p-10 min-h-[280px] md:min-h-[320px] transition-all duration-500 ease-out bg-[#070314]/20 group-hover:bg-[#0c0721]/30">
 
-        {/* Spotlight dynamic follow overlay */}
+        {/* Spotlight dynamic follow overlay — soft radial-gradient without live blur-[40px] */}
         <div
-          className="pointer-events-none absolute -translate-x-1/2 -translate-y-1/2 h-[320px] w-[320px] rounded-full opacity-0 transition-opacity duration-500 ease-out blur-[40px] group-hover:opacity-100"
+          className="pointer-events-none absolute -translate-x-1/2 -translate-y-1/2 h-[380px] w-[380px] rounded-full opacity-0 transition-opacity duration-500 ease-out group-hover:opacity-100"
           style={{
             left: "var(--mouse-x, 0px)",
             top: "var(--mouse-y, 0px)",
-            background: "radial-gradient(circle, rgba(168,85,247,0.1) 0%, rgba(255,138,91,0.05) 50%, transparent 100%)",
+            background: "radial-gradient(circle, rgba(168,85,247,0.1) 0%, rgba(255,138,91,0.04) 45%, transparent 72%)",
           }}
         />
 

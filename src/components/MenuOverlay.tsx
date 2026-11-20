@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import logoImg from "@/assets/logo.png";
 import paynowImg from "@/assets/paynow.png";
-import { CanvasVideo } from "./CanvasVideo";
 
 const MENU_IMAGES: Record<string, string> = {
   "Case Studies": "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600&q=80&auto=format&fit=crop",

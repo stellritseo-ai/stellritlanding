@@ -60,19 +60,17 @@ const STUDIES: Study[] = [
 export default function CaseStudies() {
   return (
     <section className="relative z-10 py-10 md:py-14 overflow-hidden">
-      {/* Background ambient glows */}
+      {/* Background ambient glows — pure radial gradients without heavy live blur(80px) */}
       <div
-        className="pointer-events-none absolute -left-40 top-1/4 h-[600px] w-[600px] rounded-full opacity-30"
+        className="pointer-events-none absolute -left-40 top-1/4 h-[680px] w-[680px] rounded-full opacity-30"
         style={{
-          background: "radial-gradient(circle, rgba(168,85,247,0.15), transparent 70%)",
-          filter: "blur(80px)",
+          background: "radial-gradient(circle, rgba(168,85,247,0.16) 0%, rgba(168,85,247,0.05) 40%, transparent 70%)",
         }}
       />
       <div
-        className="pointer-events-none absolute -right-40 bottom-1/4 h-[500px] w-[500px] rounded-full opacity-20"
+        className="pointer-events-none absolute -right-40 bottom-1/4 h-[580px] w-[580px] rounded-full opacity-20"
         style={{
-          background: "radial-gradient(circle, rgba(56,189,248,0.12), transparent 70%)",
-          filter: "blur(80px)",
+          background: "radial-gradient(circle, rgba(56,189,248,0.14) 0%, rgba(56,189,248,0.04) 40%, transparent 70%)",
         }}
       />
 
@@ -173,6 +171,7 @@ function CaseCard({ study, index }: { study: Study; index: number }) {
             src={study.image}
             alt={study.title}
             loading="lazy"
+            decoding="async"
             className="h-full w-full object-cover origin-center"
             animate={{
               scale: isHovered ? 1.05 : 1.0,

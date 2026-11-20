@@ -34,6 +34,7 @@ export default function ChatWidget() {
 
   const [visitorName, setVisitorName] = useState("");
   const [visitorContact, setVisitorContact] = useState("");
+  const [chatHoneypot, setChatHoneypot] = useState("");
 
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
@@ -135,6 +136,7 @@ export default function ChatWidget() {
 
   // ── Create new session ────────────────────────────────────────────────────
   const startChat = async () => {
+    if (chatHoneypot) return;
     if (!visitorName.trim()) { setFormError("Please enter your name."); return; }
     if (!visitorContact.trim()) { setFormError("Please enter your email or phone."); return; }
     setFormError(null);
@@ -142,7 +144,7 @@ export default function ChatWidget() {
 
     try {
       const sess = await createChatSessionFn({
-        data: { visitorName: visitorName.trim(), visitorContact: visitorContact.trim() },
+        data: { visitorName: visitorName.trim(), visitorContact: visitorContact.trim(), hp: chatHoneypot },
       });
 
       // Seed welcome message
@@ -242,14 +244,19 @@ export default function ChatWidget() {
         onClick={handleToggle}
         className="fixed bottom-6 right-6 z-[60] grid h-14 w-14 place-items-center rounded-full bg-gradient-to-br from-[#a855f7] to-[#6a18c8] text-white shadow-[0_10px_40px_-10px_rgba(168,85,247,0.8)] ring-1 ring-white/20 transition hover:scale-105"
       >
-        <span className="absolute inset-0 -z-10 rounded-full bg-[#a855f7] opacity-60 blur-xl animate-pulse" />
-        {open ? <X className="h-6 w-6" /> : <img src={favImg} alt="Chat logo" className="h-8 w-8 object-contain" />}
+        <span
+          className="pointer-events-none absolute -inset-3 -z-10 rounded-full opacity-60 animate-pulse"
+          style={{
+            background: "radial-gradient(circle, rgba(168,85,247,0.65) 0%, rgba(168,85,247,0.2) 45%, transparent 72%)",
+          }}
+        />
+        {open ? <X className="h-6 w-6" /> : <img src={favImg} alt="Chat logo" decoding="async" className="h-8 w-8 object-contain" />}
       </button>
 
       {/* ── Panel ────────────────────────────────────────────────────────── */}
       <div
-        className={`fixed bottom-24 right-6 z-[60] w-[min(390px,calc(100vw-1.5rem))] origin-bottom-right overflow-hidden rounded-2xl border border-white/10 bg-[#120025]/95 text-white shadow-[0_30px_80px_-20px_rgba(0,0,0,0.7)] backdrop-blur-xl transition-all duration-300 ${open
-          ? "pointer-events-auto translate-y-0 scale-100 opacity-100"
+        className={`fixed bottom-24 right-6 z-[60] w-[min(390px,calc(100vw-1.5rem))] origin-bottom-right overflow-hidden rounded-2xl border border-white/10 bg-[#120025]/95 text-white shadow-[0_30px_80px_-20px_rgba(0,0,0,0.7)] transition-all duration-300 ${open
+          ? "pointer-events-auto translate-y-0 scale-100 opacity-100 backdrop-blur-xl"
           : "pointer-events-none translate-y-3 scale-95 opacity-0"
           }`}
       >
@@ -312,6 +319,17 @@ export default function ChatWidget() {
           <div className="flex min-h-[260px] flex-col gap-4 px-5 py-6">
             <p className="text-sm text-white/70">Tell us a bit about yourself so we can help you better.</p>
             <div className="flex flex-col gap-3">
+              {/* Hidden honeypot for bot filtering */}
+              <input
+                type="text"
+                name="chat_website_url"
+                value={chatHoneypot}
+                onChange={(e) => setChatHoneypot(e.target.value)}
+                tabIndex={-1}
+                autoComplete="off"
+                aria-hidden="true"
+                className="hidden"
+              />
               <div>
                 <label className="mb-1 block text-xs text-white/50" htmlFor="chat-visitor-name">Your name *</label>
                 <input

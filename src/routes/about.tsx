@@ -175,7 +175,7 @@ function AboutPage() {
       />
 
       {/* Cream Section */}
-      <div style={{ contentVisibility: "auto", containIntrinsicSize: "0 1000px" }}>
+      <div style={{ contentVisibility: "auto", containIntrinsicSize: "auto none auto 1000px" }}>
       <section className="bg-[#FAF5EE] text-[#240945] rounded-t-[40px] md:rounded-t-[80px] -mt-10 relative z-30 pt-24 md:pt-32 pb-10">
         {/* Story Section */}
         <div className="mx-auto max-w-[1400px] px-6 md:px-12 lg:px-20 mb-32">
@@ -302,8 +302,11 @@ function AboutPage() {
 
       {/* Dark Section Transition & Partners */}
       <section className="relative bg-[#180028] pt-16 pb-24 text-white">
-        {/* Glow Effects */}
-        <div className="absolute top-10 left-10 w-[600px] h-[600px] bg-gradient-to-br from-[#772588]/30 to-[#a855f7]/10 blur-[100px] rounded-full pointer-events-none" />
+        {/* Glow Effects — pure radial gradient without heavy live blur-[100px] */}
+        <div
+          className="absolute top-10 left-10 w-[680px] h-[680px] rounded-full pointer-events-none"
+          style={{ background: "radial-gradient(circle, rgba(119,37,136,0.28) 0%, rgba(168,85,247,0.08) 45%, transparent 72%)" }}
+        />
 
         <div className="mx-auto max-w-[1400px] px-6 md:px-12 lg:px-20 relative z-10">
           <motion.h2
@@ -318,7 +321,7 @@ function AboutPage() {
           <div className="grid grid-cols-2 md:grid-cols-5 border-l border-t border-white/10 mb-32">
             {[p1, p2, p3, p4, p5, p6, p7, p8, p9, p10].map((imgSrc, i) => (
               <div key={i} className="flex items-center justify-center p-8 border-r border-b border-white/10 opacity-60 hover:opacity-100 transition-opacity h-[160px]">
-                <img src={imgSrc} alt={`Partner ${i + 1}`} className="max-w-[120px] max-h-[60px] object-contain" style={{ filter: "brightness(0) invert(1)" }} />
+                <img src={imgSrc} alt={`Partner ${i + 1}`} loading="lazy" decoding="async" className="max-w-[120px] max-h-[60px] object-contain" style={{ filter: "brightness(0) invert(1)" }} />
               </div>
             ))}
           </div>
@@ -356,7 +359,7 @@ function AboutPage() {
                     <p className="text-[13px] md:text-[14px] leading-[1.65] text-white/80 relative z-10 italic">"{t.text}"</p>
 
                     <div className="mt-8 flex flex-col items-center gap-3 relative z-10">
-                      <img src={t.img} alt={t.name} className="w-12 h-12 rounded-full object-cover border-2 border-[#180028]" />
+                      <img src={t.img} alt={t.name} loading="lazy" decoding="async" className="w-12 h-12 rounded-full object-cover border-2 border-[#180028]" />
                       <div>
                         <strong className="block text-[14px] text-white font-serif tracking-wide">{t.name}</strong>
                         <span className="text-[10px] uppercase tracking-[0.1em] text-white/50">{t.role}</span>
@@ -373,8 +376,11 @@ function AboutPage() {
       {/* Footer CTA */}
       <section className="bg-[#180028] border-t border-white/10 pt-24 pb-32">
         <div className="mx-auto max-w-[1400px] px-6 md:px-12 lg:px-20 relative">
-          {/* subtle glow for CTA */}
-          <div className="absolute top-0 right-10 w-[400px] h-[400px] bg-gradient-to-tl from-[#ff8a5b]/20 to-transparent blur-[80px] rounded-full pointer-events-none" />
+          {/* subtle glow for CTA — pure radial gradient without heavy live blur-[80px] */}
+          <div
+            className="absolute top-0 right-10 w-[480px] h-[480px] rounded-full pointer-events-none"
+            style={{ background: "radial-gradient(circle, rgba(255,138,91,0.18) 0%, transparent 70%)" }}
+          />
 
           <motion.h2 
             initial={{ opacity: 0, y: 40, scale: 0.95 }}

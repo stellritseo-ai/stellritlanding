@@ -54,13 +54,39 @@ async function checkAndAutoClose(ChatSessionModel: any, sessionId?: string) {
 
 // ── Visitor: create session ───────────────────────────────────────────────────
 export const createChatSessionFn = createServerFn({ method: "POST" }).handler(
-  async ({ data }: { data: { visitorName: string; visitorContact: string } }) => {
+  async ({ data }: { data: { visitorName: string; visitorContact: string; hp?: string } }) => {
+    const { getRequestHeader, getRequestIP } = await import("@tanstack/react-start/server");
+    const { checkRateLimit, isAnyBotUserAgent, isSpamText } = await import("./bot-guard.server");
+
+    const ua = getRequestHeader("user-agent") || "";
+    const ip = getRequestIP({ xForwardedFor: true }) || "unknown";
+    const isLocal = ip === "127.0.0.1" || ip === "::1" || ip === "unknown";
+
+    if (data?.hp) {
+      throw new Error("Invalid request.");
+    }
+    if (!isLocal && isAnyBotUserAgent(ua)) {
+      throw new Error("Automated chat sessions are not allowed.");
+    }
+    if (!isLocal) {
+      const rl = checkRateLimit(`chat-create:${ip}`, 4, 15 * 60_000);
+      if (!rl.allowed) {
+        throw new Error("Too many chat sessions started. Please try again later.");
+      }
+    }
+
+    const visitorName = String(data?.visitorName || "").trim().slice(0, 120);
+    const visitorContact = String(data?.visitorContact || "").trim().slice(0, 180);
+    if (!visitorName || !visitorContact || isSpamText(visitorName) || isSpamText(visitorContact)) {
+      throw new Error("Please provide a valid name and contact.");
+    }
+
     const { connectDB, ChatSessionModel } = await import("./db.server");
     await connectDB();
 
     const session = new ChatSessionModel({
-      visitorName: data.visitorName,
-      visitorContact: data.visitorContact || "",
+      visitorName,
+      visitorContact,
       lastMessage: "Chat started",
       lastMessageTime: new Date().toISOString(),
       unread: false,
@@ -95,6 +121,23 @@ export const getChatSessionFn = createServerFn({ method: "POST" }).handler(
 // ── Visitor: send message ─────────────────────────────────────────────────────
 export const sendChatMessageFn = createServerFn({ method: "POST" }).handler(
   async ({ data }: { data: { sessionId: string; sender: "visitor" | "admin"; text: string } }) => {
+    if (data.sender === "visitor") {
+      const { getRequestIP } = await import("@tanstack/react-start/server");
+      const { checkRateLimit, isSpamText } = await import("./bot-guard.server");
+      const ip = getRequestIP({ xForwardedFor: true }) || "unknown";
+      const isLocal = ip === "127.0.0.1" || ip === "::1" || ip === "unknown";
+
+      if (!isLocal) {
+        const rl = checkRateLimit(`chat-msg:${ip}`, 20, 2 * 60_000);
+        if (!rl.allowed) {
+          throw new Error("You're sending messages too quickly. Please wait a moment.");
+        }
+      }
+      if (!data.text || data.text.length > 2000 || isSpamText(data.text)) {
+        throw new Error("Message could not be sent.");
+      }
+    }
+
     const { connectDB, ChatSessionModel } = await import("./db.server");
     await connectDB();
 

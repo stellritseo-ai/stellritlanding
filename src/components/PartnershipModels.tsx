@@ -82,12 +82,11 @@ export default function PartnershipModels() {
 
   return (
     <section className="relative z-10 px-4 py-8 sm:px-6 md:px-12 lg:px-20 md:py-10 md:h-screen md:min-h-[600px] md:max-h-[850px] flex flex-col justify-center overflow-hidden">
-      {/* Background dynamic radial glow linked to the active tab */}
+      {/* Background dynamic radial glow linked to the active tab — pure radial gradient without blur(80px) */}
       <div
-        className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[600px] w-[600px] rounded-full transition-all duration-1000 ease-in-out opacity-70"
+        className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[720px] w-[720px] rounded-full transition-opacity duration-1000 ease-in-out opacity-70"
         style={{
-          background: `radial-gradient(circle, ${activeModel.accentGlow}, transparent 65%)`,
-          filter: "blur(80px)",
+          background: `radial-gradient(circle, ${activeModel.accentGlow} 0%, transparent 68%)`,
         }}
       />
 

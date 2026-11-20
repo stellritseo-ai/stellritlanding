@@ -72,6 +72,15 @@ export const Route = createFileRoute("/")(({
 
 function Index() {
   useEffect(() => {
+    // Skip automated/headless browsers and duplicate logs within the same browser session
+    if (typeof navigator !== "undefined" && navigator.webdriver) return;
+    if (typeof document !== "undefined" && document.visibilityState === "hidden") return;
+    try {
+      if (sessionStorage.getItem("stellr_visit_logged")) return;
+      sessionStorage.setItem("stellr_visit_logged", "1");
+    } catch {
+      // sessionStorage unavailable
+    }
     logVisitorFn().catch((err) => console.error("Failed to log visitor view:", err));
   }, []);
 
@@ -233,20 +242,21 @@ function Index() {
       <ScrollBackground />
       <SiteHeader transparent homepage />
       <Hero />
-      {/* content-visibility:auto skips rendering off-screen sections until scrolled into view */}
-      <div style={{ contentVisibility: "auto", containIntrinsicSize: "0 800px" }}>
+      {/* content-visibility:auto skips rendering off-screen sections until scrolled into view;
+          auto keyword remembers rendered heights to prevent scroll jumping */}
+      <div style={{ contentVisibility: "auto", containIntrinsicSize: "auto none auto 1100px" }}>
         <Welcome />
         <Services />
       </div>
-      <div style={{ contentVisibility: "auto", containIntrinsicSize: "0 900px" }}>
+      <div style={{ contentVisibility: "auto", containIntrinsicSize: "auto none auto 1200px" }}>
         <PartnershipModels />
         <CaseStudies />
       </div>
-      <div style={{ contentVisibility: "auto", containIntrinsicSize: "0 900px" }}>
+      <div style={{ contentVisibility: "auto", containIntrinsicSize: "auto none auto 1200px" }}>
         <Testimonials />
         <Portfolio />
       </div>
-      <div style={{ contentVisibility: "auto", containIntrinsicSize: "0 700px" }}>
+      <div style={{ contentVisibility: "auto", containIntrinsicSize: "auto none auto 700px" }}>
         <Insights />
       </div>
       <HomeFAQSection />

@@ -116,16 +116,18 @@
 
 @keyframes scroll-up {
   0% {
-    transform: translateY(0);
+    transform: translate3d(0, 0, 0);
   }
 
   100% {
-    transform: translateY(-50%);
+    transform: translate3d(0, -50%, 0);
   }
 }
 
 .animate-scroll-up {
-  animation: scroll-up 30s linear infinite;
+  @media (prefers-reduced-motion: no-preference) {
+    animation: scroll-up 30s linear infinite;
+  }
 }
 
 .animate-scroll-up:hover {
@@ -134,16 +136,18 @@
 
 @keyframes scroll-left {
   0% {
-    transform: translateX(0);
+    transform: translate3d(0, 0, 0);
   }
 
   100% {
-    transform: translateX(-50%);
+    transform: translate3d(-50%, 0, 0);
   }
 }
 
 .animate-scroll-left {
-  animation: scroll-left 30s linear infinite;
+  @media (prefers-reduced-motion: no-preference) {
+    animation: scroll-left 30s linear infinite;
+  }
 }
 
 .animate-scroll-left:hover {
@@ -154,16 +158,18 @@
 
   0%,
   100% {
-    transform: translateY(0px);
+    transform: translate3d(0, 0px, 0);
   }
 
   50% {
-    transform: translateY(-12px);
+    transform: translate3d(0, -12px, 0);
   }
 }
 
 .animate-float-soft {
-  animation: float-soft 6s ease-in-out infinite;
+  @media (prefers-reduced-motion: no-preference) {
+    animation: float-soft 6s ease-in-out infinite;
+  }
 }
 
 @media (pointer: fine) {

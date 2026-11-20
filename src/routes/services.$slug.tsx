@@ -167,6 +167,8 @@ function ServiceDynamicPage() {
               <img 
                 src={service.featureImage} 
                 alt={`${service.title} showcase`} 
+                loading="lazy"
+                decoding="async"
                 className="w-full h-full object-cover transition-transform duration-[2s] group-hover:scale-105" 
               />
               <div className="absolute inset-0 bg-gradient-to-r from-transparent to-[#0d0015]/80 hidden lg:block" />
@@ -317,6 +319,8 @@ function ServiceDynamicPage() {
                   <img
                     src={img}
                     alt={`Portfolio piece ${i + 1}`}
+                    loading="lazy"
+                    decoding="async"
                     className="w-full h-full object-cover transition-transform duration-[2s] group-hover:scale-105"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-[#0d0015]/80 via-transparent to-transparent opacity-80 group-hover:opacity-100 transition-opacity duration-500" />

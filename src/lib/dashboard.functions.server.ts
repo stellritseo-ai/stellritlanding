@@ -83,12 +83,29 @@ export const getDiagnosticsFn = createServerFn({ method: "GET" }).handler(async 
 
 // ── Log Visitor Landed ────────────────────────────────────────────────────────
 export const logVisitorFn = createServerFn({ method: "POST" }).handler(async () => {
+  const { getRequestHeader, getRequestIP } = await import("@tanstack/react-start/server");
+  const { checkRateLimit, isAnyBotUserAgent } = await import("./bot-guard.server");
+
+  const ua = getRequestHeader("user-agent") || "";
+  const ip = getRequestIP({ xForwardedFor: true }) || "unknown";
+
+  // Ignore bots, crawlers, headless tools, and empty User-Agents
+  if (isAnyBotUserAgent(ua)) {
+    return { success: false, ignored: true };
+  }
+
+  // Deduplicate per IP within a 10-minute window so reloads/bots don't inflate visits
+  const rl = checkRateLimit(`visit:${ip}`, 1, 10 * 60_000);
+  if (!rl.allowed) {
+    return { success: true, deduplicated: true };
+  }
+
   const { connectDB, VisitorLogModel } = await import("./db.server");
   await connectDB();
 
   const visitor = new VisitorLogModel({
-    ipAddress: "127.0.0.1",
-    userAgent: "Mozilla/5.0",
+    ipAddress: ip,
+    userAgent: ua.slice(0, 200),
     converted: false
   });
   await visitor.save();
@@ -724,10 +741,61 @@ export const getWebsiteEmailsFn = createServerFn({ method: "GET" }).handler(asyn
 
 export const submitWebsiteEmailFn = createServerFn({ method: "POST" }).handler(
   async ({ data }: { data: any }) => {
+    const { getRequestHeader, getRequestIP } = await import("@tanstack/react-start/server");
+    const { checkRateLimit, isAnyBotUserAgent, isSpamText } = await import("./bot-guard.server");
+
+    const ua = getRequestHeader("user-agent") || "";
+    const ip = getRequestIP({ xForwardedFor: true }) || "unknown";
+    const isLocal = ip === "127.0.0.1" || ip === "::1" || ip === "unknown";
+
+    // 1. Silent honeypot trap — bots that fill hidden fields get dropped without DB/email writes
+    if (data?.hp || data?.website_url_field) {
+      return { id: "ignored", email: "", type: data?.type || "contact" };
+    }
+
+    // 2. Reject automated bot User-Agents on form endpoints
+    if (!isLocal && isAnyBotUserAgent(ua)) {
+      throw new Error("Automated submissions are not allowed.");
+    }
+
+    // 3. Per-IP rate limit (max 5 submissions per 15 minutes)
+    if (!isLocal) {
+      const rl = checkRateLimit(`email:${ip}`, 5, 15 * 60_000);
+      if (!rl.allowed) {
+        throw new Error("Too many submissions. Please try again in a few minutes.");
+      }
+    }
+
+    // 4. Minimum human fill-time check for contact form (blocks instant bot POSTs)
+    if (data?.type === "contact" && typeof data?.formLoadedAt === "number") {
+      const elapsed = Date.now() - data.formLoadedAt;
+      if (elapsed >= 0 && elapsed < 1500) {
+        throw new Error("Please take a moment before submitting the form.");
+      }
+    }
+
+    // 5. Strict validation & spam content screening
+    const email = String(data?.email || "").trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 254) {
+      throw new Error("Please enter a valid email address.");
+    }
+    const message = String(data?.message || "").trim();
+    const name = String(data?.name || "").trim();
+    if (message.length > 5000 || name.length > 150) {
+      throw new Error("Submission exceeds maximum allowed length.");
+    }
+    if (isSpamText(message) || isSpamText(name)) {
+      throw new Error("Your message was flagged as spam. Please remove excessive links and try again.");
+    }
+
+    // Strip anti-bot metadata fields before persisting
+    const { hp: _hp, website_url_field: _wuf, formLoadedAt: _fla, ...cleanData } = data || {};
+
     const { connectDB, WebsiteEmailModel } = await import("./db.server");
     await connectDB();
     const emailDoc = new WebsiteEmailModel({
-      ...data,
+      ...cleanData,
+      email,
       submittedAt: new Date().toISOString(),
     });
     await emailDoc.save();
