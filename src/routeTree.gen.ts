@@ -9,93 +9,43 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as TermsRouteImport } from './routes/terms'
-import { Route as SmsTermsRouteImport } from './routes/sms-terms'
-import { Route as ServicesRouteImport } from './routes/services'
-import { Route as PrivacyRouteImport } from './routes/privacy'
-import { Route as PortfolioRouteImport } from './routes/portfolio'
-import { Route as LoginRouteImport } from './routes/login'
-import { Route as InsightsRouteImport } from './routes/insights'
-import { Route as DashboardRouteImport } from './routes/dashboard'
-import { Route as ContactRouteImport } from './routes/contact'
-import { Route as CaseStudiesRouteImport } from './routes/case-studies'
-import { Route as CareersRouteImport } from './routes/careers'
-import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as ServicesIndexRouteImport } from './routes/services.index'
-import { Route as InsightsIndexRouteImport } from './routes/insights.index'
-import { Route as DashboardIndexRouteImport } from './routes/dashboard/index'
+import { Route as AboutRouteImport } from './routes/about'
+import { Route as CareersRouteImport } from './routes/careers'
+import { Route as CaseStudiesRouteImport } from './routes/case-studies'
+import { Route as ContactRouteImport } from './routes/contact'
+import { Route as DashboardRouteImport } from './routes/dashboard'
+import { Route as InsightsRouteImport } from './routes/insights'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as PortfolioRouteImport } from './routes/portfolio'
+import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as ServicesRouteImport } from './routes/services'
+import { Route as SmsTermsRouteImport } from './routes/sms-terms'
+import { Route as TermsRouteImport } from './routes/terms'
 import { Route as CaseStudiesIndexRouteImport } from './routes/case-studies.index'
-import { Route as UploadTokenRouteImport } from './routes/upload.$token'
-import { Route as ShareTokenRouteImport } from './routes/share.$token'
-import { Route as ServicesSlugRouteImport } from './routes/services.$slug'
-import { Route as InsightsSlugRouteImport } from './routes/insights.$slug'
-import { Route as DashboardTeamChatRouteImport } from './routes/dashboard/team-chat'
-import { Route as DashboardTasksRouteImport } from './routes/dashboard/tasks'
-import { Route as DashboardSettingsRouteImport } from './routes/dashboard/settings'
-import { Route as DashboardProjectsRouteImport } from './routes/dashboard/projects'
-import { Route as DashboardMembersRouteImport } from './routes/dashboard/members'
-import { Route as DashboardManagementRouteImport } from './routes/dashboard/management'
-import { Route as DashboardEmailsRouteImport } from './routes/dashboard/emails'
-import { Route as DashboardClientsRouteImport } from './routes/dashboard/clients'
-import { Route as DashboardChatRouteImport } from './routes/dashboard/chat'
-import { Route as DashboardAssetsRouteImport } from './routes/dashboard/assets'
-import { Route as DashboardAdminRouteImport } from './routes/dashboard/admin'
 import { Route as CaseStudiesSlugRouteImport } from './routes/case-studies.$slug'
+import { Route as DashboardIndexRouteImport } from './routes/dashboard/index'
+import { Route as DashboardAdminRouteImport } from './routes/dashboard/admin'
+import { Route as DashboardAssetsRouteImport } from './routes/dashboard/assets'
+import { Route as DashboardChatRouteImport } from './routes/dashboard/chat'
+import { Route as DashboardClientsRouteImport } from './routes/dashboard/clients'
+import { Route as DashboardEmailsRouteImport } from './routes/dashboard/emails'
+import { Route as DashboardManagementRouteImport } from './routes/dashboard/management'
+import { Route as DashboardMembersRouteImport } from './routes/dashboard/members'
+import { Route as DashboardProjectsRouteImport } from './routes/dashboard/projects'
+import { Route as DashboardSettingsRouteImport } from './routes/dashboard/settings'
+import { Route as DashboardTasksRouteImport } from './routes/dashboard/tasks'
+import { Route as DashboardTeamChatRouteImport } from './routes/dashboard/team-chat'
+import { Route as InsightsIndexRouteImport } from './routes/insights.index'
+import { Route as InsightsSlugRouteImport } from './routes/insights.$slug'
+import { Route as ServicesIndexRouteImport } from './routes/services.index'
+import { Route as ServicesSlugRouteImport } from './routes/services.$slug'
+import { Route as ShareTokenRouteImport } from './routes/share.$token'
+import { Route as UploadTokenRouteImport } from './routes/upload.$token'
 
-const TermsRoute = TermsRouteImport.update({
-  id: '/terms',
-  path: '/terms',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SmsTermsRoute = SmsTermsRouteImport.update({
-  id: '/sms-terms',
-  path: '/sms-terms',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ServicesRoute = ServicesRouteImport.update({
-  id: '/services',
-  path: '/services',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PrivacyRoute = PrivacyRouteImport.update({
-  id: '/privacy',
-  path: '/privacy',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PortfolioRoute = PortfolioRouteImport.update({
-  id: '/portfolio',
-  path: '/portfolio',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LoginRoute = LoginRouteImport.update({
-  id: '/login',
-  path: '/login',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const InsightsRoute = InsightsRouteImport.update({
-  id: '/insights',
-  path: '/insights',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DashboardRoute = DashboardRouteImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ContactRoute = ContactRouteImport.update({
-  id: '/contact',
-  path: '/contact',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CaseStudiesRoute = CaseStudiesRouteImport.update({
-  id: '/case-studies',
-  path: '/case-studies',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CareersRoute = CareersRouteImport.update({
-  id: '/careers',
-  path: '/careers',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AboutRoute = AboutRouteImport.update({
@@ -103,99 +53,74 @@ const AboutRoute = AboutRouteImport.update({
   path: '/about',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const CareersRoute = CareersRouteImport.update({
+  id: '/careers',
+  path: '/careers',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ServicesIndexRoute = ServicesIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => ServicesRoute,
+const CaseStudiesRoute = CaseStudiesRouteImport.update({
+  id: '/case-studies',
+  path: '/case-studies',
+  getParentRoute: () => rootRouteImport,
 } as any)
-const InsightsIndexRoute = InsightsIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => InsightsRoute,
+const ContactRoute = ContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
+  getParentRoute: () => rootRouteImport,
 } as any)
-const DashboardIndexRoute = DashboardIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => DashboardRoute,
+const DashboardRoute = DashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InsightsRoute = InsightsRouteImport.update({
+  id: '/insights',
+  path: '/insights',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PortfolioRoute = PortfolioRouteImport.update({
+  id: '/portfolio',
+  path: '/portfolio',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ServicesRoute = ServicesRouteImport.update({
+  id: '/services',
+  path: '/services',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SmsTermsRoute = SmsTermsRouteImport.update({
+  id: '/sms-terms',
+  path: '/sms-terms',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const CaseStudiesIndexRoute = CaseStudiesIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => CaseStudiesRoute,
 } as any)
-const UploadTokenRoute = UploadTokenRouteImport.update({
-  id: '/upload/$token',
-  path: '/upload/$token',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ShareTokenRoute = ShareTokenRouteImport.update({
-  id: '/share/$token',
-  path: '/share/$token',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ServicesSlugRoute = ServicesSlugRouteImport.update({
+const CaseStudiesSlugRoute = CaseStudiesSlugRouteImport.update({
   id: '/$slug',
   path: '/$slug',
-  getParentRoute: () => ServicesRoute,
+  getParentRoute: () => CaseStudiesRoute,
 } as any)
-const InsightsSlugRoute = InsightsSlugRouteImport.update({
-  id: '/$slug',
-  path: '/$slug',
-  getParentRoute: () => InsightsRoute,
-} as any)
-const DashboardTeamChatRoute = DashboardTeamChatRouteImport.update({
-  id: '/team-chat',
-  path: '/team-chat',
-  getParentRoute: () => DashboardRoute,
-} as any)
-const DashboardTasksRoute = DashboardTasksRouteImport.update({
-  id: '/tasks',
-  path: '/tasks',
-  getParentRoute: () => DashboardRoute,
-} as any)
-const DashboardSettingsRoute = DashboardSettingsRouteImport.update({
-  id: '/settings',
-  path: '/settings',
-  getParentRoute: () => DashboardRoute,
-} as any)
-const DashboardProjectsRoute = DashboardProjectsRouteImport.update({
-  id: '/projects',
-  path: '/projects',
-  getParentRoute: () => DashboardRoute,
-} as any)
-const DashboardMembersRoute = DashboardMembersRouteImport.update({
-  id: '/members',
-  path: '/members',
-  getParentRoute: () => DashboardRoute,
-} as any)
-const DashboardManagementRoute = DashboardManagementRouteImport.update({
-  id: '/management',
-  path: '/management',
-  getParentRoute: () => DashboardRoute,
-} as any)
-const DashboardEmailsRoute = DashboardEmailsRouteImport.update({
-  id: '/emails',
-  path: '/emails',
-  getParentRoute: () => DashboardRoute,
-} as any)
-const DashboardClientsRoute = DashboardClientsRouteImport.update({
-  id: '/clients',
-  path: '/clients',
-  getParentRoute: () => DashboardRoute,
-} as any)
-const DashboardChatRoute = DashboardChatRouteImport.update({
-  id: '/chat',
-  path: '/chat',
-  getParentRoute: () => DashboardRoute,
-} as any)
-const DashboardAssetsRoute = DashboardAssetsRouteImport.update({
-  id: '/assets',
-  path: '/assets',
+const DashboardIndexRoute = DashboardIndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => DashboardRoute,
 } as any)
 const DashboardAdminRoute = DashboardAdminRouteImport.update({
@@ -203,10 +128,85 @@ const DashboardAdminRoute = DashboardAdminRouteImport.update({
   path: '/admin',
   getParentRoute: () => DashboardRoute,
 } as any)
-const CaseStudiesSlugRoute = CaseStudiesSlugRouteImport.update({
+const DashboardAssetsRoute = DashboardAssetsRouteImport.update({
+  id: '/assets',
+  path: '/assets',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardChatRoute = DashboardChatRouteImport.update({
+  id: '/chat',
+  path: '/chat',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardClientsRoute = DashboardClientsRouteImport.update({
+  id: '/clients',
+  path: '/clients',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardEmailsRoute = DashboardEmailsRouteImport.update({
+  id: '/emails',
+  path: '/emails',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardManagementRoute = DashboardManagementRouteImport.update({
+  id: '/management',
+  path: '/management',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardMembersRoute = DashboardMembersRouteImport.update({
+  id: '/members',
+  path: '/members',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardProjectsRoute = DashboardProjectsRouteImport.update({
+  id: '/projects',
+  path: '/projects',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardSettingsRoute = DashboardSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardTasksRoute = DashboardTasksRouteImport.update({
+  id: '/tasks',
+  path: '/tasks',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardTeamChatRoute = DashboardTeamChatRouteImport.update({
+  id: '/team-chat',
+  path: '/team-chat',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const InsightsIndexRoute = InsightsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => InsightsRoute,
+} as any)
+const InsightsSlugRoute = InsightsSlugRouteImport.update({
   id: '/$slug',
   path: '/$slug',
-  getParentRoute: () => CaseStudiesRoute,
+  getParentRoute: () => InsightsRoute,
+} as any)
+const ServicesIndexRoute = ServicesIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => ServicesRoute,
+} as any)
+const ServicesSlugRoute = ServicesSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => ServicesRoute,
+} as any)
+const ShareTokenRoute = ShareTokenRouteImport.update({
+  id: '/share/$token',
+  path: '/share/$token',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const UploadTokenRoute = UploadTokenRouteImport.update({
+  id: '/upload/$token',
+  path: '/upload/$token',
+  getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
@@ -435,81 +435,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/terms': {
-      id: '/terms'
-      path: '/terms'
-      fullPath: '/terms'
-      preLoaderRoute: typeof TermsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/sms-terms': {
-      id: '/sms-terms'
-      path: '/sms-terms'
-      fullPath: '/sms-terms'
-      preLoaderRoute: typeof SmsTermsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/services': {
-      id: '/services'
-      path: '/services'
-      fullPath: '/services'
-      preLoaderRoute: typeof ServicesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/privacy': {
-      id: '/privacy'
-      path: '/privacy'
-      fullPath: '/privacy'
-      preLoaderRoute: typeof PrivacyRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/portfolio': {
-      id: '/portfolio'
-      path: '/portfolio'
-      fullPath: '/portfolio'
-      preLoaderRoute: typeof PortfolioRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/login': {
-      id: '/login'
-      path: '/login'
-      fullPath: '/login'
-      preLoaderRoute: typeof LoginRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/insights': {
-      id: '/insights'
-      path: '/insights'
-      fullPath: '/insights'
-      preLoaderRoute: typeof InsightsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/dashboard': {
-      id: '/dashboard'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof DashboardRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/contact': {
-      id: '/contact'
-      path: '/contact'
-      fullPath: '/contact'
-      preLoaderRoute: typeof ContactRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/case-studies': {
-      id: '/case-studies'
-      path: '/case-studies'
-      fullPath: '/case-studies'
-      preLoaderRoute: typeof CaseStudiesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/careers': {
-      id: '/careers'
-      path: '/careers'
-      fullPath: '/careers'
-      preLoaderRoute: typeof CareersRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/about': {
@@ -519,33 +449,82 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AboutRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/careers': {
+      id: '/careers'
+      path: '/careers'
+      fullPath: '/careers'
+      preLoaderRoute: typeof CareersRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/services/': {
-      id: '/services/'
-      path: '/'
-      fullPath: '/services/'
-      preLoaderRoute: typeof ServicesIndexRouteImport
-      parentRoute: typeof ServicesRoute
+    '/case-studies': {
+      id: '/case-studies'
+      path: '/case-studies'
+      fullPath: '/case-studies'
+      preLoaderRoute: typeof CaseStudiesRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/insights/': {
-      id: '/insights/'
-      path: '/'
-      fullPath: '/insights/'
-      preLoaderRoute: typeof InsightsIndexRouteImport
-      parentRoute: typeof InsightsRoute
+    '/contact': {
+      id: '/contact'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/dashboard/': {
-      id: '/dashboard/'
-      path: '/'
-      fullPath: '/dashboard/'
-      preLoaderRoute: typeof DashboardIndexRouteImport
-      parentRoute: typeof DashboardRoute
+    '/dashboard': {
+      id: '/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof DashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/insights': {
+      id: '/insights'
+      path: '/insights'
+      fullPath: '/insights'
+      preLoaderRoute: typeof InsightsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/portfolio': {
+      id: '/portfolio'
+      path: '/portfolio'
+      fullPath: '/portfolio'
+      preLoaderRoute: typeof PortfolioRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/services': {
+      id: '/services'
+      path: '/services'
+      fullPath: '/services'
+      preLoaderRoute: typeof ServicesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sms-terms': {
+      id: '/sms-terms'
+      path: '/sms-terms'
+      fullPath: '/sms-terms'
+      preLoaderRoute: typeof SmsTermsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/case-studies/': {
       id: '/case-studies/'
@@ -554,102 +533,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CaseStudiesIndexRouteImport
       parentRoute: typeof CaseStudiesRoute
     }
-    '/upload/$token': {
-      id: '/upload/$token'
-      path: '/upload/$token'
-      fullPath: '/upload/$token'
-      preLoaderRoute: typeof UploadTokenRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/share/$token': {
-      id: '/share/$token'
-      path: '/share/$token'
-      fullPath: '/share/$token'
-      preLoaderRoute: typeof ShareTokenRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/services/$slug': {
-      id: '/services/$slug'
+    '/case-studies/$slug': {
+      id: '/case-studies/$slug'
       path: '/$slug'
-      fullPath: '/services/$slug'
-      preLoaderRoute: typeof ServicesSlugRouteImport
-      parentRoute: typeof ServicesRoute
+      fullPath: '/case-studies/$slug'
+      preLoaderRoute: typeof CaseStudiesSlugRouteImport
+      parentRoute: typeof CaseStudiesRoute
     }
-    '/insights/$slug': {
-      id: '/insights/$slug'
-      path: '/$slug'
-      fullPath: '/insights/$slug'
-      preLoaderRoute: typeof InsightsSlugRouteImport
-      parentRoute: typeof InsightsRoute
-    }
-    '/dashboard/team-chat': {
-      id: '/dashboard/team-chat'
-      path: '/team-chat'
-      fullPath: '/dashboard/team-chat'
-      preLoaderRoute: typeof DashboardTeamChatRouteImport
-      parentRoute: typeof DashboardRoute
-    }
-    '/dashboard/tasks': {
-      id: '/dashboard/tasks'
-      path: '/tasks'
-      fullPath: '/dashboard/tasks'
-      preLoaderRoute: typeof DashboardTasksRouteImport
-      parentRoute: typeof DashboardRoute
-    }
-    '/dashboard/settings': {
-      id: '/dashboard/settings'
-      path: '/settings'
-      fullPath: '/dashboard/settings'
-      preLoaderRoute: typeof DashboardSettingsRouteImport
-      parentRoute: typeof DashboardRoute
-    }
-    '/dashboard/projects': {
-      id: '/dashboard/projects'
-      path: '/projects'
-      fullPath: '/dashboard/projects'
-      preLoaderRoute: typeof DashboardProjectsRouteImport
-      parentRoute: typeof DashboardRoute
-    }
-    '/dashboard/members': {
-      id: '/dashboard/members'
-      path: '/members'
-      fullPath: '/dashboard/members'
-      preLoaderRoute: typeof DashboardMembersRouteImport
-      parentRoute: typeof DashboardRoute
-    }
-    '/dashboard/management': {
-      id: '/dashboard/management'
-      path: '/management'
-      fullPath: '/dashboard/management'
-      preLoaderRoute: typeof DashboardManagementRouteImport
-      parentRoute: typeof DashboardRoute
-    }
-    '/dashboard/emails': {
-      id: '/dashboard/emails'
-      path: '/emails'
-      fullPath: '/dashboard/emails'
-      preLoaderRoute: typeof DashboardEmailsRouteImport
-      parentRoute: typeof DashboardRoute
-    }
-    '/dashboard/clients': {
-      id: '/dashboard/clients'
-      path: '/clients'
-      fullPath: '/dashboard/clients'
-      preLoaderRoute: typeof DashboardClientsRouteImport
-      parentRoute: typeof DashboardRoute
-    }
-    '/dashboard/chat': {
-      id: '/dashboard/chat'
-      path: '/chat'
-      fullPath: '/dashboard/chat'
-      preLoaderRoute: typeof DashboardChatRouteImport
-      parentRoute: typeof DashboardRoute
-    }
-    '/dashboard/assets': {
-      id: '/dashboard/assets'
-      path: '/assets'
-      fullPath: '/dashboard/assets'
-      preLoaderRoute: typeof DashboardAssetsRouteImport
+    '/dashboard/': {
+      id: '/dashboard/'
+      path: '/'
+      fullPath: '/dashboard/'
+      preLoaderRoute: typeof DashboardIndexRouteImport
       parentRoute: typeof DashboardRoute
     }
     '/dashboard/admin': {
@@ -659,12 +554,117 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardAdminRouteImport
       parentRoute: typeof DashboardRoute
     }
-    '/case-studies/$slug': {
-      id: '/case-studies/$slug'
+    '/dashboard/assets': {
+      id: '/dashboard/assets'
+      path: '/assets'
+      fullPath: '/dashboard/assets'
+      preLoaderRoute: typeof DashboardAssetsRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/chat': {
+      id: '/dashboard/chat'
+      path: '/chat'
+      fullPath: '/dashboard/chat'
+      preLoaderRoute: typeof DashboardChatRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/clients': {
+      id: '/dashboard/clients'
+      path: '/clients'
+      fullPath: '/dashboard/clients'
+      preLoaderRoute: typeof DashboardClientsRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/emails': {
+      id: '/dashboard/emails'
+      path: '/emails'
+      fullPath: '/dashboard/emails'
+      preLoaderRoute: typeof DashboardEmailsRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/management': {
+      id: '/dashboard/management'
+      path: '/management'
+      fullPath: '/dashboard/management'
+      preLoaderRoute: typeof DashboardManagementRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/members': {
+      id: '/dashboard/members'
+      path: '/members'
+      fullPath: '/dashboard/members'
+      preLoaderRoute: typeof DashboardMembersRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/projects': {
+      id: '/dashboard/projects'
+      path: '/projects'
+      fullPath: '/dashboard/projects'
+      preLoaderRoute: typeof DashboardProjectsRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/settings': {
+      id: '/dashboard/settings'
+      path: '/settings'
+      fullPath: '/dashboard/settings'
+      preLoaderRoute: typeof DashboardSettingsRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/tasks': {
+      id: '/dashboard/tasks'
+      path: '/tasks'
+      fullPath: '/dashboard/tasks'
+      preLoaderRoute: typeof DashboardTasksRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/team-chat': {
+      id: '/dashboard/team-chat'
+      path: '/team-chat'
+      fullPath: '/dashboard/team-chat'
+      preLoaderRoute: typeof DashboardTeamChatRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/insights/': {
+      id: '/insights/'
+      path: '/'
+      fullPath: '/insights/'
+      preLoaderRoute: typeof InsightsIndexRouteImport
+      parentRoute: typeof InsightsRoute
+    }
+    '/insights/$slug': {
+      id: '/insights/$slug'
       path: '/$slug'
-      fullPath: '/case-studies/$slug'
-      preLoaderRoute: typeof CaseStudiesSlugRouteImport
-      parentRoute: typeof CaseStudiesRoute
+      fullPath: '/insights/$slug'
+      preLoaderRoute: typeof InsightsSlugRouteImport
+      parentRoute: typeof InsightsRoute
+    }
+    '/services/': {
+      id: '/services/'
+      path: '/'
+      fullPath: '/services/'
+      preLoaderRoute: typeof ServicesIndexRouteImport
+      parentRoute: typeof ServicesRoute
+    }
+    '/services/$slug': {
+      id: '/services/$slug'
+      path: '/$slug'
+      fullPath: '/services/$slug'
+      preLoaderRoute: typeof ServicesSlugRouteImport
+      parentRoute: typeof ServicesRoute
+    }
+    '/share/$token': {
+      id: '/share/$token'
+      path: '/share/$token'
+      fullPath: '/share/$token'
+      preLoaderRoute: typeof ShareTokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/upload/$token': {
+      id: '/upload/$token'
+      path: '/upload/$token'
+      fullPath: '/upload/$token'
+      preLoaderRoute: typeof UploadTokenRouteImport
+      parentRoute: typeof rootRouteImport
     }
   }
 }
