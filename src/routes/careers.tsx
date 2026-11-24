@@ -6,46 +6,21 @@ import PageHero from "@/components/PageHero";
 import Footer from "@/components/Footer";
 import ScrollBackground from "@/components/ScrollBackground";
 import ChatWidget from "@/components/ChatWidget";
+import {
+  buildBreadcrumbSchema,
+  buildRouteHead,
+  buildWebPageSchema,
+} from "@/lib/seo";
 
 export const Route = createFileRoute("/careers")({
-  head: () => ({
-    meta: [
-      {
-        title:
-          "Careers at StellR IT LLC — Join Our AI & Software Engineering Team | Remote",
-      },
-      {
-        name: "description",
-        content:
-          "Join StellR IT LLC's global AI and software engineering team. Open roles in AI development, full-stack engineering, UI/UX design, brand design, and digital marketing. Remote-friendly positions worldwide. Senior-only team with competitive compensation.",
-      },
-      {
-        name: "keywords",
-        content:
-          "careers at StellR IT, AI engineer jobs, software developer jobs remote, full stack developer jobs, React developer jobs, Flutter developer jobs, UX designer jobs remote, brand designer jobs, digital marketing jobs remote, AI development company jobs, software engineering careers, senior developer jobs, remote tech jobs, IT company careers Texas",
-      },
-      { name: "robots", content: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" },
-      { property: "og:title", content: "Careers at StellR IT LLC — AI & Software Engineering Jobs | Remote" },
-      {
-        property: "og:description",
-        content:
-          "Join our global AI and software engineering team. Open roles in AI development, engineering, design & marketing. Senior-only. Remote-friendly worldwide.",
-      },
-      { property: "og:url", content: "https://stellrit.com/careers" },
-      { property: "og:type", content: "website" },
-      { property: "og:image", content: "https://stellrit.com/og-image.png" },
-      { property: "og:image:alt", content: "Careers at StellR IT LLC — AI & Software Engineering Jobs" },
-      { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:title", content: "Careers at StellR IT LLC — AI & Software Engineering Jobs" },
-      {
-        name: "twitter:description",
-        content:
-          "Join our AI & software engineering team. Remote-friendly, senior-only studio. Open roles worldwide.",
-      },
-      { name: "twitter:image", content: "https://stellrit.com/og-image.png" },
-    ],
-    links: [{ rel: "canonical", href: "https://stellrit.com/careers" }],
-  }),
+  head: () =>
+    buildRouteHead({
+      title: "Careers at StellR IT LLC — AI & Software Engineering Jobs | Garland, TX & Remote",
+      description:
+        "Join StellR IT LLC's senior AI and software engineering team. Open full-time and contract roles across product design, engineering, brand, and growth in Garland, TX and remote.",
+      path: "/careers",
+      imageAlt: "Careers at StellR IT LLC — AI & Software Engineering Jobs",
+    }),
   component: CareersPage,
 });
 
@@ -68,8 +43,22 @@ const PERKS = [
 ];
 
 function CareersPage() {
+  const webPageSchema = buildWebPageSchema({
+    type: "WebPage",
+    name: "Careers at StellR IT LLC",
+    description:
+      "Open senior roles in engineering, product design, brand, and digital growth at StellR IT LLC in Garland, Texas and remote.",
+    path: "/careers",
+  });
+  const breadcrumbSchema = buildBreadcrumbSchema([
+    { name: "Home", path: "/" },
+    { name: "Careers", path: "/careers" },
+  ]);
+
   return (
     <main className="relative min-h-screen">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageSchema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
       <ScrollBackground />
       <SiteHeader transparent />
       <PageHero
@@ -111,7 +100,7 @@ function CareersPage() {
             {ROLES.map((r, i) => (
               <motion.a
                 key={r.title}
-                href="mailto:info@stellrit.com?subject=Application: "
+                href={`mailto:info@stellrit.com?subject=${encodeURIComponent(`Application: ${r.title}`)}`}
                 initial={{ opacity: 0, y: 18 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}

@@ -1,5 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { motion } from "framer-motion";
+import { createFileRoute } from "@tanstack/react-router";
 import SiteHeader from "@/components/SiteHeader";
 import Hero from "@/components/Hero";
 import Welcome from "@/components/Welcome";
@@ -10,63 +9,30 @@ import Insights from "@/components/Insights";
 import Footer from "@/components/Footer";
 import ScrollBackground from "@/components/ScrollBackground";
 import ChatWidget from "@/components/ChatWidget";
-import MarqueeStrip from "@/components/MarqueeStrip";
-import ParallaxText from "@/components/ParallaxText";
 import PartnershipModels from "@/components/PartnershipModels";
 import Portfolio from "@/components/Portfolio";
 import CustomCursor from "@/components/CustomCursor";
 import HomeFAQSection, { homeFAQs } from "@/components/faq";
 import { useEffect } from "react";
 import { logVisitorFn } from "@/lib/dashboard.functions.server";
+import {
+  SITE_URL,
+  buildBreadcrumbSchema,
+  buildFaqSchema,
+  buildRouteHead,
+  buildWebPageSchema,
+  canonicalUrl,
+} from "@/lib/seo";
 
 export const Route = createFileRoute("/")(({
-  head: () => ({
-    meta: [
-      {
-        title:
-          "StellR IT LLC — Custom Software & AI Development Company USA",
-      },
-      {
-        name: "description",
-        content:
-          "StellR IT LLC is a leading custom software development company and AI development company in the USA. We provide web development, SaaS, mobile apps, digital marketing, and dedicated engineering teams in Dallas, TX.",
-      },
-      {
-        name: "keywords",
-        content:
-          "web development company USA, custom software development company USA, software development company USA, AI development company USA, AI automation company USA, custom AI development services, mobile app development company USA, eCommerce development company USA, UI UX design agency USA, digital product development company, SaaS development company USA, custom web development company, web development company Dallas TX, software development company Dallas TX, AI development company Dallas TX, AI automation company Dallas TX, mobile app development Dallas TX, eCommerce development Dallas TX, SEO company Dallas TX, digital marketing agency Dallas TX, AI software development, generative AI development, LLM integration, custom AI solutions, React development, Next.js development, Flutter development, dedicated development team, offshore development company, white label development, staff augmentation, IT outsourcing, digital transformation company",
-      },
-      { name: "robots", content: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" },
-      // Open Graph
-      {
-        property: "og:title",
-        content:
-          "StellR IT LLC — AI Development Company | Custom Software | Digital Transformation",
-      },
-      {
-        property: "og:description",
-        content:
-          "Leading AI development, custom software engineering, SaaS, mobile apps & digital transformation. Dedicated remote engineering teams for agencies and enterprises worldwide.",
-      },
-      { property: "og:url", content: "https://stellrit.com" },
-      { property: "og:type", content: "website" },
-      { property: "og:image", content: "https://stellrit.com/og-image.png" },
-      { property: "og:image:alt", content: "StellR IT LLC — AI Development & Software Engineering Company" },
-      // Twitter
-      { name: "twitter:card", content: "summary_large_image" },
-      {
-        name: "twitter:title",
-        content: "StellR IT LLC — AI Development Company | Custom Software Development",
-      },
-      {
-        name: "twitter:description",
-        content:
-          "Leading AI development, software engineering, SaaS & digital transformation. Dedicated remote teams worldwide.",
-      },
-      { name: "twitter:image", content: "https://stellrit.com/og-image.png" },
-    ],
-    links: [{ rel: "canonical", href: "https://stellrit.com" }],
-  }),
+  head: () =>
+    buildRouteHead({
+      title: "StellR IT LLC — AI Development & Custom Software Company | Garland, TX",
+      description:
+        "StellR IT LLC is a US-based AI development and custom software engineering company in Garland, Texas. We build custom AI applications, autonomous AI agents, RAG chatbots, SaaS platforms, web & mobile apps, and dedicated engineering teams.",
+      path: "/",
+      imageAlt: "StellR IT LLC — AI Development & Custom Software Engineering Company",
+    }),
   component: Index,
 }));
 
@@ -84,148 +50,151 @@ function Index() {
     logVisitorFn().catch((err) => console.error("Failed to log visitor view:", err));
   }, []);
 
-  const faqSchema = {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    mainEntity: homeFAQs.map((faq) => ({
-      "@type": "Question",
-      name: faq.q,
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: faq.a,
-      },
-    })),
-  };
+  const webPageSchema = buildWebPageSchema({
+    type: "WebPage",
+    name: "StellR IT LLC — AI Development & Custom Software Engineering Company",
+    description:
+      "Custom AI development, autonomous AI agents, RAG chatbots, SaaS platforms, web & mobile engineering, and dedicated remote teams from Garland, Texas.",
+    path: "/",
+  });
+
+  const faqSchema = buildFaqSchema(homeFAQs);
 
   const serviceSchema = {
     "@context": "https://schema.org",
     "@type": "ItemList",
-    "@id": "https://stellrit.com/#services",
+    "@id": `${SITE_URL}/#services`,
     name: "StellR IT LLC — AI & Software Development Services",
-    description: "Comprehensive AI development, software engineering, and digital transformation services",
+    description:
+      "Core AI development, custom software engineering, SaaS, mobile, and digital growth services.",
     itemListElement: [
       {
-        "@type": "ListItem", position: 1,
+        "@type": "ListItem",
+        position: 1,
         item: {
           "@type": "Service",
           name: "AI Software Development",
-          description: "Custom AI software development including generative AI, LLM integration, chatbots, voice agents, and AI automation systems.",
-          provider: { "@id": "https://stellrit.com/#organization" },
+          description:
+            "Custom AI software development, generative AI applications, LLM integration, and secure enterprise AI systems.",
+          provider: { "@id": `${SITE_URL}/#organization` },
           serviceType: "AI Development",
-          areaServed: "Worldwide",
-          url: "https://stellrit.com/services",
+          areaServed: "United States",
+          url: canonicalUrl("/services/ai-software-development"),
         },
       },
       {
-        "@type": "ListItem", position: 2,
+        "@type": "ListItem",
+        position: 2,
         item: {
           "@type": "Service",
-          name: "Custom Software Development",
-          description: "Enterprise-grade custom software development, SaaS platforms, web applications, and API development.",
-          provider: { "@id": "https://stellrit.com/#organization" },
-          serviceType: "Software Development",
-          areaServed: "Worldwide",
-          url: "https://stellrit.com/services",
+          name: "AI Automation & Autonomous Agents",
+          description:
+            "Autonomous AI agents, workflow automation, CRM/ERP orchestration, and AI customer support systems.",
+          provider: { "@id": `${SITE_URL}/#organization` },
+          serviceType: "AI Workflow Automation",
+          areaServed: "United States",
+          url: canonicalUrl("/services/ai-automation-agents"),
         },
       },
       {
-        "@type": "ListItem", position: 3,
+        "@type": "ListItem",
+        position: 3,
+        item: {
+          "@type": "Service",
+          name: "Custom AI Chatbot & RAG Development",
+          description:
+            "Enterprise RAG chatbots, vector search pipelines, and omnichannel conversational AI.",
+          provider: { "@id": `${SITE_URL}/#organization` },
+          serviceType: "Conversational AI",
+          areaServed: "United States",
+          url: canonicalUrl("/services/ai-chatbot-development"),
+        },
+      },
+      {
+        "@type": "ListItem",
+        position: 4,
+        item: {
+          "@type": "Service",
+          name: "Custom Web & Software Development",
+          description:
+            "Full-stack custom software, Next.js/React web platforms, headless eCommerce, and API engineering.",
+          provider: { "@id": `${SITE_URL}/#organization` },
+          serviceType: "Custom Software Development",
+          areaServed: "United States",
+          url: canonicalUrl("/services/web-development"),
+        },
+      },
+      {
+        "@type": "ListItem",
+        position: 5,
+        item: {
+          "@type": "Service",
+          name: "SaaS Development",
+          description:
+            "Multi-tenant SaaS architecture, MVP-to-enterprise product engineering, billing, and DevOps.",
+          provider: { "@id": `${SITE_URL}/#organization` },
+          serviceType: "SaaS Development",
+          areaServed: "United States",
+          url: canonicalUrl("/services/saas-development"),
+        },
+      },
+      {
+        "@type": "ListItem",
+        position: 6,
         item: {
           "@type": "Service",
           name: "Mobile App Development",
-          description: "iOS, Android, Flutter, and React Native mobile app development for enterprises and startups.",
-          provider: { "@id": "https://stellrit.com/#organization" },
-          serviceType: "Mobile Development",
-          areaServed: "Worldwide",
-          url: "https://stellrit.com/services",
+          description:
+            "Cross-platform React Native, Flutter, iOS, and Android mobile application engineering.",
+          provider: { "@id": `${SITE_URL}/#organization` },
+          serviceType: "Mobile App Development",
+          areaServed: "United States",
+          url: canonicalUrl("/services/mobile-app-development"),
         },
       },
       {
-        "@type": "ListItem", position: 4,
+        "@type": "ListItem",
+        position: 7,
         item: {
           "@type": "Service",
           name: "Dedicated Engineering Teams",
-          description: "Fully managed dedicated remote development teams including AI engineers, full-stack developers, designers, QA, and DevOps.",
-          provider: { "@id": "https://stellrit.com/#organization" },
+          description:
+            "Dedicated AI engineers, full-stack developers, designers, QA, and staff augmentation with US timezone overlap.",
+          provider: { "@id": `${SITE_URL}/#organization` },
           serviceType: "Staff Augmentation",
-          areaServed: "Worldwide",
-          url: "https://stellrit.com/services",
+          areaServed: "United States",
+          url: canonicalUrl("/services/dedicated-teams"),
         },
       },
       {
-        "@type": "ListItem", position: 5,
+        "@type": "ListItem",
+        position: 8,
         item: {
           "@type": "Service",
-          name: "Digital Marketing & SEO",
-          description: "Data-driven SEO, Google Ads, social media marketing, content marketing, and conversion rate optimization.",
-          provider: { "@id": "https://stellrit.com/#organization" },
-          serviceType: "Digital Marketing",
-          areaServed: "Worldwide",
-          url: "https://stellrit.com/services",
+          name: "Digital Marketing, SEO & CRO",
+          description:
+            "Technical SEO, AI search readiness (AEO/GEO), paid search, and conversion rate optimization.",
+          provider: { "@id": `${SITE_URL}/#organization` },
+          serviceType: "Digital Marketing & SEO",
+          areaServed: "United States",
+          url: canonicalUrl("/services/digital-marketing"),
         },
       },
     ],
   };
 
-  const breadcrumbSchema = {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Home", item: "https://stellrit.com" },
-    ],
-  };
-
-  const organizationSchema = {
-    "@context": "https://schema.org",
-    "@type": "ProfessionalService",
-    "@id": "https://stellrit.com/#organization",
-    name: "StellR IT LLC",
-    url: "https://stellrit.com",
-    logo: "https://stellrit.com/og-image.png",
-    image: "https://stellrit.com/og-image.png",
-    description: "Leading AI development company and custom software development firm offering generative AI, automation systems, SaaS platforms, and dedicated engineering teams.",
-    address: {
-      "@type": "PostalAddress",
-      addressLocality: "Garland",
-      addressRegion: "TX",
-      addressCountry: "US"
-    },
-    contactPoint: {
-      "@type": "ContactPoint",
-      contactType: "customer service",
-      email: "info@stellrit.com"
-    },
-    sameAs: [
-      "https://www.linkedin.com/company/stellrit"
-    ]
-  };
-
-  const siteNavSchema = {
-    "@context": "https://schema.org",
-    "@type": "ItemList",
-    "@id": "https://stellrit.com/#sitelinks",
-    name: "StellR IT Navigation",
-    itemListElement: [
-      { "@type": "SiteNavigationElement", position: 1, name: "Services", url: "https://stellrit.com/services" },
-      { "@type": "SiteNavigationElement", position: 2, name: "About Us", url: "https://stellrit.com/about" },
-      { "@type": "SiteNavigationElement", position: 3, name: "Portfolio", url: "https://stellrit.com/portfolio" },
-      { "@type": "SiteNavigationElement", position: 4, name: "Case Studies", url: "https://stellrit.com/case-studies" },
-      { "@type": "SiteNavigationElement", position: 5, name: "Insights", url: "https://stellrit.com/insights" },
-      { "@type": "SiteNavigationElement", position: 6, name: "Careers", url: "https://stellrit.com/careers" },
-      { "@type": "SiteNavigationElement", position: 7, name: "Contact", url: "https://stellrit.com/contact" },
-    ],
-  };
+  const breadcrumbSchema = buildBreadcrumbSchema([{ name: "Home", path: "/" }]);
 
   return (
     <main className="relative min-h-screen w-full max-w-full">
       <CustomCursor />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageSchema) }}
       />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
       />
       <script
         type="application/ld+json"
@@ -234,10 +203,6 @@ function Index() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(siteNavSchema) }}
       />
       <ScrollBackground />
       <SiteHeader transparent homepage />

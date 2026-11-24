@@ -8,53 +8,24 @@ import ScrollBackground from "@/components/ScrollBackground";
 import Footer from "@/components/Footer";
 import ChatWidget from "@/components/ChatWidget";
 import { INSIGHT_ARTICLES } from "@/data/insights";
+import {
+  COMPANY,
+  SITE_URL,
+  buildBreadcrumbSchema,
+  buildRouteHead,
+  canonicalUrl,
+} from "@/lib/seo";
 
 export const Route = createFileRoute("/insights/")({
-  head: () => ({
-    meta: [
-      {
-        title:
-          "AI & Tech Insights — Software, Automation & Digital Strategy Blog | StellR IT LLC",
-      },
-      {
-        name: "description",
-        content:
-          "Expert insights, guides, and articles on AI development, generative AI, software engineering, automation, SaaS, mobile apps, web development, SEO, and digital marketing strategy from the StellR IT LLC engineering team.",
-      },
-      {
-        name: "keywords",
-        content:
-          "AI development blog, software development insights, generative AI articles, AI automation guide, LLM integration tutorial, SaaS development tips, web development blog, mobile app development guide, digital marketing strategy, SEO tips, business automation, AI for business, machine learning tutorials, AI chatbot guide, RAG implementation, custom software insights, technology blog, engineering blog",
-      },
-      { name: "robots", content: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" },
-      {
-        property: "og:title",
-        content: "AI & Tech Insights — Software & Digital Strategy Blog | StellR IT LLC",
-      },
-      {
-        property: "og:description",
-        content:
-          "Expert articles on AI development, software engineering, SaaS, automation, web & mobile development, SEO and digital marketing from the StellR IT engineering team.",
-      },
-      { property: "og:url", content: "https://stellrit.com/insights" },
-      { property: "og:type", content: "blog" },
-      { property: "og:image", content: "https://stellrit.com/og-image.png" },
-      { property: "og:image:alt", content: "StellR IT LLC Insights — AI & Software Development Blog" },
-      { property: "article:publisher", content: "https://www.linkedin.com/company/stellrit" },
-      { name: "twitter:card", content: "summary_large_image" },
-      {
-        name: "twitter:title",
-        content: "AI & Tech Insights — Software Blog | StellR IT LLC",
-      },
-      {
-        name: "twitter:description",
-        content:
-          "AI development, software engineering, automation & digital marketing insights from the StellR IT LLC team.",
-      },
-      { name: "twitter:image", content: "https://stellrit.com/og-image.png" },
-    ],
-    links: [{ rel: "canonical", href: "https://stellrit.com/insights" }],
-  }),
+  head: () =>
+    buildRouteHead({
+      title: "AI & Software Engineering Insights — Technical Guides | StellR IT LLC",
+      description:
+        "Technical guides and executive insights from StellR IT LLC on generative AI development, RAG architecture, autonomous AI agents, custom chatbots, SaaS strategy, and enterprise web engineering.",
+      path: "/insights",
+      ogType: "website",
+      imageAlt: "StellR IT LLC Insights — AI & Software Engineering Blog",
+    }),
   component: InsightsIndexPage,
 });
 
@@ -70,16 +41,16 @@ function InsightsIndexPage() {
   const blogSchema = {
     "@context": "https://schema.org",
     "@type": "Blog",
-    "@id": "https://stellrit.com/insights#blog",
+    "@id": `${SITE_URL}/insights#blog`,
     name: "StellR IT Insights",
     description:
-      "Expert insights, guides, and articles on AI development, custom software engineering, generative AI, SaaS, and digital marketing strategy.",
-    url: "https://stellrit.com/insights",
+      "Technical guides and strategic insights on AI development, RAG architecture, autonomous AI agents, custom software engineering, and SaaS.",
+    url: canonicalUrl("/insights"),
     publisher: {
       "@type": "Organization",
-      "@id": "https://stellrit.com/#organization",
-      name: "StellR IT LLC",
-      logo: { "@type": "ImageObject", url: "https://stellrit.com/fav.png" },
+      "@id": `${SITE_URL}/#organization`,
+      name: COMPANY.name,
+      logo: { "@type": "ImageObject", url: COMPANY.logo },
     },
     blogPost: INSIGHT_ARTICLES.map((a) => ({
       "@type": "BlogPosting",
@@ -87,13 +58,18 @@ function InsightsIndexPage() {
       description: a.description,
       keywords: a.tags.join(", "),
       articleSection: a.category,
-      url: `https://stellrit.com/insights/${a.slug}`,
-      author: { "@type": "Organization", "@id": "https://stellrit.com/#organization" },
-      publisher: { "@type": "Organization", "@id": "https://stellrit.com/#organization" },
+      url: canonicalUrl(`/insights/${a.slug}`),
+      author: { "@type": "Organization", "@id": `${SITE_URL}/#organization` },
+      publisher: { "@type": "Organization", "@id": `${SITE_URL}/#organization` },
       datePublished: a.publishedDate,
       dateModified: a.lastUpdated,
     })),
   };
+
+  const breadcrumbSchema = buildBreadcrumbSchema([
+    { name: "Home", path: "/" },
+    { name: "Insights", path: "/insights" },
+  ]);
 
   const featuredArticle = INSIGHT_ARTICLES[0];
 
@@ -102,6 +78,10 @@ function InsightsIndexPage() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(blogSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
       />
       <ScrollBackground />
       <SiteHeader transparent />

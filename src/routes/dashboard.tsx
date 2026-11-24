@@ -32,6 +32,12 @@ import { getCurrentOperatorFn } from "@/lib/chat.functions.server";
 import { getActivityLogsFn } from "@/lib/dashboard.functions.server";
 
 export const Route = createFileRoute("/dashboard")({
+  head: () => ({
+    meta: [
+      { title: "Dashboard — StellR IT LLC" },
+      { name: "robots", content: "noindex, nofollow, noarchive" },
+    ],
+  }),
   beforeLoad: ({ location }) => {
     if (typeof window === "undefined") return;
     const token = localStorage.getItem("stellr_admin_token");

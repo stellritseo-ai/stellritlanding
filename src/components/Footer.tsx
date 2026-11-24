@@ -4,10 +4,11 @@ import { toast } from "sonner";
 import { Link } from "@tanstack/react-router";
 import { submitWebsiteEmailFn } from "../lib/dashboard.functions.server";
 import { useInViewActive } from "@/hooks/use-in-view-active";
+import { trackEvent } from "@/lib/analytics";
 
 import logoImg from "@/assets/logo.png";
 
-type LinkItem = { label: string; to: string };
+type LinkItem = { label: string; to: string; hash?: string };
 const COMPANY: LinkItem[] = [
   { label: "About Us", to: "/about" },
   { label: "Portfolio", to: "/portfolio" },
@@ -17,22 +18,24 @@ const COMPANY: LinkItem[] = [
 ];
 const RESOURCES: LinkItem[] = [
   { label: "StellR Insights", to: "/insights" },
-  { label: "StellR Academy", to: "/insights" },
-  { label: "Blog", to: "/insights" },
+  { label: "Generative AI Guide", to: "/insights/what-is-generative-ai-development" },
+  { label: "AI Agents vs Chatbots", to: "/insights/ai-agents-vs-traditional-chatbots" },
+  { label: "RAG Architecture Guide", to: "/insights/rag-architecture-explained-for-business" },
 ];
 const SOLUTIONS: LinkItem[] = [
-  { label: "AI Development", to: "/services" },
-  { label: "Software Development", to: "/services" },
-  { label: "Web Development", to: "/services" },
-  { label: "Mobile App Development", to: "/services" },
-  { label: "Dedicated Teams", to: "/services" },
-  { label: "Digital Marketing", to: "/services" },
+  { label: "AI Development", to: "/services/ai-software-development" },
+  { label: "AI Automation & Agents", to: "/services/ai-automation-agents" },
+  { label: "AI Chatbots & RAG", to: "/services/ai-chatbot-development" },
+  { label: "Software & Web Dev", to: "/services/web-development" },
+  { label: "SaaS Development", to: "/services/saas-development" },
+  { label: "Mobile App Dev", to: "/services/mobile-app-development" },
+  { label: "Dedicated Teams", to: "/services/dedicated-teams" },
+  { label: "SEO & Digital Growth", to: "/services/digital-marketing" },
 ];
 const LEGAL: LinkItem[] = [
   { label: "Privacy Policy", to: "/privacy" },
-  { label: "Security", to: "/privacy" },
+  { label: "Data Security", to: "/privacy", hash: "data-security" },
   { label: "Terms of Service", to: "/terms" },
-  { label: "Data Security", to: "/privacy" },
   { label: "SMS Terms & Conditions", to: "/sms-terms" },
 ];
 
@@ -110,6 +113,7 @@ export default function Footer() {
           formLoadedAt: formLoadedAtRef.current,
         },
       });
+      trackEvent("newsletter_signup", { location: "footer" });
       setEmail("");
       toast.success("You've been subscribed to the StellR IT newsletter!");
     } catch (err) {
@@ -126,7 +130,8 @@ export default function Footer() {
         {items.map((s) => (
           <li key={s.label}>
             <Link
-              to={s.to}
+              to={s.to as any}
+              hash={s.hash}
               className="text-[15px] text-white/70 transition-colors hover:text-[#ff8a5b]"
             >
               {s.label}
@@ -212,19 +217,31 @@ export default function Footer() {
                 <span>5305 Creek CT, Garland, TX 75043, United States</span>
               </li>
               <li>
-                <a href="tel:2148380543" className="flex items-center gap-3 hover:text-[#ff8a5b]">
+                <a
+                  href="tel:+12148380543"
+                  onClick={() => trackEvent("phone_click", { phone: "+12148380543", location: "footer" })}
+                  className="flex items-center gap-3 hover:text-[#ff8a5b]"
+                >
                   <Phone className="h-4 w-4 shrink-0 text-white/60" />
                   (214) 838-0543
                 </a>
               </li>
               <li>
-                <a href="tel:3254808108" className="flex items-center gap-3 hover:text-[#ff8a5b]">
+                <a
+                  href="tel:+13254808108"
+                  onClick={() => trackEvent("phone_click", { phone: "+13254808108", location: "footer" })}
+                  className="flex items-center gap-3 hover:text-[#ff8a5b]"
+                >
                   <Phone className="h-4 w-4 shrink-0 text-white/60" />
                   (325) 480-8108 (Toll Free)
                 </a>
               </li>
               <li>
-                <a href="mailto:info@stellrit.com" className="flex items-center gap-3 hover:text-[#ff8a5b]">
+                <a
+                  href="mailto:info@stellrit.com"
+                  onClick={() => trackEvent("email_click", { email: "info@stellrit.com", location: "footer" })}
+                  className="flex items-center gap-3 hover:text-[#ff8a5b]"
+                >
                   <Mail className="h-4 w-4 shrink-0 text-white/60" />
                   info@stellrit.com
                 </a>
@@ -257,6 +274,7 @@ export default function Footer() {
               <div className="flex w-full flex-col gap-1 md:w-auto">
                 <input
                   type="email"
+                  aria-label="Email address for newsletter"
                   value={email}
                   onChange={(e) => {
                     setEmail(e.target.value);
@@ -292,12 +310,12 @@ export default function Footer() {
           className="relative z-20 mt-16 hidden md:flex flex-col md:flex-row items-center gap-5 border-t border-white/10 pt-8 pb-6 md:pb-4 md:items-center md:justify-between"
         >
           <span className="text-[14px] text-white/60 text-center md:text-left">
-            © StellR IT . All rights reserved {new Date().getFullYear()}
+            © StellR IT LLC. All rights reserved {new Date().getFullYear()}
           </span>
           <div className="flex items-center gap-6 md:gap-8 text-[14px] text-white/70">
             <Link to="/privacy" className="transition-colors hover:text-[#ff8a5b]">Privacy Policy</Link>
-            <Link to="/terms" className="transition-colors hover:text-[#ff8a5b]">Terms of Conditions</Link>
-            <Link to="/sms-terms" className="transition-colors hover:text-[#ff8a5b]">SMS Term & Conditions</Link>
+            <Link to="/terms" className="transition-colors hover:text-[#ff8a5b]">Terms of Service</Link>
+            <Link to="/sms-terms" className="transition-colors hover:text-[#ff8a5b]">SMS Terms &amp; Conditions</Link>
           </div>
         </div>
       </div>

@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { ArrowUpRight } from "lucide-react";
 import { motion } from "framer-motion";
+import { trackEvent } from "@/lib/analytics";
 
 export default function CtaBand({
   title = "Let's build something unforgettable.",
@@ -33,6 +34,7 @@ export default function CtaBand({
           </div>
           <Link
             to="/contact"
+            onClick={() => trackEvent("cta_click", { cta_location: "cta_band", cta_label: title })}
             className="group flex items-center gap-3 rounded-full bg-white px-6 py-4 text-[15px] font-semibold text-[#2a0860] shadow-[0_20px_60px_-20px_rgba(168,85,247,0.7)] transition hover:bg-white/90"
           >
             Start a project

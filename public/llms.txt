@@ -1,0 +1,49 @@
+# StellR IT LLC
+
+> StellR IT LLC is an AI development and custom software engineering company headquartered in Garland, Texas, USA. We design and engineer custom AI applications, autonomous AI agents, Retrieval-Augmented Generation (RAG) chatbots, SaaS platforms, custom web and mobile applications, and provide dedicated remote software engineering teams for businesses across the United States and internationally.
+
+## Company Entity
+- Legal Name: StellR IT LLC
+- Official Website: https://www.stellrit.com/
+- Headquarters: 5305 Creek CT, Garland, TX 75043, United States
+- Direct Phone: +1 (214) 838-0543
+- Toll-Free Phone: +1 (325) 480-8108
+- Email: info@stellrit.com
+- Service Area: Garland, Dallas-Fort Worth, Texas, United States, and international remote delivery
+
+## Core Pages
+- [Homepage](https://www.stellrit.com/): Overview of StellR IT LLC AI development, custom software engineering, partnership models, case studies, and FAQs.
+- [About StellR IT LLC](https://www.stellrit.com/about): Company background, engineering values, and delivery approach.
+- [All Services](https://www.stellrit.com/services): Full catalog of AI, software engineering, design, dedicated teams, and growth services.
+- [Portfolio](https://www.stellrit.com/portfolio): Filterable showcase of client engagements across AI automation, SaaS, mobile apps, websites, and branding.
+- [Case Studies](https://www.stellrit.com/case-studies): Detailed engineering and design breakdowns.
+- [Insights & Technical Guides](https://www.stellrit.com/insights): Engineering articles on generative AI, RAG architecture, AI agents, chatbots, custom software vs. SaaS, and enterprise web architecture.
+- [Careers](https://www.stellrit.com/careers): Open engineering, design, and strategy roles in Garland, TX and remote.
+- [Contact](https://www.stellrit.com/contact): Project inquiry form, consultation request, and verified contact information.
+
+## Services
+- [AI Software Development](https://www.stellrit.com/services/ai-software-development): Custom generative AI applications, LLM integrations, predictive systems, and secure enterprise AI engineering.
+- [AI Automation & Autonomous AI Agents](https://www.stellrit.com/services/ai-automation-agents): Multi-step autonomous AI agents, workflow automation, CRM/ERP orchestration, and customer support automation.
+- [Custom AI Chatbot & RAG Development](https://www.stellrit.com/services/ai-chatbot-development): Enterprise RAG chatbots, vector search pipelines, LLM integrations, and omnichannel conversational AI.
+- [Custom Web & Software Development](https://www.stellrit.com/services/web-development): Full-stack web applications, Next.js/React/TypeScript platforms, headless commerce, APIs, and cloud infrastructure.
+- [SaaS Development](https://www.stellrit.com/services/saas-development): Multi-tenant SaaS architecture, MVP-to-enterprise product engineering, billing, RBAC, and DevOps.
+- [Mobile App Development](https://www.stellrit.com/services/mobile-app-development): iOS, Android, React Native, and Flutter mobile application engineering.
+- [Dedicated Engineering Teams](https://www.stellrit.com/services/dedicated-teams): Dedicated AI engineers, full-stack developers, designers, QA, and staff augmentation for agencies and enterprises.
+- [UX Research & Strategy](https://www.stellrit.com/services/ux-research-strategy): User research, information architecture, prototyping, and usability testing.
+- [Web & Product Design](https://www.stellrit.com/services/web-product-design): Design systems, SaaS UI design, and conversion-focused product interfaces.
+- [Brand Identity Design](https://www.stellrit.com/services/brand-identity): Visual identity systems, brand architecture, and guidelines.
+- [Digital Marketing, SEO & CRO](https://www.stellrit.com/services/digital-marketing): Technical SEO, search engine marketing, analytics, and conversion rate optimization.
+
+## Technical Guides & Insights
+- [What Is Generative AI Development? (2026 Guide)](https://www.stellrit.com/insights/what-is-generative-ai-development)
+- [How to Build a Custom AI Chatbot for Your Business (2026 Guide)](https://www.stellrit.com/insights/how-to-build-custom-ai-chatbot)
+- [Custom Software Development vs. SaaS](https://www.stellrit.com/insights/custom-software-development-vs-saas)
+- [How to Choose an Enterprise Web Development Agency](https://www.stellrit.com/insights/enterprise-web-design-agency-scale)
+- [How to Choose the Right AI Development Company in the USA](https://www.stellrit.com/insights/how-to-choose-ai-development-company-usa)
+- [AI Agents vs. Traditional AI Chatbots](https://www.stellrit.com/insights/ai-agents-vs-traditional-chatbots)
+- [RAG Architecture Explained for Business Leaders](https://www.stellrit.com/insights/rag-architecture-explained-for-business)
+
+## Legal & Policies
+- [Privacy Policy & Data Security](https://www.stellrit.com/privacy)
+- [Terms of Service](https://www.stellrit.com/terms)
+- [SMS Terms & Conditions](https://www.stellrit.com/sms-terms)

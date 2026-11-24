@@ -17,6 +17,12 @@ import { loginAdminFn } from "@/lib/chat.functions.server";
 
 
 export const Route = createFileRoute("/login")({
+  head: () => ({
+    meta: [
+      { title: "Admin Login — StellR IT LLC" },
+      { name: "robots", content: "noindex, nofollow, noarchive" },
+    ],
+  }),
   component: LoginPage,
   validateSearch: (search: Record<string, unknown>): { redirect?: string } => {
     return {

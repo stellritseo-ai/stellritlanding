@@ -1,6 +1,8 @@
 # =========================================================
-# robots.txt — StellR IT LLC (https://stellrit.com)
-# Updated: 2026-11-20
+# robots.txt — StellR IT LLC (https://www.stellrit.com)
+# Updated: 2026-11-24
+# Distinguishes search discovery / citation crawlers (ALLOW)
+# from bulk model-training & SEO scraper harvesters (DISALLOW).
 # =========================================================
 
 # ---- Default: Restrict private & internal endpoints -----
@@ -12,9 +14,8 @@ Disallow: /login
 Disallow: /upload/
 Disallow: /share/
 Disallow: /_serverFn/
-Crawl-delay: 5
 
-# ---- Google (full public access for SEO) ----------------
+# ---- Google Search & Discovery --------------------------
 User-agent: Googlebot
 Allow: /
 Disallow: /dashboard
@@ -29,7 +30,15 @@ Allow: /
 User-agent: Googlebot-Video
 Allow: /
 
-# ---- Bing & DuckDuckGo & Apple --------------------------
+User-agent: GoogleOther
+Allow: /
+Disallow: /dashboard
+Disallow: /login
+Disallow: /upload/
+Disallow: /share/
+Disallow: /_serverFn/
+
+# ---- Bing, Copilot, DuckDuckGo & Apple ------------------
 User-agent: Bingbot
 Allow: /
 Disallow: /dashboard
@@ -37,9 +46,22 @@ Disallow: /login
 Disallow: /upload/
 Disallow: /share/
 Disallow: /_serverFn/
-Crawl-delay: 2
+
+User-agent: BingPreview
+Allow: /
+Disallow: /dashboard
+Disallow: /login
+Disallow: /upload/
+Disallow: /share/
 
 User-agent: DuckDuckBot
+Allow: /
+Disallow: /dashboard
+Disallow: /login
+Disallow: /upload/
+Disallow: /share/
+
+User-agent: DuckAssistBot
 Allow: /
 Disallow: /dashboard
 Disallow: /login
@@ -53,13 +75,24 @@ Disallow: /login
 Disallow: /upload/
 Disallow: /share/
 
-# ---- On-Demand AI Search (Allow for visibility) ---------
+# ---- On-Demand AI Search & Citations (ALLOW) ------------
+# Allows live discovery and citations in ChatGPT Search,
+# Perplexity, and Claude Search without granting bulk training.
 User-agent: OAI-SearchBot
 Allow: /
 Disallow: /dashboard
 Disallow: /login
 Disallow: /upload/
 Disallow: /share/
+Disallow: /_serverFn/
+
+User-agent: ChatGPT-User
+Allow: /
+Disallow: /dashboard
+Disallow: /login
+Disallow: /upload/
+Disallow: /share/
+Disallow: /_serverFn/
 
 User-agent: PerplexityBot
 Allow: /
@@ -67,8 +100,25 @@ Disallow: /dashboard
 Disallow: /login
 Disallow: /upload/
 Disallow: /share/
+Disallow: /_serverFn/
 
-# ---- Social Preview Bots (Allow for rich link cards) ----
+User-agent: Perplexity-User
+Allow: /
+Disallow: /dashboard
+Disallow: /login
+Disallow: /upload/
+Disallow: /share/
+Disallow: /_serverFn/
+
+User-agent: Claude-SearchBot
+Allow: /
+Disallow: /dashboard
+Disallow: /login
+Disallow: /upload/
+Disallow: /share/
+Disallow: /_serverFn/
+
+# ---- Social Preview Bots (ALLOW for rich link cards) ----
 User-agent: Twitterbot
 Allow: /
 
@@ -78,41 +128,14 @@ Allow: /
 User-agent: Slackbot
 Allow: /
 
-# ---- Block Scrapers, SEO Crawlers & Bulk AI Harvesters --
-User-agent: AhrefsBot
-Disallow: /
+User-agent: facebookexternalhit
+Allow: /
 
-User-agent: SemrushBot
-Disallow: /
-
-User-agent: MJ12bot
-Disallow: /
-
-User-agent: DotBot
-Disallow: /
-
-User-agent: BLEXBot
-Disallow: /
-
-User-agent: DataForSeoBot
-Disallow: /
-
-User-agent: Barkrowler
-Disallow: /
-
-User-agent: MegaIndex
-Disallow: /
-
-User-agent: Bytespider
-Disallow: /
-
-User-agent: PetalBot
+# ---- Block Bulk AI Training Crawlers & Scrapers ---------
+User-agent: GPTBot
 Disallow: /
 
 User-agent: CCBot
-Disallow: /
-
-User-agent: GPTBot
 Disallow: /
 
 User-agent: ClaudeBot
@@ -122,6 +145,12 @@ User-agent: Claude-Web
 Disallow: /
 
 User-agent: anthropic-ai
+Disallow: /
+
+User-agent: Google-Extended
+Disallow: /
+
+User-agent: Bytespider
 Disallow: /
 
 User-agent: Amazonbot
@@ -146,6 +175,34 @@ User-agent: Omgilibot
 Disallow: /
 
 User-agent: Omgili
+Disallow: /
+
+# ---- Block Aggressive SEO & Commercial Scrapers ---------
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: SemrushBot
+Disallow: /
+
+User-agent: MJ12bot
+Disallow: /
+
+User-agent: DotBot
+Disallow: /
+
+User-agent: BLEXBot
+Disallow: /
+
+User-agent: DataForSeoBot
+Disallow: /
+
+User-agent: Barkrowler
+Disallow: /
+
+User-agent: MegaIndex
+Disallow: /
+
+User-agent: PetalBot
 Disallow: /
 
 User-agent: TurnitinBot
@@ -175,6 +232,6 @@ Disallow: /
 User-agent: Scrapy
 Disallow: /
 
-# ---- Sitemaps ------------------------------------------
-Sitemap: https://stellrit.com/sitemap.xml
-Sitemap: https://stellrit.com/sitemap-images.xml
+# ---- Sitemaps (Canonical www domain) --------------------
+Sitemap: https://www.stellrit.com/sitemap.xml
+Sitemap: https://www.stellrit.com/sitemap-images.xml

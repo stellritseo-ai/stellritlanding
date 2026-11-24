@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import logoImg from "@/assets/logo.png";
 import paynowImg from "@/assets/paynow.png";
+import { trackEvent } from "@/lib/analytics";
 
 const MENU_IMAGES: Record<string, string> = {
   "Case Studies": "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600&q=80&auto=format&fit=crop",
@@ -24,12 +25,17 @@ const NAV: { label: string; to: string; children?: { label: string; to: string }
     label: "Services",
     to: "/services",
     children: [
-      { label: "UX Research & Strategy", to: "/services" },
-      { label: "Web & Product Design", to: "/services" },
-      { label: "Brand Identity & Campaigns", to: "/services" },
-      { label: "Web Development", to: "/services" },
-      { label: "Digital Marketing & CRO", to: "/services" },
-      { label: "AI Development & Automation", to: "/services" },
+      { label: "AI Software Development", to: "/services/ai-software-development" },
+      { label: "AI Automation & Agents", to: "/services/ai-automation-agents" },
+      { label: "AI Chatbots & RAG", to: "/services/ai-chatbot-development" },
+      { label: "Web & Software Development", to: "/services/web-development" },
+      { label: "SaaS Development", to: "/services/saas-development" },
+      { label: "Mobile App Development", to: "/services/mobile-app-development" },
+      { label: "Dedicated Teams", to: "/services/dedicated-teams" },
+      { label: "UX Research & Strategy", to: "/services/ux-research-strategy" },
+      { label: "Web & Product Design", to: "/services/web-product-design" },
+      { label: "Brand Identity", to: "/services/brand-identity" },
+      { label: "Digital Marketing & SEO", to: "/services/digital-marketing" },
     ],
   },
   { label: "Insights", to: "/insights" },
@@ -347,13 +353,15 @@ export default function MenuOverlay({ open, onClose }: { open: boolean; onClose:
                       Discuss a project →
                     </Link>
                     <a
-                      href="tel:2148380543"
+                      href="tel:+12148380543"
+                      onClick={() => trackEvent("phone_click", { phone: "+12148380543", location: "menu_overlay" })}
                       className="text-xs text-white/60 hover:text-[#ff8a5b] transition-colors"
                     >
                       Call: (214) 838-0543
                     </a>
                     <a
-                      href="tel:3254808108"
+                      href="tel:+13254808108"
+                      onClick={() => trackEvent("phone_click", { phone: "+13254808108", location: "menu_overlay" })}
                       className="text-xs text-white/60 hover:text-[#ff8a5b] transition-colors"
                     >
                       Toll Free: (325) 480-8108

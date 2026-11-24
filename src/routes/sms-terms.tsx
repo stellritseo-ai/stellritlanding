@@ -16,31 +16,41 @@ import {
   Info,
   CheckCircle2
 } from "lucide-react";
+import {
+  buildBreadcrumbSchema,
+  buildRouteHead,
+  buildWebPageSchema,
+} from "@/lib/seo";
 
 export const Route = createFileRoute("/sms-terms")({
-  head: () => ({
-    meta: [
-      { title: "SMS Terms & Conditions — StellR IT LLC" },
-      { name: "description", content: "SMS Terms and Conditions for text message communications from StellR IT LLC. Learn about our SMS opt-in, opt-out, and data handling practices. We do not share SMS data with third parties." },
-      { name: "robots", content: "index, follow" },
-      { property: "og:title", content: "SMS Terms & Conditions — StellR IT LLC" },
-      { property: "og:description", content: "Terms and conditions governing text message communications from StellR IT LLC. SMS opt-in consent and phone numbers are never shared with third parties." },
-      { property: "og:url", content: "https://stellrit.com/sms-terms" },
-      { property: "og:type", content: "website" },
-      { property: "og:image", content: "https://stellrit.com/og-image.png" },
-      { property: "og:image:alt", content: "StellR IT LLC SMS Terms & Conditions" },
-      { name: "twitter:card", content: "summary" },
-      { name: "twitter:title", content: "SMS Terms & Conditions — StellR IT LLC" },
-      { name: "twitter:description", content: "SMS opt-in terms for StellR IT LLC text message communications." },
-    ],
-    links: [{ rel: "canonical", href: "https://stellrit.com/sms-terms" }],
-  }),
+  head: () =>
+    buildRouteHead({
+      title: "SMS Terms & Conditions — StellR IT LLC",
+      description:
+        "SMS Terms and Conditions for text message communications from StellR IT LLC. Review SMS opt-in, opt-out, frequency, and strict no-third-party-sharing policies.",
+      path: "/sms-terms",
+      twitterCard: "summary",
+      imageAlt: "StellR IT LLC SMS Terms & Conditions",
+    }),
   component: SMSTermsPage,
 });
 
 function SMSTermsPage() {
+  const webPageSchema = buildWebPageSchema({
+    type: "WebPage",
+    name: "SMS Terms & Conditions — StellR IT LLC",
+    description: "SMS opt-in, opt-out, and messaging disclosures for StellR IT LLC.",
+    path: "/sms-terms",
+  });
+  const breadcrumbSchema = buildBreadcrumbSchema([
+    { name: "Home", path: "/" },
+    { name: "SMS Terms & Conditions", path: "/sms-terms" },
+  ]);
+
   return (
     <main className="relative min-h-screen">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageSchema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
       <ScrollBackground />
       <SiteHeader transparent />
       <PageHero
@@ -185,7 +195,7 @@ function SMSTermsPage() {
                 <h4 className="text-[#a855f7] font-semibold text-[14px] uppercase tracking-wider mb-2">Support & Help</h4>
                 <p className="text-[13px] text-white/75 leading-relaxed">
                   For immediate assistance, text "HELP" or contact us directly. Learn more on our{" "}
-                  <a href="/terms" className="underline hover:text-white transition-colors">Terms of Conditions</a> page.
+                  <a href="/terms" className="underline hover:text-white transition-colors">Terms of Service</a> page.
                 </p>
               </div>
             </div>

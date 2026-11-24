@@ -16,52 +16,21 @@ import p7 from "@/assets/logos/logo-nayshands.png";
 import p8 from "@/assets/logos/logo-white-DNQTDUZa.png";
 import p9 from "@/assets/logos/Image-507.png";
 import p10 from "@/assets/logos/cropped-logo.png";
+import {
+  buildBreadcrumbSchema,
+  buildRouteHead,
+  buildWebPageSchema,
+} from "@/lib/seo";
 
 export const Route = createFileRoute("/about")({
-  head: () => ({
-    meta: [
-      {
-        title:
-          "About StellR IT LLC — AI Development & Software Engineering Company | Garland, TX",
-      },
-      {
-        name: "description",
-        content:
-          "StellR IT LLC is a global AI development and custom software engineering company based in Garland, TX. We build AI software, SaaS platforms, web & mobile apps, and provide dedicated engineering teams for businesses worldwide. 12+ years, 180+ brands served.",
-      },
-      {
-        name: "keywords",
-        content:
-          "about StellR IT LLC, AI development company Texas, software development company Garland TX, AI engineering team, digital transformation company USA, enterprise software company Texas, dedicated development team provider, IT outsourcing company USA, software engineering firm Texas, AI consulting company, remote engineering team, offshore development company, SaaS company Texas, web development company Garland, digital agency Texas",
-      },
-      { name: "robots", content: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" },
-      {
-        property: "og:title",
-        content: "About StellR IT LLC — AI Development & Software Engineering Company",
-      },
-      {
-        property: "og:description",
-        content:
-          "Global AI development and software engineering company. 12+ years, 180+ brands served worldwide. Senior-led teams. Based in Garland, TX.",
-      },
-      { property: "og:url", content: "https://stellrit.com/about" },
-      { property: "og:type", content: "website" },
-      { property: "og:image", content: "https://stellrit.com/og-image.png" },
-      { property: "og:image:alt", content: "About StellR IT LLC — AI & Software Engineering Company" },
-      { name: "twitter:card", content: "summary_large_image" },
-      {
-        name: "twitter:title",
-        content: "About StellR IT LLC — AI Development & Software Engineering",
-      },
-      {
-        name: "twitter:description",
-        content:
-          "Global AI development & software engineering firm. 12+ years, 180+ brands. Senior-led. Garland, TX.",
-      },
-      { name: "twitter:image", content: "https://stellrit.com/og-image.png" },
-    ],
-    links: [{ rel: "canonical", href: "https://stellrit.com/about" }],
-  }),
+  head: () =>
+    buildRouteHead({
+      title: "About StellR IT LLC — AI Development & Software Engineering | Garland, TX",
+      description:
+        "Learn about StellR IT LLC, a Garland, Texas AI development and custom software engineering company building generative AI systems, SaaS platforms, web & mobile apps, and dedicated teams.",
+      path: "/about",
+      imageAlt: "About StellR IT LLC — AI & Software Engineering Company",
+    }),
   component: AboutPage,
 });
 
@@ -120,52 +89,22 @@ const TESTIMONIALS = [
 ];
 
 function AboutPage() {
-  const organizationSchema = {
-    "@context": "https://schema.org",
-    "@type": "Organization",
-    "@id": "https://stellrit.com/#organization",
-    name: "StellR IT LLC",
-    url: "https://stellrit.com",
-    logo: "https://stellrit.com/fav.png",
-    image: "https://stellrit.com/og-image.png",
+  const aboutPageSchema = buildWebPageSchema({
+    type: "AboutPage",
+    name: "About StellR IT LLC",
     description:
-      "Senior-led custom software development company and digital agency in Garland, TX. Over a decade building enterprise web apps, SaaS products, brand identities, and digital campaigns.",
-    telephone: "+12148380543",
-    email: "info@stellrit.com",
-    address: {
-      "@type": "PostalAddress",
-      streetAddress: "5305 Creek CT",
-      addressLocality: "Garland",
-      addressRegion: "TX",
-      postalCode: "75043",
-      addressCountry: "US",
-    },
-    foundingDate: "2012",
-    numberOfEmployees: { "@type": "QuantitativeValue", value: 25 },
-    areaServed: [
-      { "@type": "State", name: "Texas" },
-      { "@type": "Country", name: "United States" },
-    ],
-    sameAs: [
-      "https://twitter.com/StellRIT",
-      "https://www.linkedin.com/company/stellrit",
-      "https://clutch.co/profile/stellr-it",
-      "https://www.goodfirms.co/company/stellr-it",
-    ],
-  };
+      "StellR IT LLC is an AI development and custom software engineering company headquartered in Garland, Texas serving clients across the United States and worldwide.",
+    path: "/about",
+  });
 
-  const breadcrumbSchema = {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Home", item: "https://stellrit.com" },
-      { "@type": "ListItem", position: 2, name: "About", item: "https://stellrit.com/about" },
-    ],
-  };
+  const breadcrumbSchema = buildBreadcrumbSchema([
+    { name: "Home", path: "/" },
+    { name: "About Us", path: "/about" },
+  ]);
 
   return (
     <main className="relative min-h-screen bg-[#180028] overflow-hidden">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(aboutPageSchema) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
       <ScrollBackground />
       <SiteHeader transparent />
@@ -321,7 +260,7 @@ function AboutPage() {
           <div className="grid grid-cols-2 md:grid-cols-5 border-l border-t border-white/10 mb-32">
             {[p1, p2, p3, p4, p5, p6, p7, p8, p9, p10].map((imgSrc, i) => (
               <div key={i} className="flex items-center justify-center p-8 border-r border-b border-white/10 opacity-60 hover:opacity-100 transition-opacity h-[160px]">
-                <img src={imgSrc} alt={`Partner ${i + 1}`} loading="lazy" decoding="async" className="max-w-[120px] max-h-[60px] object-contain" style={{ filter: "brightness(0) invert(1)" }} />
+                <img src={imgSrc} alt={`StellR IT LLC client partner logo ${i + 1}`} loading="lazy" decoding="async" className="max-w-[120px] max-h-[60px] object-contain" style={{ filter: "brightness(0) invert(1)" }} />
               </div>
             ))}
           </div>

@@ -24,63 +24,39 @@ import logo9 from "@/assets/logos/logo (1).png";
 import logo10 from "@/assets/logos/logo-I6fgEckf.png";
 import logo11 from "@/assets/logos/logo-nayshands.png";
 import logo12 from "@/assets/logos/logo-white-DNQTDUZa.png";
+import {
+  buildBreadcrumbSchema,
+  buildRouteHead,
+  buildWebPageSchema,
+} from "@/lib/seo";
+import { trackEvent } from "@/lib/analytics";
+
 export const Route = createFileRoute("/contact")({
-  head: () => ({
-    meta: [
-      {
-        title:
-          "Contact StellR IT LLC — Hire AI & Software Developers | Free Consultation",
-      },
-      {
-        name: "description",
-        content:
-          "Start your AI or software project with StellR IT LLC. Get a free consultation — we respond within 24 hours. Hire dedicated AI engineers, software developers, and remote engineering teams. Based in Garland, TX, serving clients worldwide.",
-      },
-      {
-        name: "keywords",
-        content:
-          "contact StellR IT LLC, hire AI developers, hire software developers, hire dedicated engineering team, get AI development quote, free software development consultation, hire remote developers, software development quote, AI development company contact, custom software development inquiry, dedicated team inquiry, IT outsourcing contact, web development company contact, mobile app development quote",
-      },
-      { name: "robots", content: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" },
-      {
-        property: "og:title",
-        content:
-          "Contact StellR IT LLC — Hire AI & Software Developers Today",
-      },
-      {
-        property: "og:description",
-        content:
-          "Free consultation. We build AI software, SaaS, web & mobile apps. Hire dedicated remote engineers. Response within 24 hours. Garland, TX — serving worldwide.",
-      },
-      { property: "og:url", content: "https://stellrit.com/contact" },
-      { property: "og:type", content: "website" },
-      { property: "og:image", content: "https://stellrit.com/og-image.png" },
-      { property: "og:image:alt", content: "Contact StellR IT LLC — Hire AI & Software Developers" },
-      { name: "twitter:card", content: "summary_large_image" },
-      {
-        name: "twitter:title",
-        content: "Contact StellR IT LLC — Hire AI & Software Developers",
-      },
-      {
-        name: "twitter:description",
-        content:
-          "Free consultation. AI, software, SaaS & mobile development. Hire dedicated remote teams. Response within 24 hours.",
-      },
-      { name: "twitter:image", content: "https://stellrit.com/og-image.png" },
-    ],
-    links: [{ rel: "canonical", href: "https://stellrit.com/contact" }],
-  }),
+  head: () =>
+    buildRouteHead({
+      title: "Contact StellR IT LLC — Hire AI & Software Developers | Garland, TX",
+      description:
+        "Contact StellR IT LLC in Garland, Texas for a technical consultation on custom AI development, AI agents, RAG chatbots, SaaS platforms, web & mobile apps, or dedicated engineering teams.",
+      path: "/contact",
+      imageAlt: "Contact StellR IT LLC — Hire AI & Software Developers",
+    }),
   component: ContactPage,
 });
 
-const BUDGETS = ["< $1K", "$2k – $10k", "$10k – $20k", "$20+"];
+const BUDGETS = ["< $1K", "$2k – $10k", "$10k – $20k", "$20k+"];
 
 const SERVICES = [
+  "AI Software Development",
+  "AI Automation & Autonomous Agents",
+  "Custom AI Chatbot & RAG Development",
+  "Custom Web & Software Development",
+  "SaaS Development",
+  "Mobile App Development",
+  "Dedicated Engineering Teams",
   "UX Research & Strategy",
-  "Brand Identity",
   "Web & Product Design",
-  "Web Development",
-  "Digital Marketing"
+  "Brand Identity",
+  "Digital Marketing, SEO & CRO",
 ];
 
 function ContactPage() {
@@ -172,9 +148,23 @@ function ContactPage() {
       setLoading(false);
     }
   };
-  // test
+  const contactPageSchema = buildWebPageSchema({
+    type: "ContactPage",
+    name: "Contact StellR IT LLC",
+    description:
+      "Request a consultation or project quote from StellR IT LLC in Garland, Texas for AI development, custom software engineering, and dedicated remote teams.",
+    path: "/contact",
+  });
+
+  const breadcrumbSchema = buildBreadcrumbSchema([
+    { name: "Home", path: "/" },
+    { name: "Contact", path: "/contact" },
+  ]);
+
   return (
     <main className="relative min-h-screen selection:bg-[#a855f7]/30">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(contactPageSchema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
       <ScrollBackground />
       <SiteHeader transparent />
 
@@ -233,13 +223,31 @@ function ContactPage() {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 relative z-10">
                   <ContactBlock icon={<Mail className="h-4 w-4" />} title="Email">
-                    <a href="mailto:info@stellrit.com" className="font-medium hover:text-[#ff8a5b] transition-colors duration-300">info@stellrit.com</a>
+                    <a
+                      href="mailto:info@stellrit.com"
+                      onClick={() => trackEvent("email_click", { email: "info@stellrit.com", location: "contact_page" })}
+                      className="font-medium hover:text-[#ff8a5b] transition-colors duration-300"
+                    >
+                      info@stellrit.com
+                    </a>
                   </ContactBlock>
                   <ContactBlock icon={<Phone className="h-4 w-4" />} title="Direct">
-                    <a href="tel:2148380543" className="font-medium hover:text-[#ff8a5b] transition-colors duration-300">(214) 838-0543</a>
+                    <a
+                      href="tel:+12148380543"
+                      onClick={() => trackEvent("phone_click", { phone: "+12148380543", location: "contact_page" })}
+                      className="font-medium hover:text-[#ff8a5b] transition-colors duration-300"
+                    >
+                      (214) 838-0543
+                    </a>
                   </ContactBlock>
                   <ContactBlock icon={<Phone className="h-4 w-4" />} title="Toll Free">
-                    <a href="tel:3254808108" className="font-medium hover:text-[#ff8a5b] transition-colors duration-300">(325) 480-8108</a>
+                    <a
+                      href="tel:+13254808108"
+                      onClick={() => trackEvent("phone_click", { phone: "+13254808108", location: "contact_page" })}
+                      className="font-medium hover:text-[#ff8a5b] transition-colors duration-300"
+                    >
+                      (325) 480-8108
+                    </a>
                   </ContactBlock>
                   <ContactBlock icon={<MapPin className="h-4 w-4" />} title="Office">
                     <span className="font-medium text-[14px] text-white/90">5305 Creek CT<br />Garland, TX 75043</span>
@@ -511,7 +519,7 @@ function ContactPage() {
                   <img
                     key={idx}
                     src={logo}
-                    alt="Partner Logo"
+                    alt={`StellR IT LLC client partner logo ${idx + 1}`}
                     loading="lazy"
                     decoding="async"
                     className="mx-10 md:mx-16 h-12 md:h-14 w-auto object-contain opacity-35 hover:opacity-100 transition-all duration-500"

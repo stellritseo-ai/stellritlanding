@@ -18,52 +18,23 @@ import imgAppApp from "@/assets/portfolio_collect/app_development/Mobile-2.jpg";
 import imgWeb1 from "@/assets/portfolio_collect/pools/pools1.jpg";
 import imgWeb2 from "@/assets/portfolio_collect/websites/second/b1.jpg";
 import imgHarmony from "@/assets/portfolio_collect/websites/first/a1.jpg";
+import {
+  SITE_URL,
+  buildBreadcrumbSchema,
+  buildRouteHead,
+  buildWebPageSchema,
+  canonicalUrl,
+} from "@/lib/seo";
 
 export const Route = createFileRoute("/portfolio")({
-  head: () => ({
-    meta: [
-      {
-        title:
-          "Portfolio — AI, Software & Web Development Projects | StellR IT LLC",
-      },
-      {
-        name: "description",
-        content:
-          "Explore StellR IT LLC's portfolio of AI development, custom software, SaaS platforms, mobile apps, websites, and digital marketing projects. Real results for real clients worldwide.",
-      },
-      {
-        name: "keywords",
-        content:
-          "AI software development portfolio, custom software projects, SaaS development portfolio, web development portfolio, mobile app development portfolio, AI automation projects, brand identity portfolio, digital marketing results, UX UI design portfolio, enterprise software examples, StellR IT work, software development case studies, AI project examples",
-      },
-      { name: "robots", content: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" },
-      {
-        property: "og:title",
-        content: "Portfolio — AI, Software & Web Development Projects | StellR IT LLC",
-      },
-      {
-        property: "og:description",
-        content:
-          "AI software, custom SaaS, mobile apps, web development & digital marketing. Explore our portfolio of real results for clients worldwide.",
-      },
-      { property: "og:url", content: "https://stellrit.com/portfolio" },
-      { property: "og:type", content: "website" },
-      { property: "og:image", content: "https://stellrit.com/og-image.png" },
-      { property: "og:image:alt", content: "StellR IT LLC Portfolio — AI, Software & Web Development Projects" },
-      { name: "twitter:card", content: "summary_large_image" },
-      {
-        name: "twitter:title",
-        content: "Portfolio — AI, Software & Web Projects | StellR IT LLC",
-      },
-      {
-        name: "twitter:description",
-        content:
-          "AI software, SaaS, mobile apps, web development & digital marketing portfolio. Real results.",
-      },
-      { name: "twitter:image", content: "https://stellrit.com/og-image.png" },
-    ],
-    links: [{ rel: "canonical", href: "https://stellrit.com/portfolio" }],
-  }),
+  head: () =>
+    buildRouteHead({
+      title: "Portfolio — AI, Custom Software, SaaS & Web Projects | StellR IT LLC",
+      description:
+        "Explore StellR IT LLC's portfolio of enterprise AI automation, SaaS product design, React Native mobile apps, headless eCommerce platforms, and brand systems.",
+      path: "/portfolio",
+      imageAlt: "StellR IT LLC Portfolio — AI, Software & Web Development Projects",
+    }),
   component: PortfolioPage,
 });
 
@@ -257,21 +228,26 @@ function PortfolioPage() {
 
   const { scrollY } = useScroll();
 
-  const breadcrumbSchema = {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Home", item: "https://stellrit.com" },
-      { "@type": "ListItem", position: 2, name: "Portfolio", item: "https://stellrit.com/portfolio" },
-    ],
-  };
+  const webPageSchema = buildWebPageSchema({
+    type: "CollectionPage",
+    name: "Portfolio — StellR IT LLC",
+    description:
+      "Selected AI automation, custom software, SaaS, mobile app, headless commerce, and brand identity projects by StellR IT LLC.",
+    path: "/portfolio",
+  });
+
+  const breadcrumbSchema = buildBreadcrumbSchema([
+    { name: "Home", path: "/" },
+    { name: "Portfolio", path: "/portfolio" },
+  ]);
 
   const portfolioSchema = {
     "@context": "https://schema.org",
     "@type": "ItemList",
-    "@id": "https://stellrit.com/portfolio#projects",
+    "@id": `${SITE_URL}/portfolio#projects`,
     name: "StellR IT LLC Portfolio",
-    description: "Custom software development, SaaS, AI automation, brand identity, and digital marketing projects.",
+    description:
+      "Custom software development, SaaS, AI automation, brand identity, and digital marketing projects.",
     itemListElement: PROJECTS.map((p, i) => ({
       "@type": "ListItem",
       position: i + 1,
@@ -279,9 +255,9 @@ function PortfolioPage() {
         "@type": "CreativeWork",
         name: p.title,
         description: p.description,
-        creator: { "@type": "Organization", "@id": "https://stellrit.com/#organization" },
+        creator: { "@type": "Organization", "@id": `${SITE_URL}/#organization` },
         keywords: p.tags.join(", "),
-        url: `https://stellrit.com/case-studies/${p.slug}`,
+        url: canonicalUrl(`/case-studies/${p.slug}`),
       },
     })),
   };
@@ -297,6 +273,7 @@ function PortfolioPage() {
 
   return (
     <main className="relative min-h-screen bg-[#180028] text-white overflow-hidden">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageSchema) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(portfolioSchema) }} />
       <ScrollBackground />

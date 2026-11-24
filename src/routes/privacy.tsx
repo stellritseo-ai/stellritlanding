@@ -20,31 +20,41 @@ import {
   AlertCircle,
   Check
 } from "lucide-react";
+import {
+  buildBreadcrumbSchema,
+  buildRouteHead,
+  buildWebPageSchema,
+} from "@/lib/seo";
 
 export const Route = createFileRoute("/privacy")({
-  head: () => ({
-    meta: [
-      { title: "Privacy Policy — StellR IT LLC" },
-      { name: "description", content: "StellR IT LLC Privacy Policy — Learn how we collect, use, and protect your personal information. We are committed to data privacy and security for all our clients and website visitors." },
-      { name: "robots", content: "index, follow" },
-      { property: "og:title", content: "Privacy Policy — StellR IT LLC" },
-      { property: "og:description", content: "How StellR IT LLC collects, uses, and protects your information. Read our full privacy policy." },
-      { property: "og:url", content: "https://stellrit.com/privacy" },
-      { property: "og:type", content: "website" },
-      { property: "og:image", content: "https://stellrit.com/og-image.png" },
-      { property: "og:image:alt", content: "StellR IT LLC Privacy Policy" },
-      { name: "twitter:card", content: "summary" },
-      { name: "twitter:title", content: "Privacy Policy — StellR IT LLC" },
-      { name: "twitter:description", content: "How StellR IT LLC collects, uses, and protects your information." },
-    ],
-    links: [{ rel: "canonical", href: "https://stellrit.com/privacy" }],
-  }),
+  head: () =>
+    buildRouteHead({
+      title: "Privacy Policy & Data Security — StellR IT LLC",
+      description:
+        "Read StellR IT LLC's Privacy Policy and Data Security practices. Learn how we collect, protect, and safeguard client and visitor information.",
+      path: "/privacy",
+      twitterCard: "summary",
+      imageAlt: "StellR IT LLC Privacy Policy & Data Security",
+    }),
   component: PrivacyPage,
 });
 
 function PrivacyPage() {
+  const webPageSchema = buildWebPageSchema({
+    type: "WebPage",
+    name: "Privacy Policy & Data Security — StellR IT LLC",
+    description: "Privacy Policy and data security practices of StellR IT LLC.",
+    path: "/privacy",
+  });
+  const breadcrumbSchema = buildBreadcrumbSchema([
+    { name: "Home", path: "/" },
+    { name: "Privacy Policy", path: "/privacy" },
+  ]);
+
   return (
     <main className="relative min-h-screen">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageSchema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
       <ScrollBackground />
       <SiteHeader transparent />
       <PageHero
@@ -194,7 +204,7 @@ function PrivacyPage() {
           </section>
 
           {/* Section 4: Data Security */}
-          <section className="space-y-4">
+          <section id="data-security" className="scroll-mt-28 space-y-4">
             <div className="flex items-center gap-3 border-b border-white/10 pb-3">
               <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/5 text-[#ff8a5b] text-sm font-semibold border border-white/10">4</span>
               <h2 className="font-serif text-[26px] text-white font-medium">Data Security</h2>
@@ -328,7 +338,7 @@ function PrivacyPage() {
                 </li>
                 <li className="flex gap-3 text-[14px] text-white/80">
                   <Phone className="h-4.5 w-4.5 text-[#ff8a5b] shrink-0 mt-0.5" />
-                  <a href="tel:2148380543" className="hover:underline">(214) 838-0543</a>
+                  <a href="tel:+12148380543" className="hover:underline">(214) 838-0543</a>
                 </li>
               </ul>
             </div>

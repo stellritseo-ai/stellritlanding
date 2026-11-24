@@ -1,13 +1,22 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { useState } from "react";
-import { ChevronDown } from "lucide-react";
+import { ArrowUpRight, ChevronDown } from "lucide-react";
 import SiteHeader from "@/components/SiteHeader";
 import PageHero from "@/components/PageHero";
 import ScrollBackground from "@/components/ScrollBackground";
 import Footer from "@/components/Footer";
 import ChatWidget from "@/components/ChatWidget";
 import { ViewportVideo } from "@/components/ViewportVideo";
+import { servicesData } from "@/data/services";
+import {
+  SITE_URL,
+  buildBreadcrumbSchema,
+  buildFaqSchema,
+  buildRouteHead,
+  buildWebPageSchema,
+  canonicalUrl,
+} from "@/lib/seo";
 
 import uxVideo from "@/assets/video/UX.mp4";
 import brandVideo from "@/assets/video/Brand.mp4";
@@ -17,50 +26,14 @@ import marketingVideo from "@/assets/video/Website-Management.mp4";
 import aiImg from "@/assets/services/AI Development & Automation.png";
 
 export const Route = createFileRoute("/services/")({
-  head: () => ({
-    meta: [
-      {
-        title:
-          "AI & Software Development Services | StellR IT LLC — Web, Mobile, SaaS & Automation",
-      },
-      {
-        name: "description",
-        content:
-          "StellR IT LLC offers AI development, custom software, SaaS, web & mobile development, dedicated engineering teams, UX/UI design, brand identity, API development, and digital marketing. Serving startups to enterprises worldwide. Free consultation.",
-      },
-      {
-        name: "keywords",
-        content:
-          "AI development services, AI software development, generative AI services, AI chatbot development, AI automation services, LLM integration services, custom software development services, SaaS development services, web development services, mobile app development services, React development services, Next.js development services, Flutter development services, dedicated AI engineers, dedicated software developers, remote development team services, staff augmentation services, IT outsourcing services, white label development services, UX UI design services, brand identity design, API development services, DevOps services, digital marketing services, SEO services, enterprise software development, healthcare software development, dental AI solutions, business process automation services, AI consulting services, CRM development services, ERP development services, ecommerce development services, Shopify development, WordPress development",
-      },
-      { name: "robots", content: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" },
-      {
-        property: "og:title",
-        content: "AI & Software Development Services — StellR IT LLC",
-      },
-      {
-        property: "og:description",
-        content:
-          "Complete AI development, software engineering, SaaS, web & mobile development services. Dedicated remote teams for agencies and enterprises. Free consultation.",
-      },
-      { property: "og:url", content: "https://stellrit.com/services" },
-      { property: "og:type", content: "website" },
-      { property: "og:image", content: "https://stellrit.com/og-image.png" },
-      { property: "og:image:alt", content: "StellR IT LLC — AI & Software Development Services" },
-      { name: "twitter:card", content: "summary_large_image" },
-      {
-        name: "twitter:title",
-        content: "AI & Software Development Services — StellR IT LLC",
-      },
-      {
-        name: "twitter:description",
-        content:
-          "AI, software, SaaS, web, mobile & dedicated teams. Full-service digital engineering.",
-      },
-      { name: "twitter:image", content: "https://stellrit.com/og-image.png" },
-    ],
-    links: [{ rel: "canonical", href: "https://stellrit.com/services" }],
-  }),
+  head: () =>
+    buildRouteHead({
+      title: "AI Development, Custom Software & Digital Engineering Services | StellR IT LLC",
+      description:
+        "Explore StellR IT LLC's full-stack services: custom AI software, autonomous AI agents, RAG chatbots, SaaS platforms, web & mobile apps, dedicated teams, UX design, and technical SEO.",
+      path: "/services",
+      imageAlt: "StellR IT LLC — AI & Custom Software Development Services",
+    }),
   component: ServicesPage,
 });
 
@@ -127,35 +100,43 @@ function ServicesFAQSection() {
           </p>
         </div>
         <div className="space-y-3">
-          {servicesFAQs.map((faq, i) => (
-            <div
-              key={i}
-              className="rounded-xl border border-[#240945]/10 bg-white/60 overflow-hidden"
-            >
-              <button
-                onClick={() => setOpen(open === i ? null : i)}
-                aria-expanded={open === i}
-                className="w-full flex items-center justify-between gap-4 px-6 py-5 text-left"
-                id={`svc-faq-btn-${i}`}
-                aria-controls={`svc-faq-panel-${i}`}
+          {servicesFAQs.map((faq, i) => {
+            const isOpen = open === i;
+            return (
+              <div
+                key={i}
+                className="rounded-xl border border-[#240945]/10 bg-white/60 overflow-hidden"
               >
-                <span className="font-semibold text-[15px] text-[#180028]">{faq.q}</span>
-                <ChevronDown
-                  className={`h-5 w-5 text-[#240945]/50 shrink-0 transition-transform duration-200 ${open === i ? "rotate-180" : ""}`}
-                />
-              </button>
-              {open === i && (
+                <button
+                  type="button"
+                  onClick={() => setOpen(isOpen ? null : i)}
+                  aria-expanded={isOpen}
+                  className="w-full flex items-center justify-between gap-4 px-6 py-5 text-left cursor-pointer"
+                  id={`svc-faq-btn-${i}`}
+                  aria-controls={`svc-faq-panel-${i}`}
+                >
+                  <span className="font-semibold text-[15px] text-[#180028]">{faq.q}</span>
+                  <ChevronDown
+                    className={`h-5 w-5 text-[#240945]/50 shrink-0 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
+                  />
+                </button>
                 <div
                   id={`svc-faq-panel-${i}`}
                   role="region"
                   aria-labelledby={`svc-faq-btn-${i}`}
-                  className="px-6 pb-5"
+                  className={`grid transition-[grid-template-rows,opacity] duration-200 ease-in-out ${
+                    isOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
+                  }`}
                 >
-                  <p className="text-[14px] text-[#240945]/75 leading-[1.7]">{faq.a}</p>
+                  <div className="overflow-hidden">
+                    <div className="px-6 pb-5">
+                      <p className="text-[14px] text-[#240945]/75 leading-[1.7]">{faq.a}</p>
+                    </div>
+                  </div>
                 </div>
-              )}
-            </div>
-          ))}
+              </div>
+            );
+          })}
         </div>
       </div>
     </section>
@@ -166,129 +147,51 @@ function ServicesPage() {
   const servicesSchema = {
     "@context": "https://schema.org",
     "@type": "ItemList",
-    "@id": "https://stellrit.com/services#services",
+    "@id": `${SITE_URL}/services#services`,
     name: "StellR IT LLC — Complete AI & Software Development Services",
-    itemListElement: [
-      {
-        "@type": "ListItem", position: 1,
-        item: {
-          "@type": "Service",
-          name: "AI Software Development",
-          description: "Custom AI software development: generative AI, LLM integration, chatbots, voice agents, AI automation, RAG systems.",
-          provider: { "@type": "Organization", "@id": "https://stellrit.com/#organization" },
-          serviceType: "AI Development",
-          areaServed: "Worldwide",
-          url: "https://stellrit.com/services",
-        },
+    itemListElement: servicesData.map((svc, idx) => ({
+      "@type": "ListItem",
+      position: idx + 1,
+      item: {
+        "@type": "Service",
+        name: svc.title,
+        description: svc.seo.description,
+        provider: { "@type": "Organization", "@id": `${SITE_URL}/#organization` },
+        serviceType: svc.serviceType,
+        areaServed: "United States",
+        url: canonicalUrl(`/services/${svc.slug}`),
       },
-      {
-        "@type": "ListItem", position: 2,
-        item: {
-          "@type": "Service",
-          name: "UX Research & Strategy",
-          description: "Strategy-led UX and UI for web, SaaS, and mobile. We engineer calm, intuitive interfaces designed to convert and retain your users.",
-          provider: { "@type": "Organization", "@id": "https://stellrit.com/#organization" },
-          serviceType: "UX Design",
-          areaServed: "Worldwide",
-          url: "https://stellrit.com/services",
-        },
-      },
-      {
-        "@type": "ListItem", position: 3,
-        item: {
-          "@type": "Service",
-          name: "Brand Identity Design",
-          description: "Crafting iconic identities that command attention. We build distinctive brand systems, naming, and messaging.",
-          provider: { "@type": "Organization", "@id": "https://stellrit.com/#organization" },
-          serviceType: "Brand Design",
-          areaServed: "Worldwide",
-          url: "https://stellrit.com/services",
-        },
-      },
-      {
-        "@type": "ListItem", position: 4,
-        item: {
-          "@type": "Service",
-          name: "Custom Software & Web Development",
-          description: "Full-stack development in React, Next.js, and modern frameworks. Enterprise-grade reliability and performance.",
-          provider: { "@type": "Organization", "@id": "https://stellrit.com/#organization" },
-          serviceType: "Software Development",
-          areaServed: "Worldwide",
-          url: "https://stellrit.com/services",
-        },
-      },
-      {
-        "@type": "ListItem", position: 5,
-        item: {
-          "@type": "Service",
-          name: "Mobile App Development",
-          description: "iOS, Android, Flutter, and React Native mobile applications for enterprises, startups, and agencies.",
-          provider: { "@type": "Organization", "@id": "https://stellrit.com/#organization" },
-          serviceType: "Mobile Development",
-          areaServed: "Worldwide",
-          url: "https://stellrit.com/services",
-        },
-      },
-      {
-        "@type": "ListItem", position: 6,
-        item: {
-          "@type": "Service",
-          name: "Dedicated Engineering Teams",
-          description: "White-label dedicated remote development teams: AI engineers, full-stack developers, designers, QA, DevOps for agencies worldwide.",
-          provider: { "@type": "Organization", "@id": "https://stellrit.com/#organization" },
-          serviceType: "Staff Augmentation",
-          areaServed: "Worldwide",
-          url: "https://stellrit.com/services",
-        },
-      },
-      {
-        "@type": "ListItem", position: 7,
-        item: {
-          "@type": "Service",
-          name: "SaaS Development",
-          description: "End-to-end SaaS product development from MVP to enterprise scale including architecture, APIs, billing, and DevOps.",
-          provider: { "@type": "Organization", "@id": "https://stellrit.com/#organization" },
-          serviceType: "SaaS Development",
-          areaServed: "Worldwide",
-          url: "https://stellrit.com/services",
-        },
-      },
-      {
-        "@type": "ListItem", position: 8,
-        item: {
-          "@type": "Service",
-          name: "Digital Marketing & SEO",
-          description: "Data-driven paid and organic campaigns: SEO, Google Ads, content marketing, social media, email marketing, and CRO.",
-          provider: { "@type": "Organization", "@id": "https://stellrit.com/#organization" },
-          serviceType: "Digital Marketing",
-          areaServed: "Worldwide",
-          url: "https://stellrit.com/services",
-        },
-      },
-    ],
-  };
-
-  const breadcrumbSchema = {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Home", item: "https://stellrit.com" },
-      { "@type": "ListItem", position: 2, name: "Services", item: "https://stellrit.com/services" },
-    ],
-  };
-
-  const faqSchema = {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    mainEntity: servicesFAQs.map((faq) => ({
-      "@type": "Question",
-      name: faq.q,
-      acceptedAnswer: { "@type": "Answer", text: faq.a },
     })),
   };
 
+  const webPageSchema = buildWebPageSchema({
+    type: "CollectionPage",
+    name: "AI & Software Development Services — StellR IT LLC",
+    description:
+      "Full-stack AI development, autonomous AI agents, custom chatbots, SaaS, web & mobile apps, dedicated teams, UX/UI design, and digital marketing.",
+    path: "/services",
+  });
+
+  const breadcrumbSchema = buildBreadcrumbSchema([
+    { name: "Home", path: "/" },
+    { name: "Services", path: "/services" },
+  ]);
+
+  const faqSchema = buildFaqSchema(servicesFAQs);
+
+  const specializedServices = servicesData.filter((s) =>
+    [
+      "ai-automation-agents",
+      "ai-chatbot-development",
+      "saas-development",
+      "mobile-app-development",
+      "dedicated-teams",
+    ].includes(s.slug)
+  );
+
   return (
     <main className="relative min-h-screen selection:bg-[#ff8a5b]/30">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageSchema) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(servicesSchema) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
@@ -308,14 +211,14 @@ function ServicesPage() {
       <div style={{ contentVisibility: "auto", containIntrinsicSize: "auto none auto 2000px" }}>
         <section className="bg-[#FAF5EE] text-[#240945] py-[60px]">
           <div className="mx-auto max-w-[1400px] px-6 md:px-12 lg:px-20">
-          <motion.h1
+          <motion.h2
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             className="font-serif text-[60px] md:text-[96px] lg:text-[120px] font-bold leading-none tracking-tight mb-[60px]"
           >
             Our Perspective
-          </motion.h1>
+          </motion.h2>
 
           {/* 1. UX Research */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 items-center mb-[60px]">
@@ -613,12 +516,50 @@ function ServicesPage() {
               />
               <img
                 src={aiImg}
-                alt="AI Development and Automation"
+                alt="AI Development and Automation services by StellR IT LLC"
                 loading="lazy"
                 decoding="async"
                 className="relative z-10 w-full h-auto rounded-2xl shadow-[0_20px_40px_rgba(36,9,69,0.1)] bg-white/50 border border-[#240945]/5 object-cover"
               />
             </motion.div>
+          </div>
+
+          {/* Specialized AI, SaaS, Mobile & Dedicated Engineering Practices */}
+          <div className="border-t border-[#240945]/15 pt-16 mt-12">
+            <span className="text-[12px] font-bold uppercase tracking-[0.2em] text-[#240945]/60 mb-3 block">
+              Specialized Engineering Practices
+            </span>
+            <h2 className="font-serif text-[32px] md:text-[44px] font-bold leading-tight mb-4 text-[#180028]">
+              Dedicated AI, SaaS, Mobile &amp; Team Solutions
+            </h2>
+            <p className="text-[15px] text-[#240945]/75 max-w-2xl mb-10">
+              Explore our focused engineering practices built for autonomous AI workflows, private RAG chatbots, scalable SaaS products, mobile apps, and dedicated remote teams.
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {specializedServices.map((svc) => (
+                <Link
+                  key={svc.slug}
+                  to="/services/$slug"
+                  params={{ slug: svc.slug }}
+                  className="group rounded-2xl border border-[#240945]/10 bg-white/75 p-7 hover:bg-white hover:shadow-xl transition-all flex flex-col justify-between"
+                >
+                  <div>
+                    <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-[#7a2adc] block mb-2">
+                      {svc.serviceType}
+                    </span>
+                    <h3 className="font-serif text-[24px] font-bold text-[#180028] leading-snug mb-3 group-hover:text-[#7a2adc] transition-colors">
+                      {svc.title}
+                    </h3>
+                    <p className="text-[14px] text-[#240945]/75 leading-[1.65] mb-6">
+                      {svc.subtitle}
+                    </p>
+                  </div>
+                  <span className="inline-flex items-center gap-2 text-[12px] font-bold uppercase tracking-[0.16em] text-[#180028] group-hover:text-[#7a2adc]">
+                    Explore Service <ArrowUpRight className="w-4 h-4" />
+                  </span>
+                </Link>
+              ))}
+            </div>
           </div>
         </div>
       </section>

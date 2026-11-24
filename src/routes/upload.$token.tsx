@@ -19,6 +19,12 @@ import { useState, useEffect, useRef } from "react";
 import logoImg from "@/assets/logo.png";
 
 export const Route = createFileRoute("/upload/$token")({
+  head: () => ({
+    meta: [
+      { title: "Secure Upload Portal — StellR IT LLC" },
+      { name: "robots", content: "noindex, nofollow, noarchive" },
+    ],
+  }),
   loader: async ({ params }) => {
     try {
       const data = await getAssetRequestByTokenFn({ data: { token: params.token } });

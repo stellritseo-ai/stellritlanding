@@ -21,36 +21,46 @@ import {
   MapPin, 
   CheckCircle2
 } from "lucide-react";
+import {
+  buildBreadcrumbSchema,
+  buildRouteHead,
+  buildWebPageSchema,
+} from "@/lib/seo";
 
 export const Route = createFileRoute("/terms")({
-  head: () => ({
-    meta: [
-      { title: "Terms of Service — StellR IT LLC" },
-      { name: "description", content: "Terms of Service governing the use of StellR IT LLC's website, software development services, and digital solutions. Read our complete terms and conditions." },
-      { name: "robots", content: "index, follow" },
-      { property: "og:title", content: "Terms of Service — StellR IT LLC" },
-      { property: "og:description", content: "Terms and conditions governing the use of StellR IT LLC's website and services." },
-      { property: "og:url", content: "https://stellrit.com/terms" },
-      { property: "og:type", content: "website" },
-      { property: "og:image", content: "https://stellrit.com/og-image.png" },
-      { property: "og:image:alt", content: "StellR IT LLC Terms of Service" },
-      { name: "twitter:card", content: "summary" },
-      { name: "twitter:title", content: "Terms of Service — StellR IT LLC" },
-      { name: "twitter:description", content: "Terms and conditions governing the use of StellR IT LLC's website and services." },
-    ],
-    links: [{ rel: "canonical", href: "https://stellrit.com/terms" }],
-  }),
+  head: () =>
+    buildRouteHead({
+      title: "Terms of Service — StellR IT LLC",
+      description:
+        "Terms of Service governing the use of StellR IT LLC's website, custom software engineering, AI development services, and digital solutions.",
+      path: "/terms",
+      twitterCard: "summary",
+      imageAlt: "StellR IT LLC Terms of Service",
+    }),
   component: TermsPage,
 });
 
 function TermsPage() {
+  const webPageSchema = buildWebPageSchema({
+    type: "WebPage",
+    name: "Terms of Service — StellR IT LLC",
+    description: "Terms of Service governing StellR IT LLC's website and software engineering services.",
+    path: "/terms",
+  });
+  const breadcrumbSchema = buildBreadcrumbSchema([
+    { name: "Home", path: "/" },
+    { name: "Terms of Service", path: "/terms" },
+  ]);
+
   return (
     <main className="relative min-h-screen">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageSchema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
       <ScrollBackground />
       <SiteHeader transparent />
       <PageHero
         eyebrow="Legal"
-        title="Terms of Conditions"
+        title="Terms of Service"
         description="Last updated July 14, 2026. The terms governing your use of StellR IT LLC's website and services."
       />
 
@@ -442,7 +452,7 @@ function TermsPage() {
                 </li>
                 <li className="flex gap-3 text-[14px] text-white/80">
                   <Phone className="h-4.5 w-4.5 text-[#ff8a5b] shrink-0 mt-0.5" />
-                  <a href="tel:2148380543" className="hover:underline">(214) 838-0543</a>
+                  <a href="tel:+12148380543" className="hover:underline">(214) 838-0543</a>
                 </li>
               </ul>
             </div>

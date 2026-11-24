@@ -1,4 +1,5 @@
 import { memo, useEffect, useRef, useState } from "react";
+import { Link } from "@tanstack/react-router";
 import { RefreshCw } from "lucide-react";
 import { useInViewActive } from "@/hooks/use-in-view-active";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
@@ -320,12 +321,12 @@ export default function Hero() {
         <div className="z-20 max-w-md px-4" style={{ marginTop: "50px" }}>
           <p className="text-[15px] leading-[28px] text-white/80 font-sans font-light">
             Our{" "}
-            <a
-              href="#"
+            <Link
+              to="/services"
               className="underline decoration-white/40 underline-offset-4 hover:text-white font-normal text-white"
             >
-              web design agency
-            </a>{" "}
+              AI &amp; software engineering agency
+            </Link>{" "}
             helps enterprise brands and market leaders navigate digital, evolve profitably, and
             launch unforgettable websites, products, and campaigns.
           </p>
@@ -355,7 +356,7 @@ export default function Hero() {
                   <img
                     key={i}
                     src={logo}
-                    alt={`Client ${i}`}
+                    alt={`StellR IT LLC client partner logo ${i + 1}`}
                     decoding="async"
                     className="h-7 w-auto max-w-[100px] object-contain shrink-0"
                     style={{ filter: "brightness(0) invert(1)" }}
@@ -466,12 +467,12 @@ export default function Hero() {
         >
           <p className="text-[14px] leading-[1.55] text-white/85">
             Our{" "}
-            <a
-              href="#"
+            <Link
+              to="/services"
               className="underline decoration-white/60 underline-offset-4 hover:decoration-white"
             >
-              creative studio
-            </a>{" "}
+              AI &amp; software studio
+            </Link>{" "}
             helps enterprise brands and market leaders navigate digital, evolve profitably, and
             launch unforgettable websites, products, and campaigns.
           </p>
@@ -544,7 +545,7 @@ export default function Hero() {
                     >
                       <img
                         src={logo}
-                        alt={`Client Logo ${i}`}
+                        alt={`StellR IT LLC client partner logo ${i + 1}`}
                         decoding="async"
                         className="h-14 lg:h-16 w-auto max-w-[120px] lg:max-w-[150px] object-contain opacity-85 hover:opacity-100 transition-opacity duration-300"
                         style={{ filter: "brightness(0) invert(1)" }}

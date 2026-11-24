@@ -8,7 +8,16 @@ import CtaBand from "@/components/CtaBand";
 import ScrollBackground from "@/components/ScrollBackground";
 import ChatWidget from "@/components/ChatWidget";
 import { CASE_STUDIES, getCaseStudy, type CaseStudy } from "@/data/case-studies";
+import { servicesData } from "@/data/services";
 import { useInViewActive } from "@/hooks/use-in-view-active";
+import {
+  COMPANY,
+  SITE_URL,
+  buildBreadcrumbSchema,
+  buildRouteHead,
+  canonicalUrl,
+  toAbsoluteUrl,
+} from "@/lib/seo";
 
 export const Route = createFileRoute("/case-studies/$slug")({
   loader: ({ params }) => {
@@ -19,60 +28,57 @@ export const Route = createFileRoute("/case-studies/$slug")({
   head: ({ loaderData, params }) => {
     const s = loaderData?.study;
     if (!s) return { meta: [{ title: "Case Study — StellR IT LLC" }] };
-    const title = `${s.title} — ${s.subtitle} | StellR IT LLC`;
-    const description = `${s.subtitle}. ${s.overview.slice(0, 155)}`.replace(/\s+/g, " ").trim();
-    const url = `https://stellrit.com/case-studies/${params.slug}`;
+    const title = `${s.title} Case Study | ${s.industry} | StellR IT LLC`;
+    const description = `${s.subtitle}. ${s.overview.slice(0, 145)}`.replace(/\s+/g, " ").trim();
+    const url = canonicalUrl(`/case-studies/${params.slug}`);
+    const absImage = toAbsoluteUrl(s.hero);
+    const routeHead = buildRouteHead({
+      title,
+      description,
+      path: `/case-studies/${params.slug}`,
+      ogType: "article",
+      image: absImage,
+      imageAlt: `${s.title} — ${s.subtitle}`,
+      publishedTime: `${s.year}-01-01`,
+      section: s.industry,
+      author: COMPANY.name,
+    });
     return {
-      meta: [
-        { title },
-        { name: "description", content: description },
-        { name: "keywords", content: [s.industry, s.client, ...s.services, ...s.tags].join(", ") },
-        { property: "og:title", content: title },
-        { property: "og:description", content: description },
-        { property: "og:type", content: "article" },
-        { property: "og:url", content: url },
-        { property: "og:image", content: s.hero },
-        { property: "article:section", content: s.industry },
-        { property: "article:published_time", content: `${s.year}-01-01` },
-        { name: "twitter:card", content: "summary_large_image" },
-        { name: "twitter:title", content: title },
-        { name: "twitter:description", content: description },
-        { name: "twitter:image", content: s.hero },
-      ],
-      links: [{ rel: "canonical", href: url }],
+      ...routeHead,
       scripts: [
         {
           type: "application/ld+json",
           children: JSON.stringify({
             "@context": "https://schema.org",
             "@type": "Article",
+            "@id": `${url}#article`,
             headline: `${s.title} — ${s.subtitle}`,
             description,
-            image: [s.hero],
+            image: [absImage],
             datePublished: `${s.year}-01-01`,
-            author: { "@type": "Organization", name: "StellR IT LLC" },
+            author: { "@type": "Organization", "@id": `${SITE_URL}/#organization`, name: COMPANY.name },
             publisher: {
               "@type": "Organization",
-              name: "StellR IT LLC",
-              logo: { "@type": "ImageObject", url: "/favicon.ico" },
+              "@id": `${SITE_URL}/#organization`,
+              name: COMPANY.name,
+              logo: { "@type": "ImageObject", url: COMPANY.logo },
             },
             about: { "@type": "Organization", name: s.client },
             articleSection: s.industry,
             keywords: [...s.services, ...s.tags].join(", "),
             mainEntityOfPage: { "@type": "WebPage", "@id": url },
+            inLanguage: "en-US",
           }),
         },
         {
           type: "application/ld+json",
-          children: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "BreadcrumbList",
-            itemListElement: [
-              { "@type": "ListItem", position: 1, name: "Home", item: "/" },
-              { "@type": "ListItem", position: 2, name: "Case Studies", item: "/case-studies" },
-              { "@type": "ListItem", position: 3, name: s.title, item: url },
-            ],
-          }),
+          children: JSON.stringify(
+            buildBreadcrumbSchema([
+              { name: "Home", path: "/" },
+              { name: "Case Studies", path: "/case-studies" },
+              { name: s.title, path: `/case-studies/${params.slug}` },
+            ])
+          ),
         },
       ],
     };
@@ -508,6 +514,43 @@ function CaseStudyPage() {
           </motion.div>
         </div>
       </section>
+
+      {/* Related Services Internal Links */}
+      {study.relatedServiceSlugs && study.relatedServiceSlugs.length > 0 && (
+        <section className="relative z-10 px-6 py-12 md:px-12 lg:px-20 border-t border-white/[0.05]">
+          <div className="mx-auto max-w-[1400px]">
+            <div className="text-[11px] uppercase tracking-[0.4em] text-[#ff8a5b] font-semibold mb-4">
+              Capabilities Applied
+            </div>
+            <h2 className="font-serif text-[28px] md:text-[36px] text-white mb-6">
+              Explore Related Services
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {study.relatedServiceSlugs
+                .map((slug) => servicesData.find((svc) => svc.slug === slug))
+                .filter((svc): svc is NonNullable<typeof svc> => Boolean(svc))
+                .map((svc) => (
+                  <Link
+                    key={svc.slug}
+                    to="/services/$slug"
+                    params={{ slug: svc.slug }}
+                    className="group flex items-center justify-between gap-4 rounded-2xl border border-white/10 bg-white/[0.03] px-6 py-5 hover:border-white/25 hover:bg-white/[0.06] transition-all"
+                  >
+                    <div>
+                      <span className="block text-xs uppercase tracking-wider text-white/45">
+                        {svc.serviceType}
+                      </span>
+                      <span className="mt-1 block font-serif text-xl text-white group-hover:text-[#c9a4ff] transition-colors">
+                        {svc.title}
+                      </span>
+                    </div>
+                    <ArrowUpRight className="h-4 w-4 text-white/50 group-hover:text-white shrink-0" />
+                  </Link>
+                ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Next case study */}
       <section className="relative z-10 px-6 py-16 md:px-12 lg:px-20 border-t border-white/[0.05]">

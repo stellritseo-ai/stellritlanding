@@ -39,6 +39,7 @@ export const Route = createFileRoute("/share/$token")({
       meta: [
         { title },
         { name: "description", content: description },
+        { name: "robots", content: "noindex, nofollow, noarchive" },
         { property: "og:title", content: title },
         { property: "og:description", content: description },
         ...(imageUrl ? [{ property: "og:image", content: imageUrl }] : []),
@@ -208,7 +209,7 @@ function SharedImageViewerPage() {
             </div>
             <div className="pt-2">
               <a
-                href="https://stellrit.com"
+                href="https://www.stellrit.com/"
                 className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-gradient-to-r from-[#a855f7] to-[#ff8a5b] text-white text-xs font-bold hover:shadow-[0_0_20px_rgba(168,85,247,0.3)] transition active:scale-95"
               >
                 Visit StellR IT

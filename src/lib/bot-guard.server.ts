@@ -7,9 +7,9 @@
  * before they reach SSR, MongoDB, email notifications, or Gemini AI endpoints.
  */
 
-// Legitimate search engines & social preview crawlers — NEVER block these
+// Legitimate search engines, on-demand AI search bots & social preview crawlers — NEVER block these
 const GOOD_BOT_RE =
-  /\b(googlebot|google-inspectiontool|adsbot-google|mediapartners-google|bingbot|msnbot|applebot|duckduckbot|twitterbot|linkedinbot|slackbot|whatsapp|discordbot|facebookexternalhit|telegrambot|oai-searchbot|perplexitybot|vercel-screenshot|uptime|statuscake)\b/i;
+  /\b(googlebot|google-inspectiontool|googleother|adsbot-google|mediapartners-google|bingbot|bingpreview|msnbot|applebot|duckduckbot|duckassistbot|twitterbot|linkedinbot|slackbot|whatsapp|discordbot|facebookexternalhit|telegrambot|oai-searchbot|chatgpt-user|perplexitybot|perplexity-user|claude-searchbot|vercel-screenshot|uptime|statuscake)\b/i;
 
 // Known aggressive scrapers, spam bots, bulk AI crawlers, headless tools, and scanners
 const BAD_BOT_RE =
@@ -130,8 +130,13 @@ export function inspectIncomingRequest(request: Request): Response | null {
     return new Response("Bad Request", { status: 400 });
   }
 
-  // Always serve robots.txt and sitemaps cleanly
-  if (pathname === "/robots.txt" || pathname === "/sitemap.xml" || pathname === "/sitemap-images.xml") {
+  // Always serve robots.txt, llms.txt, and sitemaps cleanly
+  if (
+    pathname === "/robots.txt" ||
+    pathname === "/llms.txt" ||
+    pathname === "/sitemap.xml" ||
+    pathname === "/sitemap-images.xml"
+  ) {
     return null;
   }
 

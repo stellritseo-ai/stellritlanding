@@ -1,12 +1,30 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { motion } from "framer-motion";
 import { useState } from "react";
-import { ArrowLeft, ChevronDown, Clock, Calendar, Share2, Check, Bookmark, Sparkles } from "lucide-react";
+import {
+  ArrowLeft,
+  ArrowUpRight,
+  ChevronDown,
+  Clock,
+  Calendar,
+  Share2,
+  Check,
+  Sparkles,
+} from "lucide-react";
 import SiteHeader from "@/components/SiteHeader";
 import Footer from "@/components/Footer";
 import ScrollBackground from "@/components/ScrollBackground";
 import ChatWidget from "@/components/ChatWidget";
 import { getInsightArticle, INSIGHT_ARTICLES, type InsightArticle } from "@/data/insights";
+import { servicesData } from "@/data/services";
+import {
+  COMPANY,
+  SITE_URL,
+  buildBreadcrumbSchema,
+  buildFaqSchema,
+  buildRouteHead,
+  canonicalUrl,
+  toAbsoluteUrl,
+} from "@/lib/seo";
 
 export const Route = createFileRoute("/insights/$slug")({
   loader: ({ params }) => {
@@ -19,36 +37,23 @@ export const Route = createFileRoute("/insights/$slug")({
     if (!a) return { meta: [{ title: "Insight Article — StellR IT LLC" }] };
 
     const title = `${a.title} | StellR IT Insights`;
-    const description = a.description;
-    const url = `https://stellrit.com/insights/${params.slug}`;
+    const url = canonicalUrl(`/insights/${params.slug}`);
+    const absImage = toAbsoluteUrl(a.image);
+    const routeHead = buildRouteHead({
+      title,
+      description: a.description,
+      path: `/insights/${params.slug}`,
+      ogType: "article",
+      image: absImage,
+      imageAlt: a.title,
+      publishedTime: a.publishedDate,
+      modifiedTime: a.lastUpdated,
+      section: a.category,
+      author: a.author.name,
+    });
 
     return {
-      meta: [
-        { title },
-        { name: "description", content: description },
-        { name: "keywords", content: a.tags.join(", ") },
-        { name: "author", content: a.author.name },
-        { name: "robots", content: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" },
-
-        // Open Graph
-        { property: "og:title", content: title },
-        { property: "og:description", content: description },
-        { property: "og:type", content: "article" },
-        { property: "og:url", content: url },
-        { property: "og:image", content: a.image },
-        { property: "og:image:alt", content: a.title },
-        { property: "article:published_time", content: a.publishedDate },
-        { property: "article:modified_time", content: a.lastUpdated },
-        { property: "article:section", content: a.category },
-        { property: "article:publisher", content: "https://www.linkedin.com/company/stellrit" },
-
-        // Twitter Card
-        { name: "twitter:card", content: "summary_large_image" },
-        { name: "twitter:title", content: title },
-        { name: "twitter:description", content: description },
-        { name: "twitter:image", content: a.image },
-      ],
-      links: [{ rel: "canonical", href: url }],
+      ...routeHead,
       scripts: [
         {
           type: "application/ld+json",
@@ -58,47 +63,35 @@ export const Route = createFileRoute("/insights/$slug")({
               {
                 "@type": "BlogPosting",
                 "@id": `${url}#article`,
-                isPartOf: { "@id": "https://stellrit.com/insights#blog" },
+                isPartOf: { "@id": `${SITE_URL}/insights#blog` },
                 headline: a.title,
                 description: a.description,
-                image: [a.image],
+                image: [absImage],
                 datePublished: a.publishedDate,
                 dateModified: a.lastUpdated,
                 mainEntityOfPage: { "@type": "WebPage", "@id": url },
                 author: {
                   "@type": "Organization",
+                  "@id": `${SITE_URL}/#organization`,
                   name: a.author.name,
-                  url: "https://stellrit.com/about",
+                  url: canonicalUrl("/about"),
                 },
                 publisher: {
                   "@type": "Organization",
-                  "@id": "https://stellrit.com/#organization",
-                  name: "StellR IT LLC",
-                  logo: { "@type": "ImageObject", url: "https://stellrit.com/fav.png" },
+                  "@id": `${SITE_URL}/#organization`,
+                  name: COMPANY.name,
+                  logo: { "@type": "ImageObject", url: COMPANY.logo },
                 },
                 articleSection: a.category,
                 keywords: a.tags.join(", "),
                 inLanguage: "en-US",
               },
-              {
-                "@type": "BreadcrumbList",
-                itemListElement: [
-                  { "@type": "ListItem", position: 1, name: "Home", item: "https://stellrit.com" },
-                  { "@type": "ListItem", position: 2, name: "Insights", item: "https://stellrit.com/insights" },
-                  { "@type": "ListItem", position: 3, name: a.title, item: url },
-                ],
-              },
-              {
-                "@type": "FAQPage",
-                mainEntity: a.faqs.map((faq) => ({
-                  "@type": "Question",
-                  name: faq.question,
-                  acceptedAnswer: {
-                    "@type": "Answer",
-                    text: faq.answer,
-                  },
-                })),
-              },
+              buildBreadcrumbSchema([
+                { name: "Home", path: "/" },
+                { name: "Insights", path: "/insights" },
+                { name: a.title, path: `/insights/${params.slug}` },
+              ]),
+              ...(a.faqs && a.faqs.length > 0 ? [buildFaqSchema(a.faqs)] : []),
             ],
           }),
         },
@@ -111,7 +104,13 @@ export const Route = createFileRoute("/insights/$slug")({
 function InsightDetailArticlePage() {
   const { article } = Route.useLoaderData() as { article: InsightArticle };
   const [copied, setCopied] = useState(false);
-  const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const [openFaq, setOpenFaq] = useState<number | null>(0);
+
+  const relatedServices = (article.relatedServiceSlugs ?? [])
+    .map((slug) => servicesData.find((s) => s.slug === slug))
+    .filter((s): s is NonNullable<typeof s> => Boolean(s));
+
+  const relatedArticles = INSIGHT_ARTICLES.filter((a) => a.slug !== article.slug).slice(0, 3);
 
   const handleCopyLink = () => {
     navigator.clipboard.writeText(window.location.href);
@@ -159,7 +158,7 @@ function InsightDetailArticlePage() {
             <img
               src={article.author.avatar}
               alt={article.author.name}
-              className="w-12 h-12 rounded-full object-cover border border-white/20"
+              className="w-12 h-12 rounded-full object-contain bg-white/10 p-1.5 border border-white/20"
             />
             <div>
               <strong className="block text-sm font-bold text-white">{article.author.name}</strong>
@@ -169,10 +168,15 @@ function InsightDetailArticlePage() {
 
           <div className="flex items-center gap-3">
             <button
+              type="button"
               onClick={handleCopyLink}
-              className="flex items-center gap-2 px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/15 rounded-full text-xs font-semibold transition-all text-white/80 hover:text-white"
+              className="flex items-center gap-2 px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/15 rounded-full text-xs font-semibold transition-all text-white/80 hover:text-white cursor-pointer"
             >
-              {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Share2 className="w-3.5 h-3.5" />}
+              {copied ? (
+                <Check className="w-3.5 h-3.5 text-emerald-400" />
+              ) : (
+                <Share2 className="w-3.5 h-3.5" />
+              )}
               {copied ? "Link Copied!" : "Share"}
             </button>
           </div>
@@ -199,7 +203,10 @@ function InsightDetailArticlePage() {
           </div>
           <ul className="space-y-3">
             {article.keyTakeaways.map((takeaway, i) => (
-              <li key={i} className="flex items-start gap-3 text-sm md:text-base text-white/85 leading-relaxed">
+              <li
+                key={i}
+                className="flex items-start gap-3 text-sm md:text-base text-white/85 leading-relaxed"
+              >
                 <span className="mt-1.5 h-2 w-2 rounded-full bg-[#ff8a5b] shrink-0" />
                 {takeaway}
               </li>
@@ -215,10 +222,10 @@ function InsightDetailArticlePage() {
           <aside className="lg:col-span-4 order-2 lg:order-1">
             <div className="sticky top-28 space-y-6">
               <div className="glass rounded-xl p-6 border border-white/10 bg-white/5">
-                <h3 className="text-xs font-bold uppercase tracking-[0.2em] text-white/50 mb-4 block">
+                <h2 className="text-xs font-bold uppercase tracking-[0.2em] text-white/50 mb-4 block">
                   Table of Contents
-                </h3>
-                <nav className="space-y-2">
+                </h2>
+                <nav className="space-y-2" aria-label="Article table of contents">
                   {article.tableOfContents.map((item) => (
                     <a
                       key={item.id}
@@ -233,9 +240,9 @@ function InsightDetailArticlePage() {
 
               {/* CTA Box in Sidebar */}
               <div className="rounded-xl p-6 border border-[#a855f7]/30 bg-gradient-to-br from-[#7a2adc]/20 to-[#ff8a5b]/10 text-center">
-                <h4 className="font-serif text-lg font-bold mb-2">Build With AI Today</h4>
+                <h3 className="font-serif text-lg font-bold mb-2">Build With StellR IT</h3>
                 <p className="text-xs text-white/70 mb-4">
-                  Need a custom AI software solution, LLM integration, or RAG architecture?
+                  Need a custom AI application, RAG chatbot, autonomous agent, or scalable software platform?
                 </p>
                 <Link
                   to="/contact"
@@ -279,30 +286,60 @@ function InsightDetailArticlePage() {
                       {sec.calloutBox.title}
                     </strong>
                     <p className="text-sm md:text-base text-white/90 italic">
-                      "{sec.calloutBox.text}"
+                      &ldquo;{sec.calloutBox.text}&rdquo;
                     </p>
                   </div>
                 )}
               </section>
             ))}
 
-            {/* In-Article Action Link */}
+            {/* Related Services */}
+            {relatedServices.length > 0 && (
+              <section className="pt-8 border-t border-white/10 space-y-5">
+                <span className="text-xs font-bold uppercase tracking-[0.2em] text-[#ff8a5b] block">
+                  Related Engineering Services
+                </span>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {relatedServices.map((svc) => (
+                    <Link
+                      key={svc.slug}
+                      to="/services/$slug"
+                      params={{ slug: svc.slug }}
+                      className="group flex items-center justify-between gap-3 rounded-xl border border-white/10 bg-white/5 px-5 py-4 hover:border-white/25 transition-colors"
+                    >
+                      <div>
+                        <span className="block text-[10px] uppercase tracking-wider text-white/45">
+                          {svc.serviceType}
+                        </span>
+                        <span className="block text-sm font-semibold text-white group-hover:text-[#c9a4ff]">
+                          {svc.title}
+                        </span>
+                      </div>
+                      <ArrowUpRight className="w-4 h-4 text-white/50 group-hover:text-white shrink-0" />
+                    </Link>
+                  ))}
+                </div>
+              </section>
+            )}
+
+            {/* In-Article CTA */}
             <div className="p-8 rounded-2xl border border-white/15 bg-gradient-to-r from-[#180028] via-[#240945] to-[#180028] my-12 text-center">
               <h3 className="font-serif text-2xl font-bold mb-3 text-white">
-                Ready to Implement Custom Generative AI?
+                Ready to Architect Your AI or Software Initiative?
               </h3>
               <p className="text-sm text-white/70 max-w-xl mx-auto mb-6">
-                StellR IT LLC provides dedicated senior AI engineers to build, security-audit, and scale custom AI solutions for your enterprise.
+                StellR IT LLC in Garland, Texas provides senior AI and full-stack engineering teams
+                to scope, build, security-audit, and scale production systems.
               </p>
               <Link
                 to="/contact"
                 className="inline-flex items-center justify-center px-8 py-3.5 bg-[#a855f7] hover:bg-[#a855f7]/90 text-white font-bold text-sm rounded-full transition-transform hover:scale-105 shadow-xl"
               >
-                Hire AI Developers Today
+                Request a Technical Consultation
               </Link>
             </div>
 
-            {/* Article FAQs Section */}
+            {/* Article FAQs Section (always rendered in SSR HTML via CSS grid-rows) */}
             {article.faqs && article.faqs.length > 0 && (
               <section id="faqs" className="scroll-mt-32 pt-8 border-t border-white/10 space-y-6">
                 <span className="text-xs font-bold uppercase tracking-[0.2em] text-[#ff8a5b] block">
@@ -313,29 +350,72 @@ function InsightDetailArticlePage() {
                 </h2>
 
                 <div className="space-y-3 pt-4">
-                  {article.faqs.map((faq, i) => (
-                    <div
-                      key={i}
-                      className="glass rounded-xl border border-white/10 bg-white/5 overflow-hidden"
-                    >
-                      <button
-                        onClick={() => setOpenFaq(openFaq === i ? null : i)}
-                        aria-expanded={openFaq === i}
-                        className="w-full flex items-center justify-between gap-4 px-6 py-4 text-left"
+                  {article.faqs.map((faq, i) => {
+                    const isOpen = openFaq === i;
+                    return (
+                      <div
+                        key={i}
+                        className="glass rounded-xl border border-white/10 bg-white/5 overflow-hidden"
                       >
-                        <span className="font-semibold text-sm md:text-base text-white">
-                          {faq.question}
-                        </span>
-                        <ChevronDown
-                          className={`h-5 w-5 text-white/50 shrink-0 transition-transform duration-200 ${openFaq === i ? "rotate-180" : ""}`}
-                        />
-                      </button>
-                      {openFaq === i && (
-                        <div className="px-6 pb-4">
-                          <p className="text-sm text-white/75 leading-relaxed">{faq.answer}</p>
+                        <button
+                          type="button"
+                          onClick={() => setOpenFaq(isOpen ? null : i)}
+                          aria-expanded={isOpen}
+                          aria-controls={`article-faq-panel-${i}`}
+                          id={`article-faq-btn-${i}`}
+                          className="w-full flex items-center justify-between gap-4 px-6 py-4 text-left cursor-pointer"
+                        >
+                          <span className="font-semibold text-sm md:text-base text-white">
+                            {faq.question}
+                          </span>
+                          <ChevronDown
+                            className={`h-5 w-5 text-white/50 shrink-0 transition-transform duration-200 ${
+                              isOpen ? "rotate-180" : ""
+                            }`}
+                          />
+                        </button>
+                        <div
+                          id={`article-faq-panel-${i}`}
+                          role="region"
+                          aria-labelledby={`article-faq-btn-${i}`}
+                          className={`grid transition-[grid-template-rows,opacity] duration-200 ease-in-out ${
+                            isOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
+                          }`}
+                        >
+                          <div className="overflow-hidden">
+                            <div className="px-6 pb-4">
+                              <p className="text-sm text-white/75 leading-relaxed">{faq.answer}</p>
+                            </div>
+                          </div>
                         </div>
-                      )}
-                    </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </section>
+            )}
+
+            {/* More Technical Guides */}
+            {relatedArticles.length > 0 && (
+              <section className="pt-8 border-t border-white/10 space-y-5">
+                <span className="text-xs font-bold uppercase tracking-[0.2em] text-white/50 block">
+                  Keep Reading
+                </span>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  {relatedArticles.map((rel) => (
+                    <Link
+                      key={rel.slug}
+                      to="/insights/$slug"
+                      params={{ slug: rel.slug }}
+                      className="group rounded-xl border border-white/10 bg-white/5 p-5 hover:border-white/25 transition-colors flex flex-col justify-between"
+                    >
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-[#ff8a5b] mb-2 block">
+                        {rel.category}
+                      </span>
+                      <span className="font-serif text-base font-semibold text-white group-hover:text-[#c9a4ff] leading-snug">
+                        {rel.title}
+                      </span>
+                    </Link>
                   ))}
                 </div>
               </section>

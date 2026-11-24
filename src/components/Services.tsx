@@ -6,6 +6,7 @@ import brandImg from "@/assets/service-brand.jpg";
 import productImg from "@/assets/product.jpg";
 import growthImg from "@/assets/marketing.webp";
 import aiImg from "@/assets/ai.jpg";
+import { trackEvent } from "@/lib/analytics";
 
 const SERVICES = [
   {
@@ -14,7 +15,7 @@ const SERVICES = [
     description: "Crafting iconic identities that command attention and build lasting equity for market leaders.",
     tags: ["Visual Identity", "Video", "Content Strategy"],
     image: brandImg,
-    category: "brand",
+    slug: "brand-identity",
   },
   {
     index: "02",
@@ -22,7 +23,7 @@ const SERVICES = [
     description: "From concept to conversion — beautifully engineered digital products that scale with ambition.",
     tags: ["Web Design", "Design Systems", "eCommerce", "App Development"],
     image: productImg,
-    category: "product",
+    slug: "web-product-design",
   },
   {
     index: "03",
@@ -30,7 +31,7 @@ const SERVICES = [
     description: "Data-driven campaigns that unlock compounding growth across every channel that matters.",
     tags: ["Paid Media", "CRO", "Analytics", "SEM Strategy", "SEO", "Content Strategy", "Influencer Marketing"],
     image: growthImg,
-    category: "marketing",
+    slug: "digital-marketing",
   },
   {
     index: "04",
@@ -38,7 +39,7 @@ const SERVICES = [
     description: "Integrating intelligent agents and custom language models to streamline operations and unlock data insights.",
     tags: ["Agentic Workflows", "LLM Integrations", "Process Automation"],
     image: aiImg,
-    category: "ai",
+    slug: "ai-software-development",
   },
 ];
 
@@ -80,8 +81,9 @@ function ServiceRow({
 
   return (
     <Link
-      to="/portfolio"
-      search={{ filter: service.category } as any}
+      to="/services/$slug"
+      params={{ slug: service.slug }}
+      onClick={() => trackEvent("service_click", { service_slug: service.slug, location: "homepage_services" })}
       className="block group relative cursor-pointer"
     >
       <motion.div

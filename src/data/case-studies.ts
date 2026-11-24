@@ -66,6 +66,7 @@ export type CaseStudy = {
   quote: { text: string; author: string; role: string };
   nextSlug: string;
   projectUrl?: string;
+  relatedServiceSlugs: string[];
 };
 
 export const CASE_STUDIES: CaseStudy[] = [
@@ -117,10 +118,11 @@ export const CASE_STUDIES: CaseStudy[] = [
     },
     nextSlug: "ux-ui-conversions",
     projectUrl: "https://www.tsrskinandhaircare.com/",
+    relatedServiceSlugs: ["brand-identity", "web-product-design", "web-development"],
   },
   {
     slug: "ux-ui-conversions",
-    title: "Pingbuz SaaS Product Design",
+    title: "Finvise SaaS Product Design",
     subtitle: "Redesigning Finvise to reduce bounce rates and maximize signups",
     client: "Finvise (investment advisory startup)",
     year: "2024",
@@ -163,7 +165,7 @@ export const CASE_STUDIES: CaseStudy[] = [
       role: "Key Takeaway",
     },
     nextSlug: "ai-automation",
-    projectUrl: "#",
+    relatedServiceSlugs: ["ux-research-strategy", "web-product-design", "saas-development"],
   },
   {
     slug: "ai-automation",
@@ -208,6 +210,7 @@ export const CASE_STUDIES: CaseStudy[] = [
     },
     nextSlug: "growth-marketing",
     projectUrl: "https://meridiantrustbank.com",
+    relatedServiceSlugs: ["ai-automation-agents", "ai-software-development", "ai-chatbot-development"],
   },
   {
     slug: "growth-marketing",
@@ -254,6 +257,7 @@ export const CASE_STUDIES: CaseStudy[] = [
     },
     nextSlug: "app-development",
     projectUrl: "https://nationalhomeservices.com",
+    relatedServiceSlugs: ["digital-marketing", "ux-research-strategy", "web-development"],
   },
   {
     slug: "app-development",
@@ -301,7 +305,7 @@ export const CASE_STUDIES: CaseStudy[] = [
       role: "Technical Architect",
     },
     nextSlug: "pool-supply-wholesalers",
-    projectUrl: "#",
+    relatedServiceSlugs: ["mobile-app-development", "web-product-design", "dedicated-teams"],
   },
   {
     slug: "pool-supply-wholesalers",
@@ -347,6 +351,7 @@ export const CASE_STUDIES: CaseStudy[] = [
     },
     nextSlug: "cinco-tile-platform",
     projectUrl: "https://poolsupply.vercel.app/",
+    relatedServiceSlugs: ["web-development", "saas-development", "web-product-design"],
   },
   {
     slug: "cinco-tile-platform",
@@ -392,6 +397,7 @@ export const CASE_STUDIES: CaseStudy[] = [
     },
     nextSlug: "harmony-residential-care",
     projectUrl: "https://revitalize-real.vercel.app/",
+    relatedServiceSlugs: ["web-development", "digital-marketing", "web-product-design"],
   },
   {
     slug: "harmony-residential-care",
@@ -437,6 +443,7 @@ export const CASE_STUDIES: CaseStudy[] = [
     },
     nextSlug: "brand-building",
     projectUrl: "https://www.harmonyresidentialcarellc.com/",
+    relatedServiceSlugs: ["web-development", "ux-research-strategy", "web-product-design"],
   },
 ];
 

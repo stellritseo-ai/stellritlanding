@@ -47,22 +47,22 @@ const ITEMS: PortfolioItem[] = [
   {
     title: "TSR Skin and Hair Care",
     category: "Branding",
-    description: "Reimagining identity for a next-generation decentralized cloud platform.",
+    description: "Unified luxury brand identity, packaging architecture, and responsive digital design guidelines.",
     image: brandImg,
     year: "'26",
-    tags: ["Brand Identity", "Visual System", "3D Motion"],
+    tags: ["Brand Identity", "Packaging Design", "Visual System"],
     accentColor: "#a855f7",
     glowColor: "rgba(168, 85, 247, 0.12)",
     ratio: "aspect-[4/5]",
     slug: "brand-building",
   },
   {
-    title: "Ping Buz Application",
+    title: "Finvise SaaS Product Design",
     category: "Digital Product",
-    description: "Designing a high-fidelity interface for automated smart contracts.",
+    description: "Conversion-focused fintech SaaS onboarding overhaul and frictionless 4-field signup flow.",
     image: productImg,
     year: "'26",
-    tags: ["UI/UX Design", "SaaS Interface", "React"],
+    tags: ["UI/UX Design", "SaaS Interface", "Conversion CRO"],
     accentColor: "#ff8a5b",
     glowColor: "rgba(255, 138, 91, 0.1)",
     ratio: "aspect-[4/5]",
@@ -71,10 +71,10 @@ const ITEMS: PortfolioItem[] = [
   {
     title: "Pool Supply Wholesalers",
     category: "Creative Dev",
-    description: "An immersive audio-reactive spatial web landing experience.",
+    description: "Headless Next.js eCommerce storefront paired with a real-time sales and inventory admin dashboard.",
     image: liveNationImg,
     year: "'26",
-    tags: ["Creative Dev", "WebGL", "Interactive Design"],
+    tags: ["Next.js", "Headless Commerce", "Operations Dashboard"],
     accentColor: "#38bdf8",
     glowColor: "rgba(56, 189, 248, 0.1)",
     ratio: "aspect-[4/5]",
@@ -84,10 +84,10 @@ const ITEMS: PortfolioItem[] = [
   {
     title: "Ping Buz Mobile Application",
     category: "Mobile Application",
-    description: "An immersive audio-reactive spatial web landing experience.",
+    description: "Cross-platform React Native iOS & Android app powered by real-time WebSocket messaging.",
     image: AppImg,
     year: "'26",
-    tags: ["Creative Dev", "WebGL", "Interactive Design"],
+    tags: ["React Native", "iOS & Android", "Real-Time WebSockets"],
     accentColor: "#38bdf8",
     glowColor: "rgba(56, 189, 248, 0.1)",
     ratio: "aspect-[4/5]",
@@ -335,7 +335,7 @@ export default function Portfolio() {
                 <div key={idx} className="w-[150px] md:w-[180px] flex-shrink-0 flex items-center justify-center px-4 md:px-8">
                   <img
                     src={logo}
-                    alt={`Partner Logo ${idx}`}
+                    alt={`StellR IT LLC client partner logo ${(idx % LOGOS.length) + 1}`}
                     loading="lazy"
                     decoding="async"
                     className="max-h-12 md:max-h-12 w-auto object-contain brightness-0 invert opacity-50 hover:brightness-100 hover:invert-0 hover:opacity-100 transition-all duration-500"

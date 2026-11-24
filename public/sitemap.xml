@@ -7,57 +7,149 @@
   <!-- CORE PAGES                                                    -->
   <!-- ============================================================ -->
 
-  <!-- Homepage -->
   <url>
-    <loc>https://stellrit.com/</loc>
-    <lastmod>2026-08-03</lastmod>
+    <loc>https://www.stellrit.com/</loc>
+    <lastmod>2026-11-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
     <image:image>
-      <image:loc>https://stellrit.com/og-image.png</image:loc>
-      <image:title>StellR IT LLC — AI Development &amp; Software Engineering Company</image:title>
-      <image:caption>StellR IT LLC provides AI development, custom software, web &amp; mobile development for businesses worldwide.</image:caption>
+      <image:loc>https://www.stellrit.com/og-image.png</image:loc>
+      <image:title>StellR IT LLC — AI Development &amp; Custom Software Engineering Company</image:title>
+      <image:caption>StellR IT LLC provides custom AI software, autonomous AI agents, RAG chatbots, SaaS platforms, web &amp; mobile engineering from Garland, Texas.</image:caption>
     </image:image>
   </url>
 
-  <!-- Services -->
   <url>
-    <loc>https://stellrit.com/services</loc>
-    <lastmod>2026-08-03</lastmod>
-    <changefreq>monthly</changefreq>
+    <loc>https://www.stellrit.com/services</loc>
+    <lastmod>2026-11-24</lastmod>
+    <changefreq>weekly</changefreq>
     <priority>0.95</priority>
     <image:image>
-      <image:loc>https://stellrit.com/og-image.png</image:loc>
-      <image:title>AI, Software &amp; Web Development Services — StellR IT LLC</image:title>
-      <image:caption>Full-service AI development, custom software, mobile apps, SaaS, and digital marketing.</image:caption>
+      <image:loc>https://www.stellrit.com/og-image.png</image:loc>
+      <image:title>AI Development &amp; Custom Software Services — StellR IT LLC</image:title>
+      <image:caption>Full-stack AI development, autonomous agents, RAG chatbots, custom software, SaaS, mobile apps, dedicated teams, and technical SEO.</image:caption>
     </image:image>
   </url>
 
-  <!-- Contact (high-intent conversion page) -->
   <url>
-    <loc>https://stellrit.com/contact</loc>
-    <lastmod>2026-08-03</lastmod>
+    <loc>https://www.stellrit.com/contact</loc>
+    <lastmod>2026-11-24</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.95</priority>
+    <priority>0.90</priority>
   </url>
 
-  <!-- About -->
   <url>
-    <loc>https://stellrit.com/about</loc>
-    <lastmod>2026-08-03</lastmod>
+    <loc>https://www.stellrit.com/about</loc>
+    <lastmod>2026-11-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.85</priority>
-    <image:image>
-      <image:loc>https://stellrit.com/og-image.png</image:loc>
-      <image:title>About StellR IT LLC — AI &amp; Software Development Company</image:title>
-      <image:caption>Senior-led AI and software engineering team serving clients globally from Garland, TX.</image:caption>
-    </image:image>
   </url>
 
-  <!-- Portfolio -->
   <url>
-    <loc>https://stellrit.com/portfolio</loc>
-    <lastmod>2026-08-03</lastmod>
+    <loc>https://www.stellrit.com/portfolio</loc>
+    <lastmod>2026-11-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+
+  <url>
+    <loc>https://www.stellrit.com/case-studies</loc>
+    <lastmod>2026-11-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+
+  <url>
+    <loc>https://www.stellrit.com/insights</loc>
+    <lastmod>2026-11-24</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+
+  <url>
+    <loc>https://www.stellrit.com/careers</loc>
+    <lastmod>2026-11-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.65</priority>
+  </url>
+
+  <!-- ============================================================ -->
+  <!-- SERVICE LANDING PAGES                                         -->
+  <!-- ============================================================ -->
+
+  <url>
+    <loc>https://www.stellrit.com/services/ai-software-development</loc>
+    <lastmod>2026-11-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.95</priority>
+  </url>
+
+  <url>
+    <loc>https://www.stellrit.com/services/ai-automation-agents</loc>
+    <lastmod>2026-11-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.95</priority>
+  </url>
+
+  <url>
+    <loc>https://www.stellrit.com/services/ai-chatbot-development</loc>
+    <lastmod>2026-11-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.95</priority>
+  </url>
+
+  <url>
+    <loc>https://www.stellrit.com/services/web-development</loc>
+    <lastmod>2026-11-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.90</priority>
+  </url>
+
+  <url>
+    <loc>https://www.stellrit.com/services/saas-development</loc>
+    <lastmod>2026-11-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.90</priority>
+  </url>
+
+  <url>
+    <loc>https://www.stellrit.com/services/mobile-app-development</loc>
+    <lastmod>2026-11-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+
+  <url>
+    <loc>https://www.stellrit.com/services/dedicated-teams</loc>
+    <lastmod>2026-11-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.90</priority>
+  </url>
+
+  <url>
+    <loc>https://www.stellrit.com/services/ux-research-strategy</loc>
+    <lastmod>2026-11-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+
+  <url>
+    <loc>https://www.stellrit.com/services/web-product-design</loc>
+    <lastmod>2026-11-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+
+  <url>
+    <loc>https://www.stellrit.com/services/brand-identity</loc>
+    <lastmod>2026-11-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.80</priority>
+  </url>
+
+  <url>
+    <loc>https://www.stellrit.com/services/digital-marketing</loc>
+    <lastmod>2026-11-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.85</priority>
   </url>
@@ -66,163 +158,138 @@
   <!-- CASE STUDIES                                                  -->
   <!-- ============================================================ -->
 
-  <!-- Case Studies Index -->
   <url>
-    <loc>https://stellrit.com/case-studies</loc>
-    <lastmod>2026-08-03</lastmod>
+    <loc>https://www.stellrit.com/case-studies/ai-automation</loc>
+    <lastmod>2026-11-24</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.85</priority>
-  </url>
-
-  <!-- Case Study: Brand Building -->
-  <url>
-    <loc>https://stellrit.com/case-studies/brand-building</loc>
-    <lastmod>2026-08-03</lastmod>
-    <changefreq>yearly</changefreq>
-    <priority>0.75</priority>
-  </url>
-
-  <!-- Case Study: UX/UI Conversions -->
-  <url>
-    <loc>https://stellrit.com/case-studies/ux-ui-conversions</loc>
-    <lastmod>2026-08-03</lastmod>
-    <changefreq>yearly</changefreq>
-    <priority>0.75</priority>
-  </url>
-
-  <!-- Case Study: AI Automation -->
-  <url>
-    <loc>https://stellrit.com/case-studies/ai-automation</loc>
-    <lastmod>2026-08-03</lastmod>
-    <changefreq>yearly</changefreq>
-    <priority>0.75</priority>
-  </url>
-
-  <!-- Case Study: Growth Marketing -->
-  <url>
-    <loc>https://stellrit.com/case-studies/growth-marketing</loc>
-    <lastmod>2026-08-03</lastmod>
-    <changefreq>yearly</changefreq>
-    <priority>0.75</priority>
-  </url>
-
-  <!-- Case Study: App Development -->
-  <url>
-    <loc>https://stellrit.com/case-studies/app-development</loc>
-    <lastmod>2026-08-03</lastmod>
-    <changefreq>yearly</changefreq>
-    <priority>0.75</priority>
-  </url>
-
-  <!-- Case Study: Pool Supply Wholesalers -->
-  <url>
-    <loc>https://stellrit.com/case-studies/pool-supply-wholesalers</loc>
-    <lastmod>2026-08-03</lastmod>
-    <changefreq>yearly</changefreq>
-    <priority>0.75</priority>
-  </url>
-
-  <!-- Case Study: Cinco Tile Platform -->
-  <url>
-    <loc>https://stellrit.com/case-studies/cinco-tile-platform</loc>
-    <lastmod>2026-08-03</lastmod>
-    <changefreq>yearly</changefreq>
-    <priority>0.75</priority>
-  </url>
-
-  <!-- Case Study: Harmony Residential Care -->
-  <url>
-    <loc>https://stellrit.com/case-studies/harmony-residential-care</loc>
-    <lastmod>2026-08-03</lastmod>
-    <changefreq>yearly</changefreq>
-    <priority>0.75</priority>
-  </url>
-
-  <!-- ============================================================ -->
-  <!-- CONTENT                                                       -->
-  <!-- ============================================================ -->
-
-  <!-- Insights (Blog) -->
-  <url>
-    <loc>https://stellrit.com/insights</loc>
-    <lastmod>2026-08-03</lastmod>
-    <changefreq>weekly</changefreq>
     <priority>0.80</priority>
   </url>
 
-  <!-- Article 1: What Is Generative AI Development -->
   <url>
-    <loc>https://stellrit.com/insights/what-is-generative-ai-development</loc>
-    <lastmod>2026-08-03</lastmod>
+    <loc>https://www.stellrit.com/case-studies/ux-ui-conversions</loc>
+    <lastmod>2026-11-24</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.85</priority>
-    <image:image>
-      <image:loc>https://stellrit.com/og-image.png</image:loc>
-      <image:title>What Is Generative AI Development? A Complete Business Guide for 2025</image:title>
-      <image:caption>A comprehensive guide on generative AI development, LLM integration, RAG architecture, implementation costs, security, and ROI.</image:caption>
-    </image:image>
+    <priority>0.80</priority>
   </url>
 
-  <!-- Article 2: How to Build a Custom AI Chatbot -->
   <url>
-    <loc>https://stellrit.com/insights/how-to-build-custom-ai-chatbot</loc>
-    <lastmod>2026-08-03</lastmod>
+    <loc>https://www.stellrit.com/case-studies/growth-marketing</loc>
+    <lastmod>2026-11-24</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.85</priority>
-    <image:image>
-      <image:loc>https://stellrit.com/og-image.png</image:loc>
-      <image:title>How to Build a Custom AI Chatbot for Your Business in 2025</image:title>
-      <image:caption>A strategic and engineering guide to building enterprise conversational AI, virtual assistants, and autonomous customer support bots.</image:caption>
-    </image:image>
+    <priority>0.80</priority>
   </url>
 
-  <!-- Article 3: Custom Software Development vs. SaaS -->
   <url>
-    <loc>https://stellrit.com/insights/custom-software-development-vs-saas</loc>
-    <lastmod>2026-08-03</lastmod>
+    <loc>https://www.stellrit.com/case-studies/app-development</loc>
+    <lastmod>2026-11-24</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.85</priority>
-    <image:image>
-      <image:loc>https://stellrit.com/og-image.png</image:loc>
-      <image:title>Custom Software Development vs. SaaS: Which Is Right for Your Business?</image:title>
-      <image:caption>An executive decision-making guide on total cost of ownership, scalability, IP ownership, and operational flexibility.</image:caption>
-    </image:image>
+    <priority>0.80</priority>
   </url>
 
-  <!-- Careers -->
   <url>
-    <loc>https://stellrit.com/careers</loc>
-    <lastmod>2026-08-03</lastmod>
+    <loc>https://www.stellrit.com/case-studies/pool-supply-wholesalers</loc>
+    <lastmod>2026-11-24</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.65</priority>
+    <priority>0.80</priority>
+  </url>
+
+  <url>
+    <loc>https://www.stellrit.com/case-studies/cinco-tile-platform</loc>
+    <lastmod>2026-11-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://www.stellrit.com/case-studies/harmony-residential-care</loc>
+    <lastmod>2026-11-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://www.stellrit.com/case-studies/brand-building</loc>
+    <lastmod>2026-11-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
   </url>
 
   <!-- ============================================================ -->
-  <!-- LEGAL                                                         -->
+  <!-- TECHNICAL GUIDES & INSIGHTS                                   -->
   <!-- ============================================================ -->
 
-  <!-- Privacy Policy -->
   <url>
-    <loc>https://stellrit.com/privacy</loc>
-    <lastmod>2026-08-03</lastmod>
+    <loc>https://www.stellrit.com/insights/what-is-generative-ai-development</loc>
+    <lastmod>2026-11-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+
+  <url>
+    <loc>https://www.stellrit.com/insights/how-to-build-custom-ai-chatbot</loc>
+    <lastmod>2026-11-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+
+  <url>
+    <loc>https://www.stellrit.com/insights/custom-software-development-vs-saas</loc>
+    <lastmod>2026-11-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+
+  <url>
+    <loc>https://www.stellrit.com/insights/enterprise-web-design-agency-scale</loc>
+    <lastmod>2026-11-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.80</priority>
+  </url>
+
+  <url>
+    <loc>https://www.stellrit.com/insights/how-to-choose-ai-development-company-usa</loc>
+    <lastmod>2026-11-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+
+  <url>
+    <loc>https://www.stellrit.com/insights/ai-agents-vs-traditional-chatbots</loc>
+    <lastmod>2026-11-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+
+  <url>
+    <loc>https://www.stellrit.com/insights/rag-architecture-explained-for-business</loc>
+    <lastmod>2026-11-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+
+  <!-- ============================================================ -->
+  <!-- LEGAL & POLICIES                                              -->
+  <!-- ============================================================ -->
+
+  <url>
+    <loc>https://www.stellrit.com/privacy</loc>
+    <lastmod>2026-11-24</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.30</priority>
   </url>
 
-  <!-- Terms of Service -->
   <url>
-    <loc>https://stellrit.com/terms</loc>
-    <lastmod>2026-08-03</lastmod>
+    <loc>https://www.stellrit.com/terms</loc>
+    <lastmod>2026-11-24</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.30</priority>
   </url>
 
-  <!-- SMS Terms -->
   <url>
-    <loc>https://stellrit.com/sms-terms</loc>
-    <lastmod>2026-08-03</lastmod>
+    <loc>https://www.stellrit.com/sms-terms</loc>
+    <lastmod>2026-11-24</lastmod>
     <changefreq>yearly</changefreq>
-    <priority>0.20</priority>
+    <priority>0.25</priority>
   </url>
 
 </urlset>
